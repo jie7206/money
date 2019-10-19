@@ -7,6 +7,7 @@ require 'rspec/rails'
 # for rails console, please copy follow line:
 # require File.expand_path('../app/controllers/application_controller.rb', __FILE__)
 require File.expand_path('../../app/controllers/application_controller.rb', __FILE__)
+app_controller = ApplicationController.new
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 ActiveRecord::Migration.maintain_test_schema!
 

@@ -7,3 +7,7 @@ cn:
   home: '首页'
   home_title: '我的首页'
   hello: '您好！欢迎来到我的网站 ^_^'
+  property_name_error_by_blank: '资产名称不能空白'
+  property_name_error_by_length: '资产名称过长'
+  property_amount_error_by_blank: '资产金额不能空白'
+  property_amount_error_by_numeric: '资产金额必须是大于或等于零的数字'

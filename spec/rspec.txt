@@ -1,16 +1,26 @@
-2019-10-19 16:56:49 WARN Selenium [DEPRECATION] Selenium::WebDriver::Chrome#driver_path= is deprecated. Use Selenium::WebDriver::Chrome::Service#driver_path= instead.
-2019-10-19 16:56:50 WARN Selenium [DEPRECATION] Selenium::WebDriver::Chrome#driver_path= is deprecated. Use Selenium::WebDriver::Chrome::Service#driver_path= instead.
+2019-10-19 18:27:07 WARN Selenium [DEPRECATION] Selenium::WebDriver::Chrome#driver_path= is deprecated. Use Selenium::WebDriver::Chrome::Service#driver_path= instead.
 
-Randomized with seed 31609
+Randomized with seed 46318
 
 系统测试(Main)
   登入与登出功能测试
-    点击页面的登出链接即可安全登出
     正确输入PIN码之后跳转回根目录
+    点击页面的登出链接即可安全登出
     PIN码输入错误之后会提示错误讯息
 
-Finished in 0.22129 seconds (files took 1.6 seconds to load)
-3 examples, 0 failures
+模型测试(Property)
+  资产名称超过30个字元能显示中文错误讯息
+  资产金额空白时能显示中文错误讯息
+  资产金额不能为负数
+  资产金额为负数时能提示中文错误讯息
+  资产名称空白时能显示中文错误讯息
+  资产名称不能超过30个字元
+  新建资产时若无名称和金额则无法建立
+  资产金额必须是数字形态
+  资产金额非数字形态能显示中文错误讯息
 
-Randomized with seed 31609
+Finished in 0.23834 seconds (files took 0.78079 seconds to load)
+12 examples, 0 failures
+
+Randomized with seed 46318
 
