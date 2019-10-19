@@ -1,0 +1,7 @@
+<% if object.errors.any? %>
+  <p id="error_explanation">
+    <% object.errors.messages.each do |msg| %>
+      <%= msg[1][0] %><br/>
+    <% end %>
+  </p>
+<% end %>

@@ -1,0 +1,13 @@
+<span id="site_title">
+  <a href="<%= root_path %>">
+    <h2><%= site_logo %><%= site_name %></h2>
+  </a>
+</span>
+<%# if login? %>
+  <nav>
+    <small>
+      <%#= link_to '首页', root_path %> |
+      <%#= link_to '登出系统', logout_path %>
+    </small>
+  </nav>
+<%# end %>
