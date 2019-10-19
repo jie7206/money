@@ -48,11 +48,12 @@ small {
 #login_form {
   margin-top: 1em;
 }
-.alert-info {
+.alert-notice, .alert-info {
   background-color: #090;
   color: white;
   font-weight: bold;
   padding: 0.2em;
+  margin: 0.8em 0em;
 }
 .alert-warning, #error_explanation {
   background-color: #900;

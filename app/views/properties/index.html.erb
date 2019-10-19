@@ -1,0 +1,5 @@
+<h2>资产列表</h2>
+
+<% @properties.each do |property| %>
+<p><%= property.name %>: <%= property.amount %></p>
+<% end %>

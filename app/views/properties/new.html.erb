@@ -1,0 +1,10 @@
+<h2>新增资产</h2>
+
+<%= form_for(@property) do |f| %>
+<table>
+  <tr><td>名称：</td><td><%= f.text_field(:name) %></td></tr>
+  <tr><td>金额：</td><td><%= f.text_field(:amount) %></td></tr>
+  <tr><td colspan="2" align="right">
+      <small>(<%= link_to "返回列表", properties_path %>)</small>
+      <%= f.submit("新增资产",id:"create_new_property") %></td></tr>
+<% end %>
