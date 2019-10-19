@@ -38,7 +38,7 @@ small {
 }
 #site_logo img {
   height: 45px;
-  border: 1px #999 solid;/* inset, outset */
+  border: 0px #999 solid;/* inset, outset */
   margin-right:0.5em;
 }
 #site_title a:hover {
