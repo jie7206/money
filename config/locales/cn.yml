@@ -1,15 +1,23 @@
 cn:
-  site_name: '我的财务管理系统'
-  login_prompt: '请输入PIN码：'
-  login: '登入'
-  login_err_msg: 'PIN码输入错误！'
-  logout: '登出系统'
-  home: '首页'
-  home_title: '我的首页'
-  hello: '您好！欢迎来到我的网站 ^_^'
-  property_name_error_by_blank: '资产名称不能空白'
-  property_name_error_by_length: '资产名称过长'
-  property_amount_error_by_blank: '资产金额不能空白'
-  property_amount_error_by_numeric: '资产金额必须是大于或等于零的数字'
-  new_property: '新增资产'
-  property_created_ok: '资产创建成功！'
+  site_name: 我的财务管理系统
+  login_prompt: 请输入PIN码：
+  login: 登入
+  login_err_msg: PIN码输入错误！
+  logout: 登出系统
+  home: 首页
+  home_title: 我的首页
+  back_to_home: 返回首页
+  hello: 您好！欢迎来到我的网站 ^_^
+  property_name_error_by_blank: 资产名称不能空白
+  property_name_error_by_length: 资产名称过长
+  property_amount_error_by_blank: 资产金额不能空白
+  property_amount_error_by_numeric: 资产金额必须是大于或等于零的数字
+  new_property: 新增资产
+  property_created_ok: 资产创建成功！
+  property_name: 资产名称
+  property_amount: 资产金额
+  property_index: 资产列表
+  back_to_index: 返回列表
+  edit_property: 编辑资产
+  delete_property: 删除这笔资产
+  delete_property_confirm: 您确定要删除这笔资产吗？

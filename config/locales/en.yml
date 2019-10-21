@@ -1,9 +1,23 @@
 en:
-  site_name: 'My Blank Site'
-  login_prompt: 'Please input PIN code：'
-  login: 'Login'
-  login_err_msg: 'Your PIN code is not correct！'
-  logout: 'Logout'
-  home: 'Home'
-  home_title: 'My Homepage'
-  hello: "Hello! Welcome to my site ^_^"
+  site_name: My Properties Manager
+  login_prompt: Please input PIN code：
+  login: Login
+  login_err_msg: Your PIN code is not correct！
+  logout: Logout
+  home: Home
+  home_title: My Homepage
+  back_to_home: Home
+  hello: Hello! Welcome to my site ^_^
+  property_name_error_by_blank: Property's name can't be blank
+  property_name_error_by_length: Property's name is too long
+  property_amount_error_by_blank: Property's amount can't be blank
+  property_amount_error_by_numeric: Property's amount must be positive number
+  new_property: Add New Property
+  property_created_ok: Created property successful！
+  property_name: Property Name
+  property_amount: Property Amount
+  property_index: Property Index
+  back_to_index: Back to Index
+  edit_property: Edit Property
+  delete_property: Delete This Property
+  delete_property_confirm: Are you sure？

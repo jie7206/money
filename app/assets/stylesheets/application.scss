@@ -18,12 +18,22 @@ body {
  background-image: url("light_orange_grid.gif");
  font-family: verdana, arial, helvetica, sans-serif;
  margin-top: -0.2em;
- margin-left: 1.2em;
+ margin-left: 2.0em;
 }
 table {
-  padding: 0.3em;
+  border: 1px solid black;
+  background-color: white;
+  border-collapse: collapse;
 }
-p, ol, ul, td {
+td, th {
+  padding: 0.4em;
+  border: 1px dashed lightgray;
+}
+table thead {
+  background-color: #F7DCB4;
+  text-align: center;
+}
+p, ol, ul {
  line-height: 1.5em;
  padding: 0.3em;
 }
@@ -34,11 +44,12 @@ a { color: #000; text-decoration:none;}
 a:visited { color: #000;text-decoration:none; }
 a:hover { color: #fff;background-color:#00c;text-decoration:none; }
 small {
-  font-size: 0.7em;
+  font-size: 0.5em;
 }
 #site_logo img {
+  width: 50px;
   height: 45px;
-  border: 0px #999 solid;/* inset, outset */
+  border: 3px #000 solid;
   margin-right:0.5em;
 }
 #site_title a:hover {
@@ -47,6 +58,13 @@ small {
 }
 #login_form {
   margin-top: 1em;
+}
+#site_nav {
+  position: absolute;
+  right: 1em;
+  small {
+    font-size: 0.8em;
+  }
 }
 .alert-notice, .alert-info {
   background-color: #090;

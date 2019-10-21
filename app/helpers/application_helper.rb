@@ -8,7 +8,7 @@ module ApplicationHelper
   # 网站Logo图示
   def site_logo
     raw('<span id="site_logo">'+
-      image_tag("rails.png", alt: site_name, align: "absmiddle")+'</span>')
+      image_tag($site_logo, alt: site_name, align: "absmiddle")+'</span>')
   end
 
   # 判断是否已登入

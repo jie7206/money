@@ -1,0 +1,12 @@
+<%= form_for(@property) do |f| %>
+<table>
+  <tr><td><%= t(:property_name) %>：</td><td><%= f.text_field(:name) %></td></tr>
+  <tr><td><%= t(:property_amount) %>：</td><td><%= f.text_field(:amount, onclick: 'this.select()') %></td></tr>
+  <tr><td colspan="2" align="right">
+      <small>(<%= link_to t(:back_to_index), properties_path %>)</small>
+      <%= f.submit( submit,id: submit_id) %></td></tr>
+</table>
+<% end %>
+<% if !@property.new_record? %>
+  <br/><%= link_to t(:delete_property), @property, method: :delete, id: 'delete_property', data: { confirm: t(:delete_property_confirm) } %>
+<% end %>
