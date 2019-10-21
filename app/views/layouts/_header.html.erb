@@ -1,6 +1,6 @@
 <span id="site_title">
   <a href="<%= root_path %>">
-    <h2><%= site_logo %><%= site_name %></h2>
+    <h1><%= site_logo %><%= site_name %></h1>
   </a>
 </span>
 <% if login? %>
@@ -8,6 +8,9 @@
     <small>
       <%= link_to t(:back_to_home), root_path %> |
       <%= link_to t(:new_property), new_property_path %> |
+    <% if @property %>
+      <%= link_back_to_properties %> |
+    <% end %>
       <%= link_to t(:logout), logout_path, { id: 'logout' } %>
     </small>
   </nav>

@@ -8,17 +8,21 @@ cn:
   home_title: 我的首页
   back_to_home: 返回首页
   hello: 您好！欢迎来到我的网站 ^_^
-  property_name_error_by_blank: 资产名称不能空白
-  property_name_error_by_length: 资产名称过长
-  property_amount_error_by_blank: 资产金额不能空白
-  property_amount_error_by_numeric: 资产金额必须是大于或等于零的数字
-  new_property: 新增资产
-  property_created_ok: 资产创建成功！
+  property_name_error_by_blank: 资产名称不能空白！
+  property_name_error_by_length: 资产名称过长！
+  property_amount_error_by_blank: 资产金额不能空白！
+  property_amount_error_by_numeric: 资产金额必须是数字！
+  new_property: 新建资产
+  property_created_ok: 资产新建成功！
+  property_updated_ok: 资产更新成功！
+  property_destroy_ok: 资产删除成功！
   property_name: 资产名称
   property_amount: 资产金额
-  property_index: 资产列表
-  back_to_index: 返回列表
+  property_index: 资产负债表
+  back_to_index: 资产列表
   edit_property: 编辑资产
   update_property: 更新资产
   delete_property: 删除这笔资产
   delete_property_confirm: 您确定要删除这笔资产吗？
+  copyright: 版权所有
+  contact_email: 联系邮箱

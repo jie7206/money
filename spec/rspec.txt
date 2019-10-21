@@ -1,26 +1,44 @@
-2019-10-19 18:27:07 WARN Selenium [DEPRECATION] Selenium::WebDriver::Chrome#driver_path= is deprecated. Use Selenium::WebDriver::Chrome::Service#driver_path= instead.
+2019-10-21 17:47:10 WARN Selenium [DEPRECATION] Selenium::WebDriver::Chrome#driver_path= is deprecated. Use Selenium::WebDriver::Chrome::Service#driver_path= instead.
 
-Randomized with seed 46318
+Randomized with seed 37125
 
 系统测试(Main)
   登入与登出功能测试
-    正确输入PIN码之后跳转回根目录
     点击页面的登出链接即可安全登出
     PIN码输入错误之后会提示错误讯息
+    正确输入PIN码之后跳转回根目录
 
 模型测试(Property)
-  资产名称超过30个字元能显示中文错误讯息
-  资产金额空白时能显示中文错误讯息
-  资产金额不能为负数
-  资产金额为负数时能提示中文错误讯息
   资产名称空白时能显示中文错误讯息
-  资产名称不能超过30个字元
+  资产金额空白时能显示中文错误讯息
   新建资产时若无名称和金额则无法建立
-  资产金额必须是数字形态
+  资产名称不能超过30个字元
   资产金额非数字形态能显示中文错误讯息
+  资产金额必须是数字形态
+  资产名称超过30个字元能显示中文错误讯息
 
-Finished in 0.23834 seconds (files took 0.78079 seconds to load)
-12 examples, 0 failures
+系统测试(Properties)
+  失败用例
+    新增资产
+      当资产金额不为数字时无法新建且显示错误讯息
+      当资产没有名称时无法新建且显示错误讯息
+      当资产没有金额时无法新建且显示错误讯息
+      当资产名称过长时无法新建且显示错误讯息
+    修改与删除资产
+      当资产金额不为数字时无法更新且显示错误讯息
+      当资产名称过长时无法更新且显示错误讯息
+      当资产没有名称时无法更新且显示错误讯息
+      当资产没有金额时无法更新且显示错误讯息
+  成功用例
+    修改与删除资产
+      能通过表单删除一笔资产记录
+      能通过表单修改资产的名称
+      能通过表单修改资产的金额
+    新增资产
+      能通过表单新增一笔资产记录
 
-Randomized with seed 46318
+Finished in 0.65056 seconds (files took 0.7669 seconds to load)
+22 examples, 0 failures
+
+Randomized with seed 37125
 

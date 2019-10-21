@@ -29,9 +29,18 @@ class ApplicationController < ActionController::Base
   end
 
   # 回到资产目录页
-
   def go_properties
     redirect_to controller: :properties, action: :index
+  end
+
+  # 显示当前时间
+  def now
+    Time.now.to_s(:db)
+  end
+
+  # 显示通知讯息
+  def put_notice( string )
+    flash[:notice] = "#{string} (#{now})"
   end
 
 end

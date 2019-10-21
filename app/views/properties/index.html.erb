@@ -1,14 +1,19 @@
 <h2><%= t(:property_index) %></h2>
 
 <table>
-  <thead class="tr_head">
-    <td width="75%"><%= t(:property_name) %></td>
+  <tr class="thead">
+    <td width="5%"></td>
+    <td width="70%"><%= t(:property_name) %></td>
     <td width="25%"><%= t(:property_amount) %></td>
-  </thead>
-<% @properties.each do |property| %>
-  <tr>
-    <td><%= link_to property.name, edit_property_path(property) %></td>
-    <td align="right"><%= format('%.2f',property.amount.floor(2)) %></td>
   </tr>
+<% n = 1 %>
+<% @properties.each do |property| %>
+  <tr <%= change_row_color %>>
+    <td align="right"><%= n %></td>
+    <td><%= link_edit_to(property) %></td>
+    <td align="right"><%= to_n(property.amount) %></td>
+  </tr>
+  <% n += 1 %>
 <% end %>
 </table>
+<p>&nbsp;</p>

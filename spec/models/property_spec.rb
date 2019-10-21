@@ -45,17 +45,4 @@ RSpec.describe '模型测试(Property)', type: :model do
     expect(property.errors.messages[:amount].join).to include $property_amount_error_by_numeric
   end
 
-  specify '资产金额不能为负数' do
-    property = build(:property, amount: -10.1)
-    expect(property).not_to be_valid
-    property = build(:property, amount: 0)
-    expect(property).to be_valid
-  end
-
-  specify '资产金额为负数时能提示中文错误讯息' do
-    property = build(:property, amount: -10.1)
-    property.valid?
-    expect(property.errors.messages[:amount].join).to include $property_amount_error_by_numeric
-  end
-
 end

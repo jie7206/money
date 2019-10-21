@@ -8,17 +8,21 @@ en:
   home_title: My Homepage
   back_to_home: Home
   hello: Hello! Welcome to my site ^_^
-  property_name_error_by_blank: Property's name can't be blank
-  property_name_error_by_length: Property's name is too long
-  property_amount_error_by_blank: Property's amount can't be blank
-  property_amount_error_by_numeric: Property's amount must be positive number
+  property_name_error_by_blank: Property's name can't be blank！
+  property_name_error_by_length: Property's name is too long！
+  property_amount_error_by_blank: Property's amount can't be blank！
+  property_amount_error_by_numeric: Property's amount must be a number！
   new_property: Add New Property
   property_created_ok: Created property successful！
+  property_updated_ok: Updated property successful！
+  property_destroy_ok: Destroied property successful！
   property_name: Property Name
   property_amount: Property Amount
-  property_index: Property Index
-  back_to_index: Back to Index
+  property_index: Balance Sheet
+  back_to_index: Properties
   edit_property: Edit Property
   update_property: Update Property
   delete_property: Delete This Property
   delete_property_confirm: Are you sure？
+  copyright: Copyright
+  contact_email: Contact Email
