@@ -19,5 +19,6 @@ cn:
   property_index: 资产列表
   back_to_index: 返回列表
   edit_property: 编辑资产
+  update_property: 更新资产
   delete_property: 删除这笔资产
   delete_property_confirm: 您确定要删除这笔资产吗？

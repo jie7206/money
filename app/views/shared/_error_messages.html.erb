@@ -1,7 +1,7 @@
 <% if object.errors.any? %>
   <p id="error_explanation">
-    <% object.errors.messages.each do |msg| %>
-      <%= msg[1][0] %><br/>
+    <% object.errors.messages.each do |field,msg| %>
+      <%= msg.join(',') %><br/>
     <% end %>
   </p>
 <% end %>

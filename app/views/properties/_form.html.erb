@@ -1,3 +1,4 @@
+<%= render 'shared/error_messages', object: @property %>
 <%= form_for(@property) do |f| %>
 <table>
   <tr><td><%= t(:property_name) %>：</td><td><%= f.text_field(:name) %></td></tr>

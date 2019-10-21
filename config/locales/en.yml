@@ -19,5 +19,6 @@ en:
   property_index: Property Index
   back_to_index: Back to Index
   edit_property: Edit Property
+  update_property: Update Property
   delete_property: Delete This Property
   delete_property_confirm: Are you sure？
