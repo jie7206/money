@@ -1,0 +1,21 @@
+<h2><%= t(:currency_index) %></h2>
+
+<table>
+  <tr class="thead">
+    <td width="5%"></td>
+    <td width="30%"><%= t(:currency_name) %></td>
+    <td width="30%"><%= t(:currency_code) %></td>
+    <td width="35%"><%= t(:currency_exchange_rate) %></td>
+  </tr>
+<% n = 1 %>
+<% @currencies.each do |currency| %>
+  <tr <%= change_row_color %>>
+    <td align="right"><%= n %></td>
+    <td><%= link_edit_to(currency) %></td>
+    <td><%= currency.code %></td>
+    <td align="right"><%= to_n(currency.exchange_rate, 4) %></td>
+  </tr>
+  <% n += 1 %>
+<% end %>
+</table>
+<p><%= link_to t(:new_currency), new_currency_path, { id: 'add_new_currency' } %></p>

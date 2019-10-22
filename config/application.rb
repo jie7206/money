@@ -21,10 +21,12 @@ module Money
         view_specs:       false,
         controller_specs: false,
         helper_specs:     false,
-        routing_specs:    false
+        routing_specs:    false,
+        request_specs:    false
       g.stylesheets       false
       g.javascripts       false
       g.helper            false
+      g.jbuilder          false
     end
   end
 end

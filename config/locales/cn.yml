@@ -8,10 +8,11 @@ cn:
   home_title: 我的首页
   back_to_home: 返回首页
   hello: 您好！欢迎来到我的网站 ^_^
-  property_name_error_by_blank: 资产名称不能空白！
-  property_name_error_by_length: 资产名称过长！
-  property_amount_error_by_blank: 资产金额不能空白！
-  property_amount_error_by_numeric: 资产金额必须是数字！
+  please_fix_errors: 请您修正以下错误：
+  property_name_blank_err: 资产名称不能空白！
+  property_name_len_err: 资产名称过长！
+  property_amount_blank_err: 资产金额不能空白！
+  property_amount_nan_err: 资产金额必须是数字！
   new_property: 新建资产
   property_created_ok: 资产新建成功！
   property_updated_ok: 资产更新成功！
@@ -24,5 +25,32 @@ cn:
   update_property: 更新资产
   delete_property: 删除这笔资产
   delete_property_confirm: 您确定要删除这笔资产吗？
+  currency_index: 货币列表
+  currency_name_blank_err: 货币名称不能空白！
+  currency_code_blank_err: 货币代码不能空白！
+  currency_exchange_rate_blank_err: 货币汇率值不能空白！
+  currency_name_len_err: 货币名称过长！
+  currency_code_len_err: 货币代码过长！
+  currency_exchange_rate_nan_err: 货币汇率值必须是数字！
+  currency_created_ok: 货币新建成功！
+  currency_updated_ok: 货币更新成功！
+  currency_destroy_ok: 货币删除成功！
+  new_currency: 新建货币
+  currency_name: 货币名称
+  currency_code: 货币代码
+  currency_exchange_rate: 美元汇率值
+  delete_currency: 删除此货币
+  delete_currency_confirm: 您确定要删除此货币吗？
+  edit_currency: 编辑货币
+  update_currency: 更新货币
   copyright: 版权所有
   contact_email: 联系邮箱
+  activerecord:
+    attributes:
+      property:
+        name: 资产名称
+        amount: 资产金额
+      currency:
+        name: 货币名称
+        code: 货币代码
+        exchange_rate: 货币汇率值

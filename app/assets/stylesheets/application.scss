@@ -1,18 +1,3 @@
-/*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
- * vendor/assets/stylesheets directory can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
- * files in this directory. Styles in this file should be added after the last require_* statement.
- * It is generally better to create a new file per style scope.
- *
- *= require_tree .
- *= require_self
- */
 body {
  background-color: #fff; color: #333;
  background-image: url("light_orange_grid.gif");
@@ -20,6 +5,19 @@ body {
  margin-top: -0.2em;
  margin-bottom: 2.0em;
  margin-left: 2.0em;
+}
+a {
+  color: #000;
+  text-decoration:none;
+}
+a:visited {
+  color: #000;
+  text-decoration:none;
+}
+a:hover {
+  color: #fff;
+  background-color:#00c;
+  text-decoration:none;
 }
 h1, h2 {
   font-weight: normal;
@@ -49,13 +47,10 @@ p, ol, ul {
 input, textarea {
   border: 1px #999 solid;
 }
-a { color: #000; text-decoration:none;}
-a:visited { color: #000;text-decoration:none; }
-a:hover { color: #fff;background-color:#00c;text-decoration:none; }
 small {
   font-size: 0.7em;
 }
-#site_logo img {
+#site_logo {
   width: 50px;
   height: 45px;
   border: 3px #000 solid;
@@ -86,7 +81,12 @@ small {
   background-color: #900;
   color: white;
   font-weight: bold;
-  padding: 0.2em;
+  padding: 0.4em;
+  margin-bottom: 0.5em;
+  ol {
+    margin: -0.3em 1.5em;
+    line-height: 1.7em;
+  }
 }
 .thead {
   background-color: #F7DCB4;

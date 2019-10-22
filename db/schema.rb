@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_19_091143) do
+ActiveRecord::Schema.define(version: 2019_10_22_020717) do
+
+  create_table "currencies", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.decimal "exchange_rate"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "properties", force: :cascade do |t|
     t.string "name"

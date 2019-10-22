@@ -1,7 +1,10 @@
 <% if object.errors.any? %>
-  <p id="error_explanation">
-    <% object.errors.messages.each do |field,msg| %>
-      <%= msg.join(' ') %><br/>
+  <div id="error_explanation">
+    <%= t(:please_fix_errors) %>
+    <ol>
+    <% object.errors.full_messages.each do |msg| %>
+      <li><%= msg.split(' ')[1] %></li>
     <% end %>
-  </p>
+    </ol>
+  </div>
 <% end %>

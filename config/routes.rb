@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :currencies
   resources :properties
   root 'properties#index'
   get '/login', to: 'main#login'

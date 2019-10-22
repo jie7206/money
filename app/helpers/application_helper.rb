@@ -7,8 +7,7 @@ module ApplicationHelper
 
   # 网站Logo图示
   def site_logo
-    raw '<span id="site_logo">'+
-      image_tag($site_logo, alt: site_name, align: "absmiddle")+'</span>'
+    raw image_tag($site_logo, id: "site_logo", alt: site_name, align: "absmiddle")
   end
 
   # 判断是否已登入
@@ -36,9 +35,9 @@ module ApplicationHelper
     raw "onMouseOver=\"this.style.background='#{rgb}'\"  onMouseOut=\"this.style.background='#FFFFFF'\""
   end
 
-  # 链接到编辑资产
-  def link_edit_to(property)
-    link_to property.name, edit_property_path(property)
+  # 链接到编辑类别
+  def link_edit_to( instance )
+    eval "link_to instance.name, edit_#{instance.class.to_s.downcase}_path(instance)"
   end
 
 end

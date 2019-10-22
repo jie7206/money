@@ -1,4 +1,5 @@
 <%= render 'shared/error_messages', object: @property %>
+
 <%= form_for(@property) do |f| %>
 <table>
   <tr><td colspan="2" class="thead"></td></tr>
@@ -10,6 +11,7 @@
       <%= f.submit( submit,id: submit_id) %></td></tr>
 </table>
 <% end %>
+
 <% if !@property.new_record? %>
   <br/><%= link_to t(:delete_property), @property, method: :delete, id: 'delete_property', data: { confirm: t(:delete_property_confirm) } %>
 <% end %>

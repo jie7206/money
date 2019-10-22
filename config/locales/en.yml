@@ -2,20 +2,21 @@ en:
   site_name: My Properties Manager
   login_prompt: Please input PIN code：
   login: Login
-  login_err_msg: Your PIN code is not correct！
+  login_err_msg: Your PIN code is not correct!
   logout: Logout
   home: Home
   home_title: My Homepage
   back_to_home: Home
   hello: Hello! Welcome to my site ^_^
-  property_name_error_by_blank: Property's name can't be blank！
-  property_name_error_by_length: Property's name is too long！
-  property_amount_error_by_blank: Property's amount can't be blank！
-  property_amount_error_by_numeric: Property's amount must be a number！
+  please_fix_errors: Please fix errors：
+  property_name_blank_err: Property's name can't be blank!
+  property_name_len_err: Property's name is too long!
+  property_amount_blank_err: Property's amount can't be blank!
+  property_amount_nan_err: Property's amount must be a number!
   new_property: Add New Property
-  property_created_ok: Created property successful！
-  property_updated_ok: Updated property successful！
-  property_destroy_ok: Destroied property successful！
+  property_created_ok: Created property successful!
+  property_updated_ok: Updated property successful!
+  property_destroy_ok: Destroied property successful!
   property_name: Property Name
   property_amount: Property Amount
   property_index: Balance Sheet
@@ -23,6 +24,33 @@ en:
   edit_property: Edit Property
   update_property: Update Property
   delete_property: Delete This Property
-  delete_property_confirm: Are you sure？
+  delete_property_confirm: Are You SURE?
+  currency_index: currencies
+  currency_name_blank_err: Currency's name can't be blank!
+  currency_code_blank_err: Currency's code can't be blank!
+  currency_exchange_rate_blank_err: Currency's exchange rate can't be blank!
+  currency_name_len_err: Currency's name is too long!
+  currency_code_len_err: Currency's code is too long!
+  currency_exchange_rate_nan_err: Currency's exchange rate must be a number!
+  currency_created_ok: Currency was successfully created!
+  currency_updated_ok: Currency was successfully updated!
+  currency_destroy_ok: Currency was successfully destroyed!
+  new_currency: Add New Currency
+  currency_name: Currency Name
+  currency_code: Currency Code
+  currency_exchange_rate: USD Exchange Rate
+  delete_currency: Delete This Currency
+  delete_currency_confirm: Are You SURE?
+  edit_currency: Edit Currency
+  update_currency: Update Currency
   copyright: Copyright
   contact_email: Contact Email
+  activerecord:
+    attributes:
+      property:
+        name: Name
+        amount: Amount
+      currency:
+        name: Name
+        code: Currency Code
+        exchange_rate: Exchange Rate

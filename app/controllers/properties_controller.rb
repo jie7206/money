@@ -1,5 +1,7 @@
 class PropertiesController < ApplicationController
 
+  before_action :set_property, only: [:edit, :update, :destroy]
+
   # 资产负债列表
   def index
     @properties = Property.all
@@ -23,12 +25,10 @@ class PropertiesController < ApplicationController
 
   # 编辑资产表单
   def edit
-    get_property_by_id
   end
 
   # 储存更新资产
   def update
-    get_property_by_id
     if @property.update_attributes(property_params)
       put_notice t(:property_updated_ok)
       go_properties
@@ -39,7 +39,6 @@ class PropertiesController < ApplicationController
 
   # 删除资产
   def destroy
-    get_property_by_id
     if @property.destroy
       put_notice t(:property_destroy_ok)
       go_properties
@@ -48,12 +47,12 @@ class PropertiesController < ApplicationController
 
   private
 
-    # 读取特定资产
-    def get_property_by_id
+    # 取出特定的某笔数据
+    def set_property
       @property = Property.find(params[:id])
     end
 
-    # 供安全更新使用
+    # 设定栏位安全白名单
     def property_params
       params.require(:property).permit(:name,:amount)
     end
