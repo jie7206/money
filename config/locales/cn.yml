@@ -32,6 +32,7 @@ cn:
   currency_name_len_err: 货币名称过长！
   currency_code_len_err: 货币代码过长！
   currency_exchange_rate_nan_err: 货币汇率值必须是数字！
+  currency_exchange_rate_nap_err: 货币汇率值必须是正数！
   currency_created_ok: 货币新建成功！
   currency_updated_ok: 货币更新成功！
   currency_destroy_ok: 货币删除成功！

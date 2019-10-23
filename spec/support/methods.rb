@@ -24,7 +24,12 @@ def expect_field_value_must_be_numeric( model, fields, error_msg = nil )
   expect_field_value_not_be( model, fields, 'abcd', error_msg )
 end
 
-# 快速建立栏位不能为文字的测试代码
+# 快速建立栏位不能为负数的测试代码
+def expect_field_value_must_be_positive( model, fields, error_msg = nil )
+  expect_field_value_not_be( model, fields, -2.8, error_msg )
+end
+
+# 快速建立栏位文字不能太长的测试代码
 def expect_field_value_not_too_long( model, fields, size = 50, error_msg = nil )
   expect_field_value_not_be( model, fields, 'a'*(size+1), error_msg )
 end

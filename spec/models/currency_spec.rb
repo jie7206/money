@@ -17,4 +17,8 @@ RSpec.describe '模型测试(Currency)', type: :model do
     expect_field_value_must_be_numeric :currency, :exchange_rate, $currency_exchange_rate_nan_err
   end
 
+  specify '#92[模型层]货币汇率值不为正数时能显示错误讯息' do
+    expect_field_value_must_be_positive :currency, :exchange_rate, $currency_exchange_rate_nap_err
+  end
+
 end

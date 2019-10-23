@@ -32,6 +32,7 @@ en:
   currency_name_len_err: Currency's name is too long!
   currency_code_len_err: Currency's code is too long!
   currency_exchange_rate_nan_err: Currency's exchange rate must be a number!
+  currency_exchange_rate_nap_err: Currency's exchange rate must be a positive number!
   currency_created_ok: Currency was successfully created!
   currency_updated_ok: Currency was successfully updated!
   currency_destroy_ok: Currency was successfully destroyed!

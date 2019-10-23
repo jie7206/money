@@ -20,5 +20,10 @@ class Currency < ApplicationRecord
         message: $currency_exchange_rate_blank_err },
       numericality: {
         message: $currency_exchange_rate_nan_err }
+  validates \
+    :exchange_rate,
+      numericality: {
+        greater_than: 0,
+        message: $currency_exchange_rate_nap_err }
 
 end
