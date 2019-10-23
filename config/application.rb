@@ -13,9 +13,6 @@ module Money
     config.i18n.default_locale = :cn
 
     # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration can go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded after loading
-    # the framework and any gems in your application.
     config.generators do |g|
       g.test_framework :rspec,
         view_specs:       false,
@@ -28,5 +25,10 @@ module Money
       g.helper            false
       g.jbuilder          false
     end
+
+    # Set Time Zone
+    config.time_zone = 'Beijing'
+    config.active_record.default_timezone = :local
+    config.active_record.time_zone_aware_attributes = false
   end
 end

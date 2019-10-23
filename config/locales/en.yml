@@ -37,12 +37,13 @@ en:
   currency_destroy_ok: Currency was successfully destroyed!
   new_currency: Add New Currency
   currency_name: Currency Name
-  currency_code: Currency Code
+  currency_code: Code
   currency_exchange_rate: USD Exchange Rate
   delete_currency: Delete This Currency
   delete_currency_confirm: Are You SURE?
   edit_currency: Edit Currency
   update_currency: Update Currency
+  updated_time: Updated Time
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

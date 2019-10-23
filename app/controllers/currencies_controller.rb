@@ -21,7 +21,8 @@ class CurrenciesController < ApplicationController
     @currency = Currency.new(currency_params)
     respond_to do |format|
       if @currency.save
-        format.html { redirect_to currencies_url, notice: t(:currency_created_ok) }
+        put_notice t(:currency_created_ok)
+        format.html { redirect_to currencies_url }
       else
         format.html { render :new }
       end
@@ -32,7 +33,8 @@ class CurrenciesController < ApplicationController
   def update
     respond_to do |format|
       if @currency.update(currency_params)
-        format.html { redirect_to currencies_url, notice: t(:currency_updated_ok) }
+        put_notice t(:currency_updated_ok)
+        format.html { redirect_to currencies_url }
       else
         format.html { render :edit }
       end
@@ -43,7 +45,8 @@ class CurrenciesController < ApplicationController
   def destroy
     @currency.destroy
     respond_to do |format|
-      format.html { redirect_to currencies_url, notice: t(:currency_destroied_ok) }
+      put_notice t(:currency_destroied_ok)
+      format.html { redirect_to currencies_url }
     end
   end
 

@@ -20,6 +20,11 @@ module ApplicationHelper
     number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))
   end
 
+  # 默认的时间显示格式
+  def to_t( time )
+    time.to_s(:db)
+  end
+
   # 点击后立刻选取所有文字
   def select_all
     'this.select()'

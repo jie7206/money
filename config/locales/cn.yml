@@ -37,12 +37,13 @@ cn:
   currency_destroy_ok: 货币删除成功！
   new_currency: 新建货币
   currency_name: 货币名称
-  currency_code: 货币代码
+  currency_code: 代码
   currency_exchange_rate: 美元汇率值
   delete_currency: 删除此货币
   delete_currency_confirm: 您确定要删除此货币吗？
   edit_currency: 编辑货币
   update_currency: 更新货币
+  updated_time: 更新时间
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
