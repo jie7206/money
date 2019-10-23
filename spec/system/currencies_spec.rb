@@ -69,6 +69,15 @@ RSpec.describe '系统测试(Currencies)', type: :system do
         expect(page).to have_content $currency_exchange_rate_nan_err
       end
 
+      specify '#93[系统层]货币汇率值不为正数时无法新建且显示错误讯息' do
+        fill_in 'currency[exchange_rate]', with: 0
+        find('#create_new_currency').click
+        expect(page).to have_content $currency_exchange_rate_nap_err
+        fill_in 'currency[exchange_rate]', with: -1.8
+        find('#create_new_currency').click
+        expect(page).to have_content $currency_exchange_rate_nap_err
+      end
+
     end
 
   end
