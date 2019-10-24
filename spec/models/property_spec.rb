@@ -39,4 +39,11 @@ RSpec.describe '模型测试(Property)', type: :model do
     expect(p.amount_to(:usd)).to eq 100.0*(1.0/31.0)
   end
 
+  specify '#102[模型层]资产能以新台币或其他币种结算所有资产的总值' do
+    p1 = create(:property, amount: 100.0, currency: currencies(:twd))
+    p2 = create(:property, amount: 100.0, currency: currencies(:cny))
+    p3 = create(:property, amount: 100.0, currency: currencies(:usd))
+    expect(Property.total(:twd).to_i).to eq (100+100*(31.0/7.0)+100*(31.0/1.0)).to_i
+  end
+
 end
