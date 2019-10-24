@@ -17,6 +17,13 @@ class Property < ApplicationRecord
       numericality: {
         message: $property_amount_nan_err }
 
+  # 资产能以新台币或其他币种结算所有资产的总值
+  def self.total( target_code = :twd )
+    result = 0
+    all.each {|p| result += p.amount_to(target_code)}
+    return result
+  end
+
   # 将资产金额从自身的币别转换成其他币别(默认为新台币)
   def amount_to( target_code = :twd )
     target_exchange_rate = eval "$#{target_code.to_s.downcase}_exchange_rate"

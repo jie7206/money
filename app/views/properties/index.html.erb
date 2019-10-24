@@ -19,5 +19,8 @@
   </tr>
   <% n += 1 %>
 <% end %>
+  <tr>
+    <td colspan="5" align="right" class="thead"><%= t(:total_properties_amount) %>：<%= to_n(@total_properties_amount,0) %> <%= t(:twd) %></td>
+  </tr>
 </table>
 <p><%= link_to t(:new_property), new_property_path, { id: 'add_new_property' } %></p>

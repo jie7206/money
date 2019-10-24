@@ -47,6 +47,8 @@ cn:
   update_currency: 更新货币
   updated_time: 更新时间
   exchange_to_twd: 兑换成台币
+  total_properties_amount: 资产总净值
+  twd: 新台币
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
