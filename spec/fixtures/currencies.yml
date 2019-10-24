@@ -1,0 +1,19 @@
+twd:
+  name: 新台币
+  code: TWD
+  exchange_rate: 31.00
+
+cny:
+  name: 人民币
+  code: CNY
+  exchange_rate: 7.00
+
+usd:
+  name: 美元
+  code: USD
+  exchange_rate: 1.00
+
+krw:
+  name: 韩元
+  code: KRW
+  exchange_rate: 1173.00

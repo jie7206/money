@@ -9,7 +9,7 @@ FactoryBot.define do
     trait :twd do
       name { '新台币' }
       code { 'TWD' }
-      exchange_rate { 32.00 }
+      exchange_rate { 31.00 }
     end
 
     trait :cny do

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe '系统测试(Properties)', type: :system do
 
-  let!(:currency) { create(:currency, :cny) }
+  fixtures :currencies
 
   before do
     visit login_path

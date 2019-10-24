@@ -9,7 +9,7 @@
     <td width="15%"><%= t(:exchange_to_twd) %></td>
   </tr>
 <% n = 1 %>
-<% @properties.each do |property| %>
+<% @properties.order(amount: :desc).each do |property| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(property) %></td>

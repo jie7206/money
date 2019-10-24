@@ -27,5 +27,12 @@ class Currency < ApplicationRecord
       numericality: {
         greater_than: 0,
         message: $currency_exchange_rate_nap_err }
+        
+  # 自动新增货币汇率值到全域变数
+  def self.generate_exchange_rates
+    all.each do |c|
+      eval "$#{c.code.downcase}_exchange_rate = c.exchange_rate"
+    end
+  end
 
 end

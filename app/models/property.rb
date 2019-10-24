@@ -19,8 +19,9 @@ class Property < ApplicationRecord
 
   # 将资产金额从自身的币别转换成其他币别(默认为新台币)
   def amount_to( target_code = :twd )
-    if target = Currency.find_by_code(target_code.to_s.upcase)
-      return amount*(target.exchange_rate.to_f/self.currency.exchange_rate.to_f)
+    target_exchange_rate = eval "$#{target_code.to_s.downcase}_exchange_rate"
+    if target_exchange_rate
+      return amount*(target_exchange_rate.to_f/self.currency.exchange_rate.to_f)
     else
       return amount
     end
