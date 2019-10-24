@@ -1,5 +1,7 @@
 class Currency < ApplicationRecord
 
+  has_many :properties
+
   validates \
     :name,
       presence: {

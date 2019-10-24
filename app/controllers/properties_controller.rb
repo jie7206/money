@@ -54,7 +54,7 @@ class PropertiesController < ApplicationController
 
     # 设定栏位安全白名单
     def property_params
-      params.require(:property).permit(:name,:amount)
+      params.require(:property).permit(:name,:amount,:currency_id)
     end
 
 end

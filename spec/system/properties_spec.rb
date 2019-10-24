@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe '系统测试(Properties)', type: :system do
 
+  let!(:currency) { create(:currency, :cny) }
+
   before do
     visit login_path
     fill_in 'pincode', with: $pincode
@@ -22,6 +24,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
         find('#add_new_property').click
         fill_in 'property[name]', with: '我的工商银行账户'
         fill_in 'property[amount]', with: 99.9999
+        select '人民币', from: 'property[currency_id]'
         find('#create_new_property').click
         expect(page).to have_content '我的工商银行账户'
         expect(page).to have_content 99.99

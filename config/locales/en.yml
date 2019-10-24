@@ -19,6 +19,7 @@ en:
   property_destroy_ok: Destroied property successful!
   property_name: Property Name
   property_amount: Property Amount
+  property_currency: Property Currency
   property_index: Balance Sheet
   back_to_index: Properties
   edit_property: Edit Property
@@ -56,3 +57,9 @@ en:
         name: Name
         code: Currency Code
         exchange_rate: Exchange Rate
+    errors:
+      models:
+        property:
+          attributes:
+            currency:
+              required: Property must be associated with a currency!
