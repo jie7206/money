@@ -46,6 +46,7 @@ en:
   edit_currency: Edit Currency
   update_currency: Update Currency
   updated_time: Updated Time
+  exchange_to_twd: Eq. TWD
   copyright: Copyright
   contact_email: Contact Email
   activerecord:
