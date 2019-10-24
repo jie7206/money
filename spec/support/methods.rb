@@ -1,4 +1,3 @@
-
 # 快速建立栏位不能为某个值的测试代码
 def expect_field_value_not_be( model, fields, value, error_msg )
   setting = (fields.to_s).split(',').map {|f| "#{f}: #{value.inspect}"}.join(',')
@@ -32,4 +31,11 @@ end
 # 快速建立栏位文字不能太长的测试代码
 def expect_field_value_not_too_long( model, fields, size = 50, error_msg = nil )
   expect_field_value_not_be( model, fields, 'a'*(size+1), error_msg )
+end
+
+# 建立3种不同币别的资产
+def create_3_different_currency_properties
+  p1 = create(:property, amount: 100.0, currency: currencies(:twd))
+  p2 = create(:property, amount: 100.0, currency: currencies(:cny))
+  p3 = create(:property, amount: 100.0, currency: currencies(:usd))
 end

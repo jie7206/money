@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
   def initialize
     super
     load_global_variables
-    Currency.generate_exchange_rates # 方便汇率转换直接调用，无需再次查询数据库
+    Currency.add_or_renew_ex_rates # 方便汇率转换直接调用，无需再次查询数据库
   end
 
   # 读入网站所有的全局参数设定

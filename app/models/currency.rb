@@ -28,9 +28,16 @@ class Currency < ApplicationRecord
         greater_than: 0,
         message: $currency_exchange_rate_nap_err }
 
+  after_save :add_or_renew_ex_rate
+
   # 自动新增货币汇率值到全域变数
-  def self.generate_exchange_rates
+  def self.add_or_renew_ex_rates
     all.each {|c| eval "$#{c.code.downcase}_exchange_rate = c.exchange_rate"}
+  end
+
+  # 自动新增货币汇率值到全域变数
+  def add_or_renew_ex_rate
+    eval "$#{self.code.downcase}_exchange_rate = self.exchange_rate"
   end
 
 end
