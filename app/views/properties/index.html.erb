@@ -3,8 +3,9 @@
 <table>
   <tr class="thead">
     <td width="5%"></td>
-    <td width="70%"><%= t(:property_name) %></td>
+    <td width="55%"><%= t(:property_name) %></td>
     <td width="25%"><%= t(:property_amount) %></td>
+    <td width="15%"><%= t(:property_currency) %></td>
   </tr>
 <% n = 1 %>
 <% @properties.each do |property| %>
@@ -12,6 +13,7 @@
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(property) %></td>
     <td align="right"><%= to_n(property.amount) %></td>
+    <td align="center"><%= property.currency.name if property.currency %></td>
   </tr>
   <% n += 1 %>
 <% end %>

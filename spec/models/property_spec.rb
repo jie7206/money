@@ -21,4 +21,11 @@ RSpec.describe '模型测试(Property)', type: :model do
     expect(property).not_to be_valid
   end
 
+  specify '#100[模型层]资产若没有关联的货币种类则无法更新' do
+    property = create(:property)
+    property.currency = nil
+    property.save
+    expect(property.errors.messages[:currency]).not_to be_blank
+  end
+
 end
