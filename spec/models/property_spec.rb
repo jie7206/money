@@ -16,4 +16,9 @@ RSpec.describe '模型测试(Property)', type: :model do
     expect_field_value_must_be_numeric :property, :amount, $property_amount_nan_err
   end
 
+  specify '#99[模型层]资产若没有关联的货币种类则无法新建' do
+    property = build(:property, currency: nil)
+    expect(property).not_to be_valid
+  end
+
 end
