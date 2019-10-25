@@ -49,6 +49,8 @@ cn:
   exchange_to_twd: 兑换成台币
   total_properties_amount: 资产总净值
   twd: 新台币
+  interest_start_date_blank_err: 利息必须要有起算日！
+  interest_rate_blank_err: 利息必须要有利率值！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
@@ -66,3 +68,7 @@ cn:
           attributes:
             currency:
               required: 资产必须关联某一个货币！
+        interest:
+          attributes:
+            property:
+              required: 利息必须关联某一个资产！

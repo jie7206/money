@@ -49,6 +49,8 @@ en:
   exchange_to_twd: Eq. TWD
   total_properties_amount: Total
   twd: TWD
+  interest_start_date_blank_err: Interest's start date can't be blank!
+  interest_rate_blank_err: Interest's rate can't be blank!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:
@@ -66,3 +68,7 @@ en:
           attributes:
             currency:
               required: Property must be associated with a currency!
+        interest:
+          attributes:
+            property:
+              required: Interest must be associated with a property!

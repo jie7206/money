@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :interests
   resources :currencies
   resources :properties
   root 'properties#index'
