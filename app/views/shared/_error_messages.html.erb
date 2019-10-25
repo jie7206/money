@@ -3,7 +3,7 @@
     <%= t(:please_fix_errors) %>
     <ol>
     <% object.errors.full_messages.each do |msg| %>
-      <li><%= msg.split(' ')[1] %></li>
+      <li><%= msg.split(' ')[-1] %></li>
     <% end %>
     </ol>
   </div>

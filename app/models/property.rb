@@ -24,6 +24,11 @@ class Property < ApplicationRecord
     return result
   end
 
+  # 回传所有贷款的记录
+  def self.all_loan
+    where 'amount < 0'
+  end
+
   # 将资产金额从自身的币别转换成其他币别(默认为新台币)
   def amount_to( target_code = :twd )
     target_exchange_rate = eval "$#{target_code.to_s.downcase}_exchange_rate"

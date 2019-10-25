@@ -1,31 +1,21 @@
-<p id="notice"><%= notice %></p>
-
-<h1>Interests</h1>
+<h2><%= t(:interest_index) %></h2>
 
 <table>
-  <thead>
-    <tr>
-      <th>Property</th>
-      <th>Start date</th>
-      <th>Rate</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @interests.each do |interest| %>
-      <tr>
-        <td><%= interest.property %></td>
-        <td><%= interest.start_date %></td>
-        <td><%= interest.rate %></td>
-        <td><%= link_to 'Show', interest %></td>
-        <td><%= link_to 'Edit', edit_interest_path(interest) %></td>
-        <td><%= link_to 'Destroy', interest, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
+  <tr class="thead">
+    <td width="15"></td>
+    <td><%= t(:property_name) %></td>
+    <td width="100"><%= t(:interest_start_date) %></td>
+    <td width="100"><%= t(:interest_rate) %></td>
+  </tr>
+<% n = 1 %>
+<% @interests.each do |interest| %>
+  <tr <%= change_row_color %>>
+    <td align="right"><%= n %></td>
+    <td><%= link_edit_to(interest, interest.property.name) %></td>
+    <td><%= interest.start_date.to_s(:db) %></td>
+    <td align="right"><%= to_n(interest.rate, 2) %></td>
+  </tr>
+  <% n += 1 %>
+<% end %>
 </table>
-
-<br>
-
-<%= link_to 'New Interest', new_interest_path %>
+<p><%= link_to t(:new_interest), new_interest_path, { id: 'add_new_interest' } %></p>

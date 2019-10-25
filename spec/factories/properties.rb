@@ -12,6 +12,12 @@ FactoryBot.define do
       association :currency, :twd
     end
 
+    trait :twd_loan do
+      name { '新光银行' }
+      amount { -50.0 }
+      association :currency, :twd
+    end
+
     trait :cny do
       name { '我的工商银行账户' }
       amount { 10.0 }

@@ -51,8 +51,15 @@ cn:
   twd: 新台币
   interest_start_date_blank_err: 利息必须要有起算日！
   interest_rate_blank_err: 利息必须要有利率值！
-  interest_start_date_type_err: 利息起算日必须是日期格式！
-  interest_rate_type_err: 利息的利率必须是数字且不为负数！
+  interest_start_date_type_err: 利息起算日必须符合yyyy-mm-dd格式！
+  interest_rate_type_err: 利率值必须是数字且不为负数！
+  interest_index: 利息列表
+  interest_start_date: 利息起算日
+  interest_rate: 年化利息(%)
+  new_interest: 新建利息
+  delete_interest: 删除这笔利息
+  delete_interest_confirm: 您确定要删除这笔利息记录吗？
+  interest_created_ok: 利息新建成功！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
@@ -74,3 +81,5 @@ cn:
           attributes:
             property:
               required: 利息必须关联某一个资产！
+            rate:
+              not_a_number: 利率值必须是数字且不为负数！

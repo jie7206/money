@@ -28,11 +28,10 @@ class InterestsController < ApplicationController
 
     respond_to do |format|
       if @interest.save
-        format.html { redirect_to @interest, notice: 'Interest was successfully created.' }
-        format.json { render :show, status: :created, location: @interest }
+        put_notice t(:interest_created_ok)
+        format.html { redirect_to action: :index, notice: 'Interest was successfully created.' }
       else
         format.html { render :new }
-        format.json { render json: @interest.errors, status: :unprocessable_entity }
       end
     end
   end

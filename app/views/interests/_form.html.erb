@@ -1,32 +1,19 @@
-<%= form_with(model: interest, local: true) do |form| %>
-  <% if interest.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(interest.errors.count, "error") %> prohibited this interest from being saved:</h2>
+<%= render 'shared/error_messages', object: @interest %>
 
-      <ul>
-      <% interest.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+<%= form_for(@interest) do |f| %>
+<table>
+  <tr><td colspan="2" class="thead"></td></tr>
+  <tr><td><%= t(:property_name) %>：</td><td><%= f.select :property_id, Property.all_loan.collect { |p| [ p.name, p.id ] } %></td></tr>
+  <tr><td><%= t(:interest_start_date) %>：</td>
+    <td><%= f.text_field(:start_date, onclick: select_all) %></td></tr>
+  <tr><td><%= t(:interest_rate) %>：</td>
+    <td><%= f.text_field(:rate, onclick: select_all) %></td></tr>
+  <tr>
+    <td colspan="2" align="right" class="tfoot">
+      <%= f.submit( submit,id: submit_id) %></td></tr>
+</table>
+<% end %>
 
-  <div class="field">
-    <%= form.label :property_id %>
-    <%= form.text_field :property_id %>
-  </div>
-
-  <div class="field">
-    <%= form.label :start_date %>
-    <%= form.date_select :start_date %>
-  </div>
-
-  <div class="field">
-    <%= form.label :rate %>
-    <%= form.text_field :rate %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit %>
-  </div>
+<% if !@interest.new_record? %>
+  <br/><%= link_to t(:delete_interest), @interest, method: :delete, id: 'delete_interest', data: { confirm: t(:delete_interest_confirm) } %>
 <% end %>

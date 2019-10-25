@@ -41,8 +41,9 @@ module ApplicationHelper
   end
 
   # 链接到编辑类别
-  def link_edit_to( instance )
-    eval "link_to instance.name, edit_#{instance.class.to_s.downcase}_path(instance)"
+  def link_edit_to( instance, link_text = nil )
+    link_text ||= instance.name
+    eval "link_to '#{link_text}', edit_#{instance.class.to_s.downcase}_path(instance)"
   end
 
 end

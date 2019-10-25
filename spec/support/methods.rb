@@ -66,9 +66,23 @@ def expect_field_value_not_too_long( model, fields, size = 50, error_msg = nil )
   expect_field_value_should_be( model, fields, 'a'*size )
 end
 
-# 建立3种不同币别的资产
-def create_3_different_currency_properties
-  p1 = create(:property, amount: 100.0, currency: currencies(:twd))
-  p2 = create(:property, amount: 100.0, currency: currencies(:cny))
-  p3 = create(:property, amount: 100.0, currency: currencies(:usd))
+# 建立不同币别的资产
+def create_different_currency_properties
+  p1 = create(:property, amount: 1000.0, currency: currencies(:twd))
+  p2 = create(:property, amount: 2000.0, currency: currencies(:cny))
+  p3 = create(:property, amount: 3000.0, currency: currencies(:usd))
+  p4 = create(:property, amount: -200.0, currency: currencies(:twd), name: '台币贷款')
+  p5 = create(:property, amount: -100.0, currency: currencies(:cny), name: '人民币贷款')
+  @ps = [p1, p2, p3, p4, p5]
+end
+
+# 根据create_different_currency_properties计算资产总值
+def property_total_value_to( target_code, new_target_currency = nil )
+  result = 0
+  to_ex = new_target_currency ? new_target_currency.exchange_rate : currencies(target_code).exchange_rate
+  @ps.each do |p|
+    ex = p.currency.exchange_rate
+    result += p.amount*(to_ex.to_f/ex.to_f)
+  end
+  return result.to_i
 end

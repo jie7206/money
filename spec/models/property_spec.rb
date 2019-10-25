@@ -42,22 +42,20 @@ RSpec.describe '模型测试(Property)', type: :model do
   end
 
   specify '#102[模型层]资产能以新台币或其他币种结算所有资产的总值' do
-    create_3_different_currency_properties
-    expect(Property.total(:twd).to_i).to eq (100+100*(ori_twd_rate/ori_cny_rate)+100*(ori_twd_rate/1.0)).to_i
+    create_different_currency_properties
+    expect(Property.total(:twd).to_i).to eq property_total_value_to(:twd)
   end
 
 
   specify '#103[模型层]汇率更新后所有资产的总值也能相应更新' do
-    create_3_different_currency_properties
-    new_rate = 35.83
-    currencies(:twd).update_attribute(:exchange_rate, new_rate)
-    expect(Property.total(:twd).to_i).to eq (100+100*(new_rate/ori_cny_rate)+100*(new_rate/1.0)).to_i
-    # 新增一种货币
-    add_rate = 1.7174
-    dem = create(:currency, code: 'dem', exchange_rate: add_rate)
-    expect(Property.total(:dem).to_i).to eq (100*(add_rate/new_rate)+100*(add_rate/ori_cny_rate)+100*(add_rate/1.0)).to_i
+    create_different_currency_properties
+    currencies(:twd).update_attribute(:exchange_rate, 35.83)
+    expect(Property.total(:twd).to_i).to eq property_total_value_to(:twd)
     # 更新回原本汇率以避免其他测试失败
     currencies(:twd).update_attribute(:exchange_rate, ori_twd_rate)
+    # 新增一种货币
+    @dem = create(:currency, code: 'dem', exchange_rate: 1.7174)
+    expect(Property.total(:dem).to_i).to eq property_total_value_to(:dem,@dem)
   end
 
 end

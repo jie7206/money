@@ -26,7 +26,7 @@ en:
   update_property: Update Property
   delete_property: Delete This Property
   delete_property_confirm: Are You SURE?
-  currency_index: currencies
+  currency_index: Currencies
   currency_name_blank_err: Currency's name can't be blank!
   currency_code_blank_err: Currency's code can't be blank!
   currency_exchange_rate_blank_err: Currency's exchange rate can't be blank!
@@ -51,8 +51,15 @@ en:
   twd: TWD
   interest_start_date_blank_err: Interest's start date can't be blank!
   interest_rate_blank_err: Interest's rate can't be blank!
-  interest_start_date_type_err: Interest's start date must be a date format!
+  interest_start_date_type_err: Interest's start date must be a yyyy-mm-dd format!
   interest_rate_type_err: Interest's rate must be a positive number!
+  interest_index: Interests
+  interest_start_date: Start Date
+  interest_rate: Year Rate(%)
+  new_interest: Add New Interest
+  delete_interest: Delete This Interest
+  delete_interest_confirm: Are you SURE？
+  interest_created_ok: Interest was successfully created!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:
@@ -74,3 +81,5 @@ en:
           attributes:
             property:
               required: Interest must be associated with a property!
+            rate:
+              not_a_number: Interest's rate must be a positive number!
