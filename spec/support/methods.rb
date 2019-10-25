@@ -1,3 +1,11 @@
+# 快速建立栏位应该为某个值的测试代码
+def expect_field_value_should_be( model, fields, value )
+  setting = (fields.to_s).split(',').map {|f| "#{f}: #{value.inspect}"}.join(',')
+  command = "#{model.to_s} = build(:#{model.to_s}, #{setting})
+             expect(#{model.to_s}).to be_valid"
+  eval command
+end
+
 # 快速建立栏位不能为某个值的测试代码
 def expect_field_value_not_be( model, fields, value, error_msg )
   setting = (fields.to_s).split(',').map {|f| "#{f}: #{value.inspect}"}.join(',')
@@ -18,9 +26,22 @@ def expect_field_value_not_be_nil( model, fields, error_msg = nil )
   expect_field_value_not_be( model, fields, nil, error_msg )
 end
 
-# 快速建立栏位不能为文字的测试代码
-def expect_field_value_must_be_numeric( model, fields, error_msg = nil )
+# 快速建立栏位必须为数字的测试代码
+def expect_field_value_must_be_a_number( model, fields, error_msg = nil )
   expect_field_value_not_be( model, fields, 'abcd', error_msg )
+  expect_field_value_should_be( model, fields, 0 )
+  expect_field_value_should_be( model, fields, 10 )
+  expect_field_value_should_be( model, fields, -10 )
+  expect_field_value_should_be( model, fields, 100.00 )
+  expect_field_value_should_be( model, fields, -100.00 )
+end
+
+# 快速建立栏位必须为日期的测试代码
+def expect_field_value_must_be_a_date( model, fields, error_msg = nil )
+  expect_field_value_not_be( model, fields, 'abcd', error_msg )
+  expect_field_value_not_be( model, fields, 1234, error_msg )
+  expect_field_value_not_be( model, fields, '1234@qq.com', error_msg )
+  expect_field_value_should_be( model, fields, '2020-02-01' )
 end
 
 # 快速建立栏位不能为负数的测试代码
