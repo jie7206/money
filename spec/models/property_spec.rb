@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe '模型测试(Property)', type: :model do
 
   fixtures :currencies
+  let!(:ori_twd_rate) { currencies(:twd).exchange_rate.to_f }
+  let!(:ori_cny_rate) { currencies(:cny).exchange_rate.to_f }
 
   specify '资产若无名称和金额则无法新建并能显示错误讯息' do
     expect_field_value_not_be_nil :property, :name, $property_name_blank_err
@@ -35,27 +37,27 @@ RSpec.describe '模型测试(Property)', type: :model do
     # 查不到该币别则返回原值
     expect(p.amount_to(:unknow)).to eq 100.0
     # 从自身的币别(台币)转换成人民币和美元
-    expect(p.amount_to(:cny)).to eq 100.0*(7.0/31.0)
-    expect(p.amount_to(:usd)).to eq 100.0*(1.0/31.0)
+    expect(p.amount_to(:cny)).to eq 100.0*(ori_cny_rate/ori_twd_rate)
+    expect(p.amount_to(:usd)).to eq 100.0*(1.0/ori_twd_rate)
   end
 
   specify '#102[模型层]资产能以新台币或其他币种结算所有资产的总值' do
     create_3_different_currency_properties
-    rate = 31.0 # 确保值不被其他测试修改而导致测试失败
-    currencies(:twd).update_attribute(:exchange_rate, rate)
-    expect(Property.total(:twd).to_i).to eq (100+100*(rate/7.0)+100*(rate/1.0)).to_i
+    expect(Property.total(:twd).to_i).to eq (100+100*(ori_twd_rate/ori_cny_rate)+100*(ori_twd_rate/1.0)).to_i
   end
 
 
   specify '#103[模型层]汇率更新后所有资产的总值也能相应更新' do
     create_3_different_currency_properties
-    new_rate = 33.5
+    new_rate = 35.83
     currencies(:twd).update_attribute(:exchange_rate, new_rate)
-    expect(Property.total(:twd).to_i).to eq (100+100*(new_rate/7.0)+100*(new_rate/1.0)).to_i
+    expect(Property.total(:twd).to_i).to eq (100+100*(new_rate/ori_cny_rate)+100*(new_rate/1.0)).to_i
     # 新增一种货币
     add_rate = 1.7174
     dem = create(:currency, code: 'dem', exchange_rate: add_rate)
-    expect(Property.total(:dem).to_i).to eq (100*(add_rate/new_rate)+100*(add_rate/7.0)+100*(add_rate/1.0)).to_i
+    expect(Property.total(:dem).to_i).to eq (100*(add_rate/new_rate)+100*(add_rate/ori_cny_rate)+100*(add_rate/1.0)).to_i
+    # 更新回原本汇率以避免其他测试失败
+    currencies(:twd).update_attribute(:exchange_rate, ori_twd_rate)
   end
 
 end

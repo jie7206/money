@@ -44,14 +44,26 @@ def expect_field_value_must_be_a_date( model, fields, error_msg = nil )
   expect_field_value_should_be( model, fields, '2020-02-01' )
 end
 
+# 快速建立栏位必须大于零的测试代码
+def expect_field_value_must_greater_than_zero( model, fields, error_msg = nil )
+  expect_field_value_not_be( model, fields, 'abcd', error_msg )
+  expect_field_value_not_be( model, fields, -2.8, error_msg )
+  expect_field_value_not_be( model, fields, 0, error_msg )
+  expect_field_value_should_be( model, fields, 10.10 )
+end
+
 # 快速建立栏位不能为负数的测试代码
 def expect_field_value_must_be_positive( model, fields, error_msg = nil )
   expect_field_value_not_be( model, fields, -2.8, error_msg )
+  expect_field_value_should_be( model, fields, 0 )
+  expect_field_value_should_be( model, fields, 10 )
+  expect_field_value_should_be( model, fields, 100.0 )
 end
 
 # 快速建立栏位文字不能太长的测试代码
 def expect_field_value_not_too_long( model, fields, size = 50, error_msg = nil )
   expect_field_value_not_be( model, fields, 'a'*(size+1), error_msg )
+  expect_field_value_should_be( model, fields, 'a'*size )
 end
 
 # 建立3种不同币别的资产

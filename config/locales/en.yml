@@ -51,7 +51,8 @@ en:
   twd: TWD
   interest_start_date_blank_err: Interest's start date can't be blank!
   interest_rate_blank_err: Interest's rate can't be blank!
-  interest_start_date_type_err: Interest's start date must be date format!
+  interest_start_date_type_err: Interest's start date must be a date format!
+  interest_rate_type_err: Interest's rate must be a positive number!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

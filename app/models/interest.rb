@@ -13,6 +13,9 @@ class Interest < ApplicationRecord
   validates \
     :rate,
       presence: {
-        message: $interest_rate_blank_err }
+        message: $interest_rate_blank_err },
+      numericality: {
+        greater_than_or_equal_to: 0,
+        message: $interest_rate_type_err }
 
 end

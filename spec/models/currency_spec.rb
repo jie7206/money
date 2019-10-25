@@ -13,8 +13,8 @@ RSpec.describe '模型测试(Currency)', type: :model do
     expect_field_value_not_too_long :currency, :code, $currency_code_maxlength,  $currency_code_len_err
   end
 
-  specify '#92[模型层]货币汇率值不为正数时能显示错误讯息' do
-    expect_field_value_must_be_positive :currency, :exchange_rate, $currency_exchange_rate_nap_err
+  specify '#92[模型层]货币汇率值不大于零时能显示错误讯息' do
+    expect_field_value_must_greater_than_zero :currency, :exchange_rate, $currency_exchange_rate_nap_err
   end
 
 end
