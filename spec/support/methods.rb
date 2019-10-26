@@ -68,10 +68,10 @@ end
 
 # 建立不同币别的资产
 def create_different_currency_properties
-  # amount值不能过大，否则测试包含利息的资产总净值会出错，已使用.floor(2)缓解此问题
-  p1 = create(:property, amount: 11000000000.0, currency: currencies(:twd))
-  p2 = create(:property, amount: 12000000000.0, currency: currencies(:cny))
-  p3 = create(:property, amount: 13000000000.0, currency: currencies(:usd))
+  # amount值不能过大，否则测试包含利息的资产总净值会出错，已使用floor函数缓解此问题
+  p1 = create(:property, amount: 110000000000.0, currency: currencies(:twd))
+  p2 = create(:property, amount: 120000000000.0, currency: currencies(:cny))
+  p3 = create(:property, amount: 130000000000.0, currency: currencies(:usd))
   p4 = create(:property, amount: -2000000000.0, currency: currencies(:twd), name: '台币贷款')
   p5 = create(:property, amount: -10000000.0, currency: currencies(:cny), name: '人民币贷款')
   # 建立p4,p5的利息资料
@@ -95,11 +95,6 @@ end
 # 根据create_different_currency_properties计算资产的利息总值
 def property_total_lixi_to( target_code )
   result = 0
-  to_ex = currencies(target_code).exchange_rate
-  @ls.each do |l|
-    # 计算利息值
-    ex = l.property.currency.exchange_rate
-    result += (l.property.lixi)*(to_ex/ex).floor(2)
-  end
+  @ls.each {|l| result += l.property.lixi(target_code) }
   return result.to_f
 end

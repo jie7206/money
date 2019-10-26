@@ -22,20 +22,19 @@ class Property < ApplicationRecord
   def self.value( target_code = :twd )
     result = 0.0
     all.each {|p| result += p.amount_to(target_code)}
-    return result.to_f
+    return result
   end
 
   # 资产能以新台币或其他币种结算所有资产的利息总值
   def self.lixi( target_code = :twd )
     result = 0.0
-    to_ex = eval "$#{target_code.to_s.downcase}_exchange_rate"
-    all_loan.each {|p| result += p.lixi*(to_ex/p.currency.exchange_rate).floor(2) }
-    return result.to_f
+    all_loan.each {|p| result += p.lixi(target_code) }
+    return result
   end
 
   # 资产能以新台币或其他币种结算所有资产包含利息的净值
   def self.net_value( target_code = :twd )
-    return (Property.value(target_code) + Property.lixi(target_code)).to_f
+    return Property.value(target_code) + Property.lixi(target_code)
   end
 
   # 回传所有贷款的记录
@@ -54,8 +53,12 @@ class Property < ApplicationRecord
   end
 
   # 计算贷款利息
-  def lixi
-    interest ? (amount * interest.rate.to_f/100/365 * (Date.today-interest.start_date).to_i).floor(2) : 0
+  def lixi( target_code = :twd )
+    to_ex = eval "$#{target_code.to_s.downcase}_exchange_rate"
+    interest ? \
+      (amount * (interest.rate.to_f/100/365) * \
+        (Date.today-interest.start_date).to_i) * \
+        (to_ex/currency.exchange_rate) : 0
   end
 
 end

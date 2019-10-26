@@ -17,7 +17,7 @@
     <td align="right"><%= to_n(property.amount) %></td>
     <td align="center"><%= property.currency.name %></td>
     <td align="right"><%= to_n(property.amount_to,0) %></td>
-    <td align="right"><%= property.lixi.to_i %></td>
+    <td align="right"><%= property.lixi(:twd).to_i %></td>
   </tr>
   <% n += 1 %>
 <% end %>
