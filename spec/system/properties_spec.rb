@@ -12,20 +12,27 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
   describe '列表显示' do
 
-    before { create_different_currency_properties }
+    before do
+      create_different_currency_properties
+      visit properties_path
+    end
 
     specify '#108[系统层]能在资产列表中显示包含利息的资产总净值' do
       # 资产净值 = 原始资产总值 + 资产的利息总值
-      properties_net_value = (property_total_value_to(:twd) + property_total_lixi_to(:twd)).to_i
-      visit properties_path
+      properties_net_value = \
+        (property_total_value_to(:twd) + property_total_lixi_to(:twd)).to_i
       expect(page).to have_selector '#properties_net_value' , text: properties_net_value
     end
 
     specify '#110[系统层]资产列表增加一栏位显示资产的利息值' do
-      visit properties_path
-      @ls.each do |l|
-        expect(page).to have_content l.property.lixi.to_i
-      end
+      @ls.each {|l| expect(page).to have_content l.property.lixi.to_i}
+    end
+
+    specify '#111[系统层]能在资产列表的金额栏位中直接输入值后按回车更新' do
+      p = @ps[0]
+      fill_in "new_amount_#{p.id}", with: '57114.38'
+      find("#property_#{p.id}").click
+      expect(page.html).to include '57114.38'
     end
 
   end
@@ -47,7 +54,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
         select '人民币', from: 'property[currency_id]'
         find('#create_new_property').click
         expect(page).to have_content '我的工商银行账户'
-        expect(page).to have_content 99.99
+        expect(page.html).to include '99.9'
         expect(page).to have_selector '.alert-notice'
       end
 
@@ -103,13 +110,8 @@ RSpec.describe '系统测试(Properties)', type: :system do
       specify '能通过表单修改资产的金额' do
         fill_in 'property[amount]', with: 1000.9865
         find('#update_property').click
-        expect(page).to have_content 1000.98
-        expect(page).not_to have_content 1000.9865
+        expect(page.html).to include '1000.9'
         expect(page).to have_selector '.alert-notice'
-        click_on property.name
-        fill_in 'property[amount]', with: -100.8899
-        find('#update_property').click
-        expect(page).to have_content -100.88
       end
 
       specify '能通过表单删除一笔资产记录' do

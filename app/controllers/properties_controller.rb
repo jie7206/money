@@ -1,6 +1,6 @@
 class PropertiesController < ApplicationController
 
-  before_action :set_property, only: [:edit, :update, :destroy]
+  before_action :set_property, only: [:edit, :update, :update_amount, :destroy]
 
   # 资产负债列表
   def index
@@ -36,6 +36,15 @@ class PropertiesController < ApplicationController
     else
       render action: :edit
     end
+  end
+
+  # 从列表中快速更新资产金额
+  def update_amount
+    if new_amount = params["new_amount_#{params[:id]}"]
+      @property.update_attribute(:amount, new_amount)
+      put_notice t(:property_updated_ok)
+    end
+    go_properties
   end
 
   # 删除资产

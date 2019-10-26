@@ -47,7 +47,7 @@ cn:
   edit_currency: 编辑货币
   update_currency: 更新货币
   updated_time: 更新时间
-  exchange_to_twd: 兑换成台币
+  exchange_to_twd: 等值台币
   total_properties_amount: 资产总净值
   twd: 新台币
   interest_start_date_blank_err: 利息必须要有起算日！
