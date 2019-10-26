@@ -2,7 +2,7 @@ FactoryBot.define do
 
   factory :property do
 
-    name { '韩元现金' }
+    name { '现金' }
     amount { 10000.0 }
     association :currency, :krw
 

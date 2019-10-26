@@ -12,12 +12,20 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
   describe '列表显示' do
 
+    before { create_different_currency_properties }
+
     specify '#108[系统层]能在资产列表中显示包含利息的资产总净值' do
-      create_different_currency_properties
       # 资产净值 = 原始资产总值 + 资产的利息总值
       properties_net_value = (property_total_value_to(:twd) + property_total_lixi_to(:twd)).to_i
       visit properties_path
       expect(page).to have_selector '#properties_net_value' , text: properties_net_value
+    end
+
+    specify '#110[系统层]资产列表增加一栏位显示资产的利息值' do
+      visit properties_path
+      @ls.each do |l|
+        expect(page).to have_content l.property.lixi.to_i
+      end
     end
 
   end

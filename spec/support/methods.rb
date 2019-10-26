@@ -99,7 +99,7 @@ def property_total_lixi_to( target_code )
   @ls.each do |l|
     # 计算利息值
     ex = l.property.currency.exchange_rate
-    result += (l.property.cal_lixi)*(to_ex/ex).floor(2)
+    result += (l.property.lixi)*(to_ex/ex).floor(2)
   end
   return -1*result.to_f
 end

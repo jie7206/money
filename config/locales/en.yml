@@ -20,6 +20,7 @@ en:
   property_name: Property Name
   property_amount: Property Amount
   property_currency: Property Currency
+  property_lixi: Property Interest
   property_index: Balance Sheet
   back_to_index: Properties
   edit_property: Edit Property
