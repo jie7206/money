@@ -28,7 +28,8 @@ class Property < ApplicationRecord
   # 资产能以新台币或其他币种结算所有资产的利息总值
   def self.lixi( target_code = :twd )
     result = 0.0
-    all_loan.each {|p| result += p.cal_lixi if p.interest }
+    to_ex = eval "$#{target_code.to_s.downcase}_exchange_rate"
+    all_loan.each {|p| result += p.cal_lixi*(to_ex/p.currency.exchange_rate) if p.interest }
     return result.to_f
   end
 
