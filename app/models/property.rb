@@ -29,7 +29,7 @@ class Property < ApplicationRecord
   def self.lixi( target_code = :twd )
     result = 0.0
     to_ex = eval "$#{target_code.to_s.downcase}_exchange_rate"
-    all_loan.each {|p| result += p.cal_lixi*(to_ex/p.currency.exchange_rate) if p.interest }
+    all_loan.each {|p| result += p.cal_lixi*(to_ex/p.currency.exchange_rate).floor(2) if p.interest }
     return result.to_f
   end
 
@@ -55,7 +55,7 @@ class Property < ApplicationRecord
 
   # 计算贷款利息
   def cal_lixi
-    (amount.abs * interest.rate.to_f/100/365 * (Date.today-interest.start_date).to_i).to_f
+    (amount.abs * interest.rate.to_f/100/365 * (Date.today-interest.start_date).to_i).floor(2)
   end
 
 end
