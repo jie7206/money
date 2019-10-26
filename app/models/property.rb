@@ -35,7 +35,7 @@ class Property < ApplicationRecord
 
   # 资产能以新台币或其他币种结算所有资产包含利息的净值
   def self.net_value( target_code = :twd )
-    return (Property.value(target_code) - Property.lixi(target_code)).to_f
+    return (Property.value(target_code) + Property.lixi(target_code)).to_f
   end
 
   # 回传所有贷款的记录
@@ -55,7 +55,7 @@ class Property < ApplicationRecord
 
   # 计算贷款利息
   def lixi
-    interest ? (amount.abs * interest.rate.to_f/100/365 * (Date.today-interest.start_date).to_i).floor(2) : 0
+    interest ? (amount * interest.rate.to_f/100/365 * (Date.today-interest.start_date).to_i).floor(2) : 0
   end
 
 end

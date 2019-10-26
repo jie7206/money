@@ -101,5 +101,5 @@ def property_total_lixi_to( target_code )
     ex = l.property.currency.exchange_rate
     result += (l.property.lixi)*(to_ex/ex).floor(2)
   end
-  return -1*result.to_f
+  return result.to_f
 end
