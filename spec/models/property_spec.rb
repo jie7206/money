@@ -43,19 +43,19 @@ RSpec.describe '模型测试(Property)', type: :model do
 
   specify '#102[模型层]资产能以新台币或其他币种结算所有资产的总值' do
     create_different_currency_properties
-    expect(Property.total(:twd).to_i).to eq property_total_value_to(:twd)
+    expect(Property.value(:twd).to_i).to eq property_total_value_to(:twd)
   end
 
 
   specify '#103[模型层]汇率更新后所有资产的总值也能相应更新' do
     create_different_currency_properties
     currencies(:twd).update_attribute(:exchange_rate, 35.83)
-    expect(Property.total(:twd).to_i).to eq property_total_value_to(:twd)
+    expect(Property.value(:twd).to_i).to eq property_total_value_to(:twd)
     # 更新回原本汇率以避免其他测试失败
     currencies(:twd).update_attribute(:exchange_rate, ori_twd_rate)
     # 新增一种货币
     @dem = create(:currency, code: 'dem', exchange_rate: 1.7174)
-    expect(Property.total(:dem).to_i).to eq property_total_value_to(:dem,@dem)
+    expect(Property.value(:dem).to_i).to eq property_total_value_to(:dem,@dem)
   end
 
 end

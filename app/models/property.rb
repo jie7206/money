@@ -1,6 +1,7 @@
 class Property < ApplicationRecord
 
   belongs_to :currency
+  has_one :interest
 
   validates \
     :name,
@@ -18,15 +19,27 @@ class Property < ApplicationRecord
         message: $property_amount_nan_err }
 
   # 资产能以新台币或其他币种结算所有资产的总值
-  def self.total( target_code = :twd )
-    result = 0
+  def self.value( target_code = :twd )
+    result = 0.0
     all.each {|p| result += p.amount_to(target_code)}
-    return result
+    return result.to_f
+  end
+
+  # 资产能以新台币或其他币种结算所有资产的利息总值
+  def self.lixi( target_code = :twd )
+    result = 0.0
+    all_loan.each {|p| result += p.cal_lixi if p.interest }
+    return result.to_f
+  end
+
+  # 资产能以新台币或其他币种结算所有资产包含利息的净值
+  def self.net_value( target_code = :twd )
+    return (Property.value(target_code) - Property.lixi(target_code)).to_f
   end
 
   # 回传所有贷款的记录
   def self.all_loan
-    where 'amount < 0'
+    where 'amount < 0.0'
   end
 
   # 将资产金额从自身的币别转换成其他币别(默认为新台币)
@@ -37,6 +50,11 @@ class Property < ApplicationRecord
     else
       return amount
     end
+  end
+
+  # 计算贷款利息
+  def cal_lixi
+    (amount.abs * interest.rate.to_f/100/365 * (Date.today-interest.start_date).to_i).to_f
   end
 
 end

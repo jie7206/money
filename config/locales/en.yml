@@ -60,6 +60,10 @@ en:
   delete_interest: Delete This Interest
   delete_interest_confirm: Are you SURE？
   interest_created_ok: Interest was successfully created!
+  edit_interest: Edit Interest
+  update_interest: Update Interest
+  interest_updated_ok: Interest was successfully updated!
+  interest_destroyed_ok: Interest was successfully destroyed!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

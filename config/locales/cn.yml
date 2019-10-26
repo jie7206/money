@@ -60,6 +60,10 @@ cn:
   delete_interest: 删除这笔利息
   delete_interest_confirm: 您确定要删除这笔利息记录吗？
   interest_created_ok: 利息新建成功！
+  edit_interest: 编辑利息
+  update_interest: 更新利息
+  interest_updated_ok: 利息更新成功！
+  interest_destroyed_ok: 利息删除成功！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

@@ -1,6 +1,2 @@
-<h1>Editing Interest</h1>
-
-<%= render 'form', interest: @interest %>
-
-<%= link_to 'Show', @interest %> |
-<%= link_to 'Back', interests_path %>
+<h2><%= t(:edit_interest) %></h2>
+<%= render 'form', submit: t(:update_interest), submit_id: 'update_interest' %>
