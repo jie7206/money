@@ -37,8 +37,9 @@ RSpec.describe '模型测试(Property)', type: :model do
     # 查不到该币别则返回原值
     expect(p.amount_to(:unknow)).to eq 100.0
     # 从自身的币别(台币)转换成人民币和美元
-    expect(p.amount_to(:cny)).to eq 100.0*(ori_cny_rate/ori_twd_rate)
-    expect(p.amount_to(:usd)).to eq 100.0*(1.0/ori_twd_rate)
+    twd_ex = p.currency.exchange_rate
+    expect(p.amount_to(:cny).floor(7)).to eq (100.0*(ori_cny_rate/twd_ex)).floor(7)
+    expect(p.amount_to(:usd).floor(7)).to eq (100.0*(1.0/ori_twd_rate)).floor(7)
   end
 
   specify '#102[模型层]资产能以新台币或其他币种结算所有资产的总值' do

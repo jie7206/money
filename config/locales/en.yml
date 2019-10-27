@@ -57,6 +57,8 @@ en:
   interest_index: Interests
   interest_start_date: Start Date
   interest_rate: Year Rate(%)
+  interest_amount: Interest Amount
+  interest_currency: Interest Currency
   new_interest: Add New Interest
   delete_interest: Delete This Interest
   delete_interest_confirm: Are you SURE？

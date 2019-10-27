@@ -6,6 +6,9 @@
     <td><%= t(:property_name) %></td>
     <td width="100"><%= t(:interest_start_date) %></td>
     <td width="100"><%= t(:interest_rate) %></td>
+    <td width="100"><%= t(:interest_amount) %></td>
+    <td width="100"><%= t(:interest_currency) %></td>
+    <td width="100"><%= t(:exchange_to_twd) %></td>
   </tr>
 <% n = 1 %>
 <% @interests.each do |interest| %>
@@ -14,6 +17,9 @@
     <td><%= link_edit_to(interest, interest.property.name) %></td>
     <td><%= interest.start_date.to_s(:db) %></td>
     <td align="right"><%= to_n(interest.rate, 2) %></td>
+    <td align="right"><%= to_n(interest.amount, 0) %></td>
+    <td align="right"><%= interest.currency_name %></td>
+    <td align="right"><%= interest.amount_to_twd %></td>
   </tr>
   <% n += 1 %>
 <% end %>

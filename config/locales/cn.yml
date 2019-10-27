@@ -56,7 +56,9 @@ cn:
   interest_rate_type_err: 利率值必须是数字且不为负数！
   interest_index: 利息列表
   interest_start_date: 利息起算日
-  interest_rate: 年化利息(%)
+  interest_rate: 年化利率(%)
+  interest_amount: 利息金额
+  interest_currency: 利息币别
   new_interest: 新建利息
   delete_interest: 删除这笔利息
   delete_interest_confirm: 您确定要删除这笔利息记录吗？
