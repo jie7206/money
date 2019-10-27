@@ -13,11 +13,17 @@ RSpec.describe '系统测试(Interests)', type: :system do
 
   describe '利息列表' do
 
+    before { visit interests_path }
+
     specify '#112[系统层]利息列表能显示对应资产的利息值、币别和等值台币' do
-      visit interests_path
       expect(page).to have_content @ls[1].amount.to_i
       expect(page).to have_content @ls[1].currency_name
-      expect(page).to have_content @ls[1].amount_to_twd
+      expect(page).to have_content @ls[1].amount_to(:twd)
+    end
+
+    specify '#113[系统层]利息列表下方能以新台币和人民币显示利息的总金额' do
+      expect(page).to have_selector '#interest_total_twd', text: Interest.total
+      expect(page).to have_selector '#interest_total_cny', text: Interest.total(:cny)
     end
 
   end

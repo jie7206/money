@@ -4,6 +4,8 @@ class InterestsController < ApplicationController
 
   def index
     @interests = Interest.all
+    @interest_total_twd = Interest.total
+    @interest_total_cny = Interest.total(:cny)
   end
 
   def show

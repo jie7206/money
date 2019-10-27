@@ -17,14 +17,24 @@ class Interest < ApplicationRecord
         greater_than_or_equal_to: 0,
         message: $interest_rate_type_err }
 
+
+
+  # 利息金额
+  def self.total( target_code = :twd )
+    result = 0
+    all.each {|i| result += i.amount_to(target_code)}
+    return result
+  end
+
   # 利息金额
   def amount
     property.amount.to_f * (rate.to_f/100/365) * (Date.today-start_date).to_i
   end
 
   # 利息金额的等值台币
-  def amount_to_twd
-    (amount * ($twd_exchange_rate/property.currency.exchange_rate)).to_i
+  def amount_to( target_code = :twd )
+    target_exchange_rate = eval "$#{target_code.to_s.downcase}_exchange_rate"
+    (amount * (target_exchange_rate/property.currency.exchange_rate)).to_i
   end
 
   # 利息币别

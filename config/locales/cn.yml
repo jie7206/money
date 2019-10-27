@@ -50,6 +50,8 @@ cn:
   exchange_to_twd: 等值台币
   total_properties_amount: 资产总净值
   twd: 新台币
+  cny: 人民币
+  usd: 美元
   interest_start_date_blank_err: 利息必须要有起算日！
   interest_rate_blank_err: 利息必须要有利率值！
   interest_start_date_type_err: 利息起算日必须符合yyyy-mm-dd格式！
@@ -67,6 +69,7 @@ cn:
   update_interest: 更新利息
   interest_updated_ok: 利息更新成功！
   interest_destroyed_ok: 利息删除成功！
+  total_interests_amount: 利息总金额
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

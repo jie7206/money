@@ -50,6 +50,8 @@ en:
   exchange_to_twd: Eq. TWD
   total_properties_amount: Total
   twd: TWD
+  cny: CNY
+  usd: USD
   interest_start_date_blank_err: Interest's start date can't be blank!
   interest_rate_blank_err: Interest's rate can't be blank!
   interest_start_date_type_err: Interest's start date must be a yyyy-mm-dd format!
@@ -67,6 +69,7 @@ en:
   update_interest: Update Interest
   interest_updated_ok: Interest was successfully updated!
   interest_destroyed_ok: Interest was successfully destroyed!
+  total_interests_amount: Total Interests
   copyright: Copyright
   contact_email: Contact Email
   activerecord:
