@@ -5,7 +5,8 @@ class PropertiesController < ApplicationController
   # 资产负债列表
   def index
     @properties = Property.all
-    @properties_net_value = Property.net_value
+    @properties_net_value_twd = Property.net_value
+    @properties_net_value_cny = Property.net_value(:cny)
   end
 
   # 新建资产表单

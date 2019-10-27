@@ -18,10 +18,8 @@ RSpec.describe '系统测试(Properties)', type: :system do
     end
 
     specify '#108[系统层]能在资产列表中显示包含利息的资产总净值' do
-      # 资产净值 = 原始资产总值 + 资产的利息总值
-      properties_net_value = \
-        (property_total_value_to(:twd) + property_total_lixi_to(:twd)).to_i
-      expect(page).to have_selector '#properties_net_value' , text: properties_net_value
+      expect(page).to have_selector '#properties_net_value_twd' , \
+        text: (property_total_value_to(:twd) + property_total_lixi_to(:twd)).to_i
     end
 
     specify '#110[系统层]资产列表增加一栏位显示资产的利息值' do
@@ -33,6 +31,11 @@ RSpec.describe '系统测试(Properties)', type: :system do
       fill_in "new_amount_#{p.id}", with: '57114.38'
       find("#property_#{p.id}").click
       expect(page.html).to include '57114.38'
+    end
+
+    specify '#114[系统层]资产列表能显示以人民币计算的资产总净值' do
+      expect(page).to have_selector '#properties_net_value_cny' , \
+        text: (property_total_value_to(:cny) + property_total_lixi_to(:cny)).to_i
     end
 
   end
