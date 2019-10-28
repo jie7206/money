@@ -4,6 +4,7 @@ FactoryBot.define do
 
     name { '现金' }
     amount { 10000.0 }
+    is_hidden { false }
     association :currency, :krw
 
     trait :twd do
@@ -16,6 +17,13 @@ FactoryBot.define do
       name { '新光银行' }
       amount { -50.0 }
       association :currency, :twd
+    end
+
+    trait :usd_hidden do
+      name { '个人比特币' }
+      amount { 10000.0 }
+      is_hidden { true }
+      association :currency, :usd
     end
 
     trait :cny do

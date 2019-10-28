@@ -38,8 +38,9 @@ class Property < ApplicationRecord
   end
 
   # 取出所有数据集并按照等值台币由大到小排序
-  def self.all_by_twd
-    all.sort_by{|p| p.amount_to}.reverse
+  def self.all_by_twd( include_hidden = false )
+    scope = include_hidden ? 'all' : 'all_visible'
+    eval("self.#{scope}.sort_by{|p| p.amount_to}.reverse")
   end
 
   # 回传所有贷款的记录
@@ -49,7 +50,7 @@ class Property < ApplicationRecord
 
   # 只回传所有可见的资产
   def self.all_visible
-    where(["is_hidden != ?", true])
+    all.select {|p| p.is_hidden != true }
   end
 
   # 将资产金额从自身的币别转换成其他币别(默认为新台币)

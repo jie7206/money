@@ -36,8 +36,7 @@ RSpec.describe '模型测试(Property)', type: :model do
 
     specify '#101[模型层]每笔资产的金额能换算成其他币种' do
       p = create(:property, amount: 100.0, currency: currencies(:twd))
-      # 查不到该币别则返回原值
-      expect(p.amount_to(:unknow)).to eq 100.0
+      expect(p.amount_to(:unknow)).to eq 100.0 # 查不到该币别则返回原值
       # 从自身的币别(台币)转换成人民币和美元
       twd_ex = p.currency.exchange_rate
       expect(p.amount_to(:cny).floor(7)).to eq (100.0*(ori_cny_rate/twd_ex)).floor(7)
@@ -48,25 +47,22 @@ RSpec.describe '模型测试(Property)', type: :model do
 
   describe '进阶验证' do
 
+    before { create_different_currency_properties }
+
     specify '#102[模型层]资产能以新台币或其他币种结算所有资产的总值' do
-      create_different_currency_properties
       expect(Property.value(:twd).to_i).to eq property_total_value_to(:twd)
     end
 
 
     specify '#103[模型层]汇率更新后所有资产的总值也能相应更新' do
-      create_different_currency_properties
       currencies(:twd).update_attribute(:exchange_rate, 35.83)
       expect(Property.value(:twd).to_i).to eq property_total_value_to(:twd)
-      # 更新回原本汇率以避免其他测试失败
-      currencies(:twd).update_attribute(:exchange_rate, ori_twd_rate)
-      # 新增一种货币
-      @dem = create(:currency, code: 'dem', exchange_rate: 1.7174)
+      currencies(:twd).update_attribute(:exchange_rate, ori_twd_rate) # 还原以避免其他测试失败
+      @dem = create(:currency, code: 'dem', exchange_rate: 1.7174) # 新增一种货币
       expect(Property.value(:dem).to_i).to eq property_total_value_to(:dem,@dem)
     end
 
     specify '#116[模型层]资产附加隐藏属性且一般列表中看不到它' do
-      create_different_currency_properties
       property = @ps[0]
       property.set_as_hidden
       expect(property.reload).to be_hidden

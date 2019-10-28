@@ -42,6 +42,12 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page).to have_content /#{@ps[2].amount_to.to_i}(.)+#{@ps[1].amount_to.to_i}(.)+#{@ps[0].amount_to.to_i}/m
     end
 
+    specify '#117[系统层]一般的登入在资产列表中看不到隐藏的资产' do
+      hidden_property = @ps[5]
+      expect(page).not_to have_content hidden_property.name
+      expect(page).not_to have_content hidden_property.amount
+    end
+
   end
 
   describe '新增资产' do
