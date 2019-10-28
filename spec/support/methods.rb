@@ -69,9 +69,9 @@ end
 # 建立不同币别的资产
 def create_different_currency_properties
   # amount值不能过大，否则测试包含利息的资产总净值会出错，已使用floor函数缓解此问题
-  p1 = create(:property, amount: 110000000000.0, currency: currencies(:twd))
-  p2 = create(:property, amount: 120000000000.0, currency: currencies(:cny))
-  p3 = create(:property, amount: 130000000000.0, currency: currencies(:usd))
+  p1 = create(:property, amount: 100000000000.0, currency: currencies(:twd))
+  p2 = create(:property, amount: 100000000000.0, currency: currencies(:cny))
+  p3 = create(:property, amount: 100000000000.0, currency: currencies(:usd))
   p4 = create(:property, amount: -2000000000.0, currency: currencies(:twd), name: '台币贷款')
   p5 = create(:property, amount: -10000000.0, currency: currencies(:cny), name: '人民币贷款')
   # 建立p4,p5的利息资料

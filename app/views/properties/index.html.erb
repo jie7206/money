@@ -10,7 +10,7 @@
     <td width="15%"><%= t(:property_lixi) %></td>
   </tr>
 <% n = 1 %>
-<% @properties.order(amount: :desc).each do |property| %>
+<% @properties.each do |property| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(property) %></td>

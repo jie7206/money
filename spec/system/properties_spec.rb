@@ -38,6 +38,10 @@ RSpec.describe '系统测试(Properties)', type: :system do
         text: (property_total_value_to(:cny) + property_total_lixi_to(:cny)).to_i
     end
 
+    specify '#115[系统层]资产能按照等值台币大小由高到低排序' do
+      expect(page).to have_content /#{@ps[2].amount_to.to_i}(.)+#{@ps[1].amount_to.to_i}(.)+#{@ps[0].amount_to.to_i}/m
+    end
+
   end
 
   describe '新增资产' do

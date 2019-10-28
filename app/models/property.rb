@@ -37,6 +37,11 @@ class Property < ApplicationRecord
     return Property.value(target_code) + Property.lixi(target_code)
   end
 
+  # 取出所有数据集并按照等值台币由大到小排序
+  def self.all_by_twd
+    all.sort_by{|p| p.amount_to}.reverse
+  end
+
   # 回传所有贷款的记录
   def self.all_loan
     where 'amount < 0.0'
