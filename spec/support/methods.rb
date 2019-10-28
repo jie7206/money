@@ -83,19 +83,36 @@ def create_different_currency_properties
 end
 
 # 根据create_different_currency_properties计算资产总值
-def property_total_value_to( target_code, new_target_currency = nil )
+def property_total_value_to( target_code, new_target_currency = nil, options = {} )
   result = 0
-  to_ex = new_target_currency ? new_target_currency.exchange_rate : currencies(target_code).exchange_rate
+  to_ex = new_target_currency ? \
+    new_target_currency.exchange_rate : currencies(target_code).exchange_rate
   @ps.each do |p|
     ex = p.currency.exchange_rate
-    result += p.amount*(to_ex.to_f/ex.to_f)
+    if options[:include_hidden]
+      result += p.amount*(to_ex.to_f/ex.to_f)
+    else
+      result += p.amount*(to_ex.to_f/ex.to_f) if not p.hidden?
+    end
   end
   return result.to_i
 end
 
+# 包含利息在内的资产总净值计算
+def property_total_net_value_to( target_code, new_target_currency = nil, options = {} )
+  property_total_value_to( target_code, new_target_currency = nil, options = {} ) + \
+    property_total_lixi_to( target_code, options = {} )
+end
+
 # 根据create_different_currency_properties计算资产的利息总值
-def property_total_lixi_to( target_code )
+def property_total_lixi_to( target_code, options = {} )
   result = 0
-  @ls.each {|l| result += l.property.lixi(target_code) }
+  @ls.each do |l|
+    if options[:include_hidden]
+      result += l.property.lixi(target_code)
+    else
+      result += l.property.lixi(target_code) if not l.property.hidden?
+    end
+  end
   return result.to_f
 end

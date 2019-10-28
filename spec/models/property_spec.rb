@@ -69,6 +69,13 @@ RSpec.describe '模型测试(Property)', type: :model do
       expect(Property.all_visible).not_to include property
     end
 
+    specify '#120[模型层]资产模型能计算不包含隐藏资产的总净值' do
+      expect(Property.value(:twd,include_hidden: false).to_i).to \
+        eq property_total_value_to(:twd,nil,include_hidden: false).to_i
+      expect(Property.net_value(:twd,include_hidden: false).to_i).to \
+        eq property_total_net_value_to(:twd,nil,include_hidden: false).to_i
+    end
+
   end
 
 end

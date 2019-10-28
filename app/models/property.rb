@@ -19,28 +19,30 @@ class Property < ApplicationRecord
         message: $property_amount_nan_err }
 
   # 资产能以新台币或其他币种结算所有资产的总值
-  def self.value( target_code = :twd )
+  def self.value( target_code = :twd, options = {} )
     result = 0.0
-    all.each {|p| result += p.amount_to(target_code)}
+    scope = options[:include_hidden] ? 'all' : 'all_visible'
+    eval("#{scope}.select {|p| result += p.amount_to(target_code)}")
     return result
   end
 
   # 资产能以新台币或其他币种结算所有资产的利息总值
-  def self.lixi( target_code = :twd )
+  def self.lixi( target_code = :twd, options = {} )
     result = 0.0
-    all_loan.each {|p| result += p.lixi(target_code) }
+    scope = options[:include_hidden] ? 'all' : 'all_visible'
+    eval("#{scope}.each {|p| result += p.lixi(target_code) }")
     return result
   end
 
   # 资产能以新台币或其他币种结算所有资产包含利息的净值
-  def self.net_value( target_code = :twd )
-    return Property.value(target_code) + Property.lixi(target_code)
+  def self.net_value( target_code = :twd, options = {} )
+    return Property.value(target_code, options = {}) + Property.lixi(target_code, options = {})
   end
 
   # 取出所有数据集并按照等值台币由大到小排序
   def self.all_by_twd( include_hidden = false )
     scope = include_hidden ? 'all' : 'all_visible'
-    eval("self.#{scope}.sort_by{|p| p.amount_to}.reverse")
+    eval("#{scope}.sort_by{|p| p.amount_to}.reverse")
   end
 
   # 回传所有贷款的记录
@@ -50,7 +52,7 @@ class Property < ApplicationRecord
 
   # 只回传所有可见的资产
   def self.all_visible
-    all.select {|p| p.is_hidden != true }
+    all.select {|p| !p.hidden? }
   end
 
   # 将资产金额从自身的币别转换成其他币别(默认为新台币)
