@@ -36,4 +36,9 @@ class ApplicationController < ActionController::Base
     flash[:notice] = "#{string} (#{now})"
   end
 
+  # 显示资产时是否包含显示隐藏资产
+  def include_hidden?
+    session[:admin] ? true : false
+  end
+
 end

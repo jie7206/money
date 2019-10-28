@@ -4,7 +4,7 @@ class PropertiesController < ApplicationController
 
   # 资产负债列表
   def index
-    @properties = Property.all_by_twd
+    @properties = Property.all_by_twd include_hidden?
     @properties_net_value_twd = Property.net_value
     @properties_net_value_cny = Property.net_value(:cny)
   end

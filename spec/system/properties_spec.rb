@@ -45,7 +45,6 @@ RSpec.describe '系统测试(Properties)', type: :system do
     specify '#117[系统层]一般的登入在资产列表中看不到隐藏的资产' do
       hidden_property = @ps[5]
       expect(page).not_to have_content hidden_property.name
-      expect(page).not_to have_content hidden_property.amount
     end
 
   end
@@ -174,11 +173,10 @@ RSpec.describe '系统测试(Properties)', type: :system do
     end
 
     specify '#119[系统层]以管理员登入可以在资产列表中看到隐藏的资产' do
-      # create_different_currency_properties
-      # visit properties_path
-      # hidden_property = @ps[5]
-      # expect(page).to have_content hidden_property.name
-      # expect(page).to have_content hidden_property.amount
+      create_different_currency_properties
+      visit properties_path
+      hidden_property = @ps[5]
+      expect(page).to have_content hidden_property.name
     end
 
   end
