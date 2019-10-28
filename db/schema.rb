@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_25_081636) do
+ActiveRecord::Schema.define(version: 2019_10_28_093700) do
 
   create_table "currencies", force: :cascade do |t|
     t.string "name"
@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(version: 2019_10_25_081636) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "currency_id"
+    t.boolean "is_hidden"
     t.index ["currency_id"], name: "index_properties_on_currency_id"
   end
 

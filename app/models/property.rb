@@ -47,6 +47,11 @@ class Property < ApplicationRecord
     where 'amount < 0.0'
   end
 
+  # 只回传所有可见的资产
+  def self.all_visible
+    where(["is_hidden != ?", true])
+  end
+
   # 将资产金额从自身的币别转换成其他币别(默认为新台币)
   def amount_to( target_code = :twd )
     target_exchange_rate = eval "$#{target_code.to_s.downcase}_exchange_rate"
@@ -64,6 +69,16 @@ class Property < ApplicationRecord
       (amount * (interest.rate.to_f/100/365) * \
         (Date.today-interest.start_date).to_i) * \
         (to_ex/currency.exchange_rate) : 0
+  end
+
+  # 将此资产设置为隐藏资产
+  def set_as_hidden
+    update_attribute(:is_hidden, true)
+  end
+
+  # 回传此资产是否为隐藏资产
+  def hidden?
+    is_hidden
   end
 
 end
