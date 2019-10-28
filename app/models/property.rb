@@ -22,7 +22,7 @@ class Property < ApplicationRecord
   def self.value( target_code = :twd, options = {} )
     result = 0.0
     scope = options[:include_hidden] ? 'all' : 'all_visible'
-    eval("#{scope}.select {|p| result += p.amount_to(target_code)}")
+    eval("#{scope}.each {|p| result += p.amount_to(target_code)}")
     return result
   end
 
@@ -36,7 +36,12 @@ class Property < ApplicationRecord
 
   # 资产能以新台币或其他币种结算所有资产包含利息的净值
   def self.net_value( target_code = :twd, options = {} )
-    return Property.value(target_code, options = {}) + Property.lixi(target_code, options = {})
+    # if options[:include_hidden]
+    #   return Property.value(target_code, {include_hidden: true}) + Property.lixi(target_code, {include_hidden: true})
+    # else
+    #   return Property.value(target_code, {include_hidden: false}) + Property.lixi(target_code, {include_hidden: false})
+    # end
+    Property.value(target_code,options) + Property.lixi(target_code,options)
   end
 
   # 取出所有数据集并按照等值台币由大到小排序

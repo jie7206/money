@@ -41,4 +41,13 @@ class ApplicationController < ActionController::Base
     session[:admin] ? true : false
   end
 
+  # 显示资产时是否包含显示隐藏资产
+  def include_hidden_hash
+    if session[:admin]
+      return {include_hidden: true}
+    else
+      return {include_hidden: false}
+    end
+  end
+
 end

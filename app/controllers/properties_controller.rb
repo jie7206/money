@@ -5,8 +5,8 @@ class PropertiesController < ApplicationController
   # 资产负债列表
   def index
     @properties = Property.all_by_twd include_hidden?
-    @properties_net_value_twd = Property.net_value
-    @properties_net_value_cny = Property.net_value(:cny)
+    @properties_net_value_twd = Property.net_value :twd, include_hidden_hash
+    @properties_net_value_cny = Property.net_value :cny, include_hidden_hash
   end
 
   # 新建资产表单
