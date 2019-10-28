@@ -165,4 +165,22 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
   end
 
+  describe '管理员专属' do
+
+    before do
+      visit login_path
+      fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
+      find('#login').click
+    end
+
+    specify '#119[系统层]以管理员登入可以在资产列表中看到隐藏的资产' do
+      # create_different_currency_properties
+      # visit properties_path
+      # hidden_property = @ps[5]
+      # expect(page).to have_content hidden_property.name
+      # expect(page).to have_content hidden_property.amount
+    end
+
+  end
+
 end

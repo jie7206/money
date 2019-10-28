@@ -29,6 +29,16 @@ RSpec.describe '系统测试(Main)', type: :system do
       expect(current_path).to eq login_path
     end
 
+    specify '#118[系统层]以管理员密码能正常登入和登出系统' do
+      visit login_path
+      fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
+      find('#login').click
+      expect(current_path).to eq root_path
+      find('#logout').click
+      visit root_path
+      expect(current_path).to eq login_path
+    end
+
   end
 
 end
