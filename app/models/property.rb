@@ -23,26 +23,27 @@ class Property < ApplicationRecord
   # 资产能以新台币或其他币种结算所有资产的总值
   def self.value( target_code = :twd, options = {} )
     result = 0.0
-    scope = options[:include_hidden] ? 'all' : 'all_visible'
-    eval("#{scope}.each {|p| result += p.amount_to(target_code)}")
+    all.each do |p|
+      (next if p.hidden?) if !options[:include_hidden]
+      (next if p.negative?) if options[:only_positive]
+      (next if p.positive?) if options[:only_negative]
+      result += p.amount_to(target_code)
+    end
     return result
   end
 
   # 资产能以新台币或其他币种结算所有资产的利息总值
   def self.lixi( target_code = :twd, options = {} )
     result = 0.0
-    scope = options[:include_hidden] ? 'all' : 'all_visible'
-    eval("#{scope}.each {|p| result += p.lixi(target_code) }")
+    all.each do |p|
+      (next if p.hidden?) if !options[:include_hidden]
+      result += p.lixi(target_code)
+    end
     return result
   end
 
   # 资产能以新台币或其他币种结算所有资产包含利息的净值
   def self.net_value( target_code = :twd, options = {} )
-    # if options[:include_hidden]
-    #   return Property.value(target_code, {include_hidden: true}) + Property.lixi(target_code, {include_hidden: true})
-    # else
-    #   return Property.value(target_code, {include_hidden: false}) + Property.lixi(target_code, {include_hidden: false})
-    # end
     Property.value(target_code,options) + Property.lixi(target_code,options)
   end
 
@@ -94,6 +95,23 @@ class Property < ApplicationRecord
   # 除了比特币资产以小数点4位显示外其余为小数点2位
   def value
     currency.code == 'BTC' ? to_n(amount,4) : to_n(amount,2)
+  end
+
+  # 资产金额是否为正值
+  def positive?
+    amount >= 0 ? true : false
+  end
+
+  # 资产金额是否为负值
+  def negative?
+    amount < 0 ? true : false
+  end
+
+  # 计算资产占比
+  def proportion
+    return amount_to(:twd).to_f/Property.value(:twd,only_positive: true) if positive?
+    return amount_to(:twd).to_f/Property.value(:twd,only_negative: true) if negative?
+    return 0
   end
 
 end

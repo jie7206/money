@@ -75,6 +75,19 @@ RSpec.describe '模型测试(Property)', type: :model do
         eq property_total_net_value_to(:twd,nil,include_hidden: false).to_i
     end
 
+    specify '#124[模型层]资产模型能计算各资产占总资产比例(正负资产分开)' do
+      # 计算正资产占比
+      pp = @ps[0]
+      p_total = property_total_value_to :twd, nil, only_positive: true
+      pp_pro = (pp.amount_to.to_f/p_total).floor(4)
+      # 计算负资产占比
+      pn = @ps[4]
+      n_total = property_total_value_to :twd, nil, only_negative: true
+      pn_pro = (pn.amount_to.to_f/n_total).floor(4)
+      expect((pp.proportion).floor(4)).to eq pp_pro
+      expect((pn.proportion).floor(4)).to eq pn_pro
+    end
+
   end
 
 end

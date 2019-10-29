@@ -92,12 +92,11 @@ def property_total_value_to( target_code, new_target_currency = nil, options = {
   to_ex = new_target_currency ? \
     new_target_currency.exchange_rate : currencies(target_code).exchange_rate
   @ps.each do |p|
+    (next if p.hidden?) if !options[:include_hidden]
+    (next if p.negative?) if options[:only_positive]
+    (next if p.positive?) if options[:only_negative]
     ex = p.currency.exchange_rate
-    if options[:include_hidden]
-      result += p.amount*(to_ex.to_f/ex.to_f)
-    else
-      result += p.amount*(to_ex.to_f/ex.to_f) if not p.hidden?
-    end
+    result += p.amount*(to_ex.to_f/ex.to_f)
   end
   return result.to_i
 end
@@ -112,11 +111,8 @@ end
 def property_total_lixi_to( target_code, options = {} )
   result = 0
   @ls.each do |l|
-    if options[:include_hidden]
-      result += l.property.lixi(target_code)
-    else
-      result += l.property.lixi(target_code) if not l.property.hidden?
-    end
+    (next if l.property.hidden?) if !options[:include_hidden]
+    result += l.property.lixi(target_code)
   end
   return result.to_f
 end
