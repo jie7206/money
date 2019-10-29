@@ -22,6 +22,8 @@ cn:
   property_currency: 资产币别
   property_lixi: 资产利息
   property_proportion: 占比
+  positive_property: 资产
+  negative_property: 负债
   property_is_hidden: 设为隐藏
   property_index: 资产负债表
   back_to_index: 资产列表

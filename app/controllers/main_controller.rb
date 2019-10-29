@@ -32,6 +32,8 @@ class MainController < ApplicationController
   def check_admin?
     if input_pincode? and params[:pincode].split(':')[1] == $admincode
       session[:admin] = true
+    else
+      session[:admin] = false
     end
   end
 

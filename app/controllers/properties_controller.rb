@@ -7,6 +7,8 @@ class PropertiesController < ApplicationController
     @properties = Property.all_by_twd include_hidden?
     @properties_net_value_twd = Property.net_value :twd, include_hidden_hash
     @properties_net_value_cny = Property.net_value :cny, include_hidden_hash
+    @properties_value_twd = Property.value :twd, only_positive: true, include_hidden: session[:admin]
+    @properties_loan_twd = Property.value :twd, only_negative: true, include_hidden: session[:admin]
   end
 
   # 新建资产表单

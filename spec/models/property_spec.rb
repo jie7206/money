@@ -79,13 +79,14 @@ RSpec.describe '模型测试(Property)', type: :model do
       # 计算正资产占比
       pp = @ps[0]
       p_total = property_total_value_to :twd, nil, only_positive: true
-      pp_pro = (pp.amount_to.to_f/p_total)*100
+      pp_pro = (pp.amount_to.to_f/p_total.to_f)*100.0
       # 计算负资产占比
-      pn = @ps[4]
+      pn = @ps[3]
       n_total = property_total_value_to :twd, nil, only_negative: true
-      pn_pro = (pn.amount_to.to_f/n_total)*100
-      expect((pp.proportion).floor(4)).to eq pp_pro.floor(4)
-      expect((pn.proportion).floor(4)).to eq pn_pro.floor(4)
+      pn_pro = (pn.amount_to.to_f/n_total.to_f)*100.0
+      expect((pp.proportion(false)).floor(2)).to eq pp_pro.floor(2)
+      expect((pn.proportion(false)).floor(2)).to eq pn_pro.floor(2)
+      expect(Property.value(:twd,only_negative:true).to_i).to eq n_total
     end
 
   end

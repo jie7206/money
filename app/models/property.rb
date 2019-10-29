@@ -108,10 +108,11 @@ class Property < ApplicationRecord
   end
 
   # 计算资产占比
-  def proportion
-    return amount_to(:twd).to_f/Property.value(:twd,only_positive: true)*100 if positive?
-    return amount_to(:twd).to_f/Property.value(:twd,only_negative: true)*100 if negative?
-    return 0
+  def proportion( include_hidden )
+    return amount_to(:twd).to_f/Property.value(:twd,only_positive: true, \
+      include_hidden: include_hidden)*100 if positive?
+    return amount_to(:twd).to_f/Property.value(:twd,only_negative: true, \
+      include_hidden: include_hidden)*100 if negative?
   end
 
 end

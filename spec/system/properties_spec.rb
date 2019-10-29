@@ -57,7 +57,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
     end
 
     specify '#125[系统层]资产列表能列出各资产的占比' do
-      expect(page).to have_content @ps[0].proportion.floor(2)
+      expect(page).to have_content (@ps[0].proportion(false)).floor(2)
     end
 
   end
@@ -209,6 +209,10 @@ RSpec.describe '系统测试(Properties)', type: :system do
       visit properties_path
       expect(page).not_to have_content p.name
     end
+
+    # specify '#126[系统层]一般登入与管理员看到的资产占比是不同的' do
+    #
+    # end
 
   end
 

@@ -22,6 +22,8 @@ en:
   property_currency: Property Currency
   property_lixi: Property Interest
   property_proportion: Proportion
+  positive_property: Property
+  negative_property: Loan
   property_is_hidden: Set as Hidden Property
   property_index: Balance Sheet
   back_to_index: Properties
