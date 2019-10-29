@@ -8,6 +8,10 @@
     <td><%= f.text_field(:amount, onclick: select_all) %></td></tr>
   <tr><td><%= t(:property_currency) %>：</td>
     <td><%= f.select :currency_id, Currency.all.collect { |c| [ c.name, c.id ] } %></td></tr>
+<% if admin? %>
+  <tr><td><%= t(:property_is_hidden) %>：</td>
+    <td><%= f.check_box(:is_hidden) %></td></tr>
+<% end %>    
   <tr>
     <td colspan="2" align="right" class="tfoot">
       <%= f.submit( submit,id: submit_id) %></td></tr>

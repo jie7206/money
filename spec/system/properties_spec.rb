@@ -184,6 +184,19 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page).not_to have_content Property.net_value(:twd, include_hidden: false).to_i
     end
 
+    specify '#122[系统层]以管理员登入才可以将资产设为隐藏的资产' do
+      p = @ps[0]
+      p.is_hidden = false
+      click_on p.name
+      find('#property_is_hidden').click
+      find('#update_property').click
+      find('#logout').click
+      fill_in 'pincode', with: "#{$pincode}"
+      find('#login').click
+      visit properties_path
+      expect(page).not_to have_content p.name
+    end
+
   end
 
 end

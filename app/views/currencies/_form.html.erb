@@ -12,7 +12,8 @@
       <%= f.submit( submit,id: submit_id) %></td></tr>
 </table>
 <% end %>
-
+<br/>
+<%= link_back_to_properties %>
 <% if !@currency.new_record? %>
-  <br/><%= link_to t(:delete_currency), @currency, method: :delete, id: 'delete_currency', data: { confirm: t(:delete_currency_confirm) } %>
+  | <%= link_to t(:delete_currency), @currency, method: :delete, id: 'delete_currency', data: { confirm: t(:delete_currency_confirm) } %>
 <% end %>

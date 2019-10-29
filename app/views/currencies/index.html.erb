@@ -14,7 +14,7 @@
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(currency) %></td>
     <td><%= currency.code %></td>
-    <td align="right"><%= to_n(currency.exchange_rate, 4) %></td>
+    <td align="right"><%= to_n(currency.exchange_rate, 8) %></td>
     <td align="right"><%= to_t(currency.updated_at) %></td>
   </tr>
   <% n += 1 %>

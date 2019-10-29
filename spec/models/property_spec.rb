@@ -38,9 +38,8 @@ RSpec.describe '模型测试(Property)', type: :model do
       p = create(:property, amount: 100.0, currency: currencies(:twd))
       expect(p.amount_to(:unknow)).to eq 100.0 # 查不到该币别则返回原值
       # 从自身的币别(台币)转换成人民币和美元
-      twd_ex = p.currency.exchange_rate
-      expect(p.amount_to(:cny).floor(7)).to eq (100.0*(ori_cny_rate/twd_ex)).floor(7)
-      expect(p.amount_to(:usd).floor(7)).to eq (100.0*(1.0/ori_twd_rate)).floor(7)
+      expect(p.amount_to(:cny).to_i).to eq (100.0*(ori_cny_rate/ori_twd_rate)).to_i
+      expect(p.amount_to(:usd).to_i).to eq (100.0*(1.0/ori_twd_rate)).to_i
     end
 
   end

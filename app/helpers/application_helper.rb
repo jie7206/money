@@ -15,6 +15,11 @@ module ApplicationHelper
     session[:login] == true
   end
 
+  # 判断是否已登入
+  def admin?
+    session[:admin] == true
+  end
+
   # 默认的金额显示格式
   def to_n( number, pos=2 )
     number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))

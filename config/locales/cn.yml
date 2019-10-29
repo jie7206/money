@@ -21,6 +21,7 @@ cn:
   property_amount: 资产金额
   property_currency: 资产币别
   property_lixi: 资产利息
+  property_is_hidden: 设为隐藏
   property_index: 资产负债表
   back_to_index: 资产列表
   edit_property: 编辑资产
