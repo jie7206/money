@@ -74,6 +74,7 @@ cn:
   interest_updated_ok: 利息更新成功！
   interest_destroyed_ok: 利息删除成功！
   total_interests_amount: 利息总金额
+  lixi: 利息
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

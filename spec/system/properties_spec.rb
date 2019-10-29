@@ -210,9 +210,16 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page).not_to have_content p.name
     end
 
-    # specify '#126[系统层]一般登入与管理员看到的资产占比是不同的' do
-    #
-    # end
+    specify '#126[系统层]一般登入与管理员看到的资产占比是不同的' do
+      admin_pp = @ps[0].proportion(true).floor(2)
+      visit properties_path
+      expect(page).to have_content admin_pp
+      find('#logout').click
+      fill_in 'pincode', with: "#{$pincode}"
+      find('#login').click
+      visit properties_path
+      expect(page).not_to have_content admin_pp
+    end
 
   end
 
