@@ -1,5 +1,5 @@
 <form action="<%= update_amount_property_path(property) %>">
-  <%= text_field_tag( "new_amount_#{property.id}",  to_n(property.amount),
+  <%= text_field_tag( "new_amount_#{property.id}",  property.value,
         class: 'amount_input', onclick: select_all ) %>
   <%= image_submit_tag('empty.gif', id: dom_id(property),
         width: 1, class: 'no_border') %>

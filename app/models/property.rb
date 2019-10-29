@@ -1,5 +1,7 @@
 class Property < ApplicationRecord
 
+  include ApplicationHelper
+
   belongs_to :currency
   has_one :interest
 
@@ -87,6 +89,11 @@ class Property < ApplicationRecord
   # 回传此资产是否为隐藏资产
   def hidden?
     is_hidden
+  end
+
+  # 除了比特币资产以小数点4位显示外其余为小数点2位
+  def value
+    currency.code == 'BTC' ? to_n(amount,4) : to_n(amount,2)
   end
 
 end

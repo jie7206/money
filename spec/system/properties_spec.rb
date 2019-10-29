@@ -34,8 +34,8 @@ RSpec.describe '系统测试(Properties)', type: :system do
     end
 
     specify '#114[系统层]资产列表能显示以人民币计算的资产总净值' do
-      expect(page).to have_selector '#properties_net_value_cny' , \
-        text: (property_total_value_to(:cny) + property_total_lixi_to(:cny)).to_i
+      expect(page).to have_selector '#properties_net_value_cny', \
+        text: Property.net_value(:cny).to_i
     end
 
     specify '#115[系统层]资产能按照等值台币大小由高到低排序' do
@@ -45,6 +45,15 @@ RSpec.describe '系统测试(Properties)', type: :system do
     specify '#117[系统层]一般的登入在资产列表中看不到隐藏的资产' do
       hidden_property = @ps[5]
       expect(page).not_to have_content hidden_property.name
+    end
+
+    specify '#123[系统层]资产列表中除了比特币资产以小数点4位显示外其余为小数点2位' do
+      twd_amount = @ps[0].amount
+      expect(page.html).to include twd_amount.floor(2).to_s
+      expect(page.html).not_to include twd_amount.floor(3).to_s
+      btc_amount = @ps[6].amount
+      expect(page.html).to include btc_amount.floor(4).to_s
+      expect(page.html).not_to include btc_amount.floor(5).to_s
     end
 
   end
