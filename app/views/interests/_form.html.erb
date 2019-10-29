@@ -3,7 +3,7 @@
 <%= form_for(@interest) do |f| %>
 <table>
   <tr><td colspan="2" class="thead"></td></tr>
-  <tr><td><%= t(:property_name) %>：</td><td><%= f.select :property_id, Property.all_loan.collect { |p| [ p.name, p.id ] } %></td></tr>
+  <tr><td><%= t(:property_name) %>：</td><td><%= f.select :property_id, Property.all.collect { |p| [ p.name, p.id ] } %></td></tr>
   <tr><td><%= t(:interest_start_date) %>：</td>
     <td><%= f.text_field(:start_date, onclick: select_all) %></td></tr>
   <tr><td><%= t(:interest_rate) %>：</td>

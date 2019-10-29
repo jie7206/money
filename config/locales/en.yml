@@ -21,6 +21,7 @@ en:
   property_amount: Property Amount
   property_currency: Property Currency
   property_lixi: Property Interest
+  property_proportion: Proportion
   property_is_hidden: Set as Hidden Property
   property_index: Balance Sheet
   back_to_index: Properties

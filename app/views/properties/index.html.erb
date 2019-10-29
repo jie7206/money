@@ -3,11 +3,12 @@
 <table>
   <tr class="thead">
     <td width="5%"></td>
-    <td width="40%"><%= t(:property_name) %></td>
+    <td width="35%"><%= t(:property_name) %></td>
     <td width="20%"><%= t(:property_amount) %></td>
     <td width="8%"><%= t(:property_currency) %></td>
     <td width="15%"><%= t(:exchange_to_twd) %></td>
-    <td width="15%"><%= t(:property_lixi) %></td>
+    <td width="10%"><%= t(:property_lixi) %></td>
+    <td width="7%"><%= t(:property_proportion) %></td>
   </tr>
 <% n = 1 %>
 <% @properties.each do |property| %>
@@ -18,11 +19,12 @@
     <td align="center"><%= property.currency.name %></td>
     <td align="right"><%= to_n(property.amount_to,0) %></td>
     <td align="right"><%= property.lixi(:twd).to_i %></td>
+    <td align="right"><%= to_n(property.proportion) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="6" class="thead"><%= t(:total_properties_amount) %>：<span id="properties_net_value_twd"><%= @properties_net_value_twd.to_i %></span> <%= t(:twd) %> (<span id="properties_net_value_cny"><%= @properties_net_value_cny.to_i %></span> <%= t(:cny) %>)</td>
+    <td colspan="7" class="thead"><%= t(:total_properties_amount) %>：<span id="properties_net_value_twd"><%= @properties_net_value_twd.to_i %></span> <%= t(:twd) %> (<span id="properties_net_value_cny"><%= @properties_net_value_cny.to_i %></span> <%= t(:cny) %>)</td>
   </tr>
 </table>
 <p><%= link_to t(:new_property), new_property_path, { id: 'add_new_property' } %></p>
