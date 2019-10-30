@@ -35,21 +35,6 @@ module ApplicationHelper
     'this.select()'
   end
 
-  # 建立返回列表的链接
-  def link_back_to_properties
-    raw "#{link_to t(:property_index), properties_path}"
-  end
-
-  # 建立返回列表的链接
-  def link_back_to_currencies
-    raw "#{link_to t(:currency_index), currencies_path}"
-  end
-
-  # 建立返回列表的链接
-  def link_back_to_interests
-    raw "#{link_to t(:interest_index), interests_path}"
-  end
-
   # 移动鼠标能改变表格列的背景颜色
   def change_row_color( rgb='#FFCF00' )
     raw "onMouseOver=\"this.style.background='#{rgb}'\"  onMouseOut=\"this.style.background='#FFFFFF'\""
@@ -59,6 +44,13 @@ module ApplicationHelper
   def link_edit_to( instance, link_text = nil )
     link_text ||= instance.name
     eval "link_to '#{link_text}', edit_#{instance.class.to_s.downcase}_path(instance)"
+  end
+
+  # 建立返回列表的链接
+  "property,currency,interest".split(',').each do |n|
+    define_method "link_back_to_#{n.pluralize}" do
+      eval("raw(\"" + '#{' + "link_to t(:#{n}_index), #{n.pluralize}_path" + "}\")")
+    end
   end
 
 end

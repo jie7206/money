@@ -30,8 +30,7 @@ class Interest < ApplicationRecord
 
   # 利息金额的等值台币
   def amount_to( target_code = :twd )
-    target_exchange_rate = eval("$#{target_code.to_s.downcase}_exchange_rate")
-    (amount * (target_exchange_rate/property.currency.exchange_rate)).to_i
+    (amount * (target_rate(target_code)/property.currency.exchange_rate)).to_i
   end
 
   # 利息币别

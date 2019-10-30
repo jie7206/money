@@ -20,4 +20,6 @@
   <% n += 1 %>
 <% end %>
 </table>
-<p><%= link_to t(:new_currency), new_currency_path, { id: 'add_new_currency' } %></p>
+<br/>
+<%= link_back_to_properties %>
+| <%= link_to t(:new_currency), new_currency_path, { id: 'add_new_currency' } %>

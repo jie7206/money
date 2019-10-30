@@ -21,11 +21,6 @@ class ApplicationController < ActionController::Base
     redirect_to login_path if !login?
   end
 
-  # 回到资产目录页
-  def go_properties
-    redirect_to controller: :properties, action: :index
-  end
-
   # 显示当前时间
   def now
     Time.now.to_s(:db)
@@ -40,6 +35,13 @@ class ApplicationController < ActionController::Base
   def admin_hash?( new_options = {} )
     options = admin? ? {include_hidden: true} : {include_hidden: false}
     return options.merge new_options
+  end
+
+  # 建立回到目录页的方法
+  "property,currency,interest".split(',').each do |n|
+    define_method "go_#{n.pluralize}" do
+      eval("redirect_to controller: :#{n.pluralize}, action: :index")
+    end
   end
 
 end

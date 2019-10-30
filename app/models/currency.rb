@@ -32,12 +32,12 @@ class Currency < ApplicationRecord
 
   # 自动新增货币汇率值到全域变数
   def self.add_or_renew_ex_rates
-    all.each {|c| eval "$#{c.code.downcase}_exchange_rate = c.exchange_rate"}
+    all.each {|c| c.add_or_renew_ex_rate}
   end
 
   # 自动新增货币汇率值到全域变数
   def add_or_renew_ex_rate
-    eval "$#{self.code.downcase}_exchange_rate = self.exchange_rate"
+    set_exchange_rate self, 'self'
   end
 
 end

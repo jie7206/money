@@ -111,11 +111,4 @@ class Property < ApplicationRecord
     end
   end
 
-  private
-
-    # 取出目标货币的汇率值
-    def target_rate( target_code = :twd )
-      eval("$#{target_code.to_s.downcase}_exchange_rate")
-    end
-
 end
