@@ -26,7 +26,7 @@ cn:
   negative_property: 负债
   property_is_hidden: 设为隐藏
   property_index: 资产负债表
-  back_to_index: 资产列表
+  back_to: 返回
   edit_property: 编辑资产
   update_property: 更新资产
   delete_property: 删除这笔资产

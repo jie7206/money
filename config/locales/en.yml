@@ -26,7 +26,7 @@ en:
   negative_property: Loan
   property_is_hidden: Set as Hidden Property
   property_index: Balance Sheet
-  back_to_index: Properties
+  back_to: Back To
   edit_property: Edit Property
   update_property: Update Property
   delete_property: Delete This Property

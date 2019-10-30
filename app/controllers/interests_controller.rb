@@ -20,7 +20,6 @@ class InterestsController < ApplicationController
 
   def create
     @interest = Interest.new(interest_params)
-
     respond_to do |format|
       if @interest.save
         put_notice t(:interest_created_ok)

@@ -35,9 +35,19 @@ module ApplicationHelper
     'this.select()'
   end
 
-  # 建立返回资产列表的链接
+  # 建立返回列表的链接
   def link_back_to_properties
-    raw "#{link_to t(:back_to_index), properties_path}"
+    raw "#{link_to t(:property_index), properties_path}"
+  end
+
+  # 建立返回列表的链接
+  def link_back_to_currencies
+    raw "#{link_to t(:currency_index), currencies_path}"
+  end
+
+  # 建立返回列表的链接
+  def link_back_to_interests
+    raw "#{link_to t(:interest_index), interests_path}"
   end
 
   # 移动鼠标能改变表格列的背景颜色

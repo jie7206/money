@@ -22,7 +22,7 @@ class Property < ApplicationRecord
 
   # 资产能以新台币或其他币种结算所有资产的总值
   def self.value( target_code = :twd, options = {} )
-    result = 0.0
+    result = 0
     all.each do |p|
       (next if p.hidden?) if !options[:include_hidden]
       (next if p.negative?) if options[:only_positive]
@@ -34,7 +34,7 @@ class Property < ApplicationRecord
 
   # 资产能以新台币或其他币种结算所有资产的利息总值
   def self.lixi( target_code = :twd, options = {} )
-    result = 0.0
+    result = 0
     all.each do |p|
       (next if p.hidden?) if !options[:include_hidden]
       result += p.lixi(target_code)
@@ -48,26 +48,20 @@ class Property < ApplicationRecord
   end
 
   # 取出所有数据集并按照等值台币由大到小排序
-  def self.all_by_twd( include_hidden = false )
-    scope = include_hidden ? 'all' : 'all_visible'
+  def self.all_sort( is_admin = false )
+    scope = is_admin ? 'all' : 'all_visible'
     eval("#{scope}.sort_by{|p| p.amount_to}.reverse")
   end
 
-  # 回传所有贷款的记录
-  def self.all_loan
-    where 'amount < 0.0'
-  end
-
-  # 只回传所有可见的资产
+  # 只回传所有非隐藏的资产
   def self.all_visible
     all.select {|p| !p.hidden? }
   end
 
   # 将资产金额从自身的币别转换成其他币别(默认为新台币)
   def amount_to( target_code = :twd )
-    target_exchange_rate = eval "$#{target_code.to_s.downcase}_exchange_rate"
-    if target_exchange_rate
-      return amount*(target_exchange_rate.to_f/self.currency.exchange_rate.to_f)
+    if trate = target_rate(target_code)
+      return amount*(trate.to_f/self.currency.exchange_rate.to_f)
     else
       return amount
     end
@@ -75,11 +69,10 @@ class Property < ApplicationRecord
 
   # 计算贷款利息
   def lixi( target_code = :twd )
-    to_ex = eval "$#{target_code.to_s.downcase}_exchange_rate"
     interest ? \
       (amount * (interest.rate.to_f/100/365) * \
-        (Date.today-interest.start_date).to_i) * \
-        (to_ex/currency.exchange_rate) : 0
+      (Date.today-interest.start_date).to_i) * \
+      (target_rate(target_code)/currency.exchange_rate) : 0
   end
 
   # 将此资产设置为隐藏资产
@@ -108,11 +101,21 @@ class Property < ApplicationRecord
   end
 
   # 计算资产占比
-  def proportion( include_hidden = false )
-    return amount_to(:twd).to_f/Property.value(:twd,only_positive: true, \
-      include_hidden: include_hidden)*100 if positive?
-    return amount_to(:twd).to_f/Property.value(:twd,only_negative: true, \
-      include_hidden: include_hidden)*100 if negative?
+  def proportion( input_value = false )
+    if positive?
+      return amount_to(:twd)/Property.value(:twd, \
+        only_positive: true, include_hidden: input_value) *100
+    elsif negative?
+      return amount_to(:twd)/Property.value(:twd, \
+        only_negative: true, include_hidden: input_value) *100
+    end
   end
+
+  private
+
+    # 取出目标货币的汇率值
+    def target_rate( target_code = :twd )
+      eval("$#{target_code.to_s.downcase}_exchange_rate")
+    end
 
 end

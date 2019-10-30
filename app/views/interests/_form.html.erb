@@ -13,7 +13,8 @@
       <%= f.submit( submit,id: submit_id) %></td></tr>
 </table>
 <% end %>
-
+<br/>
+<%= link_back_to_interests %>
 <% if !@interest.new_record? %>
-  <br/><%= link_to t(:delete_interest), @interest, method: :delete, id: 'delete_interest', data: { confirm: t(:delete_interest_confirm) } %>
+  | <%= link_to t(:delete_interest), @interest, method: :delete, id: 'delete_interest', data: { confirm: t(:delete_interest_confirm) } %>
 <% end %>

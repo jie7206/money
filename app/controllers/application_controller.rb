@@ -37,17 +37,9 @@ class ApplicationController < ActionController::Base
   end
 
   # 显示资产时是否包含显示隐藏资产
-  def include_hidden?
-    session[:admin] ? true : false
-  end
-
-  # 显示资产时是否包含显示隐藏资产
-  def include_hidden_hash
-    if session[:admin]
-      return {include_hidden: true}
-    else
-      return {include_hidden: false}
-    end
+  def admin_hash?( new_options = {} )
+    options = admin? ? {include_hidden: true} : {include_hidden: false}
+    return options.merge new_options
   end
 
 end

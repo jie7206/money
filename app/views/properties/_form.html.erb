@@ -11,13 +11,14 @@
 <% if admin? %>
   <tr><td><%= t(:property_is_hidden) %>：</td>
     <td><%= f.check_box(:is_hidden) %></td></tr>
-<% end %>    
+<% end %>
   <tr>
     <td colspan="2" align="right" class="tfoot">
       <%= f.submit( submit,id: submit_id) %></td></tr>
 </table>
 <% end %>
-
+<br/>
+<%= link_back_to_properties %>
 <% if !@property.new_record? %>
-  <br/><%= link_to t(:delete_property), @property, method: :delete, id: 'delete_property', data: { confirm: t(:delete_property_confirm) } %>
+  | <%= link_to t(:delete_property), @property, method: :delete, id: 'delete_property', data: { confirm: t(:delete_property_confirm) } %>
 <% end %>

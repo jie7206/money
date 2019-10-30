@@ -1,4 +1,5 @@
 class Interest < ApplicationRecord
+
   belongs_to :property
 
   validates \
@@ -17,13 +18,9 @@ class Interest < ApplicationRecord
         greater_than_or_equal_to: 0,
         message: $interest_rate_type_err }
 
-
-
   # 利息金额
   def self.total( target_code = :twd )
-    result = 0
-    all.each {|i| result += i.amount_to(target_code)}
-    return result
+    all.sum {|i| i.amount_to(target_code)}
   end
 
   # 利息金额
@@ -33,7 +30,7 @@ class Interest < ApplicationRecord
 
   # 利息金额的等值台币
   def amount_to( target_code = :twd )
-    target_exchange_rate = eval "$#{target_code.to_s.downcase}_exchange_rate"
+    target_exchange_rate = eval("$#{target_code.to_s.downcase}_exchange_rate")
     (amount * (target_exchange_rate/property.currency.exchange_rate)).to_i
   end
 
