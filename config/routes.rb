@@ -10,5 +10,6 @@ Rails.application.routes.draw do
   root 'properties#index'
   get '/login', to: 'main#login'
   get '/logout', to: 'main#logout'
+  get 'update_all_exchange_rates', to: 'currencies#update_all_exchange_rates'
 
 end

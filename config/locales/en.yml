@@ -75,6 +75,9 @@ en:
   interest_destroyed_ok: Interest was successfully destroyed!
   total_interests_amount: Total Interests
   lixi: Interest
+  update_all_exchange_rates: Update Exchange Rates
+  update_all_exchange_rates_ok: All Exchange Rates was successfully updated!
+  update_btc_price_ok: BTC price was successfully updated!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

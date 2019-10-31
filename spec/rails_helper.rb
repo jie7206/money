@@ -5,7 +5,7 @@ require File.expand_path('../../config/environment', __FILE__)
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
 # for rails console, please copy follow line:
-# require File.expand_path('../app/controllers/application_controller.rb', __FILE__)
+# require File.expand_path('../app/controllers/application_controller.rb', __FILE__);a=ApplicationController.new
 require File.expand_path('../../app/controllers/application_controller.rb', __FILE__)
 app_controller = ApplicationController.new
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }

@@ -8,6 +8,19 @@ RSpec.describe '系统测试(Currencies)', type: :system do
     find('#login').click
   end
 
+  describe '列表显示' do
+
+    before do
+      visit currencies_path
+    end
+
+    specify '#127[系统层]在货币列表中点击更新匯率能更新比特币的汇率值' do
+      find('#update_all_exchange_rates').click
+      expect(page).to have_selector '.alert-notice', text: /#{$update_btc_price_ok}/
+    end
+
+  end
+
   describe '新增货币' do
 
     before do

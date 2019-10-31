@@ -1,4 +1,9 @@
+require 'net/https'
+require 'uri'
+
 class Currency < ApplicationRecord
+
+  include ApplicationHelper
 
   has_many :properties
 
