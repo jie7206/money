@@ -80,6 +80,7 @@ en:
   update_btc_price_ok: BTC price was successfully updated!
   latest_price: Latest price
   currency_to_usd: EX. USD
+  n_legal_exchange_rates_updated_ok:  Exchange Rates was successfully updated!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

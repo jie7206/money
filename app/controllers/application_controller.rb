@@ -62,4 +62,46 @@ class ApplicationController < ActionController::Base
     end
   end
 
+###############################################################################
+
+  # 取得SSL连线的回传值
+  def get_ssl_response(url, authorization=nil)
+    uri = URI.parse(url)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.read_timeout = 10
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    header = {'Authorization':authorization}
+    response = http.get(url, header)
+    return response.body
+  end
+
+  # 取得最新法币汇率的报价
+  def get_exchange_rate(fromCode, toCode)
+    url = "https://ali-waihui.showapi.com/waihui-transform?fromCode=#{fromCode.to_s.upcase}&toCode=#{toCode.to_s.upcase}&money=1"
+    resp = get_ssl_response(url,"APPCODE de9f4a29c5eb4c73b0be619872e18857")
+    if rate = Regexp.new(/(\d)+\.(\d)+/).match(resp)
+      return rate[0].to_f
+    else
+      return 0
+    end
+  end
+
+  # 更新单一法币的汇率值
+  def update_exchange_rate( code, value )
+    Currency.find_by_code(code).update_attribute(:exchange_rate,value)
+  end
+
+  # 更新所有法币的汇率值(除了比特币和美元以外)
+  def update_legal_exchange_rates
+    count = 0
+    (Currency.all.map {|c| c.code} - [:usd, :btc].map {|c| c.to_s.upcase}).each do |code|
+      if value = get_exchange_rate(:usd,code) and value > 0
+        update_exchange_rate( code, value )
+        count += 1
+      end
+    end
+    return count
+  end
+
 end
