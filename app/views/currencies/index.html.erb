@@ -6,6 +6,7 @@
     <td width="70"><%= t(:currency_name) %></td>
     <td width="40"><%= t(:currency_code) %></td>
     <td width="100"><%= t(:currency_exchange_rate) %></td>
+    <td width="100"><%= t(:currency_to_usd) %></td>
     <td width="200"><%= t(:updated_time) %></td>
   </tr>
 <% n = 1 %>
@@ -15,6 +16,7 @@
     <td><%= link_edit_to(currency) %></td>
     <td><%= currency.code %></td>
     <td align="right"><%= to_n(currency.exchange_rate, 8) %></td>
+    <td align="right"><%= to_n(currency.to_usd, 4) %></td>
     <td align="right"><%= to_t(currency.updated_at) %></td>
   </tr>
   <% n += 1 %>

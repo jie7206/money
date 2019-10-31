@@ -34,7 +34,7 @@ class ApplicationController < ActionController::Base
 
   # 显示通知讯息
   def put_notice( string )
-    flash[:notice] ||= ''
+    flash[:notice] ? flash[:notice].gsub!("(#{now})",' ') : flash[:notice] = ''
     flash[:notice] += "#{string} (#{now}) "
   end
 

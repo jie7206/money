@@ -45,4 +45,9 @@ class Currency < ApplicationRecord
     set_exchange_rate self, 'self'
   end
 
+  # 兑换美元汇率值
+  def to_usd
+    1.0/exchange_rate
+  end
+
 end

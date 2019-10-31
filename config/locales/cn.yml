@@ -78,6 +78,8 @@ cn:
   update_all_exchange_rates: 更新汇率
   update_all_exchange_rates_ok: 所有币种的汇率已更新！
   update_btc_price_ok: 比特币汇率已更新！
+  latest_price: 最新价
+  currency_to_usd: 兑美元汇率
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

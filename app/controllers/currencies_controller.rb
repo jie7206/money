@@ -54,7 +54,8 @@ class CurrenciesController < ApplicationController
   def update_all_exchange_rates
     if btc_price = get_btc_price and btc_price > 0
       update_btc_price(btc_price)
-      put_notice "#{t(:update_btc_price_ok)} $#{btc_price}"
+      put_notice "#{t(:update_btc_price_ok)} #{t(:latest_price)}: $#{btc_price}"
+      put_notice "法币还未更新！"
     end
     go_currencies
   end

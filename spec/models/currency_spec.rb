@@ -17,4 +17,9 @@ RSpec.describe '模型测试(Currency)', type: :model do
     expect_field_value_must_greater_than_zero :currency, :exchange_rate, $currency_exchange_rate_nap_err
   end
 
+  specify '[模型层]货币模型能显示某币种兑换美元的汇率值' do
+    twd = build(:currency, :twd)
+    expect(twd.to_usd.floor(2)).to eq (1/twd.exchange_rate).floor(2)
+  end
+
 end

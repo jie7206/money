@@ -279,15 +279,3 @@ class Huobi
   end
 
 end
-
-# access_key = '********************************'
-# secret_key = '********************************'
-# account_id = '******'
-# huobi_pro = HuobiPro.new(access_key,secret_key,account_id)
-# p huobi_pro.balances
-# p huobi_pro.symbols
-# p huobi_pro.depth('ethbtc')
-# p huobi_pro.history_kline('ethbtc',"1min")
-# p huobi_pro.merged('ethbtc')
-# p huobi_pro.trade_detail('ethbtc')
-# p huobi_pro.history_trade('ethbtc')
