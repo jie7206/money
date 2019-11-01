@@ -234,6 +234,17 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page).not_to have_content admin_pp
     end
 
+    specify '#132[系统层]管理员可以编辑并更新隐藏资产' do
+      hidden_p = create(:property, :usd_hidden)
+      visit edit_property_path(hidden_p)
+      fill_in 'property[name]', with: '新资产名称'
+      fill_in 'property[amount]', with: 1366.789
+      find('#update_property').click
+      expect(page).to have_selector '.alert-notice'
+      expect(page).to have_content '新资产名称'
+      expect(page.html).to include '1366.78'
+    end
+
   end
 
 end
