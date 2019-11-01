@@ -44,6 +44,12 @@ FactoryBot.define do
       association :currency, :cny
     end
 
+    trait :stock do
+      name { '台积电' }
+      amount { 300000.00 }
+      association :currency, :twd
+    end
+
   end
 
 end
