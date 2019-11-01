@@ -26,7 +26,7 @@ class PropertiesController < ApplicationController
 
   # 编辑资产表单
   def edit
-    if @property.hidden? and !admin? # 非管理员无法编辑隐藏资产
+    if (@property and @property.hidden? and !admin?) or !@property # 非管理员无法编辑隐藏资产
       put_warning t(:property_non_exist)
       go_properties
     end
@@ -63,7 +63,11 @@ class PropertiesController < ApplicationController
 
     # 取出特定的某笔数据
     def set_property
-      @property = Property.find(params[:id])
+      begin
+        @property = Property.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        @property = nil
+      end
     end
 
     # 设定栏位安全白名单

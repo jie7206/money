@@ -101,7 +101,7 @@ class ApplicationController < ActionController::Base
     define_method "put_#{type}" do |msg|
       eval %Q[
         flash[:#{type}] ? flash[:#{type}].gsub!(\"(\#{now})\",'　') : flash[:#{type}] = ''
-        flash[:#{type}] += \"\#{msg} (\#{now}) \"
+        flash[:#{type}] += \"\#{msg} (\#{now})\"
       ]
     end
   end

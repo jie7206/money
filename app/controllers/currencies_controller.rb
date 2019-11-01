@@ -54,7 +54,7 @@ class CurrenciesController < ApplicationController
   def update_all_exchange_rates
     if btc_price = get_btc_price and btc_price > 0
       update_btc_price(btc_price)
-      put_notice "#{t(:update_btc_price_ok)} #{t(:latest_price)}: $#{btc_price} "
+      put_notice "#{t(:update_btc_price_ok)} #{t(:latest_price)}: $#{btc_price}"
     end
     if count = update_legal_exchange_rates and count > 0
       put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}"
