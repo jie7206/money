@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :items
   resources :interests
   resources :currencies
   resources :properties do

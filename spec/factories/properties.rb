@@ -38,6 +38,12 @@ FactoryBot.define do
       association :currency, :usd
     end
 
+    trait :house do
+      name { '我的房产' }
+      amount { 600000.00 }
+      association :currency, :cny
+    end
+
   end
 
 end

@@ -1,0 +1,28 @@
+<h2><%= t(:item_index) %></h2>
+
+<table>
+  <tr class="thead">
+    <td width="15"></td>
+    <td><%= t(:property_name) %></td>
+    <td width="100"><%= t(:item_price) %></td>
+    <td width="100"><%= t(:item_amount) %></td>
+    <td width="100"><%= t(:item_url) %></td>
+  </tr>
+<% n = 1 %>
+<% @items.each do |item| %>
+  <tr <%= change_row_color %>>
+    <td align="right"><%= n %></td>
+    <td><%= link_edit_to(item, item.property.name) %></td>
+    <td align="right"><%= to_n(item.price) %></td>
+    <td align="right"><%= to_n(item.amount) %></td>
+    <td align="right"><%= truncate(item.url,20,'...') %></td>
+  </tr>
+  <% n += 1 %>
+<% end %>
+  <tr>
+    <td colspan="5" class="thead"></td>
+  </tr>
+</table>
+<br/>
+<%= link_back_to_properties %>
+| <%= link_to t(:new_item), new_item_path, { id: 'add_new_item' } %>

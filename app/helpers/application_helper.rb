@@ -1,5 +1,8 @@
 module ApplicationHelper
 
+  $models = "property,currency,interest,item" # 为哪些模型自动产生方法
+  $flashs = "notice,warning" # 为哪些类型的通知自动产生方法
+
   # 网站标题
   def site_name
     $site_name
@@ -47,7 +50,7 @@ module ApplicationHelper
   end
 
   # 建立返回列表的链接
-  "property,currency,interest".split(',').each do |n|
+  $models.split(',').each do |n|
     define_method "link_back_to_#{n.pluralize}" do
       eval("raw(\"" + '#{' + "link_to t(:#{n}_index), #{n.pluralize}_path" + "}\")")
     end

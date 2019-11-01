@@ -82,6 +82,13 @@ en:
   currency_to_usd: EX. USD
   n_legal_exchange_rates_updated_ok:  Exchange Rates was successfully updated!
   property_non_exist: The Property is not exist!
+  item_price_blank_err: Item's price can't be blank!
+  item_amount_blank_err: Item's amount can't be blank!
+  item_index: Items
+  new_item: Add New Item
+  item_price: Unit Price
+  item_amount: Total Amount
+  item_url: Quotation Website
   copyright: Copyright
   contact_email: Contact Email
   activerecord:
@@ -99,6 +106,10 @@ en:
           attributes:
             currency:
               required: Property must be associated with a currency!
+        item:
+          attributes:
+            property:
+              required: Item must be associated with a property!
         interest:
           attributes:
             property:

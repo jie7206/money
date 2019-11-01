@@ -82,6 +82,13 @@ cn:
   currency_to_usd: 兑美元汇率
   n_legal_exchange_rates_updated_ok: 种法币汇率已更新！
   property_non_exist: 该笔资产不存在！
+  item_price_blank_err: 商品必须要有单价！
+  item_amount_blank_err: 商品必须要有数量！
+  item_index: 商品列表
+  new_item: 新建商品
+  item_price: 商品单价
+  item_amount: 持有数量
+  item_url: 报价网址
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
@@ -99,6 +106,10 @@ cn:
           attributes:
             currency:
               required: 资产必须关联某一个货币！
+        item:
+          attributes:
+            property:
+              required: 商品必须关联某一个资产！
         interest:
           attributes:
             property:

@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Rails Testing Help</title>
+
+<style type="text/css">
+<!--
+li {
+	font-family: Verdana;
+	font-size: 13px;
+	line-height: 150%;
+	color: #555;
+}
+.style1 {
+	font-size: 14px;
+	font-weight: bold;
+	color: #c00;
+}
+-->
+</style>
+</head>
+
+<body>
+<h3>UnitTestingSupport </h3>
+<ul>
+  <li><span class="style1">assert</span>(boolean,message) <br />
+  Failsif boolean is false or nil.<br />
+  assert(User.find_by_name(&quot;dave&quot; ), &quot;user 'dave' is missing&quot;)</li>
+  <li><span class="style1">assert_equal</span>(expected, actual,message) </li>
+  <li> <span class="style1">assert_not_equal</span>(expected, actual,message) <br />
+  Fails unless expected and actual are/are not equal.<br />
+  assert_equal(3, Product.count)<br /> 
+  assert_not_equal(0, User.count, &quot;no users in database&quot;)</li>
+  <li><span class="style1">assert_nil</span>(object,message) </li>
+  <li> <span class="style1">assert_not_nil</span>(object,message) <br />
+  Fails unless object is/is not nil.<br />
+  assert_nil(User.find_by_name(&quot;willard&quot; ))<br />
+  assert_not_nil(User.find_by_name(&quot;henry&quot; ))</li>
+  <li><span class="style1">assert_in_delta</span>(expected_float, actual_float,delta,message) <br />
+    Fails unlessthetwo floating-pointnumbers are withindelta of each other. <br />
+  Preferred over assert_equal because floatsareinexact.<br />
+  assert_in_delta(1.33, line_item.discount, 0.005)</li>
+  <li><span class="style1">assert_raise</span>(Exception, ...,message){block...}</li>
+  <li> <span class="style1">assert_nothing_raised</span>(Exception, ...,message){block...}<br />
+  Fails unless theblock raises/does not raise one of thelisted exceptions.<br />
+  assert_raise(ActiveRecord::RecordNotFound) { Product.find(bad_id) }</li>
+  <li><span class="style1">assert_match</span>(pattern, string,message) </li>
+  <li><span class="style1">assert_no_match</span>(pattern, string,message) <br />
+    Fails unless string is matched/not matched by the regular expression in <br />
+    pattern. If pattern is a string, then it is interpreted literally—no regular <br />
+    expression metacharacters arehonored. <br />
+    assert_match(/flower/i, user.town)<br />
+  assert_match(&quot;bang*flash&quot;, user.company_name)</li>
+  <li><span class="style1">assert_valid</span>(activerecord_object) <br />
+    Fails unless the suppliedActiveRecord objectis valid—thatis, itpasses <br />
+  its validations. If validation fails, the errors are reported as part of the <br />
+  assertionfailure message. <br />
+  user = Account.new(:name =&gt; &quot;dave&quot; , :email =&gt; 'secret@pragprog.com' )<br />
+  assert_valid(user)</li>
+  <li><span class="style1">flunk</span>(message) <br />
+  Fails unconditionally. <br />
+  unless user.valid? || account.valid?<br />
+  　flunk(&quot;One of user or account should be valid&quot;)<br />
+  end</li>
+</ul>
+<h3>FunctionalTestingSupport</h3>
+<ul>
+  <li><span class="style1">get</span>(action, parameters = nil, session = nil, flash = nil)<br />
+    The methods get, <span class="style1">post</span>, <span class="style1">put</span>, <span class="style1">delete</span>, and <span class="style1">head</span> are used to simulate an incoming<br />
+      HTTP request method of the same name. They invoke the given action and<br />
+      make the response available to the test code.<br />
+  action: The action of the controller being requested<br />
+    parameters: An optional hash of request parameters<br />
+     session: An optional hash of session variables<br />
+   flash: An optional hash of flash messages<br />
+  get :add_to_cart, { :id =&gt; products(:ruby_book).id },<br />
+  { :session_key =&gt; 'session_value' }, { :message =&gt; &quot;Success!&quot; }</li>
+  <li><span class="style1">assert_dom_equal</span>(expected_html, actual_html,message)</li>
+  <li><span class="style1">assert_dom_not_equal</span>(expected_html, actual_html,message)<br />
+  expected = &quot;&lt;html&gt;&lt;body&gt;&lt;h1&gt;User Unknown&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;&quot;<br />
+  assert_dom_equal(expected, @response.body)</li>
+  <li><span class="style1">assert_response</span>(type,message) <br />
+    Assertsthatthe responseis a numericHTTPstatus or one ofthefollowing <br />
+    symbols.<br />
+    ‧ :success <br />
+    ‧ :redirect <br />
+    ‧ :missing <br />
+    ‧ :error <br />
+    Examples:<br />
+    assert_response :success<br />
+    assert_response 200<br />
+  </li>
+  <li><span class="style1">assert_redirected_to</span>(options,message) <br />
+    Assertsthatthe redirection optionspassedin matchthose of the redirect <br />
+    called in the last action. You can also pass a simple string, which is <br />
+    compared to theURLgeneratedby the redirection.<br />
+    Examples:<br />
+    assert_redirected_to :controller =&gt; 'login'<br />
+    assert_redirected_to :controller =&gt; 'login' , :action =&gt; 'index'<br />
+    assert_redirected_to &quot;http://my.host/index.html&quot;<br />
+  </li>
+  <li><span class="style1">assert_template</span>(expected,message)<br />
+  Asserts that the request was rendered with the specified template file.<br />
+  Examples:<br />
+  assert_template 'store/index'<br />
+  </li>
+  <li><span class="style1">assert_select</span>(...)<br />
+  SeeSection 13.3, TestingResponseContent, onpage 215.</li>
+  <li><span class="style1">assigns</span>(key=nil)<br />
+  Instance variables that were assignedin thelast action.<br />
+  assert_not_nil assigns[&quot;items&quot;]<br />
+  The assigns hash mustbegiven strings asindex references.For example, <br />
+    assigns[:items] will not work because the key is a symbol. To use symbols <br />
+  askeys, use a method callinstead of anindex reference.<br />
+  assert_not_nil assigns(:items)<br />
+  We can test that a controller actionfound three orders with<br />
+  assert_equal 3, assigns(:orders).size<br />
+  </li>
+  <li><span class="style1">session<br />
+  </span>Ahash of objectsin the session.<br />
+    assert_equal 2, session[:cart].items.size<br />
+  </li>
+  <li><span class="style1">flash<br />
+  </span>Ahash of flash objectscurrentlyinthesession.<br />
+    assert_equal &quot;Danger!&quot; , flash[:notice]<br />
+  </li>
+  <li><span class="style1">cookies</span><br />
+  Ahash of cookiesbeing sent to the user.<br />
+  assert_equal &quot;Fred&quot; , cookies[:name]<br />
+  </li>
+  <li><span class="style1">redirect_to_url</span><br />
+  ThefullURL that theprevious action redirected to.<br />
+  assert_equal &quot;http://test.host/login&quot; , redirect_to_url<br />
+  </li>
+  <li>assert_tag :tag => "input", :attributes => { :type => "submit" }</li>
+  <li>find_tag(conditions) <br />
+    Finds a tagin the response, using the same conditions as assert_tag.<br />
+    get :index<br />
+    tag = find_tag :tag =&gt; &quot;form&quot; ,
+    :attributes =&gt; { :action =&gt; &quot;/store/add_to_cart/993&quot; }<br />
+  assert_equal &quot;post&quot; , tag.attributes[&quot;method&quot;]<br />
+  Thisisprobablybetter written using assert_select. </li>
+  <li><span class="style1">find_all_tag</span>(conditions)<br />
+  Returns an array of tags meeting thegiven conditions. </li>
+  <li><span class="style1">follow_redirect</span><br />
+    If the preceding action generated a redirect, this method follows it by <br />
+    issuing a get request. Functional tests can follow redirects only to their <br />
+  own controller.<br />
+  post :add_to_cart, :id =&gt; 123<br />
+  assert_redirect :action =&gt; :index<br />
+    follow_redirect<br />
+  assert_response :success</li>
+  <li><span class="style1">fixture_file_upload</span>(path, mime_type)<br />
+    Create the MIME-encoded content that would normally be uploaded by <br />
+  abrowser &lt;input type=&quot;file&quot;...&gt; field.Use this to set the correspondingform <br />
+  parameterin a post request.<br />
+  post :report_bug,
+  :screenshot =&gt; fixture_file_upload(&quot;screen.png&quot; , &quot;image/png&quot; )<br />
+  </li>
+  <li><span class="style1">assert_select</span><br />
+    assert_select &quot;title&quot; , &quot;Pragprog Books Online Store&quot;<br />
+    assert_select &quot;div#cart&quot; do<br />　
+    assert_select &quot;table&quot; do<br />　　
+    assert_select &quot;tr&quot; , :count =&gt; 3<br />　　    
+    assert_select &quot;tr.total-line td:last-of-type&quot;, &quot;$57.70&quot;<br />
+    　end<br />
+    end</li>
+  <li><span class="style1">Selectors</span>
+    <ul>
+      <li>Simple Selectors<br />
+        p : matches all &lt;p&gt; tags in your document.<br />
+        p#some-id : selects the paragraph with id=&quot;some-id&quot;<br />
+p.some-class : selects paragraph(s) with class=  &quot;some-class&quot;<br />
+        p[name] : paragraphs with an attribute name=<br />
+        p[name=value] : paragraphs with an attribute name=value<br />
+        p[name^=string] : ... name=value, value starts with 'string'<br />
+        p[name$=string] : ... name=value, value ends with 'string'<br />
+        p[name*=string] : ... name=value, value must contain 'string'<br />
+        p[name~=string] : ... name=value, value must contain 'string'
+        <br />
+        p[name|=string] : ... name=value, value starts 'string'<br />
+        p[class=warning] : all paragraphs with class=&quot;warning&quot;<br />
+        tr[id=total] : the table row with id=&quot;total&quot;<br />
+        table[cellpadding] : all table tags with a cellpadding attribute<br />
+  div[class*=error] : all div tags with a class attribute containing the text error<br />
+  p[secret][class=shh] : all p tags with both a secret attribute and a class=&quot;shh&quot; attribute<br />
+  [class=error] : all tags with class=&quot;error&quot;<br />
+  p#some-id : same as p[id=some-id]<br />
+    p.some-class : same as p[class=some-class]</li>
+      <li>Chained Selectors<br />
+      sel_1 sel_2s : All sel_2s that have a sel_1 as an ancestor. <br />
+      table td : will match all td tags inside table tags<br />
+      table &gt; td : won't match in well-formed HTML, as td tags have tr tags as parents<br />
+      td.price + td.total : select all td nodes with class=&quot;total&quot; that follow a &lt;td class=&quot;price&quot;&gt;<br />
+      div#title ~ p : all the p tags that follow a &lt;div id=&quot;title&quot;&gt;<br />
+      p.warn, p.error : all paragraphs with a class of warn or error</li>
+      <li>Pseudoclasses<br />
+      order:root # only returns a selection if the root of the response is &lt;order&gt;<br />
+      div#error:empty # selects the node &lt;div id=&quot;error&quot;&gt; only if it is empty<br />
+      sel_1 sel_2:only-child # Selects the nodes that are the only children of sel_1 nodes.<br />
+      div :only-child # select the child nodes of divs that have only one child<br />
+      table tr:first-child # the first row from each table<br />
+      table tr:last-child # the last row from each table<br />
+      table tr:nth-child(2) # the second row of every table<br />
+      div p:nth-child(2) # the second element of each div if that element is a &lt;p&gt;<br />
+      table tr:nth-last-child(2) # the second to last row in every table ( counting
+      from the end )<br />
+      sel_1 sel_2:only-of-type # 
+      the sel_1 node may have multiple children but only one of type sel_2<br />
+      div p:only-of-type # all the paragraphs in divs that contain just one paragraph<br />
+      div.warn p:first-of-type # the first paragraph in &lt;div class=&quot;warn&quot;&gt;<br />
+      div.warn p:last-of-type # the last paragraph in &lt;div class=&quot;warn&quot;&gt;<br />
+      div p:nth-of-type(2) # the second paragraph of each div<br />
+      div p:nth-last-of-type(2) # the second to last paragraph of each div<br />
+      div#story p:nth-child(3n+1) # every third paragraph of the div with id=&quot;story&quot;<br />
+      div#story p:nth-child(-n+2) # The first two paragraphs<br />
+      div#story p:nth-child(odd) # paragraphs 1, 3, 5, ...<br />
+      div#story p:nth-child(even) # paragraphs 2, 4, 6, ...<br />
+      div :not(p) # all the non-paragraph nodes of all divs</li>
+    </ul>
+  </li>
+  <li>Response-Oriented Assertions<br />
+  assert_select &quot;title&quot; # does our response contain a &lt;title&gt; tag<br />
+  assert_select &quot;div.cart &gt; div#cart-title&quot; # a &lt;div class=&quot;cart&quot;&gt; with a child &lt;div id=&quot;cart-title&quot;&gt;<br />
+  assert_select &quot;title&quot; , &quot;Pragprog Online Book Store&quot;<br />
+  assert_select &quot;title&quot; , /Online/ # match the regular expression<br />
+  assert_select &quot;title&quot; , 1 # must be just one title element<br />
+  assert_select &quot;div#main div.entry&quot; , 1..10 # one to 10 entries on a page<br />
+  assert_select &quot;title&quot; , :count =&gt; 1, :text =&gt; /pragprog/
+    <ul>
+      <li>The hash may contain the following keys:<br />
+        :text =&gt;S | R # Either a string or a regular expression, which must match the contents of the node<br />
+        :count =&gt;n # Exactly n nodes must have been selected<br />
+        :minimum =&gt;n # At least n nodes must have been selected<br />
+      :maximum =&gt;n # At most n nodes must have been selected</li>
+    </ul>
+  </li>
+  <li>Nesting Select Assertions<br />
+  assert_select &quot;div#cart&quot;<br />
+    assert_select &quot;div#cart table tr&quot; , 3<br />
+  assert_select &quot;div#cart table tr.total-line td:last-of-type&quot; , &quot;$57.70&quot; # The last &lt;td&gt; in the row with class
+  total-line should have the content $57.70<br />
+assert_select&nbsp;"div#cart"&nbsp;do<br />
+&nbsp;&nbsp;assert_select&nbsp;"table"&nbsp;do<br />
+&nbsp;&nbsp;&nbsp;&nbsp;assert_select&nbsp;"tr"&nbsp;,&nbsp;:count&nbsp;=>&nbsp;3<br />
+&nbsp;&nbsp;&nbsp;&nbsp;assert_select&nbsp;"tr.total-line&nbsp;td:last-of-type"&nbsp;,&nbsp;"$57.70"<br />
+&nbsp;&nbsp;end<br />
+end</li>
+  <li>Additional Assertions<br />
+  assert_select_rjs<br />
+  assert_selected_encoded<br />
+  assert_select_email</li>
+</ul>
+<h3>Integration Testing of Applications</h3>
+<ul>
+  <li><span class="style1">follow_redirect!()</span> : If the last request to a controller resulted in a redirect, follow it.</li>
+  <li><span class="style1">get(path, params=nil, headers=nil)</span></li>
+  <li><span class="style1">post(path, params=nil, headers=nil)</span></li>
+  <li><span class="style1">xml_http_request(method, path, params=nil, headers=nil)</span></li>
+  <li><span class="style1">get_via_redirect(path, args={})</span></li>
+  <li><span class="style1">post_via_redirect(path, args={})</span></li>
+  <li><span class="style1">host!(name)</span><br />
+  Set the host name to use in the next request. Same as setting the host
+  attribute.</li>
+  <li><span class="style1">https!(use_https=true)</span><br />
+  If passed true (or with no parameter), the subsequent requests will simulate
+  using the HTTPS protocol.</li>
+  <li><span class="style1">https?</span><br />
+  Return true if the HTTPS flag is set.</li>
+  <li><span class="style1">open_session { |sess| ... }</span><br />
+  Creates a new session object. If a block is given, pass the session to the
+  block; otherwise return it.</li>
+  <li><span class="style1">redirect?()</span><br />
+  Returns true if the last response was a redirect.</li>
+  <li><span class="style1">reset!()</span><br />
+  Resets the session, allowing a single test to reuse a session.</li>
+  <li><span class="style1">url_for(options)</span><br />
+  Constructs a URL given a set of options. This can be used to generate the
+  parameter to get and post.<br />
+  get url_for(:controller =&gt; &quot;store&quot; , :action =&gt; &quot;index&quot; )</li>
+</ul>
+</body>
+</html>

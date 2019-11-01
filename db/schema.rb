@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_28_093700) do
+ActiveRecord::Schema.define(version: 2019_11_01_075454) do
 
   create_table "currencies", force: :cascade do |t|
     t.string "name"
@@ -27,6 +27,16 @@ ActiveRecord::Schema.define(version: 2019_10_28_093700) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["property_id"], name: "index_interests_on_property_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.integer "property_id"
+    t.decimal "price"
+    t.decimal "amount"
+    t.string "url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["property_id"], name: "index_items_on_property_id"
   end
 
   create_table "properties", force: :cascade do |t|

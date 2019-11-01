@@ -1,0 +1,33 @@
+<%= render 'shared/error_messages', object: @item %>
+
+<%= form_for(@item) do |f| %>
+<table>
+  <tr><td colspan="2" class="thead"></td></tr>
+  <tr>
+    <td><%= t(:property_name) %>：</td>
+    <td><%= f.select :property_id, Property.all.collect { |p| [ p.name, p.id ] } %></td>
+  </tr>
+  <tr>
+    <td><%= t(:item_price) %>：</td>
+    <td><%= f.text_field(:price, onclick: select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:item_amount) %>：</td>
+    <td><%= f.text_field(:amount, onclick: select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:item_url) %>：</td>
+    <td><%= f.text_field(:url,size:70) %></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="right" class="tfoot">
+      <%= f.submit( submit,id: submit_id) %>
+    </td>
+  </tr>
+</table>
+<% end %>
+<br/>
+<%= link_back_to_items %>
+<% if !@item.new_record? %>
+  | <%= link_to t(:delete_item), @item, method: :delete, id: 'delete_item', data: { confirm: t(:delete_item_confirm) } %>
+<% end %>

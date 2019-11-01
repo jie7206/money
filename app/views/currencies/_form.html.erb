@@ -3,10 +3,18 @@
 <%= form_for(@currency) do |f| %>
 <table>
   <tr><td colspan="2" class="thead"></td></tr>
-  <tr><td><%= t(:currency_name) %>：</td><td><%= f.text_field(:name) %></td></tr>
-  <tr><td><%= t(:currency_code) %>：</td><td><%= f.text_field(:code, onclick: select_all) %></td></tr>
-  <tr><td><%= t(:currency_exchange_rate) %>：</td>
-    <td><%= f.text_field(:exchange_rate, onclick: select_all) %></td></tr>
+  <tr>
+    <td><%= t(:currency_name) %>：</td>
+    <td><%= f.text_field(:name) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:currency_code) %>：</td>
+    <td><%= f.text_field(:code, onclick: select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:currency_exchange_rate) %>：</td>
+    <td><%= f.text_field(:exchange_rate, onclick: select_all) %></td>
+  </tr>
   <tr>
     <td colspan="2" align="right" class="tfoot">
       <%= f.submit( submit,id: submit_id) %></td></tr>
