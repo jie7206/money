@@ -1,6 +1,2 @@
-<h1>Editing Item</h1>
-
-<%= render 'form', item: @item %>
-
-<%= link_to 'Show', @item %> |
-<%= link_to 'Back', items_path %>
+<h2><%= t(:edit_item) %></h2>
+<%= render 'form', submit: t(:update_item), submit_id: 'update_item' %>

@@ -19,35 +19,29 @@ class CurrenciesController < ApplicationController
   # 新建货币
   def create
     @currency = Currency.new(currency_params)
-    respond_to do |format|
-      if @currency.save
-        put_notice t(:currency_created_ok)
-        format.html { redirect_to currencies_url }
-      else
-        format.html { render :new }
-      end
+    if @currency.save
+      put_notice t(:currency_created_ok)
+      go_currencies
+    else
+      render :new
     end
   end
 
   # 更新货币
   def update
-    respond_to do |format|
-      if @currency.update(currency_params)
-        put_notice t(:currency_updated_ok)
-        format.html { redirect_to currencies_url }
-      else
-        format.html { render :edit }
-      end
+    if @currency.update(currency_params)
+      put_notice t(:currency_updated_ok)
+      go_currencies
+    else
+      render :edit
     end
   end
 
   # 删除货币
   def destroy
     @currency.destroy
-    respond_to do |format|
-      put_notice t(:currency_destroied_ok)
-      format.html { redirect_to currencies_url }
-    end
+    put_notice t(:currency_destroied_ok)
+    go_currencies
   end
 
   # 更新所有货币的汇率值

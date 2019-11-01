@@ -59,7 +59,7 @@ cn:
   interest_start_date_blank_err: 利息必须要有起算日！
   interest_rate_blank_err: 利息必须要有利率值！
   interest_start_date_type_err: 利息起算日必须符合yyyy-mm-dd格式！
-  interest_rate_type_err: 利率值必须是数字且不为负数！
+  interest_rate_type_err: 利率值必须是数字且不能为负！
   interest_index: 利息列表
   interest_start_date: 利息起算日
   interest_rate: 年化利率(%)
@@ -68,9 +68,9 @@ cn:
   new_interest: 新建利息
   delete_interest: 删除这笔利息
   delete_interest_confirm: 您确定要删除这笔利息记录吗？
-  interest_created_ok: 利息新建成功！
   edit_interest: 编辑利息
   update_interest: 更新利息
+  interest_created_ok: 利息新建成功！
   interest_updated_ok: 利息更新成功！
   interest_destroyed_ok: 利息删除成功！
   total_interests_amount: 利息总金额
@@ -89,6 +89,14 @@ cn:
   item_price: 商品单价
   item_amount: 持有数量
   item_url: 报价网址
+  edit_item: 编辑商品
+  update_item: 更新商品
+  delete_item: 删除商品
+  item_created_ok: 商品新建成功！
+  item_updated_ok: 商品更新成功！
+  item_destroyed_ok: 商品删除成功！
+  item_price_type_err: 商品单价必须是数字且不能为负！
+  item_amount_type_err: 商品数量必须是数字且不能为负！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
@@ -115,4 +123,4 @@ cn:
             property:
               required: 利息必须关联某一个资产！
             rate:
-              not_a_number: 利率值必须是数字且不为负数！
+              not_a_number: 利率值必须是数字且不能为负！

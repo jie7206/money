@@ -53,10 +53,9 @@ class PropertiesController < ApplicationController
 
   # 删除资产
   def destroy
-    if @property.destroy
-      put_notice t(:property_destroy_ok)
-      go_properties
-    end
+    @property.destroy
+    put_notice t(:property_destroy_ok)
+    go_properties
   end
 
   private

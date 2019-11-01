@@ -20,33 +20,27 @@ class InterestsController < ApplicationController
 
   def create
     @interest = Interest.new(interest_params)
-    respond_to do |format|
-      if @interest.save
-        put_notice t(:interest_created_ok)
-        format.html { redirect_to interests_url }
-      else
-        format.html { render :new }
-      end
+    if @interest.save
+      put_notice t(:interest_created_ok)
+      go_interests
+    else
+      render :new
     end
   end
 
   def update
-    respond_to do |format|
-      if @interest.update(interest_params)
-        put_notice t(:interest_updated_ok)
-        format.html { redirect_to interests_url }
-      else
-        format.html { render :edit }
-      end
+    if @interest.update(interest_params)
+      put_notice t(:interest_updated_ok)
+      go_interests
+    else
+      render :edit
     end
   end
 
   def destroy
     @interest.destroy
-    respond_to do |format|
-      put_notice t(:interest_destroyed_ok)
-      format.html { redirect_to interests_url }
-    end
+    put_notice t(:interest_destroyed_ok)
+    go_interests
   end
 
   private

@@ -15,7 +15,7 @@
     <td><%= link_edit_to(item, item.property.name) %></td>
     <td align="right"><%= to_n(item.price) %></td>
     <td align="right"><%= to_n(item.amount) %></td>
-    <td align="right"><%= truncate(item.url,20,'...') %></td>
+    <td align="right"><%= truncate(item.url,length:40) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
