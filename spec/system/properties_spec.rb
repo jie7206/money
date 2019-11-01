@@ -173,11 +173,18 @@ RSpec.describe '系统测试(Properties)', type: :system do
         expect(page).to have_content $property_amount_nan_err
       end
 
+      specify '#130[系统层]非管理员无法编辑隐藏资产' do
+        hidden_p = create(:property, :usd_hidden)
+        visit edit_property_path(hidden_p)
+        expect(current_path).to eq properties_path
+        expect(page).to have_selector '.alert-warning', text: /#{$property_non_exist}/
+      end
+
     end
 
   end
 
-  describe '管理员专属' do
+  describe '管理员专属功能' do
 
     before do
       create_different_currency_properties

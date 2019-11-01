@@ -57,7 +57,7 @@ class CurrenciesController < ApplicationController
       put_notice "#{t(:update_btc_price_ok)} #{t(:latest_price)}: $#{btc_price} "
     end
     if count = update_legal_exchange_rates and count > 0
-      put_notice "#{count}#{t(:n_legal_exchange_rates_updated_ok)}"
+      put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}"
     end
     go_currencies
   end

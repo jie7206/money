@@ -81,6 +81,7 @@ cn:
   latest_price: 最新价
   currency_to_usd: 兑美元汇率
   n_legal_exchange_rates_updated_ok: 种法币汇率已更新！
+  property_non_exist: 该笔资产不存在！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

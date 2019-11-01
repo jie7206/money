@@ -3,11 +3,17 @@
 <%= form_for(@property) do |f| %>
 <table>
   <tr><td colspan="2" class="thead"></td></tr>
-  <tr><td><%= t(:property_name) %>：</td><td><%= f.text_field(:name) %></td></tr>
-  <tr><td><%= t(:property_amount) %>：</td>
-    <td><%= f.text_field(:amount, onclick: select_all) %></td></tr>
-  <tr><td><%= t(:property_currency) %>：</td>
-    <td><%= f.select :currency_id, Currency.all.collect { |c| [ c.name, c.id ] } %></td></tr>
+  <tr>
+    <td><%= t(:property_name) %>：</td>
+    <td><%= f.text_field(:name,size:40) %></td></tr>
+  <tr>
+    <td><%= t(:property_amount) %>：</td>
+    <td><%= f.text_field(:amount, onclick: select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:property_currency) %>：</td>
+    <td><%= f.select :currency_id, Currency.all.collect { |c| [ c.name, c.id ] } %></td>
+  </tr>
 <% if admin? %>
   <tr><td><%= t(:property_is_hidden) %>：</td>
     <td><%= f.check_box(:is_hidden) %></td></tr>

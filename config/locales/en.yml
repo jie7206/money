@@ -81,6 +81,7 @@ en:
   latest_price: Latest price
   currency_to_usd: EX. USD
   n_legal_exchange_rates_updated_ok:  Exchange Rates was successfully updated!
+  property_non_exist: The Property is not exist!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

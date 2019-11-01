@@ -32,12 +32,6 @@ class ApplicationController < ActionController::Base
     Time.now.strftime("%H:%M")
   end
 
-  # 显示通知讯息
-  def put_notice( string )
-    flash[:notice] ? flash[:notice].gsub!("(#{now})",' ') : flash[:notice] = ''
-    flash[:notice] += "#{string} (#{now}) "
-  end
-
   # 显示资产时是否包含显示隐藏资产
   def admin_hash?( new_options = {} )
     options = admin? ? {include_hidden: true} : {include_hidden: false}
@@ -54,15 +48,6 @@ class ApplicationController < ActionController::Base
     end
     return 0
   end
-
-  # 建立回到目录页的方法
-  "property,currency,interest".split(',').each do |n|
-    define_method "go_#{n.pluralize}" do
-      eval("redirect_to controller: :#{n.pluralize}, action: :index")
-    end
-  end
-
-###############################################################################
 
   # 取得SSL连线的回传值
   def get_ssl_response(url, authorization=nil)
@@ -102,6 +87,23 @@ class ApplicationController < ActionController::Base
       end
     end
     return count
+  end
+
+  # 建立回到目录页的方法
+  "property,currency,interest".split(',').each do |n|
+    define_method "go_#{n.pluralize}" do
+      eval("redirect_to controller: :#{n.pluralize}, action: :index")
+    end
+  end
+
+  # 建立各种通知消息的方法
+  "notice,warning".split(',').each do |type|
+    define_method "put_#{type}" do |msg|
+      eval %Q[
+        flash[:#{type}] ? flash[:#{type}].gsub!(\"(\#{now})\",'　') : flash[:#{type}] = ''
+        flash[:#{type}] += \"\#{msg} (\#{now}) \"
+      ]
+    end
   end
 
 end
