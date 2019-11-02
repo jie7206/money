@@ -53,6 +53,12 @@ module ApplicationHelper
     eval "link_to '#{link_text}', edit_#{instance.class.to_s.downcase}_path(instance)"
   end
 
+  # 用户在新建利息或商品时不能看到隐藏资产以供选择
+  def select_property_id( obj )
+    scope = admin? ? 'all' : 'all_visible'
+    eval("obj.select :property_id, Property.#{scope}.collect { |p| [ p.name, p.id ] }")
+  end
+
   # 建立返回列表的链接
   $models.split(',').each do |n|
     define_method "link_back_to_#{n.pluralize}" do

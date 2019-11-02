@@ -51,6 +51,14 @@ RSpec.describe '系统测试(Items)', type: :system do
         expect(page).to have_selector '.alert-notice'
       end
 
+      specify '#140[系统层]用户在新建商品时不能看到隐藏资产以供选择' do
+        property = create(:property, :usd_hidden)
+        item = create(:item, property: property)
+        visit new_item_path
+        expect(page).to have_selector '#item_property_id', count: 1
+        expect(page.html).not_to include property.name
+      end
+
     end
 
     describe '失败用例' do

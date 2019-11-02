@@ -47,6 +47,14 @@ RSpec.describe '系统测试(Interests)', type: :system do
         expect(page).to have_selector '.alert-notice'
       end
 
+      specify '#140[系统层]用户在新建利息时不能看到隐藏资产以供选择' do
+        property = create(:property, :usd_hidden)
+        interest = create(:interest, property: property)
+        visit new_interest_path
+        expect(page).to have_selector '#interest_property_id', count: 1
+        expect(page.html).not_to include property.name
+      end
+
     end
 
     describe '失败用例' do
