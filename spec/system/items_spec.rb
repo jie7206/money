@@ -134,6 +134,20 @@ RSpec.describe '系统测试(Items)', type: :system do
         expect(page).to have_selector '.alert-notice'
       end
 
+      specify '#139[系统层]由资产列表更新商品返回资产列表否则返回商品列表' do
+        property = item.property
+        visit properties_path
+        click_on property.amount
+        fill_in 'item[price]', with: 14000
+        find('#update_item').click
+        expect(current_path).to eq properties_path
+        visit items_path
+        click_on property.name
+        fill_in 'item[price]', with: 13000
+        find('#update_item').click
+        expect(current_path).to eq items_path
+      end
+
     end
 
     describe '失败用例' do
