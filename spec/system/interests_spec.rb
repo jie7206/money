@@ -167,4 +167,22 @@ RSpec.describe '系统测试(Interests)', type: :system do
 
   end
 
+  describe '以管理员登入' do
+
+    before do
+      visit login_path
+      fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
+      find('#login').click
+    end
+
+    specify '#141[系统层]管理员在新建利息时可看到隐藏资产以供选择' do
+      property = create(:property, :usd_hidden)
+      interest = create(:interest, property: property)
+      visit new_interest_path
+      expect(page).to have_selector '#interest_property_id', count: 1
+      expect(page.html).to include property.name
+    end
+
+  end
+
 end

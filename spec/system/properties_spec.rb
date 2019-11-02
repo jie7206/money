@@ -197,7 +197,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
   end
 
-  describe '管理员专属功能' do
+  describe '以管理员登入' do
 
     before do
       create_different_currency_properties
