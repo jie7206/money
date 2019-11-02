@@ -44,11 +44,7 @@ class PropertiesController < ApplicationController
 
   # 从列表中快速更新资产金额
   def update_amount
-    if new_amount = params["new_amount_#{params[:id]}"]
-      @property.update_attribute(:amount, new_amount)
-      put_notice t(:property_updated_ok)
-    end
-    go_properties
+    update_property_amount
   end
 
   # 删除资产

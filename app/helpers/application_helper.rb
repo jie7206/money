@@ -1,7 +1,11 @@
 module ApplicationHelper
 
-  $models = "property,currency,interest,item" # 为哪些模型自动产生方法
-  $flashs = "notice,warning" # 为哪些类型的通知自动产生方法
+  # 为哪些模型自动建立返回列表的链接
+  $models = "property,currency,interest,item"
+  # 为哪些类型的通知自动产生方法
+  $flashs = "notice,warning"
+  # 建立从列表中快速更新某个值的方法
+  $quick_update_attrs = ["property:amount","item:price,amount"]
 
   # 网站标题
   def site_name

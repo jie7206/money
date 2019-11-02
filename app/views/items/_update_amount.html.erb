@@ -1,0 +1,6 @@
+<form action="<%= update_amount_item_path(item) %>">
+  <%= text_field_tag( "new_amount_#{item.id}",  to_n(item.amount),
+        class: 'amount_input', onclick: select_all ) %>
+  <%= image_submit_tag('empty.gif', id: dom_id(item)+'_amount',
+        width: 1, class: 'no_border') %>
+</form>

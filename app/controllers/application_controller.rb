@@ -106,4 +106,20 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # 建立从列表中快速更新某个值的方法
+  $quick_update_attrs.each do |setting|
+    m = setting.split(':')[0]; attrs = setting.split(':')[1].split(',')
+    attrs.each do |a|
+      define_method "update_#{m}_#{a}" do
+        eval %Q[
+          if new_#{a} = params[\"new_#{a}_\#{params[:id]}\"]
+            @#{m}.update_attribute(:#{a}, new_#{a})
+            put_notice t(:#{m}_updated_ok)
+          end
+          go_#{m.pluralize}
+        ]
+      end
+    end
+  end
+
 end

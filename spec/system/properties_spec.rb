@@ -176,13 +176,11 @@ RSpec.describe '系统测试(Properties)', type: :system do
       specify '#130[系统层]非管理员无法编辑隐藏资产' do
         hidden_p = create(:property, :usd_hidden)
         visit edit_property_path(hidden_p)
-        expect(current_path).to eq properties_path
         expect(page).to have_selector '.alert-warning', text: /#{$property_non_exist}/
       end
 
       specify '#131[系统层]在网址输入不存在的资产ID则会在列表中显示错误' do
         visit '/properties/99999/edit'
-        expect(current_path).to eq properties_path
         expect(page).to have_selector '.alert-warning', text: /#{$property_non_exist}/
       end
 

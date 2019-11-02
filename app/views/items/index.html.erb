@@ -4,17 +4,17 @@
   <tr class="thead">
     <td width="15"></td>
     <td><%= t(:property_name) %></td>
-    <td width="100"><%= t(:item_price) %></td>
-    <td width="100"><%= t(:item_amount) %></td>
-    <td width="100"><%= t(:item_url) %></td>
+    <td width="160"><%= t(:item_price) %></td>
+    <td width="160"><%= t(:item_amount) %></td>
+    <td><%= t(:item_url) %></td>
   </tr>
 <% n = 1 %>
 <% @items.each do |item| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(item, item.property.name) %></td>
-    <td align="right"><%= to_n(item.price) %></td>
-    <td align="right"><%= to_n(item.amount) %></td>
+    <td align="right"><%= render 'update_price', item: item %></td>
+    <td align="right"><%= render 'update_amount', item: item %></td>
     <td align="right"><%= truncate(item.url,length:40) %></td>
   </tr>
   <% n += 1 %>

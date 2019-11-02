@@ -1,6 +1,6 @@
 class ItemsController < ApplicationController
 
-  before_action :set_item, only: [:show, :edit, :update, :destroy]
+  before_action :set_item, only: [:show, :edit, :update, :update_price, :update_amount, :destroy]
 
   def index
     @items = Item.all
@@ -33,6 +33,16 @@ class ItemsController < ApplicationController
     else
       render :edit
     end
+  end
+
+  # 从列表中快速更新单价
+  def update_price
+    update_item_price
+  end
+
+  # 从列表中快速更新数量
+  def update_amount
+    update_item_amount
   end
 
   def destroy

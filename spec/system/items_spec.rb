@@ -15,8 +15,19 @@ RSpec.describe '系统测试(Items)', type: :system do
     before { visit items_path }
 
     specify '#135[系统层]商品列表能显示对应资产的单价和数量' do
-      expect(page).to have_content item.price.to_i
-      expect(page).to have_content item.amount.to_i
+      expect(page.html).to include item.price.to_i.to_s
+      expect(page.html).to include item.amount.to_i.to_s
+    end
+
+    specify '#136[系统层]能在商品列表的单价和数量直接输入值后按回车更新' do
+      fill_in "new_price_#{item.id}", with: '13000.98'
+      find("#item_#{item.id}_price").click
+      expect(page.html).to include '13000.98'
+      expect(page).to have_selector '.alert-notice'
+      fill_in "new_amount_#{item.id}", with: '51.43'
+      find("#item_#{item.id}_amount").click
+      expect(page.html).to include '51.43'
+      expect(page).to have_selector '.alert-notice'
     end
 
   end
@@ -36,7 +47,7 @@ RSpec.describe '系统测试(Items)', type: :system do
         fill_in 'item[amount]', with: 49.50
         find('#create_new_item').click
         expect(page).to have_content '我的房产'
-        expect(page).to have_content 12100
+        expect(page.html).to include '12100'
         expect(page).to have_selector '.alert-notice'
       end
 
@@ -106,14 +117,14 @@ RSpec.describe '系统测试(Items)', type: :system do
       specify '#135[系统层]能通过表单修改单价' do
         fill_in 'item[price]', with: 1980.34
         find('#update_item').click
-        expect(page).to have_content 1980
+        expect(page.html).to include '1980'
         expect(page).to have_selector '.alert-notice'
       end
 
       specify '#135[系统层]能通过表单修改数量' do
         fill_in 'item[amount]', with: 1328.67
         find('#update_item').click
-        expect(page).to have_content 1328
+        expect(page.html).to include '1328'
         expect(page).to have_selector '.alert-notice'
       end
 
