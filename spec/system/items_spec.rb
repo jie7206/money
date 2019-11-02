@@ -30,6 +30,10 @@ RSpec.describe '系统测试(Items)', type: :system do
       expect(page).to have_selector '.alert-notice'
     end
 
+    specify '#142[系统层]点击商品列表中的报价网址能直接打开网页查看报价' do
+      expect(page).to have_link text: /#{item.url.truncate(20)}/
+    end
+
   end
 
   describe '新增商品' do
