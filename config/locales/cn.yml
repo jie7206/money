@@ -87,6 +87,7 @@ cn:
   item_index: 商品列表
   new_item: 新建商品
   item_price: 商品单价
+  item_currency: 币别
   item_amount: 持有数量
   item_url: 报价网址
   edit_item: 编辑商品
@@ -97,6 +98,7 @@ cn:
   item_destroyed_ok: 商品删除成功！
   item_price_type_err: 商品单价必须是数字且不能为负！
   item_amount_type_err: 商品数量必须是数字且不能为负！
+  delete_item_confirm: 您确定要删除这笔资料吗？
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

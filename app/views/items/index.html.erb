@@ -5,6 +5,7 @@
     <td width="15"></td>
     <td><%= t(:property_name) %></td>
     <td width="160"><%= t(:item_price) %></td>
+    <td width="50"><%= t(:item_currency) %></td>
     <td width="160"><%= t(:item_amount) %></td>
     <td><%= t(:item_url) %></td>
   </tr>
@@ -14,13 +15,14 @@
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(item, item.property.name) %></td>
     <td align="right"><%= render 'update_price', item: item %></td>
+    <td align="right"><%= item.property.currency.name %></td>
     <td align="right"><%= render 'update_amount', item: item %></td>
-    <td align="right"><%= truncate(item.url,length:40) %></td>
+    <td align="right"><%= truncate(item.url,length:30) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="5" class="thead"></td>
+    <td colspan="6" class="thead"></td>
   </tr>
 </table>
 <br/>

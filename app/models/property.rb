@@ -111,4 +111,10 @@ class Property < ApplicationRecord
     end
   end
 
+  # 更新资产金额
+  def update_amount( new_amount )
+    self.amount = new_amount
+    save
+  end
+
 end

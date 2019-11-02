@@ -87,6 +87,7 @@ en:
   item_index: Items
   new_item: Add New Item
   item_price: Unit Price
+  item_currency: Currency
   item_amount: Total Amount
   item_url: Quotation Website
   edit_item: Edit Item
@@ -97,6 +98,7 @@ en:
   item_destroyed_ok: Item was successfully destroyed!
   item_price_type_err: Item price must be a positive number!
   item_amount_type_err: Item amount must be a positive number!
+  delete_item_confirm: Are you SURE？
   copyright: Copyright
   contact_email: Contact Email
   activerecord:
