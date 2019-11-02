@@ -4,6 +4,7 @@ class Property < ApplicationRecord
 
   belongs_to :currency
   has_one :interest
+  has_one :item
 
   validates \
     :name,

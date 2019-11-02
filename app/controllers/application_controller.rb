@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
 
   # 显示当前时间
   def now
-    Time.now.strftime("%H:%M")
+    Time.now.strftime("%H:%M:%S")
   end
 
   # 显示资产时是否包含显示隐藏资产
@@ -87,6 +87,17 @@ class ApplicationController < ActionController::Base
       end
     end
     return count
+  end
+
+  # 记录返回的网址
+  def memory_back
+    session[:path] = params[:path] if params[:path]
+  end
+
+  # 返回记录的网址
+  def go_back
+    redirect_to session[:path]
+    session.delete(:path)
   end
 
   # 建立回到目录页的方法

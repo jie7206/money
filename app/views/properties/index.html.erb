@@ -15,7 +15,11 @@
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(property) %></td>
+  <% if property.item %>
+    <td align="right"><%= link_to to_n(property.amount), edit_item_path(property.item,path:properties_path) %></td>
+  <% else %>
     <td align="right"><%= render 'update_amount', property: property %></td>
+  <% end %>
     <td align="center"><%= property.currency.name %></td>
     <td align="right"><%= to_n(property.amount_to,0) %></td>
     <td align="right"><%= property.lixi(:twd).to_i %></td>

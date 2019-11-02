@@ -12,6 +12,8 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
   describe '列表显示' do
 
+
+
     before do
       create_different_currency_properties
       visit properties_path
@@ -58,6 +60,13 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
     specify '#125[系统层]资产列表能列出各资产的占比' do
       expect(page).to have_content (@ps[0].proportion(false)).floor(2)
+    end
+
+    specify '#138[系统层]资产若有商品则不显示输入表单而显示编辑链接' do
+      item = create(:item)
+      visit properties_path
+      expect(page).not_to have_selector "#new_amount_#{item.property.id}"
+      expect(page).to have_link text: /#{item.property.amount.to_i.to_s}/
     end
 
   end

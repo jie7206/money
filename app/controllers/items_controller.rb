@@ -14,6 +14,7 @@ class ItemsController < ApplicationController
   end
 
   def edit
+    memory_back
   end
 
   def create
@@ -29,7 +30,7 @@ class ItemsController < ApplicationController
   def update
     if @item.update(item_params)
       put_notice t(:item_updated_ok)
-      go_items
+      session[:path] ? go_back : go_items
     else
       render :edit
     end
