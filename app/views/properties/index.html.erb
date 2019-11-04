@@ -1,6 +1,6 @@
 <h2><%= t(:property_index) %></h2>
 
-<table>
+<table id="properties_table">
   <tr class="thead">
     <td width="5%"></td>
     <td width="35%"><%= t(:property_name) %></td>
@@ -29,12 +29,12 @@
 <% end %>
   <tr>
     <td colspan="7" class="thead">
-      <%= t(:positive_property) %>：<%= @properties_value_twd.to_i %>&nbsp;&nbsp;
-      <%= t(:negative_property) %>：<%= @properties_loan_twd.to_i %>&nbsp;&nbsp;
-      <%= t(:lixi) %>：<%= @properties_lixi_twd.to_i %>&nbsp;&nbsp;
-      <%= t(:total_properties_amount) %>：<span id="properties_net_value_twd"><%= @properties_net_value_twd.to_i %></span> (<span id="properties_net_value_cny"><%= @properties_net_value_cny.to_i %></span> <%= t(:cny) %>)&nbsp;&nbsp;
-      <%= t(:increase_or_decrease) %>：<span id="net_growth_ave_month"><%= @properties_net_growth_ave_month.to_i %></span>/月
+      <%= render 'summary' if @show_summary %>
     </td>
   </tr>
 </table>
 <p><%= link_to t(:new_property), new_property_path, { id: 'add_new_property' } %></p>
+<% if admin? %>
+  <hr/>
+  <%= render 'tag_cloud' %>
+<% end %>

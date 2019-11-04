@@ -124,6 +124,11 @@ class ApplicationController < ActionController::Base
     session.delete(:path)
   end
 
+  # 在通知讯息后面加上物件的ID
+  def add_id( object )
+    " ID: #{object.id}"
+  end
+
   # 建立回到目录页的方法
   $models.split(',').each do |n|
     define_method "go_#{n.pluralize}" do
@@ -149,7 +154,7 @@ class ApplicationController < ActionController::Base
         eval %Q[
           if new_#{a} = params[\"new_#{a}_\#{params[:id]}\"]
             @#{m}.update_attribute(:#{a}, new_#{a})
-            put_notice t(:#{m}_updated_ok)
+            put_notice t(:#{m}_updated_ok) + add_id(@#{m})
           end
           go_#{m.pluralize}
         ]

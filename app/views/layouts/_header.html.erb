@@ -7,9 +7,6 @@
   <nav id="site_nav">
     <small>
       <%= link_back_to_properties %> |
-    <% if admin? %>
-      <%= link_to t(:properties_cloud), properties_cloud_path %> |
-    <% end %>
       <%= link_to t(:currency_index), currencies_path %> |
       <%= link_to t(:interest_index), interests_path %> |
       <%= link_to t(:item_index), items_path %> |

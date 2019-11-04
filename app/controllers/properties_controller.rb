@@ -4,13 +4,13 @@ class PropertiesController < ApplicationController
 
   # 资产负债列表
   def index
-    @properties = Property.all_sort admin?
-    get_statistical_data # 获取资产的净值等统计数据
-  end
-
-  # 资产标签云
-  def tag_cloud
-    @tags = Property.tag_counts_on(:tags)
+    if admin? and params[:tag]
+      @properties = Property.tagged_with(params[:tag].split(' '))
+    else
+      @properties = Property.all_sort admin?
+      summary # 获取资产的净值等统计数据
+    end
+    get_tag_cloud if admin? # 获取资产标签数据
   end
 
   # 新建资产表单
@@ -40,7 +40,7 @@ class PropertiesController < ApplicationController
   # 储存更新资产
   def update
     if @property.update_attributes(property_params)
-      put_notice t(:property_updated_ok) + " ID: #{@property.id}"
+      put_notice t(:property_updated_ok) + add_id(@property)
       go_properties
     else
       render action: :edit
@@ -72,18 +72,28 @@ class PropertiesController < ApplicationController
 
     # 设定栏位安全白名单
     def property_params
-      params[:property][:tag_list].gsub!(' ',',') if !params[:property][:tag_list].nil?
-      params.require(:property).permit(:name,:amount,:currency_id,:is_hidden,:tag_list)
+      if admin?
+        params[:property][:tag_list].gsub!(' ',',') if !params[:property][:tag_list].nil?
+        params.require(:property).permit(:name,:amount,:currency_id,:is_hidden,:tag_list)
+      else
+        params.require(:property).permit(:name,:amount,:currency_id)
+      end
     end
 
     # 获取资产的净值等统计数据
-    def get_statistical_data
+    def summary
+      @show_summary = true
       @properties_net_value_twd = Property.net_value :twd, admin_hash?
       @properties_net_value_cny = Property.net_value :cny, admin_hash?
       @properties_lixi_twd = Property.lixi :twd, admin_hash?
       @properties_value_twd = Property.value :twd, admin_hash?(only_positive: true)
       @properties_loan_twd = Property.value :twd, admin_hash?(only_negative: true)
       @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash?
+    end
+
+    # 资产标签云
+    def get_tag_cloud
+      @tags = Property.tag_counts_on(:tags)
     end
 
 end

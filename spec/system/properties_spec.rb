@@ -261,7 +261,9 @@ RSpec.describe '系统测试(Properties)', type: :system do
       fill_in 'property[tag_list]', with: '家里 韩元 现金'
       find('#update_property').click
       expect(page).to have_selector '.alert-notice'
-      click_on property.name
+      within "#properties_table" do
+        click_on property.name
+      end
       expect(page.html).to include '家里 韩元 现金'
     end
 
