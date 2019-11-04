@@ -46,13 +46,9 @@ class CurrenciesController < ApplicationController
 
   # 更新所有货币的汇率值
   def update_all_exchange_rates
-    if btc_price = get_btc_price and btc_price > 0
-      update_btc_price(btc_price)
-      put_notice "#{t(:update_btc_price_ok)} #{t(:latest_price)}: $#{btc_price}"
-    end
-    if count = update_legal_exchange_rates and count > 0
-      put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}"
-    end
+    if btc_price = get_btc_price and btc_price > 0 then update_btc_exchange_rate(btc_price) end
+    if count = update_legal_exchange_rates and count > 0 then
+      put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}" end
     go_currencies
   end
 
@@ -66,11 +62,6 @@ class CurrenciesController < ApplicationController
     # 设定栏位安全白名单
     def currency_params
       params.require(:currency).permit(:name, :code, :exchange_rate)
-    end
-
-    # 更新比特币汇率
-    def update_btc_price( btc_price )
-      update_exchange_rate( 'BTC', (1/btc_price).floor(10) )
     end
 
 end

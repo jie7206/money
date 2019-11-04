@@ -77,7 +77,8 @@ en:
   lixi: Interest
   update_all_exchange_rates: Update Exchange Rates
   update_all_exchange_rates_ok: All Exchange Rates was successfully updated!
-  update_btc_price_ok: BTC price was successfully updated!
+  update_btc_ex_rate_ok: BTC Exchange Rates was successfully updated!
+  update_usdt_ex_rate_ok: USDT Exchange Rates was successfully updated!
   latest_price: Latest price
   currency_to_usd: EX. USD
   n_legal_exchange_rates_updated_ok:  Exchange Rates was successfully updated!
@@ -99,6 +100,7 @@ en:
   item_price_type_err: Item price must be a positive number!
   item_amount_type_err: Item amount must be a positive number!
   delete_item_confirm: Are you SURE？
+  increase_or_decrease: Increase
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

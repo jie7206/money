@@ -48,6 +48,11 @@ class Property < ApplicationRecord
     Property.value(target_code,options) + Property.lixi(target_code,options)
   end
 
+  # 资产列表能显示3月底以来资产净值平均月增减额度
+  def self.net_growth_ave_month( target_code = :twd, options = {} )
+    (Property.net_value(target_code,options)-$net_start_value)/pass_days*30
+  end
+
   # 取出所有数据集并按照等值台币由大到小排序
   def self.all_sort( is_admin = false )
     scope = is_admin ? 'all' : 'all_visible'

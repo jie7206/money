@@ -77,7 +77,8 @@ cn:
   lixi: 利息
   update_all_exchange_rates: 更新汇率
   update_all_exchange_rates_ok: 所有币种的汇率已更新！
-  update_btc_price_ok: 比特币汇率已更新！
+  update_btc_ex_rate_ok: 比特币汇率已更新！
+  update_usdt_ex_rate_ok: 泰达币汇率已更新！
   latest_price: 最新价
   currency_to_usd: 兑美元汇率
   n_legal_exchange_rates_updated_ok: 种法币汇率已更新！
@@ -99,6 +100,7 @@ cn:
   item_price_type_err: 商品单价必须是数字且不能为负！
   item_amount_type_err: 商品数量必须是数字且不能为负！
   delete_item_confirm: 您确定要删除这笔资料吗？
+  increase_or_decrease: 增减
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

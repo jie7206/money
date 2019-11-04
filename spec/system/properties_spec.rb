@@ -12,8 +12,6 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
   describe '列表显示' do
 
-
-
     before do
       create_different_currency_properties
       visit properties_path
@@ -67,6 +65,10 @@ RSpec.describe '系统测试(Properties)', type: :system do
       visit properties_path
       expect(page).not_to have_selector "#new_amount_#{item.property.id}"
       expect(page).to have_link text: /#{item.property.amount.to_i.to_s}/
+    end
+
+    specify '#143[系统层]资产列表能显示3月底以来资产净值平均月增减额度' do
+      expect(page).to have_selector '#net_growth_ave_month', text: Property.net_growth_ave_month.to_i
     end
 
   end

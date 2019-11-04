@@ -22,3 +22,8 @@ btc:
   name: 比特币
   code: BTC
   exchange_rate: 0.00010859
+
+usdt:
+  name: 泰达币
+  code: USDT
+  exchange_rate: 0.99860195	

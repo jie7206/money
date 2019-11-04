@@ -77,6 +77,7 @@ class PropertiesController < ApplicationController
       @properties_lixi_twd = Property.lixi :twd, admin_hash?
       @properties_value_twd = Property.value :twd, admin_hash?(only_positive: true)
       @properties_loan_twd = Property.value :twd, admin_hash?(only_negative: true)
+      @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash?
     end
 
 end

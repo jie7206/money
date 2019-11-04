@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
 
   # 显示当前时间
   def now
-    Time.now.strftime("%H:%M:%S")
+    Time.now.strftime("%H:%M")
   end
 
   # 显示资产时是否包含显示隐藏资产
@@ -38,15 +38,39 @@ class ApplicationController < ActionController::Base
     return options.merge new_options
   end
 
-  # 读取比特币最新报价
-  def get_btc_price
+  # 从火币网取得某一数字货币的最新报价
+  def get_huobi_price( code )
     if @huobi_api
-      root = @huobi_api.history_kline('btcusdt','1min',1)
+      root = @huobi_api.history_kline(code.to_s,'1min',1)
       if root["data"] and root["data"][0] # 不管什么情况，如果发生异常，则返回0
-        return format("%.2f",root["data"][0]["close"]).to_f
+        return format("%.4f",root["data"][0]["close"]).to_f
       end
     end
     return 0
+  end
+
+  # 取得比特币最新报价
+  def get_btc_price
+    get_huobi_price :btcusdt
+  end
+
+  # 取得泰达币最新报价
+  def get_usdt_price
+    get_huobi_price :usdthusd
+  end
+
+  # 更新比特币汇率
+  def update_btc_exchange_rate( btc_price )
+    if usdt_price = get_usdt_price and usdt_price > 0
+      update_exchange_rate( 'USDT', (1/usdt_price).floor(9) )
+      put_notice "#{t(:update_usdt_ex_rate_ok)} #{t(:latest_price)}: $#{usdt_price}"
+      #比特币对美元汇率应该加入泰达币对美元汇率进行调整
+      btc_usd_price = btc_price * usdt_price
+      update_exchange_rate( 'BTC', (1/btc_usd_price).floor(9) )
+      put_notice "#{t(:update_btc_ex_rate_ok)} #{t(:latest_price)}: $#{btc_price}"
+      return true
+    end
+    return false
   end
 
   # 取得SSL连线的回传值
