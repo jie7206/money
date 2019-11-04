@@ -21,6 +21,8 @@ cn:
   property_amount: 资产金额
   property_currency: 资产币别
   property_lixi: 资产利息
+  property_tag_list: 分类标签
+  properties_cloud: 资产标签云
   property_proportion: 占比
   positive_property: 资产
   negative_property: 负债

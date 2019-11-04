@@ -17,6 +17,8 @@
 <% if admin? %>
   <tr><td><%= t(:property_is_hidden) %>：</td>
     <td><%= f.check_box(:is_hidden) %></td></tr>
+  <tr><td><%= t(:property_tag_list) %>：</td>
+    <td><%= f.text_field(:tag_list,size:40,placeholder:'请用空格分开每一个标签') %></td></tr>
 <% end %>
   <tr>
     <td colspan="2" align="right" class="tfoot">

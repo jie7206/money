@@ -2,6 +2,7 @@ class Property < ApplicationRecord
 
   include ApplicationHelper
 
+  acts_as_taggable
   belongs_to :currency
   has_one :interest
   has_one :item

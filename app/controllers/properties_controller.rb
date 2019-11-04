@@ -8,6 +8,11 @@ class PropertiesController < ApplicationController
     get_statistical_data # 获取资产的净值等统计数据
   end
 
+  # 资产标签云
+  def tag_cloud
+    @tags = Property.tag_counts_on(:tags)
+  end
+
   # 新建资产表单
   def new
     @property = Property.new
@@ -35,7 +40,7 @@ class PropertiesController < ApplicationController
   # 储存更新资产
   def update
     if @property.update_attributes(property_params)
-      put_notice t(:property_updated_ok)
+      put_notice t(:property_updated_ok) + " ID: #{@property.id}"
       go_properties
     else
       render action: :edit
@@ -67,7 +72,8 @@ class PropertiesController < ApplicationController
 
     # 设定栏位安全白名单
     def property_params
-      params.require(:property).permit(:name,:amount,:currency_id,:is_hidden)
+      params[:property][:tag_list].gsub!(' ',',') if !params[:property][:tag_list].nil?
+      params.require(:property).permit(:name,:amount,:currency_id,:is_hidden,:tag_list)
     end
 
     # 获取资产的净值等统计数据

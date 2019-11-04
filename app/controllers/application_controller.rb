@@ -39,9 +39,9 @@ class ApplicationController < ActionController::Base
   end
 
   # 从火币网取得某一数字货币的最新报价
-  def get_huobi_price( code )
+  def get_huobi_price( symbol )
     if @huobi_api
-      root = @huobi_api.history_kline(code.to_s,'1min',1)
+      root = @huobi_api.history_kline(symbol.to_s,'1min',1)
       if root["data"] and root["data"][0] # 不管什么情况，如果发生异常，则返回0
         return format("%.4f",root["data"][0]["close"]).to_f
       end

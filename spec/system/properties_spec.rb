@@ -129,6 +129,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
   describe '修改与删除资产' do
 
     let!(:property) { create(:property) }
+
     before do
       visit properties_path
       click_on property.name
@@ -252,6 +253,16 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page).to have_selector '.alert-notice'
       expect(page).to have_content '新资产名称'
       expect(page.html).to include '1366.78'
+    end
+
+    specify '#145[系统层]在资产编辑页面中能对资产添加分类标签' do
+      property = create(:property)
+      visit edit_property_path(property)
+      fill_in 'property[tag_list]', with: '家里 韩元 现金'
+      find('#update_property').click
+      expect(page).to have_selector '.alert-notice'
+      click_on property.name
+      expect(page.html).to include '家里 韩元 现金'
     end
 
   end

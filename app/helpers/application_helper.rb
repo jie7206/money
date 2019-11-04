@@ -1,5 +1,7 @@
 module ApplicationHelper
 
+  include ActsAsTaggableOn::TagsHelper
+
   # 为哪些模型自动建立返回列表的链接
   $models = "property,currency,interest,item"
   # 为哪些类型的通知自动产生方法
@@ -48,9 +50,9 @@ module ApplicationHelper
   end
 
   # 链接到编辑类别
-  def link_edit_to( instance, link_text = nil )
+  def link_edit_to( instance, link_text = nil, options = {} )
     link_text ||= instance.name
-    eval "link_to '#{link_text}', edit_#{instance.class.to_s.downcase}_path(instance)"
+    eval "link_to '#{link_text}', edit_#{instance.class.to_s.downcase}_path(instance), #{options}"
   end
 
   # 用户在新建利息或商品时不能看到隐藏资产以供选择

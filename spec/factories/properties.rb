@@ -5,6 +5,7 @@ FactoryBot.define do
     name { '现金' }
     amount { 10000.0 }
     is_hidden { false }
+    tag_list { '个人资产' }
     association :currency, :krw
 
     trait :twd do

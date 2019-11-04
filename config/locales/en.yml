@@ -21,6 +21,8 @@ en:
   property_amount: Property Amount
   property_currency: Property Currency
   property_lixi: Property Interest
+  property_tag_list: Tag List
+  properties_cloud: Cloud
   property_proportion: Proportion
   positive_property: Property
   negative_property: Loan
