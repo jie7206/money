@@ -92,9 +92,9 @@ class Property < ApplicationRecord
     is_hidden
   end
 
-  # 除了比特币资产以小数点4位显示外其余为小数点2位
+  # 除了比特币资产以小数点8位显示外其余为小数点2位
   def value
-    currency.code == 'BTC' ? to_n(amount,4) : to_n(amount,2)
+    to_amount(amount,currency.code)
   end
 
   # 资产金额是否为正值

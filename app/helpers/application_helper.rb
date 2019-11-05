@@ -3,9 +3,9 @@ module ApplicationHelper
   include ActsAsTaggableOn::TagsHelper
 
   # 为哪些模型自动建立返回列表的链接
-  $models = "property,currency,interest,item"
+  $models = %w(property currency interest item)
   # 为哪些类型的通知自动产生方法
-  $flashs = "notice,warning"
+  $flashs = %w(notice warning)
   # 建立从列表中快速更新某个值的方法
   $quick_update_attrs = ["property:amount","item:price,amount"]
 
@@ -29,9 +29,18 @@ module ApplicationHelper
     session[:admin] == true
   end
 
-  # 默认的金额显示格式
+  # 默认的数字显示格式
   def to_n( number, pos=2 )
     number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))
+  end
+
+  # 默认的金额显示格式
+  def to_amount( number, code = :twd )
+    if code.to_s.downcase == 'btc'
+      return to_n( number, 8 )
+    else
+      return to_n( number, 2 )
+    end
   end
 
   # 默认的时间显示格式
@@ -62,7 +71,7 @@ module ApplicationHelper
   end
 
   # 建立返回列表的链接
-  $models.split(',').each do |n|
+  $models.each do |n|
     define_method "link_back_to_#{n.pluralize}" do
       eval("raw(\"" + '#{' + "link_to t(:#{n}_index), #{n.pluralize}_path" + "}\")")
     end

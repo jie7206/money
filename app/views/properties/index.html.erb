@@ -11,6 +11,10 @@
     <td width="7%"><%= t(:property_proportion) %></td>
   </tr>
 <% n = 1 %>
+<% amounts = 0 %>
+<% amount_twds = 0 %>
+<% lixis = 0 %>
+<% proportions = 0 %>
 <% @properties.each do |property| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
@@ -21,17 +25,32 @@
     <td align="right"><%= render 'update_amount', property: property %></td>
   <% end %>
     <td align="center"><%= property.currency.name %></td>
-    <td align="right"><%= to_n(property.amount_to,0) %></td>
-    <td align="right"><%= property.lixi(:twd).to_i %></td>
-    <td align="right"><%= to_n(property.proportion(admin?)) %></td>
+    <td align="right"><%= amount_twd=to_n(property.amount_to,0) %></td>
+    <td align="right"><%= lixi=property.lixi(:twd).to_i %></td>
+    <td align="right"><%= proportion=to_n(property.proportion(admin?)) %></td>
   </tr>
   <% n += 1 %>
+  <% amounts += property.amount %>
+  <% amount_twds += amount_twd.to_i %>
+  <% lixis += lixi %>
+  <% proportions += proportion.to_f %>
 <% end %>
+<% if @show_summary %>
   <tr>
     <td colspan="7" class="thead">
-      <%= render 'summary' if @show_summary %>
+      <%= render 'summary' %>
     </td>
   </tr>
+<% else %>
+  <tr class="thead">
+    <td colspan="2"></td>
+    <td align="right"><%= to_amount(amounts,@properties.last.currency.code) %>&nbsp;</td>
+    <td></td>
+    <td align="right"><%= amount_twds.to_i %></td>
+    <td align="right"><%= lixis.to_i %></td>
+    <td align="right"><%= to_n(proportions) %></td>
+  </tr>
+<% end %>
 </table>
 <p><%= link_to t(:new_property), new_property_path, { id: 'add_new_property' } %></p>
 <% if admin? %>

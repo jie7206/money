@@ -130,14 +130,14 @@ class ApplicationController < ActionController::Base
   end
 
   # 建立回到目录页的方法
-  $models.split(',').each do |n|
+  $models.each do |n|
     define_method "go_#{n.pluralize}" do
       eval("redirect_to controller: :#{n.pluralize}, action: :index")
     end
   end
 
   # 建立各种通知消息的方法
-  $flashs.split(',').each do |type|
+  $flashs.each do |type|
     define_method "put_#{type}" do |msg|
       eval %Q[
         flash[:#{type}] ? flash[:#{type}].gsub!(\"(\#{now})\",'　') : flash[:#{type}] = ''

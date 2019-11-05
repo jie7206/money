@@ -47,13 +47,11 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page).not_to have_content hidden_property.name
     end
 
-    specify '#123[系统层]资产列表中除了比特币资产以小数点4位显示外其余为小数点2位' do
+    specify '#123[系统层]资产列表中除了比特币资产以小数点8位显示外其余为小数点2位' do
+      btc_amount = @ps[6].amount
+      expect(page.html).to include btc_amount.floor(8).to_s
       twd_amount = @ps[0].amount
       expect(page.html).to include twd_amount.floor(2).to_s
-      expect(page.html).not_to include twd_amount.floor(3).to_s
-      btc_amount = @ps[6].amount
-      expect(page.html).to include btc_amount.floor(4).to_s
-      expect(page.html).not_to include btc_amount.floor(5).to_s
     end
 
     specify '#125[系统层]资产列表能列出各资产的占比' do
