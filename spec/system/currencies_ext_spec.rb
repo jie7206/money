@@ -29,7 +29,16 @@ RSpec.describe '连外测试(Currencies)', type: :system do
     end
 
     specify '#149[系统层]更新汇率时能按照数字符号更新所有数字货币的汇率' do
-      find('#update_all_exchange_rates').click
+      # 合并于 #151[系统层]导航链接能直接更新汇率然后返回最后查看的页面
+    end
+
+    specify '#151[系统层]导航链接能直接更新汇率然后返回最后查看的页面' do
+      path = rand(2) == 0 ? properties_path : currencies_path
+      visit path
+      within '#site_nav' do
+        find('#update_all_exchange_rates').click
+      end
+      expect(current_path).to eq path
       expect(page).to have_selector '.alert-notice', text: /3 #{$n_digital_exchange_rates_updated_ok}/
       expect(page).to have_selector '.alert-notice', text: /3 #{$n_legal_exchange_rates_updated_ok}/
     end

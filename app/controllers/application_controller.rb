@@ -125,8 +125,14 @@ class ApplicationController < ActionController::Base
 
   # 返回记录的网址
   def go_back
-    redirect_to session[:path]
-    session.delete(:path)
+    if params[:path]
+      redirect_to params[:path]
+    elsif session[:path]
+      redirect_to session[:path]
+      session.delete(:path)
+    else
+      redirect_to root_path
+    end
   end
 
   # 在通知讯息后面加上物件的ID

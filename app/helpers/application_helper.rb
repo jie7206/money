@@ -70,6 +70,11 @@ module ApplicationHelper
     eval("obj.select :property_id, Property.#{scope}.collect { |p| [ p.name, p.id ] }")
   end
 
+  # 返回更新汇率的链接
+  def update_all_exchange_rates_link
+    link_to t(:update_all_exchange_rates), {controller: :currencies, action: :update_all_exchange_rates, path: request.fullpath}, {id:'update_all_exchange_rates'}
+  end
+
   # 建立返回列表的链接
   $models.each do |n|
     define_method "link_back_to_#{n.pluralize}" do

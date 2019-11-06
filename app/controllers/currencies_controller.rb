@@ -50,7 +50,7 @@ class CurrenciesController < ApplicationController
       put_notice "#{count} #{t(:n_digital_exchange_rates_updated_ok)}" end
     if count = update_legal_exchange_rates and count > 0 then
       put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}" end
-    go_currencies
+    go_back
   end
 
   private
