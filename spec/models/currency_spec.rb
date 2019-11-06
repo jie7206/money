@@ -22,4 +22,11 @@ RSpec.describe '模型测试(Currency)', type: :model do
     expect(twd.to_usd.floor(4)).to eq (1/twd.exchange_rate).floor(4)
   end
 
+  specify '#146[模型层]货币增加数字符号属性以分辨该币是否为法币' do
+    twd = build(:currency, :twd, symbol: '')
+    btc = build(:currency, :btc, symbol: 'btcusdt')
+    expect(twd.is_digital?).to eq false
+    expect(btc.is_digital?).to eq true
+  end
+
 end

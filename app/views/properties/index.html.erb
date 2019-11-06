@@ -6,13 +6,15 @@
     <td width="35%"><%= t(:property_name) %></td>
     <td width="20%"><%= t(:property_amount) %></td>
     <td width="8%"><%= t(:property_currency) %></td>
-    <td width="15%"><%= t(:exchange_to_twd) %></td>
-    <td width="10%"><%= t(:property_lixi) %></td>
+    <td width="7%"><%= t(:exchange_to_twd) %></td>
+    <td width="10%"><%= t(:exchange_to_cny) %></td>
+    <td width="8%"><%= t(:property_lixi) %></td>
     <td width="7%"><%= t(:property_proportion) %></td>
   </tr>
 <% n = 1 %>
 <% amounts = 0 %>
 <% amount_twds = 0 %>
+<% amount_cnys = 0 %>
 <% lixis = 0 %>
 <% proportions = 0 %>
 <% @properties.each do |property| %>
@@ -26,18 +28,20 @@
   <% end %>
     <td align="center"><%= property.currency.name %></td>
     <td align="right"><%= amount_twd=to_n(property.amount_to,0) %></td>
+    <td align="right"><%= amount_cny=to_n(property.amount_to(:cny),0) %></td>
     <td align="right"><%= lixi=property.lixi(:twd).to_i %></td>
     <td align="right"><%= proportion=to_n(property.proportion(admin?)) %></td>
   </tr>
   <% n += 1 %>
   <% amounts += property.amount %>
   <% amount_twds += amount_twd.to_i %>
+  <% amount_cnys += amount_cny.to_i %>
   <% lixis += lixi %>
   <% proportions += proportion.to_f %>
 <% end %>
 <% if @show_summary %>
   <tr>
-    <td colspan="7" class="thead">
+    <td colspan="8" class="thead">
       <%= render 'summary' %>
     </td>
   </tr>
@@ -47,6 +51,7 @@
     <td align="right"><%= to_amount(amounts,@properties.last.currency.code) %>&nbsp;</td>
     <td></td>
     <td align="right"><%= amount_twds.to_i %></td>
+    <td align="right"><%= amount_cnys.to_i %></td>
     <td align="right"><%= lixis.to_i %></td>
     <td align="right"><%= to_n(proportions) %></td>
   </tr>

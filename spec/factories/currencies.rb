@@ -30,6 +30,12 @@ FactoryBot.define do
       exchange_rate { 1173.0 }
     end
 
+    trait :btc do
+      name { '比特币' }
+      code { 'BTC' }
+      exchange_rate { 0.00010859 }
+    end
+
   end
 
 end

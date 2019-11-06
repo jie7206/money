@@ -47,6 +47,7 @@ en:
   new_currency: Add New Currency
   currency_name: Currency Name
   currency_code: Code
+  currency_symbol: Symbol
   currency_exchange_rate: USD Exchange Rate
   delete_currency: Delete This Currency
   delete_currency_confirm: Are You SURE?
@@ -54,6 +55,7 @@ en:
   update_currency: Update Currency
   updated_time: Updated Time
   exchange_to_twd: Eq. TWD
+  exchange_to_cny: Eq. CNY
   total_properties_amount: Total
   twd: TWD
   cny: CNY

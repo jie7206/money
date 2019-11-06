@@ -47,6 +47,7 @@ cn:
   new_currency: 新建货币
   currency_name: 货币名称
   currency_code: 代码
+  currency_symbol: 数字符号
   currency_exchange_rate: 美元汇率值
   delete_currency: 删除此货币
   delete_currency_confirm: 您确定要删除此货币吗？
@@ -54,6 +55,7 @@ cn:
   update_currency: 更新货币
   updated_time: 更新时间
   exchange_to_twd: 等值台币
+  exchange_to_cny: 等值人民币
   total_properties_amount: 资产总净值
   twd: 新台币
   cny: 人民币

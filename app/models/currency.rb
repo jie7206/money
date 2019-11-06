@@ -40,6 +40,16 @@ class Currency < ApplicationRecord
     all.each {|c| c.add_or_renew_ex_rate}
   end
 
+  # 回传所有法币的数据集
+  def self.legals
+    all.reject(&:is_digital?)
+  end
+
+  # 回传所有数字货币的数据集
+  def self.digitals
+    all.select(&:is_digital?)
+  end
+
   # 自动新增货币汇率值到全域变数
   def add_or_renew_ex_rate
     set_exchange_rate self, 'self'
@@ -48,6 +58,11 @@ class Currency < ApplicationRecord
   # 兑换美元汇率值
   def to_usd
     1.0/exchange_rate
+  end
+
+  # 回传是否为数字货币
+  def is_digital?
+    (symbol.nil? or symbol.empty?) ? false : true
   end
 
 end

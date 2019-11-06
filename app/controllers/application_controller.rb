@@ -98,7 +98,9 @@ class ApplicationController < ActionController::Base
 
   # 更新单一法币的汇率值
   def update_exchange_rate( code, value )
-    Currency.find_by_code(code).update_attribute(:exchange_rate,value)
+    if currency = Currency.find_by_code(code)
+      currency.update_attribute(:exchange_rate,value)
+    end
   end
 
   # 更新所有法币的汇率值(除了比特币和美元以外)
