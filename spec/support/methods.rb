@@ -79,10 +79,11 @@ def create_different_currency_properties
   p5 = create(:property, amount: -10000000.0, currency: currencies(:cny), name: '人民币贷款')
   p6 = create(:property, amount: 13000000.66085678, currency: currencies(:btc), name: '个人比特币', is_hidden: true)
   p7 = create(:property, amount: 14000000.32874321, currency: currencies(:btc), name: '家庭比特币')
+  p8 = create(:property, amount: 888000.53561621, currency: currencies(:bch), name: '个人比特现金')
   # 建立p4,p5的利息资料
   l1 = create(:interest, property: p4, start_date: 30.days.ago, rate: 6.5)
   l2 = create(:interest, property: p5, start_date: 90.days.ago, rate: 4.5)
-  @ps = [p1, p2, p3, p4, p5, p6, p7]
+  @ps = [p1, p2, p3, p4, p5, p6, p7, p8]
   @ls = [l1, l2]
 end
 

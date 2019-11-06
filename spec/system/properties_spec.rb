@@ -69,6 +69,13 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page).to have_selector '#net_growth_ave_month', text: Property.net_growth_ave_month.to_i
     end
 
+    specify '#150[系统层]若资产为数字货币默认金额显示小数点8位否则显示2位' do
+      bch_amount = @ps[7].amount
+      expect(page.html).to include bch_amount.floor(8).to_s
+      twd_amount = @ps[0].amount
+      expect(page.html).to include twd_amount.floor(2).to_s
+    end
+
   end
 
   describe '新增资产' do

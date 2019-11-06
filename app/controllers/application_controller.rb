@@ -57,12 +57,17 @@ class ApplicationController < ActionController::Base
   # 更新所有数字货币的汇率值
   def update_digital_exchange_rates
     count = 0
-    usdt_price = Currency.usdt
-    Currency.digitals.each do |c|
-      if price = get_huobi_price(c.symbol) and price > 0
-        usd_price = price * usdt_price
-        update_exchange_rate(c.code,(1/usd_price).floor(8))
-        count += 1
+    # 必须先更新USDT的汇率，其他的报价换算成美元才能准确
+    usdt = Currency.usdt
+    if usdt_price = get_huobi_price(usdt.symbol) and usdt_price > 0
+      update_exchange_rate(usdt.code,(1/usdt_price).floor(8))
+      count += 1
+      Currency.digitals.each do |c|
+        next if c.code == 'USDT'
+        if price = get_huobi_price(c.symbol) and price > 0
+          update_exchange_rate(c.code,(1/(price*usdt_price)).floor(8))
+          count += 1
+        end
       end
     end
     return count
@@ -73,6 +78,7 @@ class ApplicationController < ActionController::Base
     count = 0
     Currency.legals.each do |c|
       code = c.code
+      next if code == 'USD'
       if value = get_exchange_rate(:usd,code) and value > 0
         update_exchange_rate( code, value )
         count += 1
@@ -108,6 +114,7 @@ class ApplicationController < ActionController::Base
   def update_exchange_rate( code, value )
     if currency = Currency.find_by_code(code)
       currency.update_attribute(:exchange_rate,value)
+      return value
     end
   end
 

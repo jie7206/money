@@ -52,7 +52,7 @@ class Currency < ApplicationRecord
 
   # 取得USDT兑美元汇率
   def self.usdt
-    Currency.find_by_code('USDT').to_usd
+    Currency.find_by_code('USDT')
   end
 
   # 自动新增货币汇率值到全域变数

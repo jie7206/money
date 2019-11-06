@@ -35,8 +35,8 @@ module ApplicationHelper
   end
 
   # 默认的金额显示格式
-  def to_amount( number, code = :twd )
-    if code.to_s.downcase == 'btc'
+  def to_amount( number, is_digital = false )
+    if is_digital
       return to_n( number, 8 )
     else
       return to_n( number, 2 )
