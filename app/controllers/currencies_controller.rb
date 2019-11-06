@@ -61,7 +61,11 @@ class CurrenciesController < ApplicationController
 
     # 设定栏位安全白名单
     def currency_params
-      params.require(:currency).permit(:name, :code, :exchange_rate)
+      if admin?
+        params.require(:currency).permit(:name, :code, :symbol, :exchange_rate)
+      else
+        params.require(:currency).permit(:name, :code, :exchange_rate)
+      end
     end
 
 end

@@ -65,4 +65,9 @@ class Currency < ApplicationRecord
     (symbol.nil? or symbol.empty?) ? false : true
   end
 
+  # 显示数字符号
+  def symbol_code
+    is_digital? ? symbol.upcase : ''
+  end
+
 end

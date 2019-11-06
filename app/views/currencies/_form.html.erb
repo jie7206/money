@@ -11,10 +11,12 @@
     <td><%= t(:currency_code) %>：</td>
     <td><%= f.text_field(:code, onclick: select_all) %></td>
   </tr>
+<% if admin? %>
   <tr>
     <td><%= t(:currency_symbol) %>：</td>
     <td><%= f.text_field(:symbol, onclick: select_all) %></td>
   </tr>
+<% end %>  
   <tr>
     <td><%= t(:currency_exchange_rate) %>：</td>
     <td><%= f.text_field(:exchange_rate, onclick: select_all) %></td>
