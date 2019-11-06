@@ -40,37 +40,45 @@ class ApplicationController < ActionController::Base
 
   # 从火币网取得某一数字货币的最新报价
   def get_huobi_price( symbol )
-    if @huobi_api
-      root = @huobi_api.history_kline(symbol.to_s,'1min',1)
-      if root["data"] and root["data"][0] # 不管什么情况，如果发生异常，则返回0
-        return format("%.4f",root["data"][0]["close"]).to_f
+    begin
+      Timeout.timeout(90) do
+        if @huobi_api
+          root = @huobi_api.history_kline(symbol.to_s,'1min',1)
+          if root["data"] and root["data"][0] # 不管什么情况，如果发生异常，则返回0
+            return format("%.4f",root["data"][0]["close"]).to_f
+          end
+        end
+      end
+    rescue
+      return 0
+    end
+  end
+
+  # 更新所有数字货币的汇率值
+  def update_digital_exchange_rates
+    count = 0
+    usdt_price = Currency.usdt
+    Currency.digitals.each do |c|
+      if price = get_huobi_price(c.symbol) and price > 0
+        usd_price = price * usdt_price
+        update_exchange_rate(c.code,(1/usd_price).floor(8))
+        count += 1
       end
     end
-    return 0
+    return count
   end
 
-  # 取得比特币最新报价
-  def get_btc_price
-    get_huobi_price :btcusdt
-  end
-
-  # 取得泰达币最新报价
-  def get_usdt_price
-    get_huobi_price :usdthusd
-  end
-
-  # 更新比特币汇率
-  def update_btc_exchange_rate( btc_price )
-    if usdt_price = get_usdt_price and usdt_price > 0
-      update_exchange_rate( 'USDT', (1/usdt_price).floor(9) )
-      put_notice "#{t(:update_usdt_ex_rate_ok)} #{t(:latest_price)}: $#{usdt_price}"
-      #比特币对美元汇率应该加入泰达币对美元汇率进行调整
-      btc_usd_price = btc_price * usdt_price
-      update_exchange_rate( 'BTC', (1/btc_usd_price).floor(9) )
-      put_notice "#{t(:update_btc_ex_rate_ok)} #{t(:latest_price)}: $#{btc_price}"
-      return true
+  # 更新所有法币的汇率值
+  def update_legal_exchange_rates
+    count = 0
+    Currency.legals.each do |c|
+      code = c.code
+      if value = get_exchange_rate(:usd,code) and value > 0
+        update_exchange_rate( code, value )
+        count += 1
+      end
     end
-    return false
+    return count
   end
 
   # 取得SSL连线的回传值
@@ -101,18 +109,6 @@ class ApplicationController < ActionController::Base
     if currency = Currency.find_by_code(code)
       currency.update_attribute(:exchange_rate,value)
     end
-  end
-
-  # 更新所有法币的汇率值(除了比特币和美元以外)
-  def update_legal_exchange_rates
-    count = 0
-    (Currency.all.map {|c| c.code} - [:usd, :btc].map {|c| c.to_s.upcase}).each do |code|
-      if value = get_exchange_rate(:usd,code) and value > 0
-        update_exchange_rate( code, value )
-        count += 1
-      end
-    end
-    return count
   end
 
   # 记录返回的网址

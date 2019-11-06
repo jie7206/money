@@ -47,7 +47,7 @@ cn:
   new_currency: 新建货币
   currency_name: 货币名称
   currency_code: 代码
-  currency_symbol: 数字符号
+  currency_symbol: 报价符号
   currency_exchange_rate: 美元汇率值
   delete_currency: 删除此货币
   delete_currency_confirm: 您确定要删除此货币吗？
@@ -86,6 +86,7 @@ cn:
   latest_price: 最新价
   currency_to_usd: 兑美元汇率
   n_legal_exchange_rates_updated_ok: 种法币汇率已更新！
+  n_digital_exchange_rates_updated_ok: 种数字货币汇率已更新！
   property_non_exist: 该笔资产不存在！
   item_price_blank_err: 商品必须要有单价！
   item_amount_blank_err: 商品必须要有数量！

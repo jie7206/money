@@ -22,8 +22,16 @@ btc:
   name: 比特币
   code: BTC
   exchange_rate: 0.00010859
+  symbol: btcusdt
 
 usdt:
   name: 泰达币
   code: USDT
-  exchange_rate: 0.99860195	
+  exchange_rate: 0.99860195
+  symbol: usdthusd
+
+bch:
+  name: 比特现金
+  code: BCH
+  exchange_rate: 0.00328785
+  symbol: bchusdt

@@ -46,7 +46,8 @@ class CurrenciesController < ApplicationController
 
   # 更新所有货币的汇率值
   def update_all_exchange_rates
-    if btc_price = get_btc_price and btc_price > 0 then update_btc_exchange_rate(btc_price) end
+    if count = update_digital_exchange_rates and count > 0 then
+      put_notice "#{count} #{t(:n_digital_exchange_rates_updated_ok)}" end
     if count = update_legal_exchange_rates and count > 0 then
       put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}" end
     go_currencies

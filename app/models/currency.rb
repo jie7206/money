@@ -50,6 +50,11 @@ class Currency < ApplicationRecord
     all.select(&:is_digital?)
   end
 
+  # 取得USDT兑美元汇率
+  def self.usdt
+    Currency.find_by_code('USDT').to_usd
+  end
+
   # 自动新增货币汇率值到全域变数
   def add_or_renew_ex_rate
     set_exchange_rate self, 'self'
