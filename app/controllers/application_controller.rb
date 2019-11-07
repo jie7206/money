@@ -27,6 +27,11 @@ class ApplicationController < ActionController::Base
     redirect_to login_path if !login?
   end
 
+  # 如果不是管理员则回到登入页重新登入
+  def check_admin
+    redirect_to login_path if !admin?
+  end
+
   # 显示当前时间
   def now
     Time.now.strftime("%H:%M")

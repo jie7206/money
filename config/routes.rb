@@ -15,6 +15,11 @@ Rails.application.routes.draw do
       get :update_price, :update_amount
     end
   end
+  resources :portfolios do
+    member do
+      get :order_up, :order_down
+    end
+  end
 
   get '/login', to: 'main#login'
   get '/logout', to: 'main#logout'

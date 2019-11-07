@@ -106,6 +106,29 @@ en:
   item_amount_type_err: Item amount must be a positive number!
   delete_item_confirm: Are you SURE？
   increase_or_decrease: Increase
+  portfolio_name_blank_err: Portfolio's name can't be blank!
+  portfolio_include_tags_blank_err: Portfolio's include tags can't be blank!
+  portfolio_name_len_err: Portfolio's name can't be too long!
+  portfolio_include_tags_len_err: Portfolio's include tags can't be too long!
+  portfolio_exclude_tags_len_err: Portfolio's exclude tags can't be too long!
+  portfolio_order_num_blank_err: Portfolio's order number can't be blank!
+  portfolio_order_up_ok: Portfolio order up successfully!
+  portfolio_order_down_ok: Portfolio order down successfully!
+  portfolio_order_num_nap_err: Portfolio's order number must be greater than zero!
+  property_name: Property Name
+  portfolio_include_tags: Inculde Tags
+  portfolio_exclude_tags: Exculde Tags
+  portfolio_order_num: Order Number
+  order: Order
+  delete_portfolio: Delete This Portfolio
+  delete_portfolio_confirm: Are you SURE？
+  edit_portfolio: Edit Portfolio
+  update_portfolio: Update Portfolio
+  portfolio_index: Portfolios
+  new_portfolio: Add New Portfolio
+  portfolio_created_ok: Portfolio was successfully created!
+  portfolio_updated_ok: Portfolio was successfully updated!
+  portfolio_destroyed_ok: Portfolio was successfully destroyed!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

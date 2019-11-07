@@ -1,0 +1,28 @@
+<h2><%= t(:portfolio_index) %></h2>
+
+<table>
+  <tr class="thead">
+    <td width="15"></td>
+    <td><%= t(:property_name) %></td>
+    <td><%= t(:portfolio_include_tags) %></td>
+    <td><%= t(:portfolio_exclude_tags) %></td>
+    <td><%= t(:order) %></td>
+  </tr>
+<% n = 1 %>
+<% @portfolios.each do |portfolio| %>
+  <tr <%= change_row_color %>>
+    <td align="right"><%= n %></td>
+    <td><%= link_edit_to(portfolio) %></td>
+    <td><%= portfolio.include_tags %></td>
+    <td><%= portfolio.exclude_tags %></td>
+    <td align="center"><%= link_up_and_down(portfolio.id) %></td>
+  </tr>
+  <% n += 1 %>
+<% end %>
+  <tr>
+    <td colspan="5" class="thead"></td>
+  </tr>
+</table>
+<br/>
+<%= link_back_to_properties %>
+| <%= link_to t(:new_portfolio), new_portfolio_path, { id: 'add_new_portfolio' } %>

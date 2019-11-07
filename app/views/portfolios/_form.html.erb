@@ -1,0 +1,33 @@
+<%= render 'shared/error_messages', object: @portfolio %>
+
+<%= form_for(@portfolio) do |f| %>
+<table>
+  <tr><td colspan="2" class="thead"></td></tr>
+  <tr>
+    <td><%= t(:property_name) %>：</td>
+    <td><%= f.text_field(:name) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:portfolio_order_num) %>：</td>
+    <td><%= f.text_field(:order_num,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:portfolio_include_tags) %>：</td>
+    <td><%= f.text_field(:include_tags,size:60) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:portfolio_exclude_tags) %>：</td>
+    <td><%= f.text_field(:exclude_tags,size:60) %></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="right" class="tfoot">
+      <%= f.submit( submit,id: submit_id) %>
+    </td>
+  </tr>
+</table>
+<% end %>
+<br/>
+<%= link_back_to_portfolios %>
+<% if !@portfolio.new_record? %>
+  | <%= link_to t(:delete_portfolio), @portfolio, method: :delete, id: 'delete_portfolio', data: { confirm: t(:delete_portfolio_confirm) } %>
+<% end %>

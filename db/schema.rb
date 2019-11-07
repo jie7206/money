@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_06_071251) do
+ActiveRecord::Schema.define(version: 2019_11_07_091355) do
 
   create_table "currencies", force: :cascade do |t|
     t.string "name"
@@ -38,6 +38,15 @@ ActiveRecord::Schema.define(version: 2019_11_06_071251) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["property_id"], name: "index_items_on_property_id"
+  end
+
+  create_table "portfolios", force: :cascade do |t|
+    t.string "name"
+    t.string "include_tags"
+    t.string "exclude_tags"
+    t.integer "order_num"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "properties", force: :cascade do |t|

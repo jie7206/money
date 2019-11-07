@@ -2,8 +2,8 @@ module ApplicationHelper
 
   include ActsAsTaggableOn::TagsHelper
 
-  # 为哪些模型自动建立返回列表的链接
-  $models = %w(property currency interest item)
+  # 为哪些模型自动建立返回列表的链接以及执行返回列表的指令
+  $models = %w(property currency interest item portfolio)
   # 为哪些类型的通知自动产生方法
   $flashs = %w(notice warning)
   # 建立从列表中快速更新某个值的方法
@@ -73,6 +73,12 @@ module ApplicationHelper
   # 返回更新汇率的链接
   def update_all_exchange_rates_link
     link_to t(:update_all_exchange_rates), {controller: :currencies, action: :update_all_exchange_rates, path: request.fullpath}, {id:'update_all_exchange_rates'}
+  end
+
+  # 建立排序上下箭头链接
+  def link_up_and_down( id )
+    raw(link_to('↑', action: :order_up, id: id)+' '+\
+        link_to('↓', action: :order_down, id: id))
   end
 
   # 建立返回列表的链接

@@ -106,6 +106,29 @@ cn:
   item_amount_type_err: 商品数量必须是数字且不能为负！
   delete_item_confirm: 您确定要删除这笔资料吗？
   increase_or_decrease: 增减
+  portfolio_name_blank_err: 资产组合名称不能空白！
+  portfolio_include_tags_blank_err: 资产组合包含标签不能空白！
+  portfolio_name_len_err: 资产组合名称不能太长！
+  portfolio_include_tags_len_err: 资产组合包含标签不能太长！
+  portfolio_exclude_tags_len_err: 资产组合排除标签不能太长！
+  portfolio_order_num_blank_err: 资产组合排序号码不能空白！
+  portfolio_order_up_ok: 资产组合向上排序成功！
+  portfolio_order_down_ok: 资产组合向下排序成功！
+  portfolio_order_num_nap_err: 资产组合排序号码必须为大于零的整数！
+  property_name: 组合名称
+  portfolio_include_tags: 包含标签
+  portfolio_exclude_tags: 排除标签
+  portfolio_order_num: 排序号码
+  order: 排序
+  delete_portfolio: 删除资产组合
+  delete_portfolio_confirm: 您确定要删除这笔组合吗？
+  edit_portfolio: 编辑资产组合
+  update_portfolio: 更新资产组合
+  portfolio_index: 资产组合
+  new_portfolio: 新建资产组合
+  portfolio_created_ok: 资产组合新建成功！
+  portfolio_updated_ok: 资产组合更新成功！
+  portfolio_destroyed_ok: 资产组合删除成功！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
