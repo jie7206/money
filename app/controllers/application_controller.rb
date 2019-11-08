@@ -125,7 +125,7 @@ class ApplicationController < ActionController::Base
 
   # 记录返回的网址
   def memory_back
-    if params[:tag]
+    if params[:tags]
       session[:path] = request.fullpath
     elsif params[:path]
       session[:path] = params[:path]

@@ -130,6 +130,7 @@ en:
   portfolio_updated_ok: Portfolio was successfully updated!
   portfolio_destroyed_ok: Portfolio was successfully destroyed!
   rate_or_price: Rate/Price
+  look: Look
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

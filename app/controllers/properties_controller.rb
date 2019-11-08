@@ -4,8 +4,12 @@ class PropertiesController < ApplicationController
 
   # 资产负债列表
   def index
-    if admin? and params[:tag]
-      @properties = Property.tagged_with(params[:tag].split(' '))
+    if admin? and params[:tags]
+      if params[:extags] and !params[:extags].empty?
+        @properties = Property.tagged_with(params[:tags].strip.split(' ')).tagged_with(params[:extags].strip.split(' '),exclude:true)
+      else
+        @properties = Property.tagged_with(params[:tags].strip.split(' '))
+      end
       memory_back
     else
       @properties = Property.all_sort admin?

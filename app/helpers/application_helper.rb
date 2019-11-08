@@ -86,6 +86,17 @@ module ApplicationHelper
         link_to('↓', action: :order_down, id: id))
   end
 
+  # 点击图标查看资产组合明细
+  def look_portfolio_detail( portfolio )
+    raw(link_to(image_tag('doc.png'), {controller: :properties, action: :index, portfolio_name: portfolio.name, tags: portfolio.include_tags, extags: portfolio.exclude_tags},{id:"portfolio_#{portfolio.id}"}))
+  end
+
+  # 显示资产组合名称
+  def portfolio_name
+    raw("<span class=\"sub_title\">
+      (#{params[:portfolio_name]})</span>") if params[:portfolio_name]
+  end
+
   # 建立返回列表的链接
   $models.each do |n|
     define_method "link_back_to_#{n.pluralize}" do

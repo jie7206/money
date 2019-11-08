@@ -7,6 +7,7 @@
     <td><%= t(:portfolio_include_tags) %></td>
     <td><%= t(:portfolio_exclude_tags) %></td>
     <td><%= t(:order) %></td>
+    <td><%= t(:look) %></td>
   </tr>
 <% n = 1 %>
 <% @portfolios.each do |portfolio| %>
@@ -16,11 +17,12 @@
     <td><%= portfolio.include_tags %></td>
     <td><%= portfolio.exclude_tags %></td>
     <td align="center"><%= link_up_and_down(portfolio.id) %></td>
+    <td align="center"><%= look_portfolio_detail(portfolio) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="5" class="thead"></td>
+    <td colspan="6" class="thead"></td>
   </tr>
 </table>
 <br/>

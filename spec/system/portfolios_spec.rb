@@ -14,7 +14,9 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
 
     describe '资产组合列表' do
 
-      before { visit portfolios_path }
+      before do
+        visit portfolios_path
+      end
 
       specify '#152[系统层]资产组合列表能显示组合名称、包含标签及排除标签' do
         expect(page).to have_content portfolio.name
@@ -30,6 +32,11 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
         find("#property_#{@twd_cash.id}").click
         expect(page.html).to include '12345.67'
         expect(current_url).to include 'MYCASH'
+      end
+
+      specify '#155[系统层]在资产组合列表中点击查看能显示该组合的资产列表' do
+        expect(page).to have_selector "#portfolio_#{portfolio.id}", count: 1
+        expect(page.html).to include portfolio.include_tags
       end
 
     end
