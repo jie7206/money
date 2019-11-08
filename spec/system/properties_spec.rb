@@ -231,7 +231,9 @@ RSpec.describe '系统测试(Properties)', type: :system do
       click_on p.name
       find('#property_is_hidden').click
       find('#update_property').click
-      find('#logout').click
+      within '#site_nav' do
+        find('#logout').click
+      end
       fill_in 'pincode', with: "#{$pincode}"
       find('#login').click
       visit properties_path
@@ -242,7 +244,9 @@ RSpec.describe '系统测试(Properties)', type: :system do
       admin_pp = @ps[0].proportion(true).floor(2)
       visit properties_path
       expect(page).to have_content admin_pp
-      find('#logout').click
+      within '#site_nav' do
+        find('#logout').click
+      end
       fill_in 'pincode', with: "#{$pincode}"
       find('#login').click
       visit properties_path

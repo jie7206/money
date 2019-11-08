@@ -47,6 +47,11 @@ p, ol, ul {
 input, textarea {
   border: 1px #999 solid;
 }
+hr {
+  height:1px;
+  border:none;
+  border-top:1px dashed gray;
+}
 small {
   font-size: 0.7em;
 }
@@ -64,9 +69,10 @@ small {
 #login_form {
   margin-top: 1em;
 }
-#site_nav {
+#site_nav, #site_nav2 {
   position: absolute;
   right: 1em;
+  margin-top: -1.5em;
   small {
     font-size: 0.85em;
   }

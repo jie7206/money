@@ -51,6 +51,12 @@ FactoryBot.define do
       association :currency, :twd
     end
 
+    trait :btc do
+      name { '个人比特币' }
+      amount { 2.0 }
+      association :currency, :btc
+    end
+
   end
 
 end

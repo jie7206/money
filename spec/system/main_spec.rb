@@ -24,7 +24,9 @@ RSpec.describe '系统测试(Main)', type: :system do
       visit login_path
       fill_in 'pincode', with: $pincode
       find('#login').click
-      find('#logout').click
+      within '#site_nav' do
+        find('#logout').click
+      end
       visit root_path
       expect(current_path).to eq login_path
     end
@@ -34,7 +36,9 @@ RSpec.describe '系统测试(Main)', type: :system do
       fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
       find('#login').click
       expect(current_path).to eq root_path
-      find('#logout').click
+      within '#site_nav' do
+        find('#logout').click
+      end
       visit root_path
       expect(current_path).to eq login_path
     end

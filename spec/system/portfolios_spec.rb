@@ -22,6 +22,16 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
         expect(page).to have_content portfolio.exclude_tags
       end
 
+      specify '#153[系统层]在标签页中更新资产金额后能回到该标签页' do
+        create_properties_with_tags
+        visit properties_path
+        click_on 'MYCASH'
+        fill_in "new_amount_#{@twd_cash.id}", with: '12345.67'
+        find("#property_#{@twd_cash.id}").click
+        expect(page.html).to include '12345.67'
+        expect(current_url).to include 'MYCASH'
+      end
+
     end
 
     describe '新增资产组合' do

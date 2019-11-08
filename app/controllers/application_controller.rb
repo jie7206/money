@@ -125,7 +125,11 @@ class ApplicationController < ActionController::Base
 
   # 记录返回的网址
   def memory_back
-    session[:path] = params[:path] if params[:path]
+    if params[:tag]
+      session[:path] = request.fullpath
+    elsif params[:path]
+      session[:path] = params[:path]
+    end
   end
 
   # 返回记录的网址
@@ -135,8 +139,6 @@ class ApplicationController < ActionController::Base
     elsif session[:path]
       redirect_to session[:path]
       session.delete(:path)
-    else
-      redirect_to root_path
     end
   end
 
@@ -172,7 +174,7 @@ class ApplicationController < ActionController::Base
             @#{m}.update_attribute(:#{a}, new_#{a})
             put_notice t(:#{m}_updated_ok) + add_id(@#{m})
           end
-          go_#{m.pluralize}
+          session[:path] ? go_back : go_#{m.pluralize}
         ]
       end
     end

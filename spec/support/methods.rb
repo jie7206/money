@@ -117,3 +117,16 @@ def property_total_lixi_to( target_code, options = {} )
   end
   return result.to_f
 end
+
+# 以fixtures建立带有标签的资产
+def create_properties_with_tags
+  @twd_cash = create(:property, :twd)
+  @cny_cash = create(:property, :cny)
+  @btc_own = create(:property, :btc)
+  @twd_cash.tag_list = 'TWD,MYCASH'
+  @cny_cash.tag_list = 'CNY,MYCASH'
+  @btc_own.tag_list = 'BTC,MINE'
+  @twd_cash.save
+  @cny_cash.save
+  @btc_own.save
+end

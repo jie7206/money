@@ -75,6 +75,11 @@ module ApplicationHelper
     link_to t(:update_all_exchange_rates), {controller: :currencies, action: :update_all_exchange_rates, path: request.fullpath}, {id:'update_all_exchange_rates'}
   end
 
+  # 资产标签云
+  def get_tag_cloud
+    @tags = Property.tag_counts_on(:tags)
+  end
+
   # 建立排序上下箭头链接
   def link_up_and_down( id )
     raw(link_to('↑', action: :order_up, id: id)+' '+\

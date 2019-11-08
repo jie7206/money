@@ -6,11 +6,11 @@ class PropertiesController < ApplicationController
   def index
     if admin? and params[:tag]
       @properties = Property.tagged_with(params[:tag].split(' '))
+      memory_back
     else
       @properties = Property.all_sort admin?
       summary # 获取资产的净值等统计数据
     end
-    get_tag_cloud if admin? # 获取资产标签数据
   end
 
   # 新建资产表单
@@ -89,11 +89,6 @@ class PropertiesController < ApplicationController
       @properties_value_twd = Property.value :twd, admin_hash?(only_positive: true)
       @properties_loan_twd = Property.value :twd, admin_hash?(only_negative: true)
       @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash?
-    end
-
-    # 资产标签云
-    def get_tag_cloud
-      @tags = Property.tag_counts_on(:tags)
     end
 
 end

@@ -58,7 +58,3 @@
 <% end %>
 </table>
 <p><%= link_to t(:new_property), new_property_path, { id: 'add_new_property' } %></p>
-<% if admin? %>
-  <hr/>
-  <%= render 'tag_cloud' %>
-<% end %>
