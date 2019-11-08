@@ -75,4 +75,9 @@ class Currency < ApplicationRecord
     is_digital? ? symbol.upcase : ''
   end
 
+  # 如果是法币则显示汇率否则显示报价
+  def rate_or_price
+    is_digital? ? to_n(to_usd) : to_n(exchange_rate)
+  end
+
 end

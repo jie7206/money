@@ -69,21 +69,21 @@ end
 # 建立不同币别的资产
 def create_different_currency_properties
   # amount值不能过大，否则测试包含利息的资产总净值会出错，已使用floor函数缓解此问题
-  p1 = create(:property, amount: 132423321100.123, \
+  @twd = create(:property, amount: 132423321100.123, \
                currency: currencies(:twd), name: '台币现金')
-  p2 = create(:property, amount: 132423321100.345, \
+  @cny = create(:property, amount: 132423321100.345, \
                currency: currencies(:cny), name: '人民币现金')
-  p3 = create(:property, amount: 132423321100.567, \
+  @usd = create(:property, amount: 132423321100.567, \
                currency: currencies(:usd), name: '美元现金')
-  p4 = create(:property, amount: -2000000000.0, currency: currencies(:twd), name: '台币贷款')
-  p5 = create(:property, amount: -10000000.0, currency: currencies(:cny), name: '人民币贷款')
-  p6 = create(:property, amount: 13000000.66085678, currency: currencies(:btc), name: '个人比特币', is_hidden: true)
-  p7 = create(:property, amount: 14000000.32874321, currency: currencies(:btc), name: '家庭比特币')
-  p8 = create(:property, amount: 888000.53561621, currency: currencies(:bch), name: '个人比特现金')
+  @twd_loan = create(:property, amount: -2000000000.0, currency: currencies(:twd), name: '台币贷款')
+  @cny_loan = create(:property, amount: -10000000.0, currency: currencies(:cny), name: '人民币贷款')
+  @btc_hidden = create(:property, amount: 13000000.66085678, currency: currencies(:btc), name: '个人比特币', is_hidden: true)
+  @btc = create(:property, amount: 14000000.32874321, currency: currencies(:btc), name: '家庭比特币')
+  @bch = create(:property, amount: 888000.53561621, currency: currencies(:bch), name: '个人比特现金')
   # 建立p4,p5的利息资料
-  l1 = create(:interest, property: p4, start_date: 30.days.ago, rate: 6.5)
-  l2 = create(:interest, property: p5, start_date: 90.days.ago, rate: 4.5)
-  @ps = [p1, p2, p3, p4, p5, p6, p7, p8]
+  l1 = create(:interest, property: @twd_loan, start_date: 30.days.ago, rate: 6.5)
+  l2 = create(:interest, property: @cny_loan, start_date: 90.days.ago, rate: 4.5)
+  @ps = [@twd, @cny, @usd, @twd_loan, @cny_loan, @btc_hidden, @btc, @bch]
   @ls = [l1, l2]
 end
 

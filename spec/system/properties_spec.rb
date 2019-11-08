@@ -76,6 +76,15 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page.html).to include twd_amount.floor(2).to_s
     end
 
+    specify '#154[系统层]资产列表能显示法币汇率数字货币显示报价' do
+      legal_rate = @twd.currency.exchange_rate.to_i
+      digital_price = @btc.currency.to_usd.to_i
+      expect(page.html).to include @twd.amount.to_i.to_s
+      expect(page.html).to include @btc.amount.to_s
+      expect(page).to have_content legal_rate
+      expect(page).to have_content digital_price
+    end
+
   end
 
   describe '新增资产' do
