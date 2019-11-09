@@ -4,11 +4,25 @@ class PropertiesController < ApplicationController
 
   # 资产负债列表
   def index
-    if admin? and params[:tags]
-      if params[:extags] and !params[:extags].empty?
-        @properties = Property.tagged_with(params[:tags].strip.split(' ')).tagged_with(params[:extags].strip.split(' '),exclude:true)
-      else
-        @properties = Property.tagged_with(params[:tags].strip.split(' '))
+    tags = params[:tags]
+    if admin? and tags
+      if mode = params[:mode] and !mode.empty?
+        # 由资产组合来的多种标签
+        case mode
+        when 'n' # none
+          options = {}
+        when 'm' # match_all
+          options = {match_all: true}
+        when 'a' # any
+          options = {any: true}
+        end
+        @properties = Property.tagged_with(tags.strip.split(' '),options)
+        if extags = params[:extags] and !extags.empty?
+          @properties = @properties.tagged_with(extags.strip.split(' '),exclude:true)
+        end
+      elsif tags
+        # 由tag_cloud来的单一标签
+        @properties = Property.tagged_with(tags.strip)
       end
       memory_back
     else

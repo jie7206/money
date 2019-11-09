@@ -6,6 +6,7 @@
     <td><%= t(:portfolio_name) %></td>
     <td><%= t(:portfolio_include_tags) %></td>
     <td><%= t(:portfolio_exclude_tags) %></td>
+    <td><%= t(:portfolio_mode) %></td>
     <td><%= t(:order) %></td>
     <td><%= t(:look) %></td>
   </tr>
@@ -16,13 +17,14 @@
     <td><%= link_edit_to(portfolio) %></td>
     <td><%= portfolio.include_tags %></td>
     <td><%= portfolio.exclude_tags %></td>
+    <td><%= portfolio.mode_name %></td>
     <td align="center"><%= link_up_and_down(portfolio.id) %></td>
     <td align="center"><%= look_portfolio_detail(portfolio) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="6" class="thead"></td>
+    <td colspan="7" class="thead"></td>
   </tr>
 </table>
 <br/>

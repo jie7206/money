@@ -6,6 +6,7 @@ FactoryBot.define do
     include_tags { "比特币 冷钱包" }
     exclude_tags { "家庭资产" }
     order_num { 1 }
+    mode { 'n' }
 
   end
 

@@ -62,12 +62,20 @@ class Currency < ApplicationRecord
 
   # 美元汇率值
   def to_rate
-    eval("$#{code.downcase}_exchange_rate")
+    if rate = eval("$#{code.downcase}_exchange_rate")
+      return rate
+    else
+      return exchange_rate
+    end
   end
 
   # 兑换美元汇率值
   def to_usd
-    eval("1.0/$#{code.downcase}_exchange_rate")
+    if rate = eval("$#{code.downcase}_exchange_rate")
+      return 1.0/rate
+    else
+      return 1.0/exchange_rate
+    end
   end
 
   # 回传是否为数字货币

@@ -62,7 +62,7 @@ class PortfoliosController < ApplicationController
     end
 
     def portfolio_params
-      params.require(:portfolio).permit(:name, :include_tags, :exclude_tags, :order_num)
+      params.require(:portfolio).permit(:name, :include_tags, :exclude_tags, :order_num, :mode)
     end
 
 end

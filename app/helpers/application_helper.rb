@@ -8,6 +8,8 @@ module ApplicationHelper
   $flashs = %w(notice warning)
   # 建立从列表中快速更新某个值的方法
   $quick_update_attrs = ["property:amount","item:price,amount"]
+  # 资产组合的模式属性
+  $modes = %w(none matchall any)
 
   # 网站标题
   def site_name
@@ -71,6 +73,11 @@ module ApplicationHelper
     eval("obj.select :property_id, Property.#{scope}.collect { |p| [ p.name, p.id ] }")
   end
 
+  # 资产组合新增模式属性以便能支持所有法币资产的查看
+  def select_portfolio_mode( obj )
+    eval("obj.select :mode, $modes.collect {|m| [m, m[0]]}")
+  end
+
   # 返回更新汇率的链接
   def update_all_exchange_rates_link
     link_to t(:update_all_exchange_rates), {controller: :currencies, action: :update_all_exchange_rates, path: request.fullpath}, {id:'update_all_exchange_rates'}
@@ -89,7 +96,7 @@ module ApplicationHelper
 
   # 点击图标查看资产组合明细
   def look_portfolio_detail( portfolio )
-    raw(link_to(image_tag('doc.png'), {controller: :properties, action: :index, portfolio_name: portfolio.name, tags: portfolio.include_tags, extags: portfolio.exclude_tags},{id:"portfolio_#{portfolio.id}"}))
+    raw(link_to(image_tag('doc.png'), {controller: :properties, action: :index, portfolio_name: portfolio.name, tags: portfolio.include_tags, extags: portfolio.exclude_tags, mode: portfolio.mode},{id:"portfolio_#{portfolio.id}"}))
   end
 
   # 显示资产组合名称

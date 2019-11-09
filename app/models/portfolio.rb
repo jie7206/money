@@ -1,5 +1,7 @@
 class Portfolio < ApplicationRecord
 
+  include ApplicationHelper
+
   validates \
     :name,
       presence: {
@@ -7,6 +9,10 @@ class Portfolio < ApplicationRecord
       length: {
         maximum: $portfolio_name_maxlength,
         message: $portfolio_name_len_err }
+  validates \
+    :mode,
+      presence: {
+        message: $portfolio_mode_blank_err }
   validates \
     :include_tags,
       presence: {
@@ -27,5 +33,13 @@ class Portfolio < ApplicationRecord
     :order_num,
       numericality: {
         greater_than: 0,
-        message: $portfolio_order_num_nap_err }        
+        message: $portfolio_order_num_nap_err }
+
+
+  def mode_name
+    $modes.each do |str|
+      return str.capitalize if mode == str[0]
+    end
+  end
+
 end

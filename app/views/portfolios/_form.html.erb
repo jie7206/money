@@ -12,6 +12,10 @@
     <td><%= f.text_field(:order_num,onclick:select_all) %></td>
   </tr>
   <tr>
+    <td><%= t(:portfolio_mode) %>：</td>
+    <td><%= select_portfolio_mode(f) %></td>
+  </tr>
+  <tr>
     <td><%= t(:portfolio_include_tags) %>：</td>
     <td><%= f.text_field(:include_tags,size:60) %></td>
   </tr>

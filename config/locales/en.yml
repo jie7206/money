@@ -112,6 +112,7 @@ en:
   portfolio_include_tags_len_err: Portfolio's include tags can't be too long!
   portfolio_exclude_tags_len_err: Portfolio's exclude tags can't be too long!
   portfolio_order_num_blank_err: Portfolio's order number can't be blank!
+  portfolio_mode_blank_err: Portfolio's search mode can't be blank!
   portfolio_order_up_ok: Portfolio order up successfully!
   portfolio_order_down_ok: Portfolio order down successfully!
   portfolio_order_num_nap_err: Portfolio's order number must be greater than zero!
@@ -119,6 +120,7 @@ en:
   portfolio_include_tags: Inculde Tags
   portfolio_exclude_tags: Exculde Tags
   portfolio_order_num: Order Number
+  portfolio_mode: Search Mode
   order: Order
   delete_portfolio: Delete This Portfolio
   delete_portfolio_confirm: Are you SURE？

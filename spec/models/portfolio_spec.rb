@@ -20,6 +20,10 @@ RSpec.describe '模型测试(Portfolio)', type: :model do
       expect_field_value_must_greater_than_zero :portfolio, :order_num, $portfolio_order_num_nap_err
     end
 
+    specify '#157[模型层]资产组合新增模式属性以便能支持所有法币资产的查看' do
+      expect_field_value_not_be_nil :portfolio, :mode, $portfolio_mode_blank_err
+    end
+
   end
 
 end
