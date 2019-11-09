@@ -11,11 +11,7 @@
     <td width="7%"><%= t(:property_proportion) %></td>
   </tr>
 <% n = 1 %>
-<% amounts = 0 %>
-<% amount_twds = 0 %>
-<% amount_cnys = 0 %>
-<% lixis = 0 %>
-<% proportions = 0 %>
+<% amounts = amount_twds = amount_cnys = lixis = proportions = 0.0 %>
 <% properties.each do |property| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>

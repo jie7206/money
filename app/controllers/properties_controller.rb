@@ -16,9 +16,15 @@ class PropertiesController < ApplicationController
         when 'a' # any
           options = {any: true}
         end
+        # 依照包含标签选取
         @properties = Property.tagged_with(tags.strip.split(' '),options)
+        # 依照排除标签排除
         if extags = params[:extags] and !extags.empty?
           @properties = @properties.tagged_with(extags.strip.split(' '),exclude:true)
+        end
+        # 点击查看资产组合能记录等值台币等值人民币与资产占比讯息
+        if @properties.size > 0 and pid = params[:pid] and pid.to_i > 0
+          update_portfolio_params( pid, @properties )
         end
       elsif tags
         # 由tag_cloud来的单一标签

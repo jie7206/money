@@ -147,6 +147,26 @@ class ApplicationController < ActionController::Base
     " ID: #{object.id}"
   end
 
+  # 更新资产组合栏位数据
+  def update_portfolio_params( id, properties )
+    twd_amount, cny_amount, proportion = get_portfolio_params(properties)
+    Portfolio.find(id).update_attributes(
+      twd_amount: twd_amount.to_i,
+      cny_amount: cny_amount.to_i,
+      proportion: proportion)
+  end
+
+  # 取得资产组合栏位数据
+  def get_portfolio_params( properties )
+    twd_amount = cny_amount = proportion = 0.0
+    properties.each do |p|
+      twd_amount += p.amount_to(:twd).to_i
+      cny_amount += p.amount_to(:cny).to_i
+      proportion += p.proportion(admin?).to_f
+    end
+    return [twd_amount, cny_amount, proportion]
+  end
+
   # 建立回到目录页的方法
   $models.each do |n|
     define_method "go_#{n.pluralize}" do

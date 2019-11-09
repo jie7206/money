@@ -33,7 +33,11 @@ module ApplicationHelper
 
   # 默认的数字显示格式
   def to_n( number, pos=2 )
-    number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))
+    if number
+      return number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))
+    else
+      return '0.00'
+    end
   end
 
   # 默认的金额显示格式
@@ -96,7 +100,9 @@ module ApplicationHelper
 
   # 点击图标查看资产组合明细
   def look_portfolio_detail( portfolio )
-    raw(link_to(image_tag('doc.png'), {controller: :properties, action: :index, portfolio_name: portfolio.name, tags: portfolio.include_tags, extags: portfolio.exclude_tags, mode: portfolio.mode},{id:"portfolio_#{portfolio.id}"}))
+    raw(link_to(image_tag('doc.png'),
+      {controller: :properties, action: :index, portfolio_name: portfolio.name,
+        tags: portfolio.include_tags, extags: portfolio.exclude_tags, mode: portfolio.mode, pid: portfolio.id},{id:"portfolio_#{portfolio.id}"}))
   end
 
   # 显示资产组合名称

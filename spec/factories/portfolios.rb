@@ -8,6 +8,14 @@ FactoryBot.define do
     order_num { 1 }
     mode { 'n' }
 
+    trait :mycash do
+      name { "For RSpec Test" }
+      include_tags { "MYCASH" }
+      exclude_tags { "" }
+      order_num { 2 }
+      mode { 'n' }
+    end
+
   end
 
 end

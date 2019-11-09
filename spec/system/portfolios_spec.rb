@@ -14,9 +14,7 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
 
     describe '资产组合列表' do
 
-      before do
-        visit portfolios_path
-      end
+      before { visit portfolios_path }
 
       specify '#152[系统层]资产组合列表能显示组合名称、包含标签及排除标签' do
         expect(page).to have_content portfolio.name
@@ -24,19 +22,32 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
         expect(page).to have_content portfolio.exclude_tags
       end
 
-      specify '#153[系统层]在标签页中更新资产金额后能回到该标签页' do
-        create_properties_with_tags
-        visit properties_path
-        click_on 'MYCASH'
-        fill_in "new_amount_#{@twd_cash.id}", with: '12345.67'
-        find("#property_#{@twd_cash.id}").click
-        expect(page.html).to include '12345.67'
-        expect(current_url).to include 'MYCASH'
-      end
-
       specify '#155[系统层]在资产组合列表中点击查看能显示该组合的资产列表' do
         expect(page).to have_selector "#portfolio_#{portfolio.id}", count: 1
         expect(page.html).to include portfolio.include_tags
+      end
+
+      describe '需要先有标签的资产' do
+
+        before { create_properties_with_tags }
+
+        specify '#153[系统层]在标签页中更新资产金额后能回到该标签页' do
+          visit properties_path
+          click_on 'MYCASH'
+          fill_in "new_amount_#{@twd_cash.id}", with: '12345.67'
+          find("#property_#{@twd_cash.id}").click
+          expect(page.html).to include '12345.67'
+          expect(current_url).to include 'MYCASH'
+        end
+
+        specify '#158[系统层]点击查看资产组合能记录等值台币等值人民币与资产占比讯息' do
+          portfolio = create(:portfolio,:mycash)
+          visit "/properties/?tags=#{portfolio.include_tags}&mode=#{portfolio.mode}&pid=#{portfolio.id}"
+          twd_amount = @twd_cash.amount_to(:twd)+@cny_cash.amount_to(:twd)
+          visit portfolios_path
+          expect(page).to have_content twd_amount.to_i
+        end
+
       end
 
     end

@@ -10,7 +10,7 @@ FactoryBot.define do
 
     trait :twd do
       name { '台北银行' }
-      amount { 100.0 }
+      amount { 1567.0 }
       association :currency, :twd
     end
 
@@ -29,7 +29,7 @@ FactoryBot.define do
 
     trait :cny do
       name { '我的工商银行账户' }
-      amount { 10.0 }
+      amount { 789.0 }
       association :currency, :cny
     end
 
@@ -53,7 +53,7 @@ FactoryBot.define do
 
     trait :btc do
       name { '个人比特币' }
-      amount { 2.0 }
+      amount { 2.4567 }
       association :currency, :btc
     end
 
