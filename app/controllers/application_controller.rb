@@ -147,9 +147,39 @@ class ApplicationController < ActionController::Base
     " ID: #{object.id}"
   end
 
+  # 从标签设定值取出相应的资产数据集
+  def get_properties_from_tags( include_tags, exclude_tags = nil, mode = 'n' )
+    case mode
+      when 'n' # none
+        options = {}
+      when 'm' # match_all
+        options = {match_all: true}
+      when 'a' # any
+        options = {any: true}
+    end
+    # 依照包含标签选取
+    if include_tags and !include_tags.empty?
+      result = Property.tagged_with(include_tags.strip.split(' '),options)
+      if exclude_tags and !exclude_tags.empty?
+        # 依照排除标签排除
+        result = result.tagged_with(exclude_tags.strip.split(' '),exclude: true)
+      end
+      return result
+    end
+    return nil
+  end
+
+  # 更新所有的资产组合栏位数据
+  def update_all_portfolio_attributes
+    Portfolio.all.each do |p|
+      properties = get_properties_from_tags(p.include_tags,p.exclude_tags,p.mode)
+      update_portfolio_attributes(p.id, properties)
+    end
+  end
+
   # 更新资产组合栏位数据
-  def update_portfolio_params( id, properties )
-    twd_amount, cny_amount, proportion = get_portfolio_params(properties)
+  def update_portfolio_attributes( id, properties )
+    twd_amount, cny_amount, proportion = get_portfolio_attributes(properties)
     Portfolio.find(id).update_attributes(
       twd_amount: twd_amount.to_i,
       cny_amount: cny_amount.to_i,
@@ -157,7 +187,7 @@ class ApplicationController < ActionController::Base
   end
 
   # 取得资产组合栏位数据
-  def get_portfolio_params( properties )
+  def get_portfolio_attributes( properties )
     twd_amount = cny_amount = proportion = 0.0
     properties.each do |p|
       twd_amount += p.amount_to(:twd).to_i
@@ -167,6 +197,17 @@ class ApplicationController < ActionController::Base
     return [twd_amount, cny_amount, proportion]
   end
 
+  # 获取资产的净值等统计数据
+  def summary
+    @show_summary = true
+    @properties_net_value_twd = Property.net_value :twd, admin_hash?
+    @properties_net_value_cny = Property.net_value :cny, admin_hash?
+    @properties_lixi_twd = Property.lixi :twd, admin_hash?
+    @properties_value_twd = Property.value :twd, admin_hash?(only_positive: true)
+    @properties_loan_twd = Property.value :twd, admin_hash?(only_negative: true)
+    @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash?
+  end
+  
   # 建立回到目录页的方法
   $models.each do |n|
     define_method "go_#{n.pluralize}" do

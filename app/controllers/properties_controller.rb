@@ -5,26 +5,13 @@ class PropertiesController < ApplicationController
   # 资产负债列表
   def index
     tags = params[:tags]
+    extags = params[:extags]
     if admin? and tags
       if mode = params[:mode] and !mode.empty?
-        # 由资产组合来的多种标签
-        case mode
-        when 'n' # none
-          options = {}
-        when 'm' # match_all
-          options = {match_all: true}
-        when 'a' # any
-          options = {any: true}
-        end
-        # 依照包含标签选取
-        @properties = Property.tagged_with(tags.strip.split(' '),options)
-        # 依照排除标签排除
-        if extags = params[:extags] and !extags.empty?
-          @properties = @properties.tagged_with(extags.strip.split(' '),exclude:true)
-        end
+        @properties = get_properties_from_tags(tags,extags,mode)
         # 点击查看资产组合能记录等值台币等值人民币与资产占比讯息
         if @properties.size > 0 and pid = params[:pid] and pid.to_i > 0
-          update_portfolio_params( pid, @properties )
+          update_portfolio_attributes( pid, @properties )
         end
       elsif tags
         # 由tag_cloud来的单一标签
@@ -102,17 +89,6 @@ class PropertiesController < ApplicationController
       else
         params.require(:property).permit(:name,:amount,:currency_id)
       end
-    end
-
-    # 获取资产的净值等统计数据
-    def summary
-      @show_summary = true
-      @properties_net_value_twd = Property.net_value :twd, admin_hash?
-      @properties_net_value_cny = Property.net_value :cny, admin_hash?
-      @properties_lixi_twd = Property.lixi :twd, admin_hash?
-      @properties_value_twd = Property.value :twd, admin_hash?(only_positive: true)
-      @properties_loan_twd = Property.value :twd, admin_hash?(only_negative: true)
-      @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash?
     end
 
 end

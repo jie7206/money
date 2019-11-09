@@ -2,9 +2,12 @@
   <nav id="<%= id %>">
     <small>
       <%= link_back_to_properties %> |
+      <% if admin? %>
+        <%= link_to t(:portfolio_index), portfolios_path %> |
+      <% end %>
       <%= update_all_exchange_rates_link %> |
     <% if admin? %>
-      <%= link_to t(:portfolio_index), portfolios_path %> |
+      <%= update_all_portfolios_link %> |
     <% end %>
       <%= link_to t(:currency_index), currencies_path %> |
       <%= link_to t(:interest_index), interests_path %> |

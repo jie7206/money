@@ -48,6 +48,16 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
           expect(page).to have_content twd_amount.to_i
         end
 
+        specify '#159[系统层]按下更新组合链接能更新所有资产组合的栏位值' do
+          path = rand(2) == 0 ? properties_path : portfolios_path
+          visit path
+          within '#site_nav' do
+            find('#update_all_portfolios').click
+          end
+          expect(current_path).to eq path
+          expect(page).to have_selector '.alert-notice', text: /#{$portfolios_updated_ok}/
+        end
+
       end
 
     end

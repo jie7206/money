@@ -9,28 +9,26 @@
     <td><%= t(:property_proportion) %></td>
     <td><%= t(:portfolio_include_tags) %></td>
     <td><%= t(:portfolio_exclude_tags) %></td>
-    <td><%= t(:portfolio_mode) %></td>
-    <td><%= t(:order) %></td>
-    <td><%= t(:look) %></td>
+    <td><%= t(:compose) %></td>
   </tr>
 <% n = 1 %>
 <% @portfolios.each do |portfolio| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(portfolio) %></td>
-    <td align="right"><%= portfolio.twd_amount %></td>
-    <td align="right"><%= portfolio.cny_amount %></td>
+    <td align="right"><%= to_n(portfolio.twd_amount,0) %></td>
+    <td align="right"><%= to_n(portfolio.cny_amount,0) %></td>
     <td align="right"><%= to_n(portfolio.proportion) %></td>
     <td><%= portfolio.include_tags %></td>
     <td><%= portfolio.exclude_tags %></td>
-    <td><%= portfolio.mode_name %></td>
-    <td align="center"><%= link_up_and_down(portfolio.id) %></td>
     <td align="center"><%= look_portfolio_detail(portfolio) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="10" class="thead"></td>
+    <td colspan="8" class="thead">
+      <%= render 'shared/summary' %>
+    </td>
   </tr>
 </table>
 <br/>

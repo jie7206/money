@@ -126,13 +126,16 @@ en:
   delete_portfolio_confirm: Are you SURE？
   edit_portfolio: Edit Portfolio
   update_portfolio: Update Portfolio
+  update_all_portfolios: Update Portfolios
   portfolio_index: Portfolios
   new_portfolio: Add New Portfolio
   portfolio_created_ok: Portfolio was successfully created!
   portfolio_updated_ok: Portfolio was successfully updated!
   portfolio_destroyed_ok: Portfolio was successfully destroyed!
+  portfolios_updated_ok: All Portfolio's value was successfully updated!
   rate_or_price: Rate/Price
   look: Look
+  compose: Compose
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

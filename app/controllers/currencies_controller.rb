@@ -50,6 +50,10 @@ class CurrenciesController < ApplicationController
       put_notice "#{count} #{t(:n_digital_exchange_rates_updated_ok)}" end
     if count = update_legal_exchange_rates and count > 0 then
       put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}" end
+    if admin?
+      update_all_portfolio_attributes # 更新所有的资产组合栏位数据
+      put_notice t(:portfolios_updated_ok)
+    end
     go_back
   end
 

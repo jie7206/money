@@ -4,7 +4,8 @@ class PortfoliosController < ApplicationController
   before_action :set_portfolio, only: [:show, :edit, :update, :destroy]
 
   def index
-    @portfolios = Portfolio.all.order(:order_num)
+    @portfolios = Portfolio.all.order(:twd_amount).reverse
+    summary # 获取资产的净值等统计数据
   end
 
   def show
@@ -53,6 +54,12 @@ class PortfoliosController < ApplicationController
     Portfolio.order_down(params[:id])
     put_notice t(:portfolio_order_down_ok)
     go_portfolios
+  end
+
+  def update_all_portfolios
+    update_all_portfolio_attributes
+    put_notice t(:portfolios_updated_ok)
+    go_back
   end
 
   private

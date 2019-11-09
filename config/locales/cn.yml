@@ -126,13 +126,16 @@ cn:
   delete_portfolio_confirm: 您确定要删除这笔组合吗？
   edit_portfolio: 编辑资产组合
   update_portfolio: 更新资产组合
+  update_all_portfolios: 更新组合
   portfolio_index: 资产组合
   new_portfolio: 新建资产组合
   portfolio_created_ok: 资产组合新建成功！
   portfolio_updated_ok: 资产组合更新成功！
   portfolio_destroyed_ok: 资产组合删除成功！
+  portfolios_updated_ok: 所有的资产组合现值已更新！
   rate_or_price: 汇率/价格
   look: 查看
+  compose: 成员
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

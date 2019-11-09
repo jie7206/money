@@ -36,7 +36,7 @@ module ApplicationHelper
     if number
       return number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))
     else
-      return '0.00'
+      return format("%.#{pos}f",0)
     end
   end
 
@@ -82,9 +82,14 @@ module ApplicationHelper
     eval("obj.select :mode, $modes.collect {|m| [m, m[0]]}")
   end
 
-  # 返回更新汇率的链接
+  # 更新汇率的链接
   def update_all_exchange_rates_link
     link_to t(:update_all_exchange_rates), {controller: :currencies, action: :update_all_exchange_rates, path: request.fullpath}, {id:'update_all_exchange_rates'}
+  end
+
+  # 更新资产组合的链接
+  def update_all_portfolios_link
+    link_to t(:update_all_portfolios), {controller: :portfolios, action: :update_all_portfolios, path: request.fullpath}, {id:'update_all_portfolios'}
   end
 
   # 资产标签云
@@ -114,6 +119,14 @@ module ApplicationHelper
       text = params[:tags]
     end
     raw("<span class=\"sub_title\">(#{text})</span>") if !text.empty?
+  end
+
+  def item_url( obj )
+    url = obj.url ? obj.url : ''
+    if !url.empty? and url.index('http')
+      return raw(link_to(t(:item_url),url,{target: :blank}))
+    end
+    return t(:item_url)
   end
 
   # 建立返回列表的链接
