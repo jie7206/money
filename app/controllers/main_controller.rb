@@ -13,6 +13,7 @@ class MainController < ApplicationController
   def logout
     session.delete(:login)
     session.delete(:admin)
+    session.delete(:path)
     redirect_to login_path
   end
 

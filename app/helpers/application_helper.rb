@@ -59,9 +59,10 @@ module ApplicationHelper
   end
 
   # 链接到编辑类别
-  def link_edit_to( instance, link_text = nil, options = {} )
+  def link_edit_to( instance, link_text = nil, back_path = nil, options = {} )
     link_text ||= instance.name
-    eval "link_to '#{link_text}', edit_#{instance.class.to_s.downcase}_path(instance), #{options}"
+    path_str = ", path: '#{back_path}'" if !back_path.nil?
+    eval "link_to '#{link_text}', {controller: :#{instance.class.to_s.downcase.pluralize}, action: :edit, id: #{instance.id}#{path_str}}, #{options}"
   end
 
   # 用户在新建利息或商品时不能看到隐藏资产以供选择
@@ -93,8 +94,13 @@ module ApplicationHelper
 
   # 显示资产组合名称
   def portfolio_name
-    raw("<span class=\"sub_title\">
-      (#{params[:portfolio_name]})</span>") if params[:portfolio_name]
+    text = ''
+    if params[:portfolio_name]
+      text = params[:portfolio_name]
+    elsif params[:tags]
+      text = params[:tags]
+    end
+    raw("<span class=\"sub_title\">(#{text})</span>") if !text.empty?
   end
 
   # 建立返回列表的链接

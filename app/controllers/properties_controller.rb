@@ -45,7 +45,7 @@ class PropertiesController < ApplicationController
   def update
     if @property.update_attributes(property_params)
       put_notice t(:property_updated_ok) + add_id(@property)
-      go_properties
+      session[:path] ? go_back : go_properties
     else
       render action: :edit
     end

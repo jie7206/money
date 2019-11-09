@@ -115,7 +115,7 @@ cn:
   portfolio_order_up_ok: 资产组合向上排序成功！
   portfolio_order_down_ok: 资产组合向下排序成功！
   portfolio_order_num_nap_err: 资产组合排序号码必须为大于零的整数！
-  property_name: 组合名称
+  portfolio_name: 组合名称
   portfolio_include_tags: 包含标签
   portfolio_exclude_tags: 排除标签
   portfolio_order_num: 排序号码

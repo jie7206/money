@@ -60,9 +60,14 @@ class Currency < ApplicationRecord
     set_exchange_rate self, 'self'
   end
 
+  # 美元汇率值
+  def to_rate
+    eval("$#{code.downcase}_exchange_rate")
+  end
+
   # 兑换美元汇率值
   def to_usd
-    1.0/exchange_rate
+    eval("1.0/$#{code.downcase}_exchange_rate")
   end
 
   # 回传是否为数字货币
@@ -77,7 +82,7 @@ class Currency < ApplicationRecord
 
   # 如果是法币则显示汇率否则显示报价
   def rate_or_price
-    is_digital? ? to_n(to_usd) : to_n(exchange_rate)
+    is_digital? ? to_n(to_usd) : to_n(to_rate)
   end
 
 end

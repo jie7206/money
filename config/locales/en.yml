@@ -115,7 +115,7 @@ en:
   portfolio_order_up_ok: Portfolio order up successfully!
   portfolio_order_down_ok: Portfolio order down successfully!
   portfolio_order_num_nap_err: Portfolio's order number must be greater than zero!
-  property_name: Property Name
+  portfolio_name: Portfolio Name
   portfolio_include_tags: Inculde Tags
   portfolio_exclude_tags: Exculde Tags
   portfolio_order_num: Order Number
