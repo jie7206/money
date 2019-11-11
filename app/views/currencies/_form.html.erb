@@ -2,7 +2,7 @@
 
 <%= form_for(@currency) do |f| %>
 <table>
-  <tr><td colspan="2" class="thead"></td></tr>
+  <tr><td colspan="2" class="thead"><%= timestamps(@currency) %></td></tr>
   <tr>
     <td><%= t(:currency_name) %>：</td>
     <td><%= f.text_field(:name) %></td>
@@ -16,7 +16,7 @@
     <td><%= t(:currency_symbol) %>：</td>
     <td><%= f.text_field(:symbol, onclick: select_all) %></td>
   </tr>
-<% end %>  
+<% end %>
   <tr>
     <td><%= t(:currency_exchange_rate) %>：</td>
     <td><%= f.text_field(:exchange_rate, onclick: select_all) %></td>

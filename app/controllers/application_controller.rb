@@ -175,6 +175,7 @@ class ApplicationController < ActionController::Base
       properties = get_properties_from_tags(p.include_tags,p.exclude_tags,p.mode)
       update_portfolio_attributes(p.id, properties)
     end
+    put_notice t(:portfolios_updated_ok)
   end
 
   # 更新资产组合栏位数据
@@ -207,7 +208,7 @@ class ApplicationController < ActionController::Base
     @properties_loan_twd = Property.value :twd, admin_hash?(only_negative: true)
     @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash?
   end
-  
+
   # 建立回到目录页的方法
   $models.each do |n|
     define_method "go_#{n.pluralize}" do

@@ -2,7 +2,7 @@
 
 <%= form_for(@property) do |f| %>
 <table>
-  <tr><td colspan="2" class="thead"></td></tr>
+  <tr><td colspan="2" class="thead"><%= timestamps(@property) %></td></tr>
   <tr>
     <td><%= t(:property_name) %>：</td>
     <td><%= f.text_field(:name,size:40) %></td></tr>

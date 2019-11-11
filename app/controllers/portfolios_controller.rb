@@ -2,6 +2,7 @@ class PortfoliosController < ApplicationController
 
   before_action :check_admin
   before_action :set_portfolio, only: [:show, :edit, :update, :destroy]
+  after_action :update_all_portfolio_attributes, only: [:create, :update]
 
   def index
     @portfolios = Portfolio.all.order(:twd_amount).reverse
@@ -58,7 +59,6 @@ class PortfoliosController < ApplicationController
 
   def update_all_portfolios
     update_all_portfolio_attributes
-    put_notice t(:portfolios_updated_ok)
     go_back
   end
 

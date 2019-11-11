@@ -1,6 +1,7 @@
 class ItemsController < ApplicationController
 
   before_action :set_item, only: [:show, :edit, :update, :update_price, :update_amount, :destroy]
+  after_action :update_all_portfolio_attributes, only: [:create, :update, :update_price, :update_amount, :destroy]
 
   def index
     @items = Item.all

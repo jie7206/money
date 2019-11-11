@@ -2,7 +2,7 @@
 
 <%= form_for(@interest) do |f| %>
 <table>
-  <tr><td colspan="2" class="thead"></td></tr>
+  <tr><td colspan="2" class="thead"><%= timestamps(@interest) %></td></tr>
   <tr>
     <td><%= t(:property_name) %>：</td>
     <td><%= select_property_id(f) %></td>

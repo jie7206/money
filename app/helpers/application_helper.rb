@@ -129,6 +129,15 @@ module ApplicationHelper
     return t(:item_url)
   end
 
+  def timestamps( obj )
+    if !obj.new_record?
+      raw("<div class='timestamps'>
+        #{t(:created_at)}: #{obj.created_at.to_s(:db)}
+        #{t(:updated_at)}: #{obj.updated_at.to_s(:db)}
+      </div>")
+    end
+  end
+
   # 建立返回列表的链接
   $models.each do |n|
     define_method "link_back_to_#{n.pluralize}" do

@@ -136,6 +136,8 @@ cn:
   rate_or_price: 汇率/价格
   look: 查看
   compose: 成员
+  created_at: 创建
+  updated_at: 更新
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
