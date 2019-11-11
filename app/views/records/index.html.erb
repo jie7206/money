@@ -6,6 +6,7 @@
     <td><%= t(:record_class_name) %></td>
     <td><%= t(:record_oid) %></td>
     <td><%= t(:record_value) %></td>
+    <td><%= t(:updated_time) %></td>
   </tr>
 <% n = 1 %>
 <% @records.each do |record| %>
@@ -14,11 +15,12 @@
     <td><%= link_edit_to(record,record.class_name) %></td>
     <td align="right"><%= record.oid %></td>
     <td align="right"><%= record.value %></td>
+    <td align="right"><%= to_t(record.updated_at) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="4" class="thead"></td>
+    <td colspan="5" class="thead"></td>
   </tr>
 </table>
 <br/>

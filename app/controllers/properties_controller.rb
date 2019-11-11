@@ -2,7 +2,7 @@ class PropertiesController < ApplicationController
 
   before_action :set_property, only: [:edit, :update, :update_amount, :destroy]
   after_action :update_all_portfolio_attributes, only: [:create, :update, :update_amount, :destroy]
-  
+
   # 资产负债列表
   def index
     tags = params[:tags]
@@ -21,7 +21,7 @@ class PropertiesController < ApplicationController
       memory_back
     else
       @properties = Property.all_sort admin?
-      summary # 获取资产的净值等统计数据
+      summary(admin?) # 获取资产的净值等统计数据
     end
   end
 

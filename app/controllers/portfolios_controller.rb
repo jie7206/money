@@ -6,7 +6,7 @@ class PortfoliosController < ApplicationController
 
   def index
     @portfolios = Portfolio.all.order(:twd_amount).reverse
-    summary # 获取资产的净值等统计数据
+    summary(admin?) # 获取资产的净值等统计数据
   end
 
   def show

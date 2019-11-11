@@ -38,8 +38,8 @@ class ApplicationController < ActionController::Base
   end
 
   # 显示资产时是否包含显示隐藏资产
-  def admin_hash?( new_options = {} )
-    options = admin? ? {include_hidden: true} : {include_hidden: false}
+  def admin_hash( admin, new_options = {} )
+    options = admin ? {include_hidden: true} : {include_hidden: false}
     return options.merge new_options
   end
 
@@ -199,14 +199,29 @@ class ApplicationController < ActionController::Base
   end
 
   # 获取资产的净值等统计数据
-  def summary
+  def summary( admin = false )
     @show_summary = true
-    @properties_net_value_twd = Property.net_value :twd, admin_hash?
-    @properties_net_value_cny = Property.net_value :cny, admin_hash?
-    @properties_lixi_twd = Property.lixi :twd, admin_hash?
-    @properties_value_twd = Property.value :twd, admin_hash?(only_positive: true)
-    @properties_loan_twd = Property.value :twd, admin_hash?(only_negative: true)
-    @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash?
+    @properties_net_value_twd = Property.net_value :twd, admin_hash(admin)
+    @properties_net_value_cny = Property.net_value :cny, admin_hash(admin)
+    @properties_lixi_twd = Property.lixi :twd, admin_hash(admin)
+    @properties_value_twd = Property.value :twd, admin_hash(admin,only_positive: true)
+    @properties_loan_twd = Property.value :twd, admin_hash(admin,only_negative: true)
+    @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash(admin)
+    # 访问资产负债表时能自动写入资产净值到数值记录表
+    class_name = admin ? 'NetValueAdmin' : 'NetValue'
+    record class_name, 1, @properties_net_value_twd.to_i
+  end
+
+  def record( class_name, oid, value )
+    # 1.先确定有没有今天的记录
+    today_record = Record.where(["class_name = ? and oid = ? and created_at > ?", class_name, oid,  "#{Date.today} 00:00:00".to_time]).last
+    # 2.如果没有今天的记录则新增一笔
+    if !today_record
+      Record.create(class_name: class_name, oid: oid, value: value)
+    else
+    # 3.如果已有今天的记录则更新
+      today_record.update_attribute(:value,value)
+    end
   end
 
   # 建立回到目录页的方法
