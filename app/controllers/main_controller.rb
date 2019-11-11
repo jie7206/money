@@ -2,6 +2,7 @@ class MainController < ApplicationController
 
   # 默认首页
   def index
+    #render layout: nil
   end
 
   # 显示登入表单及接受登入表单
