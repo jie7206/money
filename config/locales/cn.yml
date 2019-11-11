@@ -138,6 +138,16 @@ cn:
   compose: 成员
   created_at: 创建
   updated_at: 更新
+  record_class_name_blank_err: 数值记录模型名称不能为空白
+  record_oid_blank_err: 数值记录物件编号不能为空白
+  record_value_blank_err: 数值记录的数值资料不能为空白
+  record_class_name: 分类名称
+  record_oid: 识别ID
+  record_value: 记录数值
+  edit_record: 编辑记录
+  update_record: 更新记录
+  record_index: 记录列表
+  new_record: 新建记录
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

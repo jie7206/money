@@ -1,0 +1,29 @@
+<%= render 'shared/error_messages', object: @record %>
+
+<%= form_for(@record) do |f| %>
+<table>
+  <tr><td colspan="2" class="thead"><%= timestamps(@record) %></td></tr>
+  <tr>
+    <td><%= t(:record_class_name) %>：</td>
+    <td><%= select_record_model(f) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:record_oid) %>：</td>
+    <td><%= f.text_field(:oid,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:record_value) %>：</td>
+    <td><%= f.text_field(:value,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="right" class="tfoot">
+      <%= f.submit( submit,id: submit_id) %>
+    </td>
+  </tr>
+</table>
+<% end %>
+<br/>
+<%= link_back_to_records %>
+<% if !@record.new_record? %>
+  | <%= link_to t(:delete_record), @record, method: :delete, id: 'delete_record', data: { confirm: t(:delete_record_confirm) } %>
+<% end %>

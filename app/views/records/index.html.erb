@@ -1,0 +1,26 @@
+<h2><%= t(:record_index) %></h2>
+
+<table>
+  <tr class="thead">
+    <td width="15"></td>
+    <td><%= t(:record_class_name) %></td>
+    <td><%= t(:record_oid) %></td>
+    <td><%= t(:record_value) %></td>
+  </tr>
+<% n = 1 %>
+<% @records.each do |record| %>
+  <tr <%= change_row_color %>>
+    <td align="right"><%= n %></td>
+    <td><%= link_edit_to(record,record.class_name) %></td>
+    <td align="right"><%= record.oid %></td>
+    <td align="right"><%= record.value %></td>
+  </tr>
+  <% n += 1 %>
+<% end %>
+  <tr>
+    <td colspan="4" class="thead"></td>
+  </tr>
+</table>
+<br/>
+<%= link_back_to_properties %>
+| <%= link_to t(:new_record), new_record_path, { id: 'add_new_record' } %>

@@ -136,6 +136,16 @@ en:
   rate_or_price: Rate/Price
   look: Look
   compose: Compose
+  record_class_name_blank_err: Record's class name can't be blank
+  record_oid_blank_err: Record's object id can't be blank
+  record_value_blank_err: Record's value can't be blank
+  record_class_name: Class Name
+  record_oid: Object ID
+  record_value: Record Value
+  edit_record: Edit Record
+  update_record: Update Record
+  record_index: Records
+  new_record: Add New Record
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

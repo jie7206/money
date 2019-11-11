@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
-
+  
   root 'properties#index'
 
   resources :currencies
   resources :interests
+  resources :records
 
   resources :properties do
     member do

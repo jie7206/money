@@ -36,10 +36,13 @@ RSpec.describe '模型测试(Property)', type: :model do
 
     specify '#101[模型层]每笔资产的金额能换算成其他币种' do
       p = create(:property, amount: 100.0, currency: currencies(:twd))
-      expect(p.amount_to(:unknow)).to eq 100.0 # 查不到该币别则返回原值
+      # 查不到该币别则返回原值
+      expect(p.amount_to(:unknow)).to eq 100.0
       # 从自身的币别(台币)转换成人民币和美元
-      expect(p.amount_to(:cny).to_i).to eq (100.0*(ori_cny_rate/ori_twd_rate)).to_i
-      expect(p.amount_to(:usd).to_i).to eq (100.0*(1.0/ori_twd_rate)).to_i
+      trate = currencies(:twd).exchange_rate.to_f
+      crate = currencies(:cny).exchange_rate.to_f
+      expect(p.amount_to(:cny).to_i).to eq (100.0*(crate/trate)).to_i
+      expect(p.amount_to(:usd).to_i).to eq (100.0*(1.0/trate)).to_i
     end
 
   end

@@ -3,13 +3,15 @@ module ApplicationHelper
   include ActsAsTaggableOn::TagsHelper
 
   # 为哪些模型自动建立返回列表的链接以及执行返回列表的指令
-  $models = %w(property currency interest item portfolio)
+  $models = %w(property currency interest item portfolio record)
   # 为哪些类型的通知自动产生方法
   $flashs = %w(notice warning)
   # 建立从列表中快速更新某个值的方法
   $quick_update_attrs = ["property:amount","item:price,amount"]
   # 资产组合的模式属性
   $modes = %w(none matchall any)
+  # 记录数值的模型名称
+  $record_classes = ($models - %w(record)).map{|w| w.capitalize} + ['NetValue','NetValueAdmin']
 
   # 网站标题
   def site_name
@@ -80,6 +82,11 @@ module ApplicationHelper
   # 资产组合新增模式属性以便能支持所有法币资产的查看
   def select_portfolio_mode( obj )
     eval("obj.select :mode, $modes.collect {|m| [m, m[0]]}")
+  end
+
+  # 资产组合新增模式属性以便能支持所有法币资产的查看
+  def select_record_model( obj )
+    eval("obj.select :class_name, $record_classes.collect {|m| [m, m]}")
   end
 
   # 更新汇率的链接
