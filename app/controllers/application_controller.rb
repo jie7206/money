@@ -178,6 +178,23 @@ class ApplicationController < ActionController::Base
     put_notice t(:portfolios_updated_ok)
   end
 
+  # 更新所有模型的数值记录
+  def update_all_record_values
+    properties_net_value_guest = Property.net_value :twd, admin_hash(false)
+    properties_net_value_admin = Property.net_value :twd, admin_hash(true)
+    $record_classes.each do |class_name|
+      case class_name
+        when 'NetValue'
+          Property.record class_name, 1, properties_net_value_guest.to_i
+        when 'NetValueAdmin'
+          Property.record class_name, 1, properties_net_value_admin.to_i
+        else
+          eval(class_name).update_all_records
+      end
+    end
+    put_notice t(:all_records_updated_ok)
+  end
+
   # 更新资产组合栏位数据
   def update_portfolio_attributes( id, properties )
     twd_amount, cny_amount, proportion = get_portfolio_attributes(properties)
@@ -209,19 +226,7 @@ class ApplicationController < ActionController::Base
     @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash(admin)
     # 访问资产负债表时能自动写入资产净值到数值记录表
     class_name = admin ? 'NetValueAdmin' : 'NetValue'
-    record class_name, 1, @properties_net_value_twd.to_i
-  end
-
-  def record( class_name, oid, value )
-    # 1.先确定有没有今天的记录
-    today_record = Record.where(["class_name = ? and oid = ? and created_at > ?", class_name, oid,  "#{Date.today} 00:00:00".to_time]).last
-    # 2.如果没有今天的记录则新增一笔
-    if !today_record
-      Record.create(class_name: class_name, oid: oid, value: value)
-    else
-    # 3.如果已有今天的记录则更新
-      today_record.update_attribute(:value,value)
-    end
+    Property.record class_name, 1, @properties_net_value_twd.to_i
   end
 
   # 建立回到目录页的方法

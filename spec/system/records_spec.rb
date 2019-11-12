@@ -4,11 +4,7 @@ RSpec.describe '系统测试(Records)', type: :system do
 
   describe '一般登入' do
 
-    before do
-      visit login_path
-      fill_in 'pincode', with: $pincode
-      find('#login').click
-    end
+    before { login_as_guest }
 
     specify '#161[系统层]访问资产负债表时能自动写入资产净值到数值记录表' do
       record = create(:record,:net,updated_at: 1.day.ago)

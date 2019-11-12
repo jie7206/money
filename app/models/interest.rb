@@ -38,4 +38,9 @@ class Interest < ApplicationRecord
     property.currency.name
   end
 
+  # 要写入记录列表的值
+  def record_value
+    amount_to(:twd).to_i
+  end
+
 end

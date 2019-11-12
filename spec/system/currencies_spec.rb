@@ -5,9 +5,7 @@ RSpec.describe '系统测试(Currencies)', type: :system do
   fixtures :currencies
 
   before do
-    visit login_path
-    fill_in 'pincode', with: $pincode
-    find('#login').click
+    login_as_guest
   end
 
   describe '新增货币' do
@@ -174,9 +172,7 @@ RSpec.describe '系统测试(Currencies)', type: :system do
   describe '以管理员登入' do
 
     before do
-      visit login_path
-      fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
-      find('#login').click
+      login_as_admin
     end
 
     specify '#147[系统层]只有管理员能设定数字货币的符号属性' do

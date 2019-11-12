@@ -4,11 +4,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
   fixtures :currencies
 
-  before do
-    visit login_path
-    fill_in 'pincode', with: $pincode
-    find('#login').click
-  end
+  before { login_as_guest }
 
   describe '列表显示' do
 
@@ -218,9 +214,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
     before do
       create_different_currency_properties
-      visit login_path
-      fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
-      find('#login').click
+      login_as_admin
       visit properties_path
     end
 

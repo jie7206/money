@@ -74,6 +74,11 @@ class Property < ApplicationRecord
     end
   end
 
+  # 要写入记录列表的值
+  def record_value
+    amount_to(:twd).to_i
+  end
+
   # 计算贷款利息
   def lixi( target_code = :twd )
     interest ? \

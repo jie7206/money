@@ -31,6 +31,24 @@ class ApplicationRecord < ActiveRecord::Base
     end
   end
 
+  # 执行记录模型数值资料
+  def self.record( class_name, oid, value )
+    # 1.先确定有没有今天的记录
+    today_record = Record.where(["class_name = ? and oid = ? and created_at > ?", class_name, oid,  "#{Date.today} 00:00:00".to_time]).last
+    # 2.如果没有今天的记录则新增一笔
+    if !today_record
+      Record.create(class_name: class_name, oid: oid, value: value)
+    else
+    # 3.如果已有今天的记录则更新
+      today_record.update_attribute(:value,value)
+    end
+  end
+
+  # 更新模型里所有数据的数值资料
+  def self.update_all_records
+    all.each {|i| self.record(self.name, i.id, i.record_value)}
+  end
+
   # 设定货币的汇率值
   def set_exchange_rate( object, name )
     eval("$#{object.code.downcase}_exchange_rate = #{name}.exchange_rate")

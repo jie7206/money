@@ -4,11 +4,7 @@ RSpec.describe '系统测试(Items)', type: :system do
 
   let!(:item) { create(:item) }
 
-  before do
-    visit login_path
-    fill_in 'pincode', with: $pincode
-    find('#login').click
-  end
+  before { login_as_guest }
 
   describe '商品列表' do
 
@@ -206,11 +202,7 @@ RSpec.describe '系统测试(Items)', type: :system do
 
   describe '以管理员登入' do
 
-    before do
-      visit login_path
-      fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
-      find('#login').click
-    end
+    before { login_as_admin }
 
     specify '#141[系统层]管理员在新建商品时可看到隐藏资产以供选择' do
       property = create(:property, :usd_hidden)

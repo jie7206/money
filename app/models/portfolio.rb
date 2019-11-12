@@ -35,11 +35,16 @@ class Portfolio < ApplicationRecord
         greater_than: 0,
         message: $portfolio_order_num_nap_err }
 
-
+  # 设定搜索模式
   def mode_name
     $modes.each do |str|
       return str.capitalize if mode == str[0]
     end
+  end
+
+  # 要写入记录列表的值
+  def record_value
+    twd_amount.to_i
   end
 
 end

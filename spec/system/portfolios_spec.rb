@@ -6,11 +6,7 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
 
   describe '以管理员登入' do
 
-    before do
-      visit login_path
-      fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
-      find('#login').click
-    end
+    before { login_as_admin }
 
     describe '资产组合列表' do
 
@@ -202,11 +198,7 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
 
   describe '非管理员登入' do
 
-    before do
-      visit login_path
-      fill_in 'pincode', with: $pincode
-      find('#login').click
-    end
+    before { login_as_guest }
 
     specify '#152[系统层]非管理员则无法显示资产组合编辑页面' do
       visit portfolios_path

@@ -1,3 +1,17 @@
+# 以访客身份登入
+def login_as_guest
+  visit login_path
+  fill_in 'pincode', with: $pincode
+  find('#login').click
+end
+
+# 以管理员身份登入
+def login_as_admin
+  visit login_path
+  fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
+  find('#login').click
+end
+
 # 快速建立栏位应该为某个值的测试代码
 def expect_field_value_should_be( model, fields, value )
   setting = (fields.to_s).split(',').map {|f| "#{f}: #{value.inspect}"}.join(',')

@@ -4,11 +4,7 @@ RSpec.describe '连外测试(Currencies)', type: :system do
 
   fixtures :currencies
 
-  before do
-    visit login_path
-    fill_in 'pincode', with: $pincode
-    find('#login').click
-  end
+  before { login_as_admin }
 
   describe '列表显示' do
 
@@ -33,6 +29,10 @@ RSpec.describe '连外测试(Currencies)', type: :system do
     end
 
     specify '#151[系统层]导航链接能直接更新汇率然后返回最后查看的页面' do
+      # 合并于 #162[系统层]当更新汇率后能一并更新所有模型的数值记录
+    end
+
+    specify '#162[系统层]当更新汇率后能一并更新所有模型的数值记录' do
       path = rand(2) == 0 ? properties_path : currencies_path
       visit path
       within '#site_nav' do
@@ -41,6 +41,8 @@ RSpec.describe '连外测试(Currencies)', type: :system do
       expect(current_path).to eq path
       expect(page).to have_selector '.alert-notice', text: /3 #{$n_digital_exchange_rates_updated_ok}/
       expect(page).to have_selector '.alert-notice', text: /3 #{$n_legal_exchange_rates_updated_ok}/
+      expect(page).to have_selector '.alert-notice', text: /#{$portfolios_updated_ok}/
+      expect(page).to have_selector '.alert-notice', text: /#{$all_records_updated_ok}/
     end
 
   end

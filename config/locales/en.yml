@@ -146,6 +146,7 @@ en:
   update_record: Update Record
   record_index: Records
   new_record: Add New Record
+  all_records_updated_ok: All records was successfully created!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

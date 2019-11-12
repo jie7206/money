@@ -52,6 +52,7 @@ class CurrenciesController < ApplicationController
       put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}" end
     if admin?
       update_all_portfolio_attributes # 更新所有的资产组合栏位数据
+      update_all_record_values # 更新所有模型的数值记录
     end
     go_back
   end

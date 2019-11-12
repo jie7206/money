@@ -4,7 +4,7 @@ class RecordsController < ApplicationController
   before_action :set_record, only: [:show, :edit, :update, :destroy]
 
   def index
-    @records = Record.all.order(:class_name)
+    @records = Record.all.limit(200).order(:class_name,'value desc')
   end
 
   def show

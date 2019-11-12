@@ -1,5 +1,7 @@
 class Item < ApplicationRecord
 
+  include ApplicationHelper
+
   belongs_to :property
 
   validates \
@@ -30,6 +32,11 @@ class Item < ApplicationRecord
     else
       return false
     end
+  end
+
+  # 要写入记录列表的值
+  def record_value
+    to_n(price)
   end
 
 end

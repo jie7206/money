@@ -6,9 +6,7 @@ RSpec.describe '系统测试(Interests)', type: :system do
 
   before do
     create_different_currency_properties
-    visit login_path
-    fill_in 'pincode', with: $pincode
-    find('#login').click
+    login_as_guest
   end
 
   describe '利息列表' do
@@ -169,11 +167,7 @@ RSpec.describe '系统测试(Interests)', type: :system do
 
   describe '以管理员登入' do
 
-    before do
-      visit login_path
-      fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
-      find('#login').click
-    end
+    before { login_as_admin }
 
     specify '#141[系统层]管理员在新建利息时可看到隐藏资产以供选择' do
       property = create(:property, :usd_hidden)
