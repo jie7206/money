@@ -39,4 +39,8 @@ class Item < ApplicationRecord
     to_n(price)
   end
 
+  def name
+    "#{property.name}单价"
+  end
+
 end

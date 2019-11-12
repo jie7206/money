@@ -9,6 +9,7 @@
     <td width="100"><%= t(:currency_exchange_rate) %></td>
     <td width="100"><%= t(:currency_to_usd) %></td>
     <td width="200"><%= t(:updated_time) %></td>
+    <td width="50"><%= t(:chart) %></td>
   </tr>
 <% n = 1 %>
 <% @currencies.each do |currency| %>
@@ -20,6 +21,7 @@
     <td align="right"><%= to_n(currency.exchange_rate, 8) %></td>
     <td align="right"><%= to_n(currency.to_usd, 4) %></td>
     <td align="right"><%= to_t(currency.updated_at) %></td>
+    <td align="center"><%= chart_link(currency) %></td>
   </tr>
   <% n += 1 %>
 <% end %>

@@ -10,6 +10,7 @@
     <td><%= t(:portfolio_include_tags) %></td>
     <td><%= t(:portfolio_exclude_tags) %></td>
     <td><%= t(:compose) %></td>
+    <td><%= t(:chart) %></td>
   </tr>
 <% n = 1 %>
 <% @portfolios.each do |portfolio| %>
@@ -22,11 +23,12 @@
     <td><%= portfolio.include_tags %></td>
     <td><%= portfolio.exclude_tags %></td>
     <td align="center"><%= look_portfolio_detail(portfolio) %></td>
+    <td align="center"><%= chart_link(portfolio) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="8" class="thead">
+    <td colspan="9" class="thead">
       <%= render 'shared/summary' %>
     </td>
   </tr>

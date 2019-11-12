@@ -19,7 +19,7 @@ RSpec.describe '模型测试(Currency)', type: :model do
 
   specify '#128[模型层]货币模型能显示某币种兑换美元的汇率值' do
     twd = build(:currency, :twd)
-    expect(twd.to_usd.floor(4)).to eq (1/twd.exchange_rate).floor(4)
+    expect(twd.to_usd.floor(3)).to eq (1/twd.exchange_rate).floor(3)
   end
 
   specify '#146[模型层]货币增加数字符号属性以分辨该币是否为法币' do

@@ -225,8 +225,70 @@ class ApplicationController < ActionController::Base
     @properties_loan_twd = Property.value :twd, admin_hash(admin,only_negative: true)
     @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash(admin)
     # 访问资产负债表时能自动写入资产净值到数值记录表
-    class_name = admin ? 'NetValueAdmin' : 'NetValue'
-    Property.record class_name, 1, @properties_net_value_twd.to_i
+    Property.record get_class_name_by_login, 1, @properties_net_value_twd.to_i
+  end
+
+  # 若以管理员登入则写入到NetValueAdmin否则NetValue
+  def get_class_name_by_login
+    admin? ? 'NetValueAdmin' : 'NetValue'
+  end
+
+  # 生成FusionCharts的XML资料的辅助方法
+  def find_rec_date_value( records, date, value_field_name, rec_date_field_name )
+    records.each do |r|
+      return r.send(value_field_name) if r.send(rec_date_field_name).to_date.to_s(:db) == date.to_s(:db)
+    end
+    return nil
+  end
+
+  # 生成FusionCharts的XML资料
+  def build_fusion_chart_data( class_name, oid )
+    @name = class_name.index('Net') ? '资产总净值' : eval(class_name).find(oid).name
+    records = Record.where(["class_name = ? and oid = ? and updated_at >= ?",class_name,oid,Date.today-$fusionchart_data_num.days]).order('updated_at')
+    # 依照资料笔数的多寡来决定如何取图表中第一个值
+    case records.size
+      when 0
+        last_record = Record.where(["class_name = ? and oid = ?",class_name,oid])
+        last_value = last_record ? last_record.value : 0
+      else
+        last_value = records.first.value
+    end
+    @chart_data = ''
+    today = Date.today
+    start_date = today - $fusionchart_data_num.days
+    data_arr = [] # 为了找出最大值和最小值
+    start_date.upto(today) do |date|
+      this_value = find_rec_date_value(records,date,'value','updated_at')
+      if this_value
+        value = this_value
+        last_value = this_value
+      else
+        this_value = last_value
+      end
+      data_arr << this_value
+      @chart_data += "<set label='#{date.strftime("%Y-%m-%d")}' value='#{this_value}' />"
+    end
+    # 设定最大值和最小值
+    factor = 1.5 # 调整上下值，让图好看点，值越小离边界越近，不可小于1
+    @min_value = data_arr.min
+    @max_value = data_arr.max
+    pos = @min_value < 1 ? 4 : 2 # 如果数值小于1，则显示小数点到4位，否则2位
+    if @min_value == @max_value
+      @top_value = to_n(@min_value*(1+(factor-1)),pos)
+      @bottom_value = to_n(@min_value*(1-(factor-1)),pos)
+    else
+      mid_value = (@max_value + @min_value)/2
+      center_diff = (@max_value - mid_value).abs #与中轴距离=最大值-中间值
+      @top_value = to_n(mid_value + center_diff*factor,pos) #新最大值=中间值+与中轴距离*调整因子
+      @bottom_value = to_n(mid_value - center_diff*factor,pos) #新最小值=中间值-与中轴距离*调整因子
+    end
+    @caption = "#{@name} #{$fusionchart_data_num}天走势图 ( #{@min_value} ➠ #{@max_value} )"
+  end
+
+  # 显示走势图
+  def chart
+    build_fusion_chart_data(self.class.name.sub('Controller','').singularize,params[:id])
+    render template: 'shared/chart'
   end
 
   # 建立回到目录页的方法

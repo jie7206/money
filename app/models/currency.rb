@@ -95,7 +95,7 @@ class Currency < ApplicationRecord
 
   # 要写入记录列表的值
   def record_value
-    rate_or_price
+    is_digital? ? to_n(to_usd,4) : to_n(to_rate)
   end
 
 end

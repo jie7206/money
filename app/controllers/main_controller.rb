@@ -1,8 +1,9 @@
 class MainController < ApplicationController
 
-  # 默认首页
-  def index
-    #render layout: nil
+  # 显示走势图
+  def chart
+    build_fusion_chart_data(get_class_name_by_login,1)
+    render template: 'shared/chart'
   end
 
   # 显示登入表单及接受登入表单

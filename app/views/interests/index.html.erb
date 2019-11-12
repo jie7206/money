@@ -9,6 +9,7 @@
     <td width="100"><%= t(:interest_amount) %></td>
     <td width="100"><%= t(:interest_currency) %></td>
     <td width="100"><%= t(:exchange_to_twd) %></td>
+    <td width="50"><%= t(:chart) %></td>
   </tr>
 <% n = 1 %>
 <% @interests.each do |interest| %>
@@ -20,11 +21,12 @@
     <td align="right"><%= to_n(interest.amount, 0) %></td>
     <td align="right"><%= interest.currency_name %></td>
     <td align="right"><%= interest.amount_to(:twd) %></td>
+    <td align="center"><%= chart_link(interest) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="7" class="thead"><%= t(:total_interests_amount) %>：<span id="interest_total_twd"><%= @interest_total_twd %></span> <%= t(:twd) %>
+    <td colspan="8" class="thead"><%= t(:total_interests_amount) %>：<span id="interest_total_twd"><%= @interest_total_twd %></span> <%= t(:twd) %>
       (<span id="interest_total_cny"><%= @interest_total_cny %></span> <%= t(:cny) %>)</td>
   </tr>
 </table>

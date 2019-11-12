@@ -5,16 +5,13 @@
       <% if admin? %>
         <%= link_to t(:portfolio_index), portfolios_path %> |
       <% end %>
-      <%= update_all_exchange_rates_link %> |
-    <% if admin? %>
-      <%= update_all_portfolios_link %> |
-    <% end %>
       <%= link_to t(:currency_index), currencies_path %> |
       <%= link_to t(:interest_index), interests_path %> |
+      <%= link_to t(:item_index), items_path %> |
       <% if admin? %>
         <%= link_to t(:record_index), records_path %> |
       <% end %>
-      <%= link_to t(:item_index), items_path %> |
+      <%= update_all_exchange_rates_link %> |
       <%= link_to t(:logout), logout_path, { id: 'logout' } %>
     </small>
   </nav>

@@ -20,7 +20,7 @@ cn:
   property_name: 资产名称
   property_amount: 资产金额
   property_currency: 资产币别
-  property_lixi: 资产利息
+  property_lixi: 利息
   property_tag_list: 分类标签
   properties_cloud: 资产标签
   property_proportion: 占比
@@ -135,6 +135,7 @@ cn:
   portfolios_updated_ok: 所有资产组合已更新！
   rate_or_price: 汇率/价格
   look: 查看
+  chart: 走势
   compose: 成员
   created_at: 创建
   updated_at: 更新

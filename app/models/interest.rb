@@ -43,4 +43,8 @@ class Interest < ApplicationRecord
     amount_to(:twd).to_i
   end
 
+  def name
+    "#{property.name}利息"
+  end
+
 end

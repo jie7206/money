@@ -34,7 +34,11 @@ class ApplicationRecord < ActiveRecord::Base
   # 执行记录模型数值资料
   def self.record( class_name, oid, value )
     # 1.先确定有没有今天的记录
-    today_record = Record.where(["class_name = ? and oid = ? and created_at > ?", class_name, oid,  "#{Date.today} 00:00:00".to_time]).last
+    today_record = Record.where(
+      ["class_name = ? and oid = ? and
+        created_at > ? and created_at < ?", class_name, oid,
+        "#{Date.today} 00:00:00".to_time,
+        "#{Date.today+1.day} 00:00:00".to_time]).last 
     # 2.如果没有今天的记录则新增一笔
     if !today_record
       Record.create(class_name: class_name, oid: oid, value: value)

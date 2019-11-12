@@ -1,5 +1,5 @@
 <%= t(:positive_property) %>：<%= @properties_value_twd.to_i %>&nbsp;&nbsp;
 <%= t(:negative_property) %>：<%= @properties_loan_twd.to_i %>&nbsp;&nbsp;
 <%= t(:lixi) %>：<%= @properties_lixi_twd.to_i %>&nbsp;&nbsp;
-<%= t(:total_properties_amount) %>：<span id="properties_net_value_twd"><%= @properties_net_value_twd.to_i %></span> (<span id="properties_net_value_cny"><%= @properties_net_value_cny.to_i %></span> <%= t(:cny) %>)&nbsp;&nbsp;
+<%= t(:total_properties_amount) %>：<span id="properties_net_value_twd"><%= link_to @properties_net_value_twd.to_i, chart_path, target: :blank %></span> (<span id="properties_net_value_cny"><%= @properties_net_value_cny.to_i %></span> <%= t(:cny) %>)&nbsp;&nbsp;
 <%= t(:increase_or_decrease) %>：<span id="net_growth_ave_month"><%= @properties_net_growth_ave_month.to_i %></span>/月

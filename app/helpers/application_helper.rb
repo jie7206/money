@@ -152,4 +152,27 @@ module ApplicationHelper
     end
   end
 
+  # Fusioncharts属性大全: http://wenku.baidu.com/link?url=JUwX7IJwCbYMnaagerDtahulirJSr5ASDToWeehAqjQPfmRqFmm8wb5qeaS6BsS7w2_hb6rCPmeig2DBl8wzwb2cD1O0TCMfCpwalnoEDWa
+  def show_fusion_chart
+    raw "<div id=\"chartContainer\"></div><p>
+    <script type=\"text/javascript\">
+    FusionCharts.ready(function () {
+        var myChart = new FusionCharts({
+          \"type\": \"line\",
+          \"renderAt\": \"chartContainer\",
+          \"width\": \"95%\",
+          \"height\": \"450\",
+          \"dataFormat\": \"xml\",
+          \"dataSource\": \"<chart yAxisMinValue='#{@bottom_value}' yAxisMaxvalue='#{@top_value}' animation='0' caption='#{@caption}' xaxisname='　' yaxisname='' formatNumberScale='0' formatNumber ='0' palettecolors='#CC0000' bgColor='#F0E68C' canvasBgColor='#F0E68C' valuefontcolor='#000000' showValues='0' borderalpha='0' canvasborderalpha='0' theme='fint' useplotgradientcolor='0' plotborderalpha='0' placevaluesinside='0' rotatevalues='1'  captionpadding='12' showaxislines='0' axislinealpha='0' divlinealpha='0' lineThickness='3' drawAnchors='0'>#{@chart_data}</chart>\"
+        });
+      myChart.render();
+    });
+    </script>"
+  end
+
+  # 建立查看走势图链接
+  def chart_link( obj )
+    raw(link_to(image_tag('chart.png',width:16),{controller: obj.class.name.pluralize.downcase.to_sym, action: :chart, id: obj.id},{target: :blank}))
+  end
+
 end

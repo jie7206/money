@@ -135,6 +135,7 @@ en:
   portfolios_updated_ok: All Portfolio's value was successfully updated!
   rate_or_price: Rate/Price
   look: Look
+  chart: Chart
   compose: Compose
   record_class_name_blank_err: Record's class name can't be blank
   record_oid_blank_err: Record's object id can't be blank
