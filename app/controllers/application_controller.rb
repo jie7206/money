@@ -102,12 +102,15 @@ class ApplicationController < ActionController::Base
 
   # 更新所有货币的汇率值
   def update_all_data
+    ori_login = admin? ? 'admin' : 'guest' # 远端必须以管理员身份存取，否则资产占比会出错
+    session[:admin] = true
+    update_yanda_house_price # 更新燕大星苑房屋单价
     update_digital_exchange_rates # 更新所有数字货币的汇率值
     update_legal_exchange_rates # 更新所有法币的汇率值
     update_all_portfolio_attributes # 更新所有的资产组合栏位数据
     update_all_record_values # 更新所有模型的数值记录
     go_back
-    puts "    Run update_all_data at #{Time.now.to_s(:db)}"
+    session[:admin] = ori_login == 'admin' ? true : false # 恢复原始登入身份
   end
 
   # 取得SSL连线的回传值
@@ -117,8 +120,12 @@ class ApplicationController < ActionController::Base
     http.read_timeout = 10
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    header = {'Authorization':authorization}
-    response = http.get(url, header)
+    if authorization
+      header = {'Authorization':authorization}
+      response = http.get(url, header)
+    else
+      response = http.get(url)
+    end
     return response.body
   end
 
@@ -307,6 +314,21 @@ class ApplicationController < ActionController::Base
   def chart
     build_fusion_chart_data(self.class.name.sub('Controller','').singularize,params[:id])
     render template: 'shared/chart'
+  end
+
+  # 更新燕大星苑房屋单价
+  def update_yanda_house_price
+    url = "https://qinhuangdao.anjuke.com/community/trends/387687"
+    code = get_ssl_response(url)
+    if code and matches = Regexp.new(/\"comm_midprice\":\"(\d+)\"/).match(code).to_a
+      if matches.size > 1
+        Item.house.update_attribute(:price,matches[1].to_i)
+        put_notice t(:yanda_house_price_updated_ok)
+        update_all_portfolio_attributes
+      elsif code.empty?
+        put_notice t(:source_empty)
+      end
+    end
   end
 
   # 建立回到目录页的方法

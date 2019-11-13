@@ -54,6 +54,12 @@ class ItemsController < ApplicationController
     destroy
   end
 
+  # 能从安居客自动更新房价
+  def update_house_price
+    update_yanda_house_price
+    go_back
+  end
+
   private
 
     def set_item

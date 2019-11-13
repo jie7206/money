@@ -30,6 +30,12 @@ RSpec.describe '系统测试(Items)', type: :system do
       expect(page).to have_link text: /#{item.url.truncate(20)}/
     end
 
+    specify '#163[系统层]导航列中点击更新房价能从安居客自动更新房价' do
+      house_item = create(:item)
+      find('#update_house_price').click
+      expect(page).to have_selector '.alert-notice', text: /#{$yanda_house_price_updated_ok}/
+    end
+
   end
 
   describe '新增商品' do
@@ -42,11 +48,11 @@ RSpec.describe '系统测试(Items)', type: :system do
     describe '成功用例' do
 
       specify '#135[系统层]能通过商品表单成功建立一笔商品记录' do
-        select '我的房产', from: 'item[property_id]'
+        select '燕大星苑', from: 'item[property_id]'
         fill_in 'item[price]', with: 12100.78
         fill_in 'item[amount]', with: 49.50
         find('#create_new_item').click
-        expect(page).to have_content '我的房产'
+        expect(page).to have_content '燕大星苑'
         expect(page.html).to include '12100'
         expect(page).to have_selector '.alert-notice'
       end

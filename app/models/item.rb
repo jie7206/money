@@ -22,6 +22,17 @@ class Item < ApplicationRecord
 
   after_save :update_property_amount
 
+  # 回传房产的物件
+  def self.house
+    house = Property.where("name like '%燕大星苑%'").first
+    if house
+      id = house.id
+    else
+      id = self.first.property.id
+    end
+    find_by_property_id(id)
+  end
+
   # 更新对应的资产金额
   def update_property_amount
     ori_amount = property.amount.to_i

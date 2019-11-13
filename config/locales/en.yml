@@ -155,6 +155,9 @@ en:
   record_created_ok: Record was successfully created!
   record_updated_ok: Record was successfully updated!
   record_destroyed_ok: Record was successfully destroyed!
+  update_house_price: Update House Price
+  yanda_house_price_updated_ok: Yan-Da House price was successfully updated!
+  source_empty: ERROR! source code return empty >_<
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

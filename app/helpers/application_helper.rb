@@ -104,6 +104,11 @@ module ApplicationHelper
     link_to t(:update_all_portfolios), {controller: :portfolios, action: :update_all_portfolios, path: request.fullpath}, {id:'update_all_portfolios'}
   end
 
+  # 更新房价的链接
+  def update_house_price_link
+    link_to t(:update_house_price), {controller: :items, action: :update_house_price, path: request.fullpath}, {id:'update_house_price'}
+  end
+
   # 资产标签云
   def get_tag_cloud
     @tags = Property.tag_counts_on(:tags)

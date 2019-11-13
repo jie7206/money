@@ -40,7 +40,7 @@ FactoryBot.define do
     end
 
     trait :house do
-      name { '我的房产' }
+      name { '燕大星苑' }
       amount { 600000.00 }
       association :currency, :cny
     end
