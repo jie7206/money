@@ -43,7 +43,7 @@ cn:
   currency_exchange_rate_nap_err: 货币汇率值必须是正数！
   currency_created_ok: 货币新建成功！
   currency_updated_ok: 货币更新成功！
-  currency_destroy_ok: 货币删除成功！
+  currency_destroyed_ok: 货币删除成功！
   new_currency: 新建货币
   currency_name: 货币名称
   currency_code: 代码
@@ -126,7 +126,7 @@ cn:
   delete_portfolio_confirm: 您确定要删除这笔组合吗？
   edit_portfolio: 编辑资产组合
   update_portfolio: 更新资产组合
-  update_all_portfolios: 更新组合
+  update_all_portfolios: 更新全部资产组合
   portfolio_index: 资产组合
   new_portfolio: 新建资产组合
   portfolio_created_ok: 资产组合新建成功！
@@ -149,7 +149,14 @@ cn:
   update_record: 更新记录
   record_index: 记录列表
   new_record: 新建记录
+  delete_record: 删除这笔记录
+  delete_record_confirm: 您确定要删除这笔记录吗？
   all_records_updated_ok: 所有数值记录已更新！
+  update_all_data: 更新全部
+  update_all_data_ok: 所有资料已更新！
+  record_created_ok: 记录新建成功！
+  record_updated_ok: 记录更新成功！
+  record_destroyed_ok: 记录删除成功！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

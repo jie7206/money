@@ -36,7 +36,7 @@ RSpec.describe '连外测试(Currencies)', type: :system do
       path = rand(2) == 0 ? properties_path : currencies_path
       visit path
       within '#site_nav' do
-        find('#update_all_exchange_rates').click
+        find('#update_all_data').click
       end
       expect(current_path).to eq path
       expect(page).to have_selector '.alert-notice', text: /3 #{$n_digital_exchange_rates_updated_ok}/

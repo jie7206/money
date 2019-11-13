@@ -27,6 +27,4 @@
 <% end %>
 <br/>
 <%= link_back_to_properties %>
-<% if !@property.new_record? %>
-  | <%= link_to t(:delete_property), @property, method: :delete, id: 'delete_property', data: { confirm: t(:delete_property_confirm) } %>
-<% end %>
+<%= link_to_delete(@property) %>

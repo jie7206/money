@@ -1,6 +1,6 @@
 class CurrenciesController < ApplicationController
 
-  before_action :set_currency, only: [:edit, :update, :destroy]
+  before_action :set_currency, only: [:edit, :update, :destroy, :delete]
 
   # 货币列表
   def index
@@ -40,21 +40,13 @@ class CurrenciesController < ApplicationController
   # 删除货币
   def destroy
     @currency.destroy
-    put_notice t(:currency_destroied_ok)
+    put_notice t(:currency_destroyed_ok)
     go_currencies
   end
 
-  # 更新所有货币的汇率值
-  def update_all_exchange_rates
-    if count = update_digital_exchange_rates and count > 0 then
-      put_notice "#{count} #{t(:n_digital_exchange_rates_updated_ok)}" end
-    if count = update_legal_exchange_rates and count > 0 then
-      put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}" end
-    if admin?
-      update_all_portfolio_attributes # 更新所有的资产组合栏位数据
-      update_all_record_values # 更新所有模型的数值记录
-    end
-    go_back
+  # 删除货币
+  def delete
+    destroy
   end
 
   private

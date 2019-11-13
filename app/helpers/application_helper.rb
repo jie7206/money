@@ -94,6 +94,11 @@ module ApplicationHelper
     link_to t(:update_all_exchange_rates), {controller: :currencies, action: :update_all_exchange_rates, path: request.fullpath}, {id:'update_all_exchange_rates'}
   end
 
+  # 更新汇率的链接
+  def update_all_data_link
+    link_to t(:update_all_data), {controller: :properties, action: :update_all_data, path: request.fullpath}, {id:'update_all_data'}
+  end
+
   # 更新资产组合的链接
   def update_all_portfolios_link
     link_to t(:update_all_portfolios), {controller: :portfolios, action: :update_all_portfolios, path: request.fullpath}, {id:'update_all_portfolios'}
@@ -136,12 +141,21 @@ module ApplicationHelper
     return t(:item_url)
   end
 
+  # 显示数据创建及更新时间
   def timestamps( obj )
     if !obj.new_record?
       raw("<div class='timestamps'>
         #{t(:created_at)}: #{obj.created_at.to_s(:db)}
         #{t(:updated_at)}: #{obj.updated_at.to_s(:db)}
       </div>")
+    end
+  end
+
+  # 显示删除某笔数据链接
+  def link_to_delete( obj )
+    if !obj.new_record?
+      name = obj.class.name.downcase
+      raw(' | '+eval("link_to t(:delete_#{name}), delete_#{name}_path(@#{name}), id: 'delete_#{name}'"))
     end
   end
 

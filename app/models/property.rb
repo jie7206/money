@@ -7,6 +7,8 @@ class Property < ApplicationRecord
   has_one :interest
   has_one :item
 
+  after_create :update_records
+
   validates \
     :name,
       presence: {

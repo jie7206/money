@@ -43,7 +43,7 @@ en:
   currency_exchange_rate_nap_err: Currency's exchange rate must be a positive number!
   currency_created_ok: Currency was successfully created!
   currency_updated_ok: Currency was successfully updated!
-  currency_destroy_ok: Currency was successfully destroyed!
+  currency_destroyed_ok: Currency was successfully destroyed!
   new_currency: Add New Currency
   currency_name: Currency Name
   currency_code: Code
@@ -126,7 +126,7 @@ en:
   delete_portfolio_confirm: Are you SURE？
   edit_portfolio: Edit Portfolio
   update_portfolio: Update Portfolio
-  update_all_portfolios: Update Portfolios
+  update_all_portfolios: Update All Portfolios
   portfolio_index: Portfolios
   new_portfolio: Add New Portfolio
   portfolio_created_ok: Portfolio was successfully created!
@@ -147,7 +147,14 @@ en:
   update_record: Update Record
   record_index: Records
   new_record: Add New Record
-  all_records_updated_ok: All records was successfully created!
+  delete_record: Delete Record
+  delete_record_confirm: Are you SURE？
+  all_records_updated_ok: All records was successfully updated!
+  update_all_data: Update All
+  update_all_data_ok: All data was successfully updated!
+  record_created_ok: Record was successfully created!
+  record_updated_ok: Record was successfully updated!
+  record_destroyed_ok: Record was successfully destroyed!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

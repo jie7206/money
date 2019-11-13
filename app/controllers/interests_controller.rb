@@ -1,14 +1,11 @@
 class InterestsController < ApplicationController
 
-  before_action :set_interest, only: [:show, :edit, :update, :destroy]
+  before_action :set_interest, only: [:edit, :update, :destroy, :delete]
 
   def index
     @interests = Interest.all
     @interest_total_twd = Interest.total
     @interest_total_cny = Interest.total(:cny)
-  end
-
-  def show
   end
 
   def new
@@ -37,10 +34,16 @@ class InterestsController < ApplicationController
     end
   end
 
+  # 删除利息
   def destroy
     @interest.destroy
     put_notice t(:interest_destroyed_ok)
     go_interests
+  end
+
+  # 删除利息
+  def delete
+    destroy
   end
 
   private

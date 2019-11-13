@@ -28,6 +28,4 @@
 <% end %>
 <br/>
 <%= link_back_to_currencies %>
-<% if !@currency.new_record? %>
-  | <%= link_to t(:delete_currency), @currency, method: :delete, id: 'delete_currency', data: { confirm: t(:delete_currency_confirm) } %>
-<% end %>
+<%= link_to_delete(@currency) %>

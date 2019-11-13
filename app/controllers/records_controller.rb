@@ -1,13 +1,10 @@
 class RecordsController < ApplicationController
 
-  before_action :check_admin
-  before_action :set_record, only: [:show, :edit, :update, :destroy]
+  before_action :check_admin, except: [:update_all_record_values]
+  before_action :set_record, only: [:edit, :update, :destroy, :delete]
 
   def index
     @records = Record.all.limit(500).order('updated_at desc')
-  end
-
-  def show
   end
 
   def new
@@ -20,7 +17,7 @@ class RecordsController < ApplicationController
   def create
     @record = Record.new(record_params)
     if @record.save
-      put_notice 'Record was successfully created.'
+      put_notice t(:record_created_ok)
       go_records
     else
       render :new
@@ -29,7 +26,7 @@ class RecordsController < ApplicationController
 
   def update
     if @record.update(record_params)
-      put_notice 'Record was successfully updated.'
+      put_notice t(:record_updated_ok)
       go_records
     else
       render :edit
@@ -38,8 +35,12 @@ class RecordsController < ApplicationController
 
   def destroy
     @record.destroy
-    put_notice 'Record was successfully destroyed.'
+    put_notice t(:record_destroyed_ok)
     go_records
+  end
+
+  def delete
+    destroy
   end
 
   private

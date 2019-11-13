@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
 
   include ApplicationHelper
 
-  before_action :check_login, except: [ :login ]
+  before_action :check_login, except: [ :login, :update_all_data ]
 
   # 火币API初始化
   def ini_huobi( id = '1' )
@@ -75,7 +75,7 @@ class ApplicationController < ActionController::Base
         end
       end
     end
-    return count
+    put_notice "#{count} #{t(:n_digital_exchange_rates_updated_ok)}"
   end
 
   # 更新所有法币的汇率值
@@ -89,7 +89,24 @@ class ApplicationController < ActionController::Base
         count += 1
       end
     end
-    return count
+    put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}"
+  end
+
+  # 更新所有货币的汇率值
+  def update_all_exchange_rates
+    update_digital_exchange_rates
+    update_legal_exchange_rates
+    go_back
+  end
+
+  # 更新所有货币的汇率值
+  def update_all_data
+    update_digital_exchange_rates # 更新所有数字货币的汇率值
+    update_legal_exchange_rates # 更新所有法币的汇率值
+    update_all_portfolio_attributes # 更新所有的资产组合栏位数据
+    update_all_record_values # 更新所有模型的数值记录
+    go_back
+    puts "    Run update_all_data at #{Time.now.to_s(:db)}"
   end
 
   # 取得SSL连线的回传值
@@ -248,7 +265,7 @@ class ApplicationController < ActionController::Base
     # 依照资料笔数的多寡来决定如何取图表中第一个值
     case records.size
       when 0
-        last_record = Record.where(["class_name = ? and oid = ?",class_name,oid])
+        last_record = Record.where(["class_name = ? and oid = ?",class_name,oid]).last
         last_value = last_record ? last_record.value : 0
       else
         last_value = records.first.value

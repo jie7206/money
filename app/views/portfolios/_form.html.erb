@@ -4,7 +4,7 @@
 <table>
   <tr><td colspan="2" class="thead"><%= timestamps(@portfolio) %></td></tr>
   <tr>
-    <td><%= t(:property_name) %>：</td>
+    <td><%= t(:portfolio_name) %>：</td>
     <td><%= f.text_field(:name) %></td>
   </tr>
   <tr>
@@ -32,6 +32,4 @@
 <% end %>
 <br/>
 <%= link_back_to_portfolios %>
-<% if !@portfolio.new_record? %>
-  | <%= link_to t(:delete_portfolio), @portfolio, method: :delete, id: 'delete_portfolio', data: { confirm: t(:delete_portfolio_confirm) } %>
-<% end %>
+<%= link_to_delete(@portfolio) %>

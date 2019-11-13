@@ -38,7 +38,7 @@ class ApplicationRecord < ActiveRecord::Base
       ["class_name = ? and oid = ? and
         created_at > ? and created_at < ?", class_name, oid,
         "#{Date.today} 00:00:00".to_time,
-        "#{Date.today+1.day} 00:00:00".to_time]).last 
+        "#{Date.today+1.day} 00:00:00".to_time]).last
     # 2.如果没有今天的记录则新增一笔
     if !today_record
       Record.create(class_name: class_name, oid: oid, value: value)
@@ -48,9 +48,14 @@ class ApplicationRecord < ActiveRecord::Base
     end
   end
 
-  # 更新模型里所有数据的数值资料
+  # 更新模型里所有数据的记录资料
   def self.update_all_records
     all.each {|i| self.record(self.name, i.id, i.record_value)}
+  end
+
+  # 更新某笔数据的记录资料
+  def update_records
+    Property.record(self.class.name, id, record_value)
   end
 
   # 设定货币的汇率值

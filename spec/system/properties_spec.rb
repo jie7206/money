@@ -95,10 +95,12 @@ RSpec.describe '系统测试(Properties)', type: :system do
       specify '能通过表单新增一笔资产记录' do
         visit properties_path
         find('#add_new_property').click
-        fill_in 'property[name]', with: '我的工商银行账户'
-        fill_in 'property[amount]', with: 99.9999
-        select '人民币', from: 'property[currency_id]'
-        find('#create_new_property').click
+        expect {
+          fill_in 'property[name]', with: '我的工商银行账户'
+          fill_in 'property[amount]', with: 99.9999
+          select '人民币', from: 'property[currency_id]'
+          find('#create_new_property').click
+        }.to change { Record.all.size }.by 1 # 记录列表拥有该笔记录，否则走势图会出错
         expect(page).to have_content '我的工商银行账户'
         expect(page.html).to include '99.9'
         expect(page).to have_selector '.alert-notice'

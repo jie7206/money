@@ -24,6 +24,4 @@
 <% end %>
 <br/>
 <%= link_back_to_records %>
-<% if !@record.new_record? %>
-  | <%= link_to t(:delete_record), @record, method: :delete, id: 'delete_record', data: { confirm: t(:delete_record_confirm) } %>
-<% end %>
+<%= link_to_delete(@record) %>

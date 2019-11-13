@@ -1,15 +1,12 @@
 class PortfoliosController < ApplicationController
 
-  before_action :check_admin
-  before_action :set_portfolio, only: [:show, :edit, :update, :destroy]
-  after_action :update_all_portfolio_attributes, only: [:create, :update]
+  before_action :check_admin, except: [:update_all_portfolio_attributes]
+  before_action :set_portfolio, only: [:edit, :update, :destroy, :delete]
+  after_action :update_all_portfolio_attributes, only: [:create]
 
   def index
     @portfolios = Portfolio.all.order(:twd_amount).reverse
     summary(admin?) # 获取资产的净值等统计数据
-  end
-
-  def show
   end
 
   def new
@@ -43,6 +40,10 @@ class PortfoliosController < ApplicationController
     @portfolio.destroy
     put_notice t(:portfolio_destroyed_ok)
     go_portfolios
+  end
+
+  def delete
+    destroy
   end
 
   def order_up

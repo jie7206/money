@@ -1,6 +1,6 @@
 class PropertiesController < ApplicationController
 
-  before_action :set_property, only: [:edit, :update, :update_amount, :destroy]
+  before_action :set_property, only: [:edit, :update, :update_amount, :destroy, :delete]
   after_action :update_all_portfolio_attributes, only: [:create, :update, :update_amount, :destroy]
 
   # 资产负债列表
@@ -69,6 +69,11 @@ class PropertiesController < ApplicationController
     @property.destroy
     put_notice t(:property_destroy_ok)
     go_properties
+  end
+
+  # 删除资产
+  def delete
+    destroy
   end
 
   private

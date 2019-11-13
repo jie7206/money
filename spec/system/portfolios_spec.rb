@@ -45,7 +45,9 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
         end
 
         specify '#159[系统层]按下更新组合链接能更新所有资产组合的栏位值' do
-          # 合并于 #162[系统层]当更新汇率后能一并更新所有模型的数值记录
+          visit portfolios_path
+          find('#update_all_portfolios').click
+          expect(page).to have_selector '.alert-notice', text: /#{$portfolios_updated_ok}/
         end
 
       end
