@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
 
   before_action :check_login, except: [ :login, :update_all_data ]
+  before_action :summary, only: [ :index ]
 
   # 火币API初始化
   def ini_huobi( id = '1' )
@@ -233,7 +234,7 @@ class ApplicationController < ActionController::Base
   end
 
   # 获取资产的净值等统计数据
-  def summary( admin = false )
+  def summary( admin = admin? )
     @show_summary = true
     @properties_net_value_twd = Property.net_value :twd, admin_hash(admin)
     @properties_net_value_cny = Property.net_value :cny, admin_hash(admin)

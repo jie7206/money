@@ -159,6 +159,14 @@ module ApplicationHelper
     end
   end
 
+  # 显示资产统计讯息
+  def show_summary_tr( colspan )
+   raw "<tr>
+          <td colspan='#{colspan}' class='thead'>
+            #{render 'shared/summary'}
+          </td>
+        </tr>"
+  end
   # 建立返回列表的链接
   $models.each do |n|
     define_method "link_back_to_#{n.pluralize}" do

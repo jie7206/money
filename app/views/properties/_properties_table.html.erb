@@ -38,11 +38,7 @@
   <% proportions += proportion.to_f %>
 <% end %>
 <% if show_summary %>
-  <tr>
-    <td colspan="10" class="thead">
-      <%= render 'shared/summary' %>
-    </td>
-  </tr>
+  <%= show_summary_tr(10) %>
 <% else %>
   <tr class="thead">
     <td colspan="2"></td>

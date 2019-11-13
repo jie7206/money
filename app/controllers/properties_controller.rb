@@ -21,7 +21,6 @@ class PropertiesController < ApplicationController
       memory_back
     else
       @properties = Property.all_sort admin?
-      summary(admin?) # 获取资产的净值等统计数据
     end
   end
 
