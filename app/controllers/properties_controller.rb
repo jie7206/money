@@ -18,7 +18,6 @@ class PropertiesController < ApplicationController
         # 由tag_cloud来的单一标签
         @properties = Property.tagged_with(tags.strip)
       end
-      memory_back
     else
       @properties = Property.all_sort admin?
     end

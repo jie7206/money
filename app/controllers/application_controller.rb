@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
 
   before_action :check_login, except: [ :login, :update_all_data ]
-  before_action :summary, only: [ :index ]
+  before_action :summary, :memory_back, only: [ :index ]
 
   # 火币API初始化
   def ini_huobi( id = '1' )
@@ -117,9 +117,11 @@ class ApplicationController < ActionController::Base
   def get_ssl_response(url, authorization=nil)
     uri = URI.parse(url)
     http = Net::HTTP.new(uri.host, uri.port)
-    http.read_timeout = 10
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    http.read_timeout = 30
+    if url.split(':').first == 'https'
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
     if authorization
       header = {'Authorization':authorization}
       response = http.get(url, header)
@@ -149,12 +151,8 @@ class ApplicationController < ActionController::Base
   end
 
   # 记录返回的网址
-  def memory_back
-    if params[:tags]
-      session[:path] = request.fullpath
-    elsif params[:path]
-      session[:path] = params[:path]
-    end
+  def memory_back( given_path = request.fullpath )
+    session[:path] = params[:path] ? params[:path] : given_path
   end
 
   # 返回记录的网址
@@ -318,13 +316,20 @@ class ApplicationController < ActionController::Base
 
   # 更新燕大星苑房屋单价
   def update_yanda_house_price
-    url = "https://qinhuangdao.anjuke.com/community/trends/387687"
+    # 安居客
+    # url_1 = "https://qinhuangdao.anjuke.com/community/trends/387687"
+    # pattern_1 = /\"comm_midprice\":\"(\d+)\"/
+    # 房天下
+    # url_2 = "https://yandaxingyuanhongshuwan.fang.com/"
+    # pattern_2 = /var price = \"(\d+)\"/
+    # 赶集网
+    url = "http://qinhuangdao.ganji.com/xiaoqu/yandaxingyuanhongshuwan92JO/"
+    pattern = /class=\"price\">(\d+)/
     code = get_ssl_response(url)
-    if code and matches = Regexp.new(/\"comm_midprice\":\"(\d+)\"/).match(code).to_a
-      if matches.size > 1
-        Item.house.update_attribute(:price,matches[1].to_i)
+    if code and matches = Regexp.new(pattern).match(code).to_a and price = matches[1].to_i
+      if price > 0
+        Item.house.update_attribute(:price,price)
         put_notice t(:yanda_house_price_updated_ok)
-        update_all_portfolio_attributes
       elsif code.empty?
         put_notice t(:source_empty)
       end
@@ -342,7 +347,7 @@ class ApplicationController < ActionController::Base
   $flashs.each do |type|
     define_method "put_#{type}" do |msg|
       eval %Q[
-        flash[:#{type}] ? flash[:#{type}].gsub!(\"(\#{now})\",'　') : flash[:#{type}] = ''
+        flash[:#{type}] ? flash[:#{type}].gsub!(\"(\#{now})\",'') : flash[:#{type}] = ''
         flash[:#{type}] += \"\#{msg} (\#{now})\"
       ]
     end

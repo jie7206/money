@@ -12,7 +12,7 @@ class ItemsController < ApplicationController
   end
 
   def edit
-    memory_back
+    memory_back(items_path)
   end
 
   def create
@@ -28,7 +28,7 @@ class ItemsController < ApplicationController
   def update
     if @item.update(item_params)
       put_notice t(:item_updated_ok)
-      session[:path] ? go_back : go_items
+      go_back
     else
       render :edit
     end
@@ -57,6 +57,7 @@ class ItemsController < ApplicationController
   # 能从安居客自动更新房价
   def update_house_price
     update_yanda_house_price
+    update_all_portfolio_attributes
     go_back
   end
 

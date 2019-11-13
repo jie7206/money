@@ -158,7 +158,7 @@ cn:
   record_updated_ok: 记录更新成功！
   record_destroyed_ok: 记录删除成功！
   update_house_price: 更新房价
-  yanda_house_price_updated_ok: 燕大星苑房屋单价已更新！
+  yanda_house_price_updated_ok: 燕大星苑单价已更新！
   source_empty: 错误！没有获取到网页源代码 >_<
   copyright: 版权所有
   contact_email: 联系邮箱
