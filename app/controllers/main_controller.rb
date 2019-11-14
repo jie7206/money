@@ -49,4 +49,10 @@ class MainController < ApplicationController
     params[:pincode] and !params[:pincode].empty?
   end
 
+  # 更新火币所有账号的资产余额
+  def update_huobi_assets
+    update_portfolios_and_records if update_all_huobi_assets > 0
+    go_back
+  end
+
 end

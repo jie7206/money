@@ -37,6 +37,14 @@ class CurrenciesController < ApplicationController
     end
   end
 
+  # 更新所有货币的汇率值
+  def update_all_exchange_rates
+    count1 = update_digital_exchange_rates
+    count2 = update_legal_exchange_rates
+    update_portfolios_and_records if count1 + count2 > 0
+    go_back
+  end
+
   # 删除货币
   def destroy
     @currency.destroy

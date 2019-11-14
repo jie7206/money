@@ -57,7 +57,7 @@ class ItemsController < ApplicationController
   # 能从安居客自动更新房价
   def update_house_price
     update_yanda_house_price
-    update_all_portfolio_attributes
+    update_portfolios_and_records
     go_back
   end
 

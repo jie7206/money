@@ -6,8 +6,10 @@ class ApplicationController < ActionController::Base
   before_action :summary, :memory_back, only: [ :index ]
 
   # 火币API初始化
-  def ini_huobi( id = '1' )
-    eval("@huobi_api = Huobi.new($acckey_#{id},$seckey_#{id},$accid_#{id},$huobi_server)")
+  def ini_huobi
+    [135,170].each do |pno|
+      eval("@huobi_api_#{pno} = Huobi.new($acckey_#{pno},$seckey_#{pno},$accid_#{pno},$huobi_server)")
+    end
   end
 
   # 初始化设置
@@ -48,8 +50,8 @@ class ApplicationController < ActionController::Base
   def get_huobi_price( symbol )
     begin
       Timeout.timeout(90) do
-        if @huobi_api
-          root = @huobi_api.history_kline(symbol.to_s,'1min',1)
+        if @huobi_api_135
+          root = @huobi_api_135.history_kline(symbol.to_s,'1min',1)
           if root["data"] and root["data"][0] # 不管什么情况，如果发生异常，则返回0
             return format("%.4f",root["data"][0]["close"]).to_f
           end
@@ -76,7 +78,8 @@ class ApplicationController < ActionController::Base
         end
       end
     end
-    put_notice "#{count} #{t(:n_digital_exchange_rates_updated_ok)}"
+    put_notice "#{count} #{t(:n_digital_exchange_rates_updated_ok)}" if count > 0
+    return count
   end
 
   # 更新所有法币的汇率值
@@ -90,14 +93,8 @@ class ApplicationController < ActionController::Base
         count += 1
       end
     end
-    put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}"
-  end
-
-  # 更新所有货币的汇率值
-  def update_all_exchange_rates
-    update_digital_exchange_rates
-    update_legal_exchange_rates
-    go_back
+    put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}" if count > 0
+    return count
   end
 
   # 更新所有货币的汇率值
@@ -105,10 +102,10 @@ class ApplicationController < ActionController::Base
     ori_login = admin? ? 'admin' : 'guest' # 远端必须以管理员身份存取，否则资产占比会出错
     session[:admin] = true
     update_yanda_house_price # 更新燕大星苑房屋单价
+    update_all_huobi_assets # 更新火币所有账号的资产余额
     update_digital_exchange_rates # 更新所有数字货币的汇率值
     update_legal_exchange_rates # 更新所有法币的汇率值
-    update_all_portfolio_attributes # 更新所有的资产组合栏位数据
-    update_all_record_values # 更新所有模型的数值记录
+    update_portfolios_and_records # 更新所有的资产组合栏位数据和所有模型的数值记录
     go_back
     session[:admin] = ori_login == 'admin' ? true : false # 恢复原始登入身份
   end
@@ -333,6 +330,108 @@ class ApplicationController < ActionController::Base
       elsif code.empty?
         put_notice t(:source_empty)
       end
+    end
+  end
+
+  # 连线读取火币账号的资产余额
+  def get_huobi_assets( huobi_obj )
+    root = huobi_obj.balances
+    if root["status"] == "ok"
+      result = []
+      root["data"]["list"].each do |item|
+        data = {}
+        if item["balance"].to_f > 0.000000001
+          data[:currency] = item["currency"]
+          data[:type] = item["type"]
+          data[:balance] = to_n(item["balance"].to_f,8)
+          result << data
+        end
+      end
+      return result
+    else
+      return nil
+    end
+  end
+
+  # 合并trade与frozen两种type
+  def sum_huobi_assets( arr )
+    if arr and arr.size > 0
+      result = []
+      arr.each do |asset|
+        data = {}; trade = frozen = 0
+        trade = (arr.select {|a| a[:currency]==asset[:currency] and a[:type]=='trade'}).first[:balance].to_f
+        if f = (arr.select {|a| a[:currency]==asset[:currency] \
+            and a[:type]=='frozen'}) and f.size > 0
+          frozen = f.first[:balance].to_f
+        end
+        data[:code] = asset[:currency].upcase
+        data[:amount] = to_n(trade+frozen,8)
+        result << data
+      end
+      return result
+    end
+  end
+
+  # 更新火币所有账号的资产余额
+  def update_all_huobi_assets
+    count = 0
+    [135,170].each do |pno|
+    # 1.读取并整理火币资产数据成[{:code=>"husd",:amount=>"0.00005986"}]格式
+      # 原始数据，包含trade与frozen两种type
+      assets_arr_ori = get_huobi_assets(eval("@huobi_api_#{pno}"))
+      # 合并trade与frozen两种type
+      assets_arr_sum = sum_huobi_assets(assets_arr_ori)
+    # 2.更新资产中相关的数据，若无则自动新增
+      if assets_arr_sum and assets_arr_sum.size > 0
+        properties = Property.tagged_with(pno)
+        assets_arr_sum.each do |a|
+          if property = (properties.select {|p| p.name.index(a[:code]) and p.name.index("火币资产 #{phone_number(pno)}")}.first)
+            # 更新
+            property.update_attribute(:amount,a[:amount])
+            count += 1
+          else
+            # 新建
+            Property.create(
+              name: "火币资产 #{phone_number(pno)}: #{a[:code]}",
+              amount: a[:amount],
+              currency_id: get_or_create_currency(a[:code]),
+              tag_list: pno
+            )
+            count += 1
+          end
+        end
+      end
+    end
+    put_notice "#{count}#{t(:xiang)}#{t(:huobi_assets_updated_ok)}" if count > 0
+    return count
+  end
+
+  # 更新所有的资产组合栏位数据和所有模型的数值记录
+  def update_portfolios_and_records
+    update_all_portfolio_attributes # 更新所有的资产组合栏位数据
+    update_all_record_values # 更新所有模型的数值记录
+  end
+
+  # 获取手机号码
+  def phone_number( pno )
+    case pno.to_s
+      when '135' then return '13581706025'
+      when '170' then return '17099311026'
+    end
+  end
+
+  # 获取货币识别ID，若无则新增
+  def get_or_create_currency( code )
+    if currency = Currency.find_by_code(code)
+      return currency.id
+    else
+      new_currency = Currency.create(
+        name: code.capitalize,
+        code: code,
+        symbol: "#{code.downcase}usdt",
+        exchange_rate: 1.0
+      )
+      return new_currency.id
     end
   end
 

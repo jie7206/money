@@ -136,6 +136,7 @@ en:
   rate_or_price: Rate/Price
   look: Look
   chart: Chart
+  xiang:  
   compose: Compose
   record_class_name_blank_err: Record's class name can't be blank
   record_oid_blank_err: Record's object id can't be blank
@@ -158,6 +159,8 @@ en:
   update_house_price: Update House Price
   yanda_house_price_updated_ok: Yan-Da House price was successfully updated!
   source_empty: ERROR! source code return empty >_<
+  update_huobi_assets: Update Huobi
+  huobi_assets_updated_ok: huobi assets was successfully destroyed!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

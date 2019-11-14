@@ -58,7 +58,7 @@ class PortfoliosController < ApplicationController
   end
 
   def update_all_portfolios
-    update_all_portfolio_attributes
+    update_portfolios_and_records
     go_back
   end
 

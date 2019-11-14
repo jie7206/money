@@ -136,6 +136,7 @@ cn:
   rate_or_price: 汇率/价格
   look: 查看
   chart: 走势
+  xiang: 项
   compose: 成员
   created_at: 创建
   updated_at: 更新
@@ -160,6 +161,8 @@ cn:
   update_house_price: 更新房价
   yanda_house_price_updated_ok: 燕大星苑单价已更新！
   source_empty: 错误！没有获取到网页源代码 >_<
+  update_huobi_assets: 更新火币
+  huobi_assets_updated_ok: 火币资产已更新！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
