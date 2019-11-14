@@ -34,6 +34,7 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
           find("#property_#{@twd_cash.id}").click
           expect(page.html).to include '12345.67'
           expect(current_url).to include 'MYCASH'
+          expect(page).to have_selector '#properties_total_info'
         end
 
         specify '#158[系统层]点击查看资产组合能记录等值台币等值人民币与资产占比讯息' do

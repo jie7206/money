@@ -40,7 +40,7 @@
 <% if show_summary %>
   <%= show_summary_tr(10) %>
 <% else %>
-  <tr class="thead">
+  <tr class="thead" id="properties_total_info">
     <td colspan="2"></td>
     <td colspan="3" align="right"><%= to_amount(amounts,properties.last.currency.is_digital?) %>&nbsp;</td>
     <td align="right"><%= amount_twds.to_i %></td>

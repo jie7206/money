@@ -240,7 +240,7 @@ class ApplicationController < ActionController::Base
 
   # 获取资产的净值等统计数据
   def summary( admin = admin? )
-    @show_summary = true
+    @show_summary = params[:tags] ? false : true
     @properties_net_value_twd = Property.net_value :twd, admin_hash(admin)
     @properties_net_value_cny = Property.net_value :cny, admin_hash(admin)
     @properties_lixi_twd = Property.lixi :twd, admin_hash(admin)

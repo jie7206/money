@@ -41,6 +41,11 @@ RSpec.describe '连外测试(Currencies)', type: :system do
       end
       expect(current_path).to eq path
       expect(page).to have_selector '.alert-notice'
+      expect(page).to have_content $yanda_house_price_updated_ok # 房屋单价
+      expect(page).to have_content $n_digital_exchange_rates_updated_ok # 数字货币
+      expect(page).to have_content $n_legal_exchange_rates_updated_ok # 法币汇率
+      expect(page).to have_content $portfolios_updated_ok # 资产组合
+      expect(page).to have_content $all_records_updated_ok # 数值记录
     end
 
   end
