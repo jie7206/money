@@ -1,0 +1,51 @@
+<%= render 'shared/error_messages', object: @deal_record %>
+
+<%= form_for(@deal_record) do |f| %>
+<table>
+  <tr><td colspan="2" class="thead"><%= timestamps(@deal_record) %></td></tr>
+  <tr>
+    <td><%= t(:deal_record_deal_type) %>：</td>
+    <td><%= select_deal_record_type(f) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_symbol) %>：</td>
+    <td><%= f.text_field(:symbol,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_price) %>：</td>
+    <td><%= f.text_field(:price,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_amount) %>：</td>
+    <td><%= f.text_field(:amount,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_fees) %>：</td>
+    <td><%= f.text_field(:fees,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_purpose) %>：</td>
+    <td><%= f.text_field(:purpose,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_earn_limit) %>：</td>
+    <td><%= f.text_field(:earn_limit,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_loss_limit) %>：</td>
+    <td><%= f.text_field(:loss_limit,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_auto_sell) %>：</td>
+    <td><%= f.check_box(:auto_sell) %></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="right" class="tfoot">
+      <%= f.submit( submit,id: submit_id) %>
+    </td>
+  </tr>
+</table>
+<% end %>
+<br/>
+<%= link_back_to_deal_records %>
+<%= link_to_delete(@deal_record) %>

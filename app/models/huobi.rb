@@ -116,10 +116,10 @@ class Huobi
   ## 如果使用借贷资产交易
   ## 请在下单接口/v1/order/orders/place
   ## 请求参数source中填写'margin-api'
-  def new_order(symbol,side,price,count)
+  def new_order(symbol,side,price,amount)
     params ={
       "account-id" => @account_id,
-      "amount" => count,
+      "amount" => amount,
       "price" => price,
       "source" => "api",
       "symbol" => symbol,
@@ -194,9 +194,9 @@ class Huobi
   end
 
   ## 查询当前成交、历史成交
-  def history_matchresults(symbol)
+  def history_matchresults(symbol,start_date=(Date.today-1.days).strftime("%Y-%m-%d"),end_date=(Date.today-0.days).strftime("%Y-%m-%d"))
     path = "/v1/order/matchresults"
-    params ={"symbol"=>symbol}
+    params ={"symbol"=>symbol,"start-date"=>start_date,"end-date"=>end_date}
     request_method = "GET"
     util(path,params,request_method)
   end

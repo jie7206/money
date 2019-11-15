@@ -163,6 +163,30 @@ cn:
   source_empty: 错误！没有获取到网页源代码 >_<
   update_huobi_assets: 更新火币
   huobi_assets_updated_ok: 火币资产已更新！
+  deal_record_symbol_blank_err: 交易记录的币种不能空白！
+  deal_record_price_blank_err: 交易记录的成交价格不能空白！
+  deal_record_amount_blank_err: 交易记录的成交量不能空白！
+  deal_record_created_ok: 交易记录新建成功！
+  deal_record_updated_ok: 交易记录更新成功！
+  deal_record_destroyed_ok: 交易记录删除成功！
+  deal_record_deal_type: 交易类别
+  deal_record_symbol: 交易币种
+  deal_record_price: 成交价格
+  deal_record_amount: 成交数量
+  deal_record_fees: 手续费用
+  deal_record_purpose: 投资目的
+  deal_record_earn_limit: 止盈额度
+  deal_record_loss_limit: 止损额度
+  deal_record_auto_sell: 自动卖出
+  edit_deal_record: 编辑交易记录
+  update_deal_record: 更新交易记录
+  new_deal_record: 新建交易记录
+  deal_record_index: 交易列表
+  delete_deal_record: 删除这笔交易记录
+  deal_record_price_type_err: 成交价格必须为大于零的数字！
+  deal_record_amount_type_err: 成交数量必须为大于零的数字！
+  deal_record_earn_limit_type_err: 止盈额度必须为大于零的整数！
+  deal_record_loss_limit_type_err: 止损额度必须为大于零的整数！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

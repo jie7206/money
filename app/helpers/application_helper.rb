@@ -3,7 +3,7 @@ module ApplicationHelper
   include ActsAsTaggableOn::TagsHelper
 
   # 为哪些模型自动建立返回列表的链接以及执行返回列表的指令
-  $models = %w(property currency interest item portfolio record)
+  $models = %w(property currency interest item portfolio record deal_record)
   # 为哪些类型的通知自动产生方法
   $flashs = %w(notice warning)
   # 建立从列表中快速更新某个值的方法
@@ -11,7 +11,16 @@ module ApplicationHelper
   # 资产组合的模式属性
   $modes = %w(none matchall any)
   # 记录数值的模型名称
-  $record_classes = ($models - %w(record)).map{|w| w.capitalize} + ['NetValue','NetValueAdmin']
+  $record_classes = \
+    %w(property currency interest item portfolio).\
+    map{|w| w.capitalize} + ['NetValue','NetValueAdmin']
+
+  # 建立返回列表的链接
+  $models.each do |n|
+    define_method "link_back_to_#{n.pluralize}" do
+      eval("raw(\"" + '#{' + "link_to t(:#{n}_index), #{n.pluralize}_path" + "}\")")
+    end
+  end
 
   # 网站标题
   def site_name
@@ -70,7 +79,7 @@ module ApplicationHelper
   def link_edit_to( instance, link_text = nil, back_path = nil, options = {} )
     link_text ||= instance.name
     path_str = ", path: '#{back_path}'" if !back_path.nil?
-    eval "link_to '#{link_text}', {controller: :#{instance.class.to_s.downcase.pluralize}, action: :edit, id: #{instance.id}#{path_str}}, #{options}"
+    eval "link_to '#{link_text}', {controller: :#{instance.class.table_name}, action: :edit, id: #{instance.id}#{path_str}}, #{options}"
   end
 
   # 链接到编辑类别
@@ -90,9 +99,14 @@ module ApplicationHelper
     eval("obj.select :mode, $modes.collect {|m| [m, m[0]]}")
   end
 
-  # 资产组合新增模式属性以便能支持所有法币资产的查看
+  # 选择交易记录的分类
   def select_record_model( obj )
     eval("obj.select :class_name, $record_classes.collect {|m| [m, m]}")
+  end
+
+  # 选择交易记录的类型
+  def select_deal_record_type( obj )
+    eval("obj.select :deal_type, ['buy','sell'].collect {|m| [m.upcase, m]}")
   end
 
   # 更新汇率的链接
@@ -170,7 +184,7 @@ module ApplicationHelper
   # 显示删除某笔数据链接
   def link_to_delete( obj )
     if !obj.new_record?
-      name = obj.class.name.downcase
+      name = obj.class.table_name.singularize
       raw(' | '+eval("link_to t(:delete_#{name}), delete_#{name}_path(@#{name}), id: 'delete_#{name}'"))
     end
   end
@@ -182,12 +196,6 @@ module ApplicationHelper
             #{render 'shared/summary'}
           </td>
         </tr>"
-  end
-  # 建立返回列表的链接
-  $models.each do |n|
-    define_method "link_back_to_#{n.pluralize}" do
-      eval("raw(\"" + '#{' + "link_to t(:#{n}_index), #{n.pluralize}_path" + "}\")")
-    end
   end
 
   # Fusioncharts属性大全: http://wenku.baidu.com/link?url=JUwX7IJwCbYMnaagerDtahulirJSr5ASDToWeehAqjQPfmRqFmm8wb5qeaS6BsS7w2_hb6rCPmeig2DBl8wzwb2cD1O0TCMfCpwalnoEDWa
@@ -211,6 +219,39 @@ module ApplicationHelper
   # 建立查看走势图链接
   def chart_link( obj )
     raw(link_to(image_tag('chart.png',width:16),{controller: obj.class.name.pluralize.downcase.to_sym, action: :chart, id: obj.id},{target: :blank}))
+  end
+
+  # 显示火币JSON回传讯息
+  def get_json(url)
+    resp = Net::HTTP.get(URI("https://#{$huobi_server}/"+url))
+    return JSON.parse(ActiveSupport::JSON.decode(resp.to_json))
+  end
+
+  # 显示火币时间讯息使用
+  def get_timestamp
+    root = get_json('v1/common/timestamp')
+    if root["status"] == "ok" and root["data"]
+      return root["data"].to_i/1000
+    else
+      return 0
+    end
+  end
+
+  # 将UTC time in millisecond显示成一般日期格式
+  def show_time( utc_time )
+    if timestamp = get_timestamp and timestamp > 0
+      (Time.now-(get_timestamp-utc_time.to_i/1000).second).strftime("%Y-%m-%d %H:%M:%S")
+    end
+  end
+
+  # 是否显示打勾的图示
+  def show_ok( boolean )
+    image_tag('ok.png',width:15) if boolean
+  end
+
+  # 显示交易类别
+  def show_deal_type( type )
+    type == 'buy' ? '买进' : '卖出'
   end
 
 end

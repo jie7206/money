@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_11_091456) do
+ActiveRecord::Schema.define(version: 2019_11_15_114238) do
 
   create_table "currencies", force: :cascade do |t|
     t.string "name"
@@ -19,6 +19,20 @@ ActiveRecord::Schema.define(version: 2019_11_11_091456) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "symbol"
+  end
+
+  create_table "deal_records", force: :cascade do |t|
+    t.string "deal_type"
+    t.string "symbol"
+    t.decimal "price"
+    t.decimal "amount"
+    t.decimal "fees"
+    t.string "purpose"
+    t.integer "loss_limit"
+    t.integer "earn_limit"
+    t.boolean "auto_sell"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "interests", force: :cascade do |t|

@@ -71,7 +71,7 @@ en:
   interest_currency: Interest Currency
   new_interest: Add New Interest
   delete_interest: Delete This Interest
-  delete_interest_confirm: Are you SURE？
+  delete_interest_confirm: Are you SURE?
   edit_interest: Edit Interest
   update_interest: Update Interest
   interest_created_ok: Interest was successfully created!
@@ -104,7 +104,7 @@ en:
   item_destroyed_ok: Item was successfully destroyed!
   item_price_type_err: Item price must be a positive number!
   item_amount_type_err: Item amount must be a positive number!
-  delete_item_confirm: Are you SURE？
+  delete_item_confirm: Are you SURE?
   increase_or_decrease: Increase
   portfolio_name_blank_err: Portfolio's name can't be blank!
   portfolio_include_tags_blank_err: Portfolio's include tags can't be blank!
@@ -123,7 +123,7 @@ en:
   portfolio_mode: Search Mode
   order: Order
   delete_portfolio: Delete This Portfolio
-  delete_portfolio_confirm: Are you SURE？
+  delete_portfolio_confirm: Are you SURE?
   edit_portfolio: Edit Portfolio
   update_portfolio: Update Portfolio
   update_all_portfolios: Update All Portfolios
@@ -136,7 +136,7 @@ en:
   rate_or_price: Rate/Price
   look: Look
   chart: Chart
-  xiang:  
+  xiang:
   compose: Compose
   record_class_name_blank_err: Record's class name can't be blank
   record_oid_blank_err: Record's object id can't be blank
@@ -149,7 +149,7 @@ en:
   record_index: Records
   new_record: Add New Record
   delete_record: Delete Record
-  delete_record_confirm: Are you SURE？
+  delete_record_confirm: Are you SURE?
   all_records_updated_ok: All records was successfully updated!
   update_all_data: Update All
   update_all_data_ok: All data was successfully updated!
@@ -161,6 +161,30 @@ en:
   source_empty: ERROR! source code return empty >_<
   update_huobi_assets: Update Huobi
   huobi_assets_updated_ok: huobi assets was successfully destroyed!
+  deal_record_symbol_blank_err: Deal Record's symbol can't be blank
+  deal_record_price_blank_err: Deal Record's price can't be blank
+  deal_record_amount_blank_err: Deal Record's amount can't be blank
+  deal_record_created_ok: Deal Record was successfully created!
+  deal_record_updated_ok: Deal Record was successfully updated!
+  deal_record_destroyed_ok: Deal Record was successfully destroyed!
+  deal_record_deal_type: Type
+  deal_record_symbol: Symbol
+  deal_record_price: Price
+  deal_record_amount: Amount
+  deal_record_fees: Fees
+  deal_record_purpose: Purpose
+  deal_record_earn_limit: Earn Limit
+  deal_record_loss_limit: Loss Limit
+  deal_record_auto_sell: Auto Sell
+  edit_deal_record: Edit Deal Record
+  update_deal_record: Update Deal Record
+  new_deal_record: Add New Deal Record
+  deal_record_index: Deal Record Index
+  delete_deal_record: Are you SURE?
+  deal_record_price_type_err: Price must be a positive number!
+  deal_record_amount_type_err: Amount must be a positive number!
+  deal_record_earn_limit_type_err: Earn Limit must be a positive number!
+  deal_record_loss_limit_type_err: Loss Limit must be a positive number!  
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

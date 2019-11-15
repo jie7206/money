@@ -32,6 +32,11 @@ Rails.application.routes.draw do
       get :delete
     end
   end
+  resources :deal_records do
+    member do
+      get :delete
+    end
+  end  
 
   get '/login', to: 'main#login'
   get '/logout', to: 'main#logout'
@@ -41,6 +46,5 @@ Rails.application.routes.draw do
   get 'update_all_exchange_rates', to: 'currencies#update_all_exchange_rates'
   get 'update_all_portfolios', to: 'portfolios#update_all_portfolios'
   get 'update_house_price', to: 'items#update_house_price'
-
 
 end
