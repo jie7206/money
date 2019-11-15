@@ -118,7 +118,7 @@ RSpec.describe '系统测试(Portfolios)', type: :system do
 
       before do
         visit portfolios_path
-        click_on portfolio.name
+        find("#portfolio_edit_#{portfolio.id}").click
       end
 
       describe '成功用例' do

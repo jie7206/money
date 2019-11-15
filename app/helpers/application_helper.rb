@@ -73,6 +73,12 @@ module ApplicationHelper
     eval "link_to '#{link_text}', {controller: :#{instance.class.to_s.downcase.pluralize}, action: :edit, id: #{instance.id}#{path_str}}, #{options}"
   end
 
+  # 链接到编辑类别
+  def link_edit_to_image( instance, image_name = 'doc.png', back_path = nil )
+    path_str = ", path: '#{back_path}'" if !back_path.nil?
+    eval "link_to image_tag('#{image_name}'), {controller: :#{instance.class.to_s.downcase.pluralize}, action: :edit, id: #{instance.id}#{path_str}}, {id:'#{instance.class.name.downcase}_edit_#{instance.id}'}"
+  end
+
   # 用户在新建利息或商品时不能看到隐藏资产以供选择
   def select_property_id( obj )
     scope = admin? ? 'all' : 'all_visible'
@@ -127,7 +133,7 @@ module ApplicationHelper
 
   # 点击图标查看资产组合明细
   def look_portfolio_detail( portfolio )
-    raw(link_to(image_tag('doc.png'),
+    raw(link_to(portfolio.name,
       {controller: :properties, action: :index, portfolio_name: portfolio.name,
         tags: portfolio.include_tags, extags: portfolio.exclude_tags, mode: portfolio.mode, pid: portfolio.id},{id:"portfolio_#{portfolio.id}"}))
   end

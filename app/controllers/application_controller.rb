@@ -97,7 +97,7 @@ class ApplicationController < ActionController::Base
     return count
   end
 
-  # 更新所有货币的汇率值
+  # 更新所有的资料
   def update_all_data
     ori_login = admin? ? 'admin' : 'guest' # 远端必须以管理员身份存取，否则资产占比会出错
     session[:admin] = true
@@ -111,7 +111,7 @@ class ApplicationController < ActionController::Base
   end
 
   # 取得SSL连线的回传值
-  def get_ssl_response(url, authorization=nil)
+  def get_ssl_response( url, authorization = nil )
     uri = URI.parse(url)
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = 30
@@ -129,8 +129,8 @@ class ApplicationController < ActionController::Base
   end
 
   # 取得最新法币汇率的报价
-  def get_exchange_rate(fromCode, toCode)
-    url = "https://ali-waihui.showapi.com/waihui-transform?fromCode=#{fromCode.to_s.upcase}&toCode=#{toCode.to_s.upcase}&money=1"
+  def get_exchange_rate( from_code, to_code )
+    url = "https://ali-waihui.showapi.com/waihui-transform?fromCode=#{from_code.to_s.upcase}&toCode=#{to_code.to_s.upcase}&money=1"
     resp = get_ssl_response(url,"APPCODE de9f4a29c5eb4c73b0be619872e18857")
     if rate = Regexp.new(/(\d)+\.(\d)+/).match(resp)
       return rate[0].to_f
@@ -139,7 +139,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # 更新单一法币的汇率值
+  # 更新单一货币的汇率值
   def update_exchange_rate( code, value )
     if currency = Currency.find_by_code(code)
       currency.update_attribute(:exchange_rate,value)
@@ -184,7 +184,7 @@ class ApplicationController < ActionController::Base
         # 依照排除标签排除
         result = result.tagged_with(exclude_tags.strip.split(' '),exclude: true)
       end
-      return result
+      return result.sort_by{|p| p.amount_to}.reverse
     end
     return nil
   end
@@ -375,7 +375,7 @@ class ApplicationController < ActionController::Base
   # 更新火币所有账号的资产余额
   def update_all_huobi_assets
     count = 0
-    [135,170].each do |pno|
+    ['135','170'].each do |pno|
     # 1.读取并整理火币资产数据成[{:code=>"husd",:amount=>"0.00005986"}]格式
       # 原始数据，包含trade与frozen两种type
       assets_arr_ori = get_huobi_assets(eval("@huobi_api_#{pno}"))
