@@ -13,6 +13,8 @@
     <td><%= t(:now_to_cny) %></td>
     <td><%= t(:earn_or_loss) %></td>
     <td><%= t(:deal_record_purpose) %></td>
+    <td><%= t(:deal_record_earn_short) %></td>
+    <td><%= t(:deal_record_loss_short) %></td>
   </tr>
 <% n = 1 %>
 <% @deal_records.each do |deal_record| %>
@@ -29,11 +31,13 @@
     <td align="right"><%= deal_record.cny_amount_now %></td>
     <td align="right"><%= deal_record.earn_or_loss %></td>
     <td align="left"><%= deal_record.purpose %></td>
+    <td align="right"><%= deal_record.earn_limit %></td>
+    <td align="right"><%= deal_record.loss_limit %></td>
   </tr>
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="12" class="thead"></td>
+    <td colspan="14" class="thead"></td>
   </tr>
 </table>
 <br/>

@@ -172,7 +172,7 @@ en:
   deal_record_created_ok: Deal Record was successfully created!
   deal_record_updated_ok: Deal Record was successfully updated!
   deal_record_destroyed_ok: Deal Record was successfully destroyed!
-  deal_record_account: Account
+  deal_record_account: Acc.
   deal_record_data_id: Data ID
   deal_record_deal_type: Type
   deal_record_symbol: Symbol
@@ -182,6 +182,8 @@ en:
   deal_record_purpose: Purpose
   deal_record_earn_limit: Earn Limit
   deal_record_loss_limit: Loss Limit
+  deal_record_earn_short: EarnL
+  deal_record_loss_short: LossL
   deal_record_auto_sell: Auto Sell
   edit_deal_record: Edit Deal Record
   update_deal_record: Update Deal Record
