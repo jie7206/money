@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :deal_record do
     deal_type { "" }
-    symbol { "MyString" }
+    symbol { "btcusdt" }
     amount { "9.99" }
     price { "9.99" }
     fees { "9.99" }

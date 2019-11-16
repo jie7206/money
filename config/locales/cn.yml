@@ -178,14 +178,15 @@ cn:
   deal_record_data_id: 交易编号
   deal_record_deal_type: 类别
   deal_record_symbol: 币种
-  deal_record_price: 成交价格
-  deal_record_amount: 成交数量
+  deal_record_price: 成交价
+  deal_record_amount: 成交量
   deal_record_fees: 手续费用
   deal_record_purpose: 投资目的
   deal_record_earn_limit: 止盈额度
   deal_record_loss_limit: 止损额度
   deal_record_earn_short: 止盈
   deal_record_loss_short: 止损
+  price_now: 现价
   deal_record_auto_sell: 自动卖出
   edit_deal_record: 编辑交易记录
   update_deal_record: 更新交易记录

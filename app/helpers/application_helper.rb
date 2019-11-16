@@ -263,4 +263,9 @@ module ApplicationHelper
     type.index('buy') ? '买进' : '卖出'
   end
 
+  # 显示较长的文字数据
+  def show_long_text( string, length = 10 )
+    raw "<span title='#{string}'>#{truncate(string,length: length)}</span>"
+  end
+
 end

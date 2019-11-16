@@ -184,6 +184,7 @@ en:
   deal_record_loss_limit: Loss Limit
   deal_record_earn_short: EarnL
   deal_record_loss_short: LossL
+  price_now: Price Now
   deal_record_auto_sell: Auto Sell
   edit_deal_record: Edit Deal Record
   update_deal_record: Update Deal Record

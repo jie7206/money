@@ -18,7 +18,7 @@
     <td align="right"><%= render 'update_price', item: item %></td>
     <td align="right"><%= item.property.currency.name %></td>
     <td align="right"><%= render 'update_amount', item: item %></td>
-    <td align="right"><%= link_to item.url.truncate(30), item.url, {target: :blank} %></td>
+    <td align="right"><%= link_to show_long_text(item.url,30), item.url, {target: :blank} %></td>
     <td align="center"><%= chart_link(item) %></td>
   </tr>
   <% n += 1 %>

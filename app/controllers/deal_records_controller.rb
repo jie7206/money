@@ -4,7 +4,7 @@ class DealRecordsController < ApplicationController
   before_action :set_deal_record, only: [:edit, :update, :destroy, :delete]
 
   def index
-    @deal_records = DealRecord.all.order('account desc,data_id desc')
+    @deal_records = DealRecord.order('data_id desc').limit(100)
   end
 
   def new
