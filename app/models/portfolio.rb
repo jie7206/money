@@ -1,7 +1,5 @@
 class Portfolio < ApplicationRecord
 
-  include ApplicationHelper
-
   validates \
     :name,
       presence: {

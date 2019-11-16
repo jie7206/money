@@ -45,6 +45,12 @@ class CurrenciesController < ApplicationController
     go_back
   end
 
+  # 更新所有法币的汇率值
+  def update_all_legal_exchange_rates
+    update_portfolios_and_records if update_legal_exchange_rates > 0
+    go_back
+  end
+
   # 删除货币
   def destroy
     @currency.destroy

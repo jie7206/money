@@ -36,14 +36,15 @@ Rails.application.routes.draw do
     member do
       get :delete
     end
-  end  
+  end
 
   get '/login', to: 'main#login'
   get '/logout', to: 'main#logout'
   get '/chart', to: 'main#chart'
-  get 'update_huobi_assets', to: 'main#update_huobi_assets'
+  get 'update_huobi_data', to: 'main#update_huobi_data'
   get 'update_all_data', to: 'properties#update_all_data'
   get 'update_all_exchange_rates', to: 'currencies#update_all_exchange_rates'
+  get 'update_all_legal_exchange_rates', to: 'currencies#update_all_legal_exchange_rates'
   get 'update_all_portfolios', to: 'portfolios#update_all_portfolios'
   get 'update_house_price', to: 'items#update_house_price'
 

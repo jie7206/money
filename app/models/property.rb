@@ -1,7 +1,5 @@
 class Property < ApplicationRecord
 
-  include ApplicationHelper
-
   acts_as_taggable
   belongs_to :currency
   has_one :interest
@@ -65,15 +63,6 @@ class Property < ApplicationRecord
   # 只回传所有非隐藏的资产
   def self.all_visible
     all.select {|p| !p.hidden? }
-  end
-
-  # 将资产金额从自身的币别转换成其他币别(默认为新台币)
-  def amount_to( target_code = :twd )
-    if trate = target_rate(target_code)
-      return amount*(trate.to_f/self.currency.exchange_rate.to_f)
-    else
-      return amount
-    end
   end
 
   # 要写入记录列表的值

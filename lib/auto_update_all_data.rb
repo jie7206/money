@@ -12,7 +12,7 @@ while true
     end
   rescue
     puts "Timeout error at #{Time.now}"
-    sleep 60*2
+    sleep 60*3
     next
   end
   sleep period

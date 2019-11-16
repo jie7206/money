@@ -1,7 +1,5 @@
 class Item < ApplicationRecord
 
-  include ApplicationHelper
-
   belongs_to :property
 
   validates \

@@ -103,8 +103,8 @@ class ApplicationController < ActionController::Base
     session[:admin] = true
     update_yanda_house_price # 更新燕大星苑房屋单价
     update_all_huobi_assets # 更新火币所有账号的资产余额
+    update_huobi_deal_records # 更新火币所有账号的交易记录
     update_digital_exchange_rates # 更新所有数字货币的汇率值
-    update_legal_exchange_rates # 更新所有法币的汇率值
     update_portfolios_and_records # 更新所有的资产组合栏位数据和所有模型的数值记录
     go_back
     session[:admin] = ori_login == 'admin' ? true : false # 恢复原始登入身份
@@ -114,7 +114,7 @@ class ApplicationController < ActionController::Base
   def get_ssl_response( url, authorization = nil )
     uri = URI.parse(url)
     http = Net::HTTP.new(uri.host, uri.port)
-    http.read_timeout = 30
+    http.read_timeout = 180
     if url.split(':').first == 'https'
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -403,6 +403,42 @@ class ApplicationController < ActionController::Base
       end
     end
     put_notice "#{count}#{t(:xiang)}#{t(:huobi_assets_updated_ok)}" if count > 0
+    return count
+  end
+
+  # 更新火币所有账号的交易记录
+  def update_huobi_deal_records
+    count = 0
+    symbol = 'btcusdt'
+    ['135','170'].each do |pno|
+      count += add_huobi_deal_records(eval("@huobi_api_#{pno}"),pno,symbol)
+    end
+    put_notice "#{count}#{t(:bi)}#{t(:huobi_deal_records_created_ok)}" if count > 0
+    return count
+  end
+
+  # 连线读取火币账号的交易记录并自动新增
+  def add_huobi_deal_records( huobi_obj, account, symbol )
+    count = 0
+    root = huobi_obj.history_matchresults(symbol)
+    if root["status"] == "ok"
+      root["data"].each do |data|
+        data_id = data["id"]
+        if !DealRecord.find_by_data_id(data_id)
+          DealRecord.create(
+            account: account,
+            data_id: data_id,
+            symbol: symbol,
+            deal_type: data["type"],
+            price: data["price"].to_f,
+            amount: data["filled-amount"].to_f,
+            fees: data["filled-fees"].to_f,
+            earn_limit: 0,
+            loss_limit: 0 )
+          count += 1
+        end
+      end
+    end
     return count
   end
 

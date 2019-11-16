@@ -17,9 +17,6 @@ RSpec.describe '系统测试(DealRecords)', type: :system do
       fill_in 'deal_record[loss_limit]', with: 500
       find('#update_deal_record').click
       expect(page).to have_selector '.alert-notice'
-      expect(page).to have_content '买新的电脑'
-      expect(page).to have_content 9000
-      expect(page).to have_content 500
     end
 
     specify '#165[系统层]能通过表单删除一笔交易记录' do

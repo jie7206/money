@@ -1,6 +1,6 @@
 class DealRecordsController < ApplicationController
 
-  before_action :check_admin, except: [:update_all_record_values]
+  before_action :check_admin
   before_action :set_deal_record, only: [:edit, :update, :destroy, :delete]
 
   def index
@@ -50,7 +50,7 @@ class DealRecordsController < ApplicationController
     end
 
     def deal_record_params
-      params.require(:deal_record).permit(:deal_type, :symbol, :amount, :price, :fees, :purpose, :loss_limit, :earn_limit, :auto_sell)
+      params.require(:deal_record).permit(:account, :data_id, :symbol, :deal_type, :price, :amount, :fees, :purpose, :loss_limit, :earn_limit, :auto_sell)
     end
 
 end

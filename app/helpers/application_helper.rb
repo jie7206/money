@@ -44,7 +44,7 @@ module ApplicationHelper
 
   # 默认的数字显示格式
   def to_n( number, pos=2 )
-    if number
+    if number = number.to_f
       return number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))
     else
       return format("%.#{pos}f",0)
@@ -76,8 +76,7 @@ module ApplicationHelper
   end
 
   # 链接到编辑类别
-  def link_edit_to( instance, link_text = nil, back_path = nil, options = {} )
-    link_text ||= instance.name
+  def link_edit_to( instance, link_text = instance.name, back_path = nil, options = {} )
     path_str = ", path: '#{back_path}'" if !back_path.nil?
     eval "link_to '#{link_text}', {controller: :#{instance.class.table_name}, action: :edit, id: #{instance.id}#{path_str}}, #{options}"
   end
@@ -104,14 +103,24 @@ module ApplicationHelper
     eval("obj.select :class_name, $record_classes.collect {|m| [m, m]}")
   end
 
+  # 选择交易记录的账号
+  def select_deal_record_account( obj )
+    eval("obj.select :account, ['135','170'].collect {|a| [a, a]}")
+  end
+
   # 选择交易记录的类型
   def select_deal_record_type( obj )
     eval("obj.select :deal_type, ['buy','sell'].collect {|m| [m.upcase, m]}")
   end
 
-  # 更新汇率的链接
+  # 更新所有汇率的链接
   def update_all_exchange_rates_link
     link_to t(:update_all_exchange_rates), {controller: :currencies, action: :update_all_exchange_rates, path: request.fullpath}, {id:'update_all_exchange_rates'}
+  end
+
+  # 更新法币汇率的链接
+  def update_all_legal_exchange_rates_link
+    link_to t(:update_all_legal_exchange_rates), {controller: :currencies, action: :update_all_legal_exchange_rates, path: request.fullpath}, {id:'update_all_legal_exchange_rates'}
   end
 
   # 更新全部的链接
@@ -120,8 +129,8 @@ module ApplicationHelper
   end
 
   # 更新火币的链接
-  def update_huobi_assets_link
-    link_to t(:update_huobi_assets), {controller: :main, action: :update_huobi_assets, path: request.fullpath}, { id: 'update_huobi_assets' }
+  def update_huobi_data_link
+    link_to t(:update_huobi_data), {controller: :main, action: :update_huobi_data, path: request.fullpath}, { id: 'update_huobi_data' }
   end
 
   # 更新资产组合的链接
@@ -251,7 +260,7 @@ module ApplicationHelper
 
   # 显示交易类别
   def show_deal_type( type )
-    type == 'buy' ? '买进' : '卖出'
+    type.index('buy') ? '买进' : '卖出'
   end
 
 end

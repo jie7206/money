@@ -1,5 +1,6 @@
 class ApplicationRecord < ActiveRecord::Base
 
+  include ApplicationHelper
   self.abstract_class = true
 
   # 从起算日到今天为止已经经过几天
@@ -66,6 +67,20 @@ class ApplicationRecord < ActiveRecord::Base
   # 取出目标货币的汇率值
   def target_rate( target_code = :twd )
     eval("$#{target_code.to_s.downcase}_exchange_rate")
+  end
+
+  # 将资产金额从自身的币别转换成其他币别(默认为新台币)
+  def amount_to( target_code = :twd, self_rate = self.currency.exchange_rate.to_f )
+    if trate = target_rate(target_code)
+      return amount*(trate.to_f/self_rate)
+    else
+      return amount
+    end
+  end
+
+  # USDT换成人民币
+  def usdt_to_cny
+    target_rate(:cny).to_f/target_rate(:usdt)
   end
 
 end
