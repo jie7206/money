@@ -184,6 +184,8 @@ en:
   deal_record_loss_limit: Loss Limit
   deal_record_earn_short: EarnL
   deal_record_loss_short: LossL
+  deal_record_order_id: Order Id
+  deal_record_real_profit: Realized Profit
   price_now: Price Now
   deal_record_auto_sell: Auto Sell
   edit_deal_record: Edit Deal Record
@@ -196,6 +198,9 @@ en:
   deal_record_earn_limit_type_err: Earn Limit must be a positive number!
   deal_record_loss_limit_type_err: Loss Limit must be a positive number!
   huobi_deal_records_created_ok: Huobi Deal Record was successfully created!
+  clear_deal_records: Clear Deal Records
+  clear_deal_records_ok: Deal Records was successfully cleared!
+  update_huobi_records: Update Huobi Deal Records
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

@@ -194,9 +194,10 @@ class Huobi
   end
 
   ## 查询当前成交、历史成交
-  def history_matchresults(symbol='btcusdt',start_date=(Date.today-1.days).strftime("%Y-%m-%d"),end_date=(Date.today-0.days).strftime("%Y-%m-%d"))
+  def history_matchresults(symbol='btcusdt',start_date=(Date.today-1.days).strftime("%Y-%m-%d"),end_date=(Date.today-0.days).strftime("%Y-%m-%d"),types='buy-limit')
     path = "/v1/order/matchresults"
-    params ={"symbol"=>symbol,"start-date"=>start_date,"end-date"=>end_date}
+    params = { "symbol" => symbol, "types" => types, \
+               "start-date" => start_date, "end-date" => end_date }
     request_method = "GET"
     util(path,params,request_method)
   end

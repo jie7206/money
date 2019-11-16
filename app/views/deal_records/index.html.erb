@@ -4,42 +4,62 @@
     <td width="15"></td>
     <td><%= t(:deal_record_account) %></td>
     <td><%= t(:deal_record_data_id) %></td>
-    <td><%= t(:deal_record_symbol) %></td>
-    <td><%= t(:deal_record_price) %></td>
     <td><%= t(:price_now) %></td>
+    <td><%= t(:deal_record_price) %></td>
     <td><%= t(:deal_record_amount) %></td>
     <td><%= t(:deal_record_fees) %></td>
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
     <td><%= t(:earn_or_loss) %></td>
-    <td><%= t(:deal_record_purpose) %></td>
     <td><%= t(:deal_record_earn_short) %></td>
     <td><%= t(:deal_record_loss_short) %></td>
+    <td><%= t(:deal_record_order_id) %></td>
+    <td><%= t(:deal_record_real_profit) %></td>
   </tr>
 <% n = 1 %>
+<% total_price = total_amount = total_fees = \
+   total_cny_amount = total_cny_amount_now = total_earn_or_loss = total_real_profit = 0 %>
 <% @deal_records.each do |deal_record| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td align="center"><%= deal_record.account %></td>
     <td><%= link_edit_to(deal_record,deal_record.data_id) %></td>
-    <td align="center"><%= deal_record.bi %></td>
-    <td align="right"><%= to_n(deal_record.price,1) %></td>
     <td align="right"><%= to_n(deal_record.price_now,1) %></td>
-    <td align="right"><%= to_n(deal_record.amount,6) %></td>
-    <td align="right"><%= to_n(deal_record.fees,6) %></td>
-    <td align="right"><%= to_n(deal_record.cny_amount,2) %></td>
-    <td align="right"><%= deal_record.cny_amount_now %></td>
-    <td align="right"><%= deal_record.earn_or_loss %></td>
-    <td align="left"><%= show_long_text(deal_record.purpose) %></td>
+    <td align="right"><%= price = to_n(deal_record.price,1) %></td>
+    <td align="right"><%= amount = to_n(deal_record.amount,6) %></td>
+    <td align="right"><%= fees = to_n(deal_record.fees,6) %></td>
+    <td align="right"><%= cny_amount = to_n(deal_record.cny_amount,2) %></td>
+    <td align="right"><%= cny_amount_now = deal_record.cny_amount_now %></td>
+    <td align="right"><%= earn_or_loss = deal_record.earn_or_loss %></td>
     <td align="right"><%= deal_record.earn_limit %></td>
     <td align="right"><%= deal_record.loss_limit %></td>
+    <td align="right"><%=  %></td>
+    <td align="right"><%=  %></td>
   </tr>
   <% n += 1 %>
+  <% total_price += price.to_f * amount.to_f
+     total_amount += amount.to_f
+     total_fees += fees.to_f
+     total_cny_amount += cny_amount.to_f
+     total_cny_amount_now += cny_amount_now.to_f
+     total_earn_or_loss += earn_or_loss.to_f
+     #total_real_profit +=
+  %>
 <% end %>
-  <tr>
-    <td colspan="14" class="thead"></td>
+  <tr class="thead">
+    <td colspan="4"></td>
+    <td align="right"><%= to_n(total_price/total_amount,1) if total_amount > 0 %></td>
+    <td align="right"><%= to_n(total_amount,6) %></td>
+    <td align="right"><%= to_n(total_fees,6) %></td>
+    <td align="right"><%= to_n(total_cny_amount,2) %></td>
+    <td align="right"><%= to_n(total_cny_amount_now,2) %></td>
+    <td align="right"><%= to_n(total_earn_or_loss,2) %></td>
+    <td colspan="4" align="right"><%= 0 %></td>
   </tr>
 </table>
 <br/>
 <%= link_back_to_portfolios %>
+| <%= link_to t(:update_huobi_records), update_huobi_records_path, { id: 'update_huobi_records' } %>
 | <%= link_to t(:new_deal_record), new_deal_record_path, { id: 'add_new_deal_record' } %>
+| <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
+<p/></p>

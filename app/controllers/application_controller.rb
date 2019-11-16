@@ -413,29 +413,33 @@ class ApplicationController < ActionController::Base
     ['135','170'].each do |pno|
       count += add_huobi_deal_records(eval("@huobi_api_#{pno}"),pno,symbol)
     end
-    put_notice "#{count}#{t(:bi)}#{t(:huobi_deal_records_created_ok)}" if count > 0
+    put_notice "#{count}#{t(:bi)}#{t(:huobi_deal_records_created_ok)}"
     return count
   end
 
   # 连线读取火币账号的交易记录并自动新增
   def add_huobi_deal_records( huobi_obj, account, symbol )
     count = 0
-    root = huobi_obj.history_matchresults(symbol)
-    if root["status"] == "ok"
-      root["data"].each do |data|
-        data_id = data["id"]
-        if !DealRecord.find_by_data_id(data_id)
-          DealRecord.create(
-            account: account,
-            data_id: data_id,
-            symbol: symbol,
-            deal_type: data["type"],
-            price: data["price"].to_f,
-            amount: data["filled-amount"].to_f,
-            fees: data["filled-fees"].to_f,
-            earn_limit: 0,
-            loss_limit: 0 )
-          count += 1
+    (1..$rec_days).each do |n| # 读取最近几天历史交易记录(限BTC与限价买单)
+      start_date = (Date.today-n.days).strftime("%Y-%m-%d")
+      end_date = (Date.today-(n-1).days).strftime("%Y-%m-%d")
+      root = huobi_obj.history_matchresults(symbol,start_date,end_date)
+      if root["status"] == "ok"
+        root["data"].each do |data|
+          data_id = data["id"]
+          if !DealRecord.find_by_data_id(data_id)
+            DealRecord.create(
+              account: account,
+              data_id: data_id,
+              symbol: symbol,
+              deal_type: data["type"],
+              price: data["price"].to_f,
+              amount: data["filled-amount"].to_f,
+              fees: data["filled-fees"].to_f,
+              earn_limit: 0,
+              loss_limit: 0 )
+            count += 1
+          end
         end
       end
     end

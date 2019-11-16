@@ -47,5 +47,7 @@ Rails.application.routes.draw do
   get 'update_all_legal_exchange_rates', to: 'currencies#update_all_legal_exchange_rates'
   get 'update_all_portfolios', to: 'portfolios#update_all_portfolios'
   get 'update_house_price', to: 'items#update_house_price'
+  get 'clear_deal_records', to: 'deal_records#clear'
+  get 'update_huobi_records', to: 'main#update_huobi_records'
 
 end

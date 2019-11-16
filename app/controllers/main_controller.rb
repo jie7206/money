@@ -51,10 +51,16 @@ class MainController < ApplicationController
 
   # 更新火币所有账号的资料
   def update_huobi_data
-    if update_all_huobi_assets > 0 or update_huobi_deal_records > 0
+    if update_all_huobi_assets > 0 and update_huobi_deal_records
       update_portfolios_and_records
     end
     go_back
+  end
+
+  # 更新火币交易记录
+  def update_huobi_records
+    update_huobi_deal_records
+    go_deal_records
   end
 
 end

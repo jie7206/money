@@ -63,7 +63,7 @@ cn:
   exchange_to_twd: 等值台币
   exchange_to_cny: 等值人民币
   now_to_cny: 现值人民币
-  earn_or_loss: 盈亏
+  earn_or_loss: 浮动盈亏
   total_properties_amount: 资产总净值
   twd: 新台币
   cny: 人民币
@@ -186,6 +186,8 @@ cn:
   deal_record_loss_limit: 止损额度
   deal_record_earn_short: 止盈
   deal_record_loss_short: 止损
+  deal_record_order_id: 下单编号
+  deal_record_real_profit: 已实现损益
   price_now: 现价
   deal_record_auto_sell: 自动卖出
   edit_deal_record: 编辑交易记录
@@ -198,6 +200,9 @@ cn:
   deal_record_earn_limit_type_err: 止盈额度必须为正数！
   deal_record_loss_limit_type_err: 止损额度必须为正数！
   huobi_deal_records_created_ok: 火币交易记录已新建！
+  clear_deal_records: 清空交易记录
+  clear_deal_records_ok: 交易记录已全部清空！
+  update_huobi_records: 获取最新交易记录
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

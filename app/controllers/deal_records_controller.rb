@@ -43,6 +43,12 @@ class DealRecordsController < ApplicationController
     destroy
   end
 
+  def clear
+    DealRecord.delete_all
+    put_notice t(:clear_deal_records_ok)
+    go_deal_records
+  end
+
   private
 
     def set_deal_record
