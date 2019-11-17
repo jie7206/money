@@ -374,7 +374,7 @@ class ApplicationController < ActionController::Base
 
   # 更新火币所有账号的资产余额
   def update_all_huobi_assets
-    count = 0
+    count = 0; clear_symbols = []
     ['135','170'].each do |pno|
     # 1.读取并整理火币资产数据成[{:code=>"husd",:amount=>"0.00005986"}]格式
       # 原始数据，包含trade与frozen两种type
@@ -401,8 +401,22 @@ class ApplicationController < ActionController::Base
           end
         end
       end
+    # 3.若回传的火币资产已无该币种，则将其对应的资产金额归零
+      if assets_arr_sum and assets_arr_sum.size > 0
+        huobi_symbols = assets_arr_sum.map {|a| a[:code]}
+        property_symbols = properties.map {|p| p.name.split(': ')[1]}
+        if should_clear_symbols = property_symbols-huobi_symbols \
+          and should_clear_symbols.size > 0
+          should_clear_symbols.each do |symbol|
+            property_id = properties.select{|p| p.name.index(symbol)}.first.id
+            Property.clear_amount(property_id)
+            clear_symbols << symbol
+          end
+        end
+      end
     end
     put_notice "#{count}#{t(:xiang)}#{t(:huobi_assets_updated_ok)}" if count > 0
+    put_notice "#{clear_symbols.join(',')} #{t(:property_clear_amount_ok)}" if clear_symbols.size > 0
     return count
   end
 

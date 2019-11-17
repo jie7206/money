@@ -48,6 +48,7 @@ Rails.application.routes.draw do
   get 'update_all_portfolios', to: 'portfolios#update_all_portfolios'
   get 'update_house_price', to: 'items#update_house_price'
   get 'clear_deal_records', to: 'deal_records#clear'
+  get 'update_huobi_assets', to: 'main#update_huobi_assets'
   get 'update_huobi_records', to: 'main#update_huobi_records'
 
 end

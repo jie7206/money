@@ -46,12 +46,12 @@ class Property < ApplicationRecord
 
   # 资产能以新台币或其他币种结算所有资产包含利息的净值
   def self.net_value( target_code = :twd, options = {} )
-    Property.value(target_code,options) + Property.lixi(target_code,options)
+    value(target_code,options) + lixi(target_code,options)
   end
 
   # 资产列表能显示3月底以来资产净值平均月增减额度
   def self.net_growth_ave_month( target_code = :twd, options = {} )
-    (Property.net_value(target_code,options)-$net_start_value)/pass_days*30
+    (net_value(target_code,options)-$net_start_value)/pass_days*30
   end
 
   # 取出所有数据集并按照等值台币由大到小排序
@@ -63,6 +63,10 @@ class Property < ApplicationRecord
   # 只回传所有非隐藏的资产
   def self.all_visible
     all.select {|p| !p.hidden? }
+  end
+
+  def self.clear_amount( property_id )
+    find(property_id).update_attribute(:amount,0)
   end
 
   # 要写入记录列表的值

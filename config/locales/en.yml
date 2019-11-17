@@ -201,6 +201,8 @@ en:
   clear_deal_records: Clear Deal Records
   clear_deal_records_ok: Deal Records was successfully cleared!
   update_huobi_records: Update Huobi Deal Records
+  update_huobi_assets: Update Huobi Assets
+  property_clear_amount_ok: Amount have cleared!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

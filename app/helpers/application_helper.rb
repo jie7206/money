@@ -133,6 +133,16 @@ module ApplicationHelper
     link_to t(:update_huobi_data), {controller: :main, action: :update_huobi_data, path: request.fullpath}, { id: 'update_huobi_data' }
   end
 
+  # 更新火币的链接
+  def update_huobi_assets_link
+    link_to t(:update_huobi_assets), {controller: :main, action: :update_huobi_assets, path: request.fullpath}, { id: 'update_huobi_assets' }
+  end
+
+  # 更新火币的链接
+  def update_huobi_records_link
+    link_to t(:update_huobi_records), {controller: :main, action: :update_huobi_records, path: request.fullpath}, { id: 'update_huobi_records' }
+  end
+
   # 更新资产组合的链接
   def update_all_portfolios_link
     link_to t(:update_all_portfolios), {controller: :portfolios, action: :update_all_portfolios, path: request.fullpath}, {id:'update_all_portfolios'}

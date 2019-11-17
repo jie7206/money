@@ -57,10 +57,16 @@ class MainController < ApplicationController
     go_back
   end
 
+  # 更新火币资产
+  def update_huobi_assets
+    update_all_huobi_assets
+    go_back
+  end
+
   # 更新火币交易记录
   def update_huobi_records
     update_huobi_deal_records
-    go_deal_records
+    go_back
   end
 
 end

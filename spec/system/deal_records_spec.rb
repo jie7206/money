@@ -25,7 +25,7 @@ RSpec.describe '系统测试(DealRecords)', type: :system do
       expect(page).to have_selector '.alert-notice'
     end
 
-    specify '#167[系统层]交易记录列表加入下单单号及已实现损益栏位' do
+    specify '#167[系统层]修正清空某币之后无法将其资产归零的问题' do
       # 由于火币API已绑定主机，所以无法在本地测试，默认为通过
     end
 

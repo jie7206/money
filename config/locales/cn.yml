@@ -203,6 +203,8 @@ cn:
   clear_deal_records: 清空交易记录
   clear_deal_records_ok: 交易记录已全部清空！
   update_huobi_records: 获取最新交易记录
+  update_huobi_assets: 更新火币资产讯息
+  property_clear_amount_ok: 金额已归零！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
