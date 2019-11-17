@@ -27,7 +27,11 @@
     <td align="right"><%= amount_twd=to_n(property.amount_to,0) %></td>
     <td align="right"><%= amount_cny=to_n(property.amount_to(:cny),0) %></td>
     <td align="right"><%= lixi=property.lixi(:twd).to_i %></td>
+  <% if @properties_sum and @properties_sum > 0 %>
+    <td align="right"><%= proportion=to_n(amount_twd.to_f/@properties_sum*100) %></td>
+  <% else %>
     <td align="right"><%= proportion=to_n(property.proportion(admin?)) %></td>
+  <% end %>
     <td align="center"><%= chart_link(property) %></td>
   </tr>
   <% n += 1 %>
