@@ -71,7 +71,8 @@ class MainController < ApplicationController
 
   # 火币下单确认页
   def place_order_confirm
-    if deal_record = DealRecord.find(params[:id])
+    session[:deal_record_id] = params[:id]
+    if deal_record = DealRecord.find(session[:deal_record_id])
       @amount = deal_record.real_amount.floor(6)
       if params[:type] == 'earn'
         @price = deal_record.earn_limit_price
@@ -85,11 +86,19 @@ class MainController < ApplicationController
   def place_order
     root = eval("@huobi_api_#{params[:account]}").new_order(params[:symbol],params[:type],params[:price],params[:amount])
     if root["status"] == "ok" and order_id = root["data"] and !order_id.empty?
+      DealRecord.find(session[:deal_record_id]).update_attribute(:order_id,order_id)
       put_notice "#{t(:place_order_ok)} #{t(:deal_record_order_id)}: #{order_id}"
+      session.delete(:deal_record_id)
     else
       put_notice t(:place_order_failure)
     end
     go_deal_records
+  end
+
+  # 查看火币下单情况
+  def look_order
+    root = eval("@huobi_api_#{params[:account]}").order_status(params[:id])
+    render :json => root
   end
 
 end

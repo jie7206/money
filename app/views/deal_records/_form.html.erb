@@ -44,6 +44,14 @@
     <td><%= f.text_field(:loss_limit,onclick:select_all) %></td>
   </tr>
   <tr>
+    <td><%= t(:deal_record_order_id) %>：</td>
+    <td><%= f.text_field(:order_id,onclick:select_all) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_real_profit) %>：</td>
+    <td><%= f.text_field(:real_profit,onclick:select_all) %></td>
+  </tr>
+  <tr>
     <td><%= t(:deal_record_auto_sell) %>：</td>
     <td><%= f.check_box(:auto_sell) %></td>
   </tr>

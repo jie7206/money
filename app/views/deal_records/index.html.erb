@@ -6,7 +6,6 @@
     <td><%= t(:deal_record_data_id) %></td>
     <td><%= t(:deal_record_price) %></td>
     <td><%= t(:deal_record_amount) %></td>
-    <td><%= t(:deal_record_fees) %></td>
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
     <td><%= t(:earn_or_loss) %></td>
@@ -18,40 +17,38 @@
   </tr>
 <% n = 1 %>
 <% if !@deal_records.empty? then price_now = @deal_records.first.price_now end %>
-<% total_price = total_amount = total_fees = total_cny_amount = \
-   total_cny_amount_now = total_earn_or_loss = total_earn_limit = total_real_profit = 0 %>
+<% total_price = total_amount = total_cny_amount = total_cny_amount_now = \
+   total_earn_or_loss = total_earn_limit = total_real_profit = 0 %>
 <% @deal_records.each do |dr| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td align="center"><%= dr.account %></td>
-    <td><%= link_edit_to(dr,dr.data_id.to_s[-6..-1]) %></td>
+    <td><%= link_edit_to(dr,dr.data_id.to_s[-7..-1]) %></td>
     <td align="right"><%= price = to_n(dr.price) %></td>
     <td align="right"><%= amount = to_n(dr.amount,6) %></td>
-    <td align="right"><%= fees = to_n(dr.fees,6) %></td>
     <td align="right"><%= cny_amount = to_n(dr.cny_amount,2) %></td>
     <td align="right"><%= cny_amount_now = dr.cny_amount_now %></td>
     <td align="right"><%= earn_or_loss = dr.earn_or_loss %></td>
-    <td align="right"><%= earn_limit = dr.earn_limit %></td>
+    <td align="right"><%= earn_limit = dr.earn_limit if !dr.real_profit and dr.earn_limit > 0 %></td>
     <% earn_limit_price = dr.earn_limit_price %>
-    <td align="right" <%= if_red_bg(price_now,earn_limit_price) %>>
-      <%= huobi_order_link(earn_limit_price,dr,'earn') %>
+    <td align="right" <%= if_red_bg(price_now,earn_limit_price) if !dr.real_profit %>>
+      <%= huobi_order_link(earn_limit_price,dr,'earn') if !dr.real_profit %>
     </td>
     <% loss_limit_price = dr.loss_limit_price %>
-    <td align="right" <%= if_green_bg(price_now,loss_limit_price) %>>
-      <%= huobi_order_link(loss_limit_price,dr,'loss') %>
+    <td align="right" <%= if_green_bg(price_now,loss_limit_price) if !dr.real_profit %>>
+      <%= huobi_order_link(loss_limit_price,dr,'loss') if !dr.real_profit %>
     </td>
-    <td align="right"><%=  %></td>
-    <td align="right"><%=  %></td>
+    <td align="right"><%= look_order_link(dr) %></td>
+    <td align="right"><%= real_profit = to_n(dr.real_profit,4) if dr.real_profit %></td>
   </tr>
   <% n += 1 %>
   <% total_price += price.to_f * amount.to_f
      total_amount += amount.to_f
-     total_fees += fees.to_f
      total_cny_amount += cny_amount.to_f
      total_cny_amount_now += cny_amount_now.to_f
      total_earn_or_loss += earn_or_loss.to_f
-     total_earn_limit += earn_limit
-     #total_real_profit +=
+     total_earn_limit += earn_limit.to_i if !dr.real_profit
+     total_real_profit += real_profit.to_f if dr.real_profit
   %>
 <% end %>
   <tr class="thead">
@@ -60,12 +57,11 @@
     </td>
     <td align="right"><%= to_n(total_price/total_amount) if total_amount > 0 %></td>
     <td align="right"><%= to_n(total_amount,6) %></td>
-    <td align="right"><%= to_n(total_fees,6) %></td>
     <td align="right"><%= to_n(total_cny_amount) %></td>
     <td align="right"><%= to_n(total_cny_amount_now) %></td>
     <td align="right"><%= to_n(total_earn_or_loss) %></td>
     <td align="right"><%= to_n(total_earn_limit,0) %></td>
-    <td colspan="4" align="right"><%= '0.00' %></td>
+    <td colspan="4" align="right"><%= to_n(total_real_profit,4) %></td>
   </tr>
 </table>
 <br/>

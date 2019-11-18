@@ -4,7 +4,7 @@ class DealRecordsController < ApplicationController
   before_action :set_deal_record, only: [:edit, :update, :destroy, :delete]
 
   def index
-    @deal_records = DealRecord.order('data_id desc').limit(100)
+    @deal_records = DealRecord.order('data_id desc').limit($deal_records_limit)
   end
 
   def new
@@ -43,6 +43,7 @@ class DealRecordsController < ApplicationController
     destroy
   end
 
+  # 清空交易记录
   def clear
     DealRecord.delete_all
     put_notice t(:clear_deal_records_ok)

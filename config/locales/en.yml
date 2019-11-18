@@ -207,6 +207,8 @@ en:
   info_confirm:  Info Confirmation
   place_order_ok: Place Order To Huobi successfully!
   place_order_failure: Place Order To Huobi Failure!
+  order_done: Done
+  order_undone: Undone
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

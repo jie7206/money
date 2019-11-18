@@ -104,6 +104,7 @@ class ApplicationController < ActionController::Base
     update_yanda_house_price # 更新燕大星苑房屋单价
     update_all_huobi_assets # 更新火币所有账号的资产余额
     update_huobi_deal_records # 更新火币所有账号的交易记录
+    update_all_real_profits # 更新交易下单的已实现损益
     update_digital_exchange_rates # 更新所有数字货币的汇率值
     update_portfolios_and_records # 更新所有的资产组合栏位数据和所有模型的数值记录
     go_back
@@ -518,6 +519,26 @@ class ApplicationController < ActionController::Base
           end
           session[:path] ? go_back : go_#{m.pluralize}
         ]
+      end
+    end
+  end
+
+  # 更新交易下单的已实现损益
+  def update_all_real_profits
+    DealRecord.order('id desc').limit($deal_records_limit).each do |dr|
+      if dr.order_id and !dr.order_id.empty? and !dr.real_profit
+        root = eval("@huobi_api_#{dr.account}").order_status(dr.order_id)
+        if root["status"] == "ok"
+          price = root["data"]["price"].to_f
+          amount = root["data"]["amount"].to_f
+          field_amount = root["data"]["field-amount"].to_f
+          field_cash_amount = root["data"]["field-cash-amount"].to_f
+          field_fees = root["data"]["field-fees"].to_f
+          if amount == field_amount
+            real_profit = (field_cash_amount-field_fees-(dr.price*dr.amount))*dr.usdt_to_cny
+            dr.update_attribute(:real_profit,to_n(real_profit,4).to_f)
+          end
+        end
       end
     end
   end

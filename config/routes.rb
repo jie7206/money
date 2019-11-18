@@ -51,6 +51,7 @@ Rails.application.routes.draw do
   get 'update_huobi_assets', to: 'main#update_huobi_assets'
   get 'update_huobi_records', to: 'main#update_huobi_records'
   get 'place_order_confirm', to: 'main#place_order_confirm'
+  get 'look_order', to: 'main#look_order'
   post 'place_order', to: 'main#place_order'
 
 end

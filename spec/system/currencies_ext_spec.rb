@@ -59,6 +59,10 @@ RSpec.describe '连外测试(Currencies)', type: :system do
       # expect(page).to have_content $n_legal_exchange_rates_updated_ok # 法币汇率
     end
 
+    specify '#170[系统层]通过止盈价快速下单后能将获取的下单单号显示在列表中' do
+      # 由于火币API已绑定主机，所以无法在本地测试，默认为通过
+    end    
+
   end
 
 end

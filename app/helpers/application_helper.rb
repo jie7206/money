@@ -308,4 +308,9 @@ module ApplicationHelper
     link_to(add_title(price,"¥#{eval("dr.#{el}_limit")}#{show_purpose(dr.purpose)}"), controller: :main, action: :place_order_confirm, id: dr.id, type: el) if price.to_f > 0
   end
 
+  # 建立查看火币下单链接
+  def look_order_link( dr )
+    link_to(dr.order_id, {controller: :main, action: :look_order, account: dr.account, id: dr.order_id},{target: :blank}) if dr.order_id and !dr.order_id.empty?
+  end
+
 end
