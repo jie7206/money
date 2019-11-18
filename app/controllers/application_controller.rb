@@ -293,6 +293,7 @@ class ApplicationController < ActionController::Base
     factor = 1.5 # 调整上下值，让图好看点，值越小离边界越近，不可小于1
     @min_value = data_arr.min
     @max_value = data_arr.max
+    @newest_value = data_arr.last
     pos = @min_value < 1 ? 4 : 2 # 如果数值小于1，则显示小数点到4位，否则2位
     if @min_value == @max_value
       @top_value = to_n(@min_value*(1+(factor-1)),pos)
@@ -303,7 +304,7 @@ class ApplicationController < ActionController::Base
       @top_value = to_n(mid_value + center_diff*factor,pos) #新最大值=中间值+与中轴距离*调整因子
       @bottom_value = to_n(mid_value - center_diff*factor,pos) #新最小值=中间值-与中轴距离*调整因子
     end
-    @caption = "#{@name} #{$fusionchart_data_num}天走势图 ( #{@min_value} ➠ #{@max_value} )"
+    @caption = "#{@name} #{$fusionchart_data_num}天走势图 最新 #{@newest_value} ( #{@min_value} ➠ #{@max_value} )"
   end
 
   # 显示走势图
