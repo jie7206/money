@@ -26,9 +26,9 @@
     <td><%= link_edit_to(dr,dr.data_id.to_s[-7..-1]) %></td>
     <td align="right"><%= price = to_n(dr.price) %></td>
     <td align="right"><%= amount = to_n(dr.amount,6) %></td>
-    <td align="right"><%= cny_amount = to_n(dr.cny_amount,2) %></td>
-    <td align="right"><%= cny_amount_now = dr.cny_amount_now %></td>
-    <td align="right"><%= earn_or_loss = dr.earn_or_loss %></td>
+    <td align="right"><%= cny_amount = to_n(dr.cny_amount,2) if !dr.real_profit %></td>
+    <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
+    <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
     <td align="right"><%= earn_limit = dr.earn_limit if !dr.real_profit and dr.earn_limit > 0 %></td>
     <% earn_limit_price = dr.earn_limit_price %>
     <td align="right" <%= if_red_bg(price_now,earn_limit_price) if !dr.real_profit %>>
@@ -44,9 +44,9 @@
   <% n += 1 %>
   <% total_price += price.to_f * amount.to_f
      total_amount += amount.to_f
-     total_cny_amount += cny_amount.to_f
-     total_cny_amount_now += cny_amount_now.to_f
-     total_earn_or_loss += earn_or_loss.to_f
+     total_cny_amount += cny_amount.to_f if !dr.real_profit
+     total_cny_amount_now += cny_amount_now.to_f if !dr.real_profit
+     total_earn_or_loss += earn_or_loss.to_f if !dr.real_profit
      total_earn_limit += earn_limit.to_i if !dr.real_profit
      total_real_profit += real_profit.to_f if dr.real_profit
   %>

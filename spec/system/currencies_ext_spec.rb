@@ -61,7 +61,11 @@ RSpec.describe '连外测试(Currencies)', type: :system do
 
     specify '#170[系统层]通过止盈价快速下单后能将获取的下单单号显示在列表中' do
       # 由于火币API已绑定主机，所以无法在本地测试，默认为通过
-    end    
+    end
+
+    specify '#172[系统层]若止盈下单成功卖出后能在交易列表中显示已实现损益' do
+      # 由于火币API已绑定主机，所以无法在本地测试，默认为通过
+    end
 
   end
 

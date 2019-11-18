@@ -4,7 +4,7 @@ class DealRecordsController < ApplicationController
   before_action :set_deal_record, only: [:edit, :update, :destroy, :delete]
 
   def index
-    @deal_records = DealRecord.order('data_id desc').limit($deal_records_limit)
+    @deal_records = DealRecord.order('order_id,amount desc').limit($deal_records_limit)
   end
 
   def new
@@ -57,7 +57,7 @@ class DealRecordsController < ApplicationController
     end
 
     def deal_record_params
-      params.require(:deal_record).permit(:account, :data_id, :symbol, :deal_type, :price, :amount, :fees, :purpose, :loss_limit, :earn_limit, :auto_sell)
+      params.require(:deal_record).permit(:account, :data_id, :symbol, :deal_type, :price, :amount, :fees, :purpose, :loss_limit, :earn_limit, :auto_sell, :order_id)
     end
 
 end
