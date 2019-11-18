@@ -184,8 +184,8 @@ cn:
   deal_record_purpose: 投资目的
   deal_record_earn_limit: 止盈额度
   deal_record_loss_limit: 止损额度
-  deal_record_earn_short: 止盈
-  deal_record_loss_short: 止损
+  deal_record_earn_short: 止盈价
+  deal_record_loss_short: 止损价
   deal_record_order_id: 下单编号
   deal_record_real_profit: 已实现损益
   price_now: 现价
@@ -205,6 +205,10 @@ cn:
   update_huobi_records: 获取最新交易记录
   update_huobi_assets: 更新火币资产讯息
   property_clear_amount_ok: 金额已归零！
+  place_order_to_huobi: 下单到火币
+  info_confirm: 确认页
+  place_order_ok: 下单到火币已成功！
+  place_order_failure: 下单到火币失败！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

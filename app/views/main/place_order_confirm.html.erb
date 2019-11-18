@@ -1,0 +1,33 @@
+<h2><%= t(:place_order_to_huobi)+t(:info_confirm) %></h2>
+<%= form_tag(place_order_path, method: :post) do -%>
+<table>
+  <tr><td colspan="2" class="thead"><%= Time.now.to_s(:db) %></td></tr>
+  <tr>
+    <td><%= t(:deal_record_account) %>：</td>
+    <td><%= select_huobi_account %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_symbol) %>：</td>
+    <td><%= text_field_tag(:symbol,'btcusdt') %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_deal_type) %>：</td>
+    <td><%= text_field_tag(:type,'sell-limit') %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_price) %>：</td>
+    <td><%= text_field_tag(:price,@price) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_amount) %>：</td>
+    <td><%= text_field_tag(:amount,@amount) %></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="right" class="tfoot">
+      <%= submit_tag( t(:place_order_to_huobi) ) %>
+    </td>
+  </tr>
+</table>
+<% end -%>
+<br/>
+<%= link_back_to_deal_records %>

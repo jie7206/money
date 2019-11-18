@@ -108,6 +108,11 @@ module ApplicationHelper
     eval("obj.select :account, ['135','170'].collect {|a| [a, a]}")
   end
 
+  # 选择交易记录的账号
+  def select_huobi_account( account = '170' )
+    select_tag "account", options_for_select([ "135", "170" ], account)
+  end
+
   # 选择交易记录的类型
   def select_deal_record_type( obj )
     eval("obj.select :deal_type, ['buy','sell'].collect {|m| [m.upcase, m]}")
@@ -276,6 +281,31 @@ module ApplicationHelper
   # 显示较长的文字数据
   def show_long_text( string, length = 10 )
     raw "<span title='#{string}'>#{truncate(string,length: length)}</span>"
+  end
+
+  # 显示附加文字的内容
+  def add_title( text, title )
+    raw "<span title='#{title}'>#{text}</span>"
+  end
+
+  # 显示投资目的字符串
+  def show_purpose( purpose )
+    ": #{purpose}" if purpose and !purpose.empty?
+  end
+
+  # 显示绿色或红色背景
+  def if_red_bg( value, compare )
+    raw('class="red_bg"') if compare.to_f > 0 and value.to_f > compare.to_f
+  end
+
+  # 显示绿色或红色背景
+  def if_green_bg( value, compare )
+    raw('class="green_bg"') if compare.to_f > 0 and value.to_f < compare.to_f
+  end
+
+  # 显示火币下单链接(显示价格,个别数据具柄,earn_or_loss)
+  def huobi_order_link( price, dr, el )
+    link_to(add_title(price,"¥#{eval("dr.#{el}_limit")}#{show_purpose(dr.purpose)}"), controller: :main, action: :place_order_confirm, id: dr.id, type: el) if price.to_f > 0
   end
 
 end

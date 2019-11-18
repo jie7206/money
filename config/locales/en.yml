@@ -203,6 +203,10 @@ en:
   update_huobi_records: Update Huobi Deal Records
   update_huobi_assets: Update Huobi Assets
   property_clear_amount_ok: Amount have cleared!
+  place_order_to_huobi: Place Order To Huobi
+  info_confirm:  Info Confirmation
+  place_order_ok: Place Order To Huobi successfully!
+  place_order_failure: Place Order To Huobi Failure!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

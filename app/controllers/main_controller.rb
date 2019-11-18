@@ -69,4 +69,27 @@ class MainController < ApplicationController
     go_back
   end
 
+  # 火币下单确认页
+  def place_order_confirm
+    if deal_record = DealRecord.find(params[:id])
+      @amount = deal_record.real_amount.floor(6)
+      if params[:type] == 'earn'
+        @price = deal_record.earn_limit_price
+      elsif params[:type] == 'loss'
+        @price = deal_record.loss_limit_price
+      end
+    end
+  end
+
+  # 执行火币下单
+  def place_order
+    root = eval("@huobi_api_#{params[:account]}").new_order(params[:symbol],params[:type],params[:price],params[:amount])
+    if root["status"] == "ok" and order_id = root["data"] and !order_id.empty?
+      put_notice "#{t(:place_order_ok)} #{t(:deal_record_order_id)}: #{order_id}"
+    else
+      put_notice t(:place_order_failure)
+    end
+    go_deal_records
+  end
+
 end

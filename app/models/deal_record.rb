@@ -29,6 +29,8 @@ class DealRecord < ApplicationRecord
         greater_than_or_equal_to: 0,
         message: $deal_record_loss_limit_type_err }
 
+  before_validation :set_default
+
   # 显示币种
   def bi
     symbol.sub('usdt','').upcase
@@ -63,6 +65,29 @@ class DealRecord < ApplicationRecord
     else
       return 1.0/Currency.find_by_code(bi.upcase).exchange_rate
     end
+  end
+
+  # 扣除费用而实际得到的数量
+  def real_amount
+    amount - fees
+  end
+
+  # 回传止盈价格
+  def earn_limit_price
+    earn_limit > 0 ? \
+      to_n((earn_limit+price*real_amount*usdt_to_cny)/(real_amount*usdt_to_cny*(1-$fees_rate))) : 0
+  end
+
+  # 回传止损价格
+  def loss_limit_price
+    (loss_limit > 0 and loss_limit < price*real_amount*usdt_to_cny) ? \
+      to_n((price*real_amount-loss_limit/usdt_to_cny)/(real_amount*(1-$fees_rate))) : 0
+  end
+
+  # 如果没输入栏位值则设定預設值
+  def set_default
+    self.earn_limit = 0 if !self.earn_limit
+    self.loss_limit = 0 if !self.loss_limit
   end
 
 end

@@ -5,31 +5,31 @@
   <tr><td colspan="2" class="thead"><%= timestamps(@deal_record) %></td></tr>
   <tr>
     <td><%= t(:deal_record_account) %>：</td>
-    <td><%= select_deal_record_account(f) %></td>
+    <td><%= f.text_field(:account,disabled: 'disabled') %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_deal_type) %>：</td>
-    <td><%= f.text_field(:deal_type,onclick:select_all) %></td>
+    <td><%= f.text_field(:deal_type,disabled: 'disabled') %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_data_id) %>：</td>
-    <td><%= f.text_field(:data_id,onclick:select_all) %></td>
+    <td><%= f.text_field(:data_id,disabled: 'disabled') %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_symbol) %>：</td>
-    <td><%= f.text_field(:symbol,onclick:select_all) %></td>
+    <td><%= f.text_field(:symbol,disabled: 'disabled') %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_price) %>：</td>
-    <td><%= f.text_field(:price,onclick:select_all) %></td>
+    <td><%= f.text_field(:price,disabled: 'disabled') %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_amount) %>：</td>
-    <td><%= f.text_field(:amount,onclick:select_all) %></td>
+    <td><%= f.text_field(:amount,disabled: 'disabled') %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_fees) %>：</td>
-    <td><%= f.text_field(:fees,onclick:select_all) %></td>
+    <td><%= f.text_field(:fees,disabled: 'disabled') %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_purpose) %>：</td>
