@@ -60,12 +60,13 @@ class MainController < ApplicationController
   # 更新火币资产
   def update_huobi_assets
     update_all_huobi_assets
-    go_back
+    redirect_to '/?tags=170'
   end
 
   # 更新火币交易记录
   def update_huobi_records
     update_huobi_deal_records
+    update_all_real_profits
     go_back
   end
 
@@ -99,6 +100,14 @@ class MainController < ApplicationController
   def look_order
     root = eval("@huobi_api_#{params[:account]}").order_status(params[:id])
     render :json => root
+  end
+
+  # API测试
+  def get_huobi_assets_test
+    root = @huobi_api_170.balances
+    respond_to do |format|
+      format.json  { render :json => root }
+    end
   end
 
 end

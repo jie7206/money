@@ -96,4 +96,9 @@ class Currency < ApplicationRecord
     is_digital? ? to_n(to_usd,4) : to_n(to_rate)
   end
 
+  # 以数字报价更新汇率值(ex:BTC)
+  def update_price(price)
+    update_attribute(:exchange_rate, 1.0/price)
+  end
+
 end

@@ -45,6 +45,8 @@ Rails.application.routes.draw do
   get 'update_all_data', to: 'properties#update_all_data'
   get 'update_all_exchange_rates', to: 'currencies#update_all_exchange_rates'
   get 'update_all_legal_exchange_rates', to: 'currencies#update_all_legal_exchange_rates'
+  get 'update_all_digital_exchange_rates', to: 'currencies#update_all_digital_exchange_rates'
+  get 'update_btc_exchange_rates', to: 'currencies#update_btc_exchange_rates'
   get 'update_all_portfolios', to: 'portfolios#update_all_portfolios'
   get 'update_house_price', to: 'items#update_house_price'
   get 'clear_deal_records', to: 'deal_records#clear'
@@ -53,5 +55,6 @@ Rails.application.routes.draw do
   get 'place_order_confirm', to: 'main#place_order_confirm'
   get 'look_order', to: 'main#look_order'
   post 'place_order', to: 'main#place_order'
+  get 'main/get_huobi_assets_test'
 
 end

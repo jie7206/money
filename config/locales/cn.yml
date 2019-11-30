@@ -89,6 +89,7 @@ cn:
   lixi: 利息
   update_all_exchange_rates: 更新汇率
   update_all_legal_exchange_rates: 更新法币汇率
+  update_all_digital_exchange_rates: 更新数字货币报价
   update_all_exchange_rates_ok: 所有币种的汇率已更新！
   update_btc_ex_rate_ok: 比特币汇率已更新！
   update_usdt_ex_rate_ok: 泰达币汇率已更新！
@@ -202,7 +203,7 @@ cn:
   huobi_deal_records_created_ok: 火币交易记录已新建！
   clear_deal_records: 清空交易记录
   clear_deal_records_ok: 交易记录已全部清空！
-  update_huobi_records: 获取最新交易记录
+  update_huobi_records: 更新记录与实现损益
   update_huobi_assets: 更新火币资产讯息
   property_clear_amount_ok: 金额已归零！
   place_order_to_huobi: 下单到火币
@@ -211,6 +212,8 @@ cn:
   place_order_failure: 下单到火币失败！
   order_done: 已成交
   order_undone: 未成交
+  update_btc_price_ok: 比特币价格已更新！
+  update_btc_exchange_rates: 更新比特币报价
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

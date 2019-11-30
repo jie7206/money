@@ -128,6 +128,16 @@ module ApplicationHelper
     link_to t(:update_all_legal_exchange_rates), {controller: :currencies, action: :update_all_legal_exchange_rates, path: request.fullpath}, {id:'update_all_legal_exchange_rates'}
   end
 
+  # 更新所有数字货币汇率的链接
+  def update_all_digital_exchange_rates_link
+    link_to t(:update_all_digital_exchange_rates), {controller: :currencies, action: :update_all_digital_exchange_rates, path: request.fullpath}, {id:'update_all_digital_exchange_rates'}
+  end
+
+  # 更新比特币汇率的链接
+  def update_btc_exchange_rates_link
+    link_to t(:update_btc_exchange_rates), {controller: :currencies, action: :update_btc_exchange_rates, path: request.fullpath}, {id:'update_btc_exchange_rates'}
+  end
+
   # 更新全部的链接
   def update_all_data_link
     link_to t(:update_all_data), {controller: :properties, action: :update_all_data, path: request.fullpath}, {id:'update_all_data'}

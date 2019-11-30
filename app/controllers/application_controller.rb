@@ -49,12 +49,13 @@ class ApplicationController < ActionController::Base
   # 从火币网取得某一数字货币的最新报价
   def get_huobi_price( symbol )
     begin
-      Timeout.timeout(90) do
-        if @huobi_api_135
-          root = @huobi_api_135.history_kline(symbol.to_s,'1min',1)
-          if root["data"] and root["data"][0] # 不管什么情况，如果发生异常，则返回0
-            return format("%.4f",root["data"][0]["close"]).to_f
-          end
+      Timeout.timeout(30) do
+        if @huobi_api_170
+          #root = @huobi_api_170.history_kline(symbol.to_s,'1min',1)
+          url = "http://api.huobi.pro/market/history/kline?period=1min&size=1&symbol=#{symbol}"
+          return Regexp.new(/close\":(\d+)\.(\d+)/).match(get_uri_response(url)).to_a[0].split(':')[1].to_f.floor(4)
+        else
+          put_notice 'Connection Error!'
         end
       end
     rescue
@@ -101,21 +102,26 @@ class ApplicationController < ActionController::Base
   def update_all_data
     ori_login = admin? ? 'admin' : 'guest' # 远端必须以管理员身份存取，否则资产占比会出错
     session[:admin] = true
-    update_yanda_house_price # 更新燕大星苑房屋单价
     update_all_huobi_assets # 更新火币所有账号的资产余额
-    update_huobi_deal_records # 更新火币所有账号的交易记录
-    update_all_real_profits # 更新交易下单的已实现损益
+    # update_legal_exchange_rates # 更新所有法币的汇率值
     update_digital_exchange_rates # 更新所有数字货币的汇率值
     update_portfolios_and_records # 更新所有的资产组合栏位数据和所有模型的数值记录
+    update_huobi_deal_records # 更新火币所有账号的交易记录
+    update_all_real_profits # 更新交易下单的已实现损益
     go_back
     session[:admin] = ori_login == 'admin' ? true : false # 恢复原始登入身份
+  end
+
+  # 取得URI连线的回传值
+  def get_uri_response( url )
+    return Net::HTTP.get_response(URI.parse(url)).body
   end
 
   # 取得SSL连线的回传值
   def get_ssl_response( url, authorization = nil )
     uri = URI.parse(url)
     http = Net::HTTP.new(uri.host, uri.port)
-    http.read_timeout = 180
+    http.read_timeout = 90
     if url.split(':').first == 'https'
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -313,6 +319,12 @@ class ApplicationController < ActionController::Base
     render template: 'shared/chart'
   end
 
+  # 更新比特币报价
+  def update_btc_price
+    Currency.find_by_code('BTC').update_price(get_huobi_price('btcusdt'))
+    put_notice t(:update_btc_price_ok)
+  end
+
   # 更新燕大星苑房屋单价
   def update_yanda_house_price
     # 安居客
@@ -377,7 +389,8 @@ class ApplicationController < ActionController::Base
   # 更新火币所有账号的资产余额
   def update_all_huobi_assets
     count = 0; clear_symbols = []
-    ['135','170'].each do |pno|
+    # ['135','170'].each do |pno|
+    ['170'].each do |pno|
     # 1.读取并整理火币资产数据成[{:code=>"husd",:amount=>"0.00005986"}]格式
       # 原始数据，包含trade与frozen两种type
       assets_arr_ori = get_huobi_assets(eval("@huobi_api_#{pno}"))
@@ -426,7 +439,8 @@ class ApplicationController < ActionController::Base
   def update_huobi_deal_records
     count = 0
     symbol = 'btcusdt'
-    ['135','170'].each do |pno|
+    # ['135','170'].each do |pno|
+    ['170'].each do |pno|
       count += add_huobi_deal_records(eval("@huobi_api_#{pno}"),pno,symbol)
     end
     put_notice "#{count}#{t(:bi)}#{t(:huobi_deal_records_created_ok)}"
@@ -526,7 +540,7 @@ class ApplicationController < ActionController::Base
 
   # 更新交易下单的已实现损益
   def update_all_real_profits
-    DealRecord.order('id desc').limit($deal_records_limit).each do |dr|
+    DealRecord.order('id desc').limit($real_records_limit).each do |dr|
       if dr.order_id and !dr.order_id.empty? and !dr.real_profit
         root = eval("@huobi_api_#{dr.account}").order_status(dr.order_id)
         if root["status"] == "ok"

@@ -30,14 +30,18 @@
     <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
     <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
     <td align="right"><%= earn_limit = dr.earn_limit if !dr.real_profit and dr.earn_limit > 0 %></td>
+  <% if !dr.real_profit and (!dr.order_id or dr.order_id.empty?) %>
     <% earn_limit_price = dr.earn_limit_price %>
-    <td align="right" <%= if_red_bg(price_now,earn_limit_price) if !dr.real_profit %>>
-      <%= huobi_order_link(earn_limit_price,dr,'earn') if !dr.real_profit %>
+    <td align="right" <%= if_red_bg(price_now,earn_limit_price) %>>
+      <%= huobi_order_link(earn_limit_price,dr,'earn') %>
     </td>
     <% loss_limit_price = dr.loss_limit_price %>
-    <td align="right" <%= if_green_bg(price_now,loss_limit_price) if !dr.real_profit %>>
-      <%= huobi_order_link(loss_limit_price,dr,'loss') if !dr.real_profit %>
+    <td align="right" <%= if_green_bg(price_now,loss_limit_price) %>>
+      <%= huobi_order_link(loss_limit_price,dr,'loss') %>
     </td>
+  <% else %>
+    <td/><td/>
+  <% end %>
     <td align="right"><%= look_order_link(dr) %></td>
     <td align="right"><%= real_profit = to_n(dr.real_profit,4) if dr.real_profit %></td>
   </tr>
@@ -66,7 +70,8 @@
 </table>
 <br/>
 <%= link_back_to_portfolios %>
-| <%= update_huobi_records_link%>
+| <%= update_huobi_assets_link %>
+| <%= update_huobi_records_link %>
 | <%= link_to t(:new_deal_record), new_deal_record_path, { id: 'add_new_deal_record' } %>
 | <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
 <p/></p>

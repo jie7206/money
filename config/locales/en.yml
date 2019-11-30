@@ -209,6 +209,8 @@ en:
   place_order_failure: Place Order To Huobi Failure!
   order_done: Done
   order_undone: Undone
+  update_btc_price_ok: BTC price was successfully updated!
+  update_btc_exchange_rates: Update BTC Price
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

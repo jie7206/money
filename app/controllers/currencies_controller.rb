@@ -45,6 +45,31 @@ class CurrenciesController < ApplicationController
     go_back
   end
 
+  # 更新比特币的汇率值
+  def update_btc_exchange_rates
+    begin
+      update_btc_price
+      update_portfolios_and_records
+    rescue Net::OpenTimeout
+      put_notice 'Execution Expired Error!'
+    end
+    go_currencies
+  end
+
+  # 更新所有数字货币的汇率值
+  def update_all_digital_exchange_rates
+    begin
+      if update_digital_exchange_rates > 0
+        update_portfolios_and_records
+      else
+        put_notice '取得报价时遇到错误！'
+      end
+    rescue Net::OpenTimeout
+      put_notice 'Execution Expired Error!'
+    end
+    go_currencies
+  end
+
   # 更新所有法币的汇率值
   def update_all_legal_exchange_rates
     update_portfolios_and_records if update_legal_exchange_rates > 0
