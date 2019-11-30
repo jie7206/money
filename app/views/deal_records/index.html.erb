@@ -9,9 +9,9 @@
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
     <td><%= t(:earn_or_loss) %></td>
+    <td><%= t(:profit_p) %></td>
     <td><%= t(:deal_record_earn_limit) %></td>
     <td><%= t(:deal_record_earn_short) %></td>
-    <td><%= t(:deal_record_loss_short) %></td>
     <td><%= t(:deal_record_order_id) %></td>
     <td><%= t(:deal_record_real_profit) %></td>
   </tr>
@@ -29,18 +29,15 @@
     <td align="right"><%= cny_amount = to_n(dr.cny_amount,2) if !dr.real_profit %></td>
     <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
     <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
+    <td align="right"><%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %></td>
     <td align="right"><%= earn_limit = dr.earn_limit if !dr.real_profit and dr.earn_limit > 0 %></td>
   <% if !dr.real_profit and (!dr.order_id or dr.order_id.empty?) %>
     <% earn_limit_price = dr.earn_limit_price %>
     <td align="right" <%= if_red_bg(price_now,earn_limit_price) %>>
       <%= huobi_order_link(earn_limit_price,dr,'earn') %>
     </td>
-    <% loss_limit_price = dr.loss_limit_price %>
-    <td align="right" <%= if_green_bg(price_now,loss_limit_price) %>>
-      <%= huobi_order_link(loss_limit_price,dr,'loss') %>
-    </td>
   <% else %>
-    <td/><td/>
+    <td/>
   <% end %>
     <td align="right"><%= look_order_link(dr) %></td>
     <td align="right"><%= real_profit = to_n(dr.real_profit,4) if dr.real_profit %></td>
@@ -64,8 +61,9 @@
     <td align="right"><%= to_n(total_cny_amount) %></td>
     <td align="right"><%= to_n(total_cny_amount_now) %></td>
     <td align="right"><%= to_n(total_earn_or_loss) %></td>
+    <td align="right"><%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) %></td>
     <td align="right"><%= to_n(total_earn_limit,0) %></td>
-    <td colspan="4" align="right"><%= to_n(total_real_profit,4) %></td>
+    <td colspan="3" align="right"><%= to_n(total_real_profit,4) %></td>
   </tr>
 </table>
 <br/>

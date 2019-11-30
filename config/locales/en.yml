@@ -211,6 +211,8 @@ en:
   order_undone: Undone
   update_btc_price_ok: BTC price was successfully updated!
   update_btc_exchange_rates: Update BTC Price
+  update_btc: Update BTC
+  profit_p: Profit(%)
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

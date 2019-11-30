@@ -214,6 +214,8 @@ cn:
   order_undone: 未成交
   update_btc_price_ok: 比特币价格已更新！
   update_btc_exchange_rates: 更新比特币报价
+  update_btc: 更新比特币
+  profit_p: 获利率(%)
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

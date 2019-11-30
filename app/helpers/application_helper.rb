@@ -143,6 +143,11 @@ module ApplicationHelper
     link_to t(:update_all_data), {controller: :properties, action: :update_all_data, path: request.fullpath}, {id:'update_all_data'}
   end
 
+  # 更新比特币的链接
+  def update_btc_link
+    link_to t(:update_btc), {controller: :currencies, action: :update_btc_exchange_rates, path: request.fullpath}, {id:'update_btc_exchange_rates'}
+  end
+
   # 更新火币的链接
   def update_huobi_data_link
     link_to t(:update_huobi_data), {controller: :main, action: :update_huobi_data, path: request.fullpath}, { id: 'update_huobi_data' }

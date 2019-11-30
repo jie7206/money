@@ -53,7 +53,7 @@ class CurrenciesController < ApplicationController
     rescue Net::OpenTimeout
       put_notice 'Execution Expired Error!'
     end
-    go_currencies
+    go_back
   end
 
   # 更新所有数字货币的汇率值
