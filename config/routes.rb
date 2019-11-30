@@ -56,5 +56,6 @@ Rails.application.routes.draw do
   get 'look_order', to: 'main#look_order'
   post 'place_order', to: 'main#place_order'
   get 'main/get_huobi_assets_test'
+  get 'main/del_huobi_orders'
 
 end

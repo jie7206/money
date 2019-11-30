@@ -90,4 +90,9 @@ class DealRecord < ApplicationRecord
     self.loss_limit = 0 if !self.loss_limit
   end
 
+  # 清空下单编号
+  def clear_order
+    update_attribute(:order_id,'')
+  end
+
 end

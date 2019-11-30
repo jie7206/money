@@ -216,6 +216,8 @@ cn:
   update_btc_exchange_rates: 更新比特币报价
   update_btc: 更新比特币
   profit_p: 获利率(%)
+  cancel_order: 取消这笔下单
+  cancel_order_ok: 取消下单成功！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

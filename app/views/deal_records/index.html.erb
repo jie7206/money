@@ -31,14 +31,14 @@
     <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
     <td align="right"><%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %></td>
     <td align="right"><%= earn_limit = dr.earn_limit if !dr.real_profit and dr.earn_limit > 0 %></td>
-  <% if !dr.real_profit and (!dr.order_id or dr.order_id.empty?) %>
     <% earn_limit_price = dr.earn_limit_price %>
     <td align="right" <%= if_red_bg(price_now,earn_limit_price) %>>
-      <%= huobi_order_link(earn_limit_price,dr,'earn') %>
+      <% if !dr.real_profit and (!dr.order_id or dr.order_id.empty?) %>
+        <%= huobi_order_link(earn_limit_price,dr,'earn') %>
+      <% else %>
+        <%= huobi_order_link(earn_limit_price,dr,'earn',false) %>
+      <% end %>
     </td>
-  <% else %>
-    <td/>
-  <% end %>
     <td align="right"><%= look_order_link(dr) %></td>
     <td align="right"><%= real_profit = to_n(dr.real_profit,4) if dr.real_profit %></td>
   </tr>

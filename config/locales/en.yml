@@ -213,6 +213,8 @@ en:
   update_btc_exchange_rates: Update BTC Price
   update_btc: Update BTC
   profit_p: Profit(%)
+  cancel_order: Cancel Order
+  cancel_order_ok: Cancel Order successfully!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

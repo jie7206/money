@@ -319,8 +319,12 @@ module ApplicationHelper
   end
 
   # 显示火币下单链接(显示价格,个别数据具柄,earn_or_loss)
-  def huobi_order_link( price, dr, el )
+  def huobi_order_link( price, dr, el, link = true )
+    if link
     link_to(add_title(price,"¥#{eval("dr.#{el}_limit")}#{show_purpose(dr.purpose)}"), controller: :main, action: :place_order_confirm, id: dr.id, type: el) if price.to_f > 0
+    else
+      add_title(price,"¥#{eval("dr.#{el}_limit")}#{show_purpose(dr.purpose)}")
+    end
   end
 
   # 建立查看火币下单链接

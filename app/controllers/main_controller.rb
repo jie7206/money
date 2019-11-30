@@ -102,6 +102,17 @@ class MainController < ApplicationController
     render :json => root
   end
 
+  # 取消火币下单
+  def del_huobi_orders
+    order_id = params[:order_id]
+    root = @huobi_api_170.submitcancel(order_id)
+    if root["status"] == "ok"
+      DealRecord.find_by_order_id(order_id).clear_order
+      put_notice t(:cancel_order_ok)
+    end
+    go_deal_records
+  end
+
   # API测试
   def get_huobi_assets_test
     root = @huobi_api_170.balances
