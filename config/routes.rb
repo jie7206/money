@@ -57,5 +57,6 @@ Rails.application.routes.draw do
   post 'place_order', to: 'main#place_order'
   get 'main/get_huobi_assets_test'
   get 'main/del_huobi_orders'
+  get 'main/kline_chart'
 
-end
+end 

@@ -48,10 +48,13 @@ class CurrenciesController < ApplicationController
   # 更新比特币的汇率值
   def update_btc_exchange_rates
     begin
-      update_btc_price
-      update_portfolios_and_records
+      if update_btc_price
+        update_portfolios_and_records
+      else
+        put_notice t(:get_price_error)
+      end
     rescue Net::OpenTimeout
-      put_notice 'Execution Expired Error!'
+      put_notice t(:get_price_error)
     end
     go_back
   end
@@ -62,7 +65,7 @@ class CurrenciesController < ApplicationController
       if update_digital_exchange_rates > 0
         update_portfolios_and_records
       else
-        put_notice '取得报价时遇到错误！'
+        put_notice t(:get_price_error)
       end
     rescue Net::OpenTimeout
       put_notice 'Execution Expired Error!'

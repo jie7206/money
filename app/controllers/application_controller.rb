@@ -5,6 +5,13 @@ class ApplicationController < ActionController::Base
   before_action :check_login, except: [ :login, :update_all_data ]
   before_action :summary, :memory_back, only: [ :index ]
 
+  # 更新主要资料
+  def update_all_data
+    put_notice `python update_all.py`
+    update_portfolios_and_records
+    go_back
+  end
+
   # 火币API初始化
   def ini_huobi
     [135,170].each do |pno|
@@ -49,17 +56,17 @@ class ApplicationController < ActionController::Base
   # 从火币网取得某一数字货币的最新报价
   def get_huobi_price( symbol )
     begin
-      Timeout.timeout(30) do
-        if @huobi_api_170
-          #root = @huobi_api_170.history_kline(symbol.to_s,'1min',1)
-          url = "http://api.huobi.pro/market/history/kline?period=1min&size=1&symbol=#{symbol}"
-          return Regexp.new(/close\":(\d+)\.(\d+)/).match(get_uri_response(url)).to_a[0].split(':')[1].to_f.floor(4)
-        else
-          put_notice 'Connection Error!'
-        end
+      Timeout.timeout(20) do
+        url = "http://api.huobi.pro/market/history/kline?period=1min&size=1&symbol=#{symbol}"
+        return Regexp.new(/close\":(\d+)\.(\d+)/).match(get_uri_response(url)).to_a[0].split(':')[1].to_f.floor(4)
       end
     rescue
-      return 0
+      root = @huobi_api_170.history_kline(symbol.to_s,'1min',1)
+      if root["data"] and root["data"][0] # 不管什么情况，如果发生异常，则返回0
+        return format("%.2f",root["data"][0]["close"]).to_f
+      else
+        return 0
+      end
     end
   end
 
@@ -96,20 +103,6 @@ class ApplicationController < ActionController::Base
     end
     put_notice "#{count} #{t(:n_legal_exchange_rates_updated_ok)}" if count > 0
     return count
-  end
-
-  # 更新所有的资料
-  def update_all_data
-    ori_login = admin? ? 'admin' : 'guest' # 远端必须以管理员身份存取，否则资产占比会出错
-    session[:admin] = true
-    update_all_huobi_assets # 更新火币所有账号的资产余额
-    # update_legal_exchange_rates # 更新所有法币的汇率值
-    update_digital_exchange_rates # 更新所有数字货币的汇率值
-    update_portfolios_and_records # 更新所有的资产组合栏位数据和所有模型的数值记录
-    update_huobi_deal_records # 更新火币所有账号的交易记录
-    update_all_real_profits # 更新交易下单的已实现损益
-    go_back
-    session[:admin] = ori_login == 'admin' ? true : false # 恢复原始登入身份
   end
 
   # 取得URI连线的回传值
@@ -321,8 +314,13 @@ class ApplicationController < ActionController::Base
 
   # 更新比特币报价
   def update_btc_price
-    Currency.find_by_code('BTC').update_price(get_huobi_price('btcusdt'))
-    put_notice t(:update_btc_price_ok)
+    if btc_price = get_huobi_price('btcusdt') and btc_price > 0
+      Currency.find_by_code('BTC').update_price(btc_price)
+      put_notice t(:update_btc_price_ok)
+      return true
+    else
+      return false
+    end
   end
 
   # 更新燕大星苑房屋单价
@@ -505,39 +503,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # 建立回到目录页的方法
-  $models.each do |n|
-    define_method "go_#{n.pluralize}" do
-      eval("redirect_to controller: :#{n.pluralize}, action: :index")
-    end
-  end
-
-  # 建立各种通知消息的方法
-  $flashs.each do |type|
-    define_method "put_#{type}" do |msg|
-      eval %Q[
-        flash[:#{type}] ? flash[:#{type}].gsub!(\"(\#{now})\",'') : flash[:#{type}] = ''
-        flash[:#{type}] += \"\#{msg} (\#{now})\"
-      ]
-    end
-  end
-
-  # 建立从列表中快速更新某个值的方法
-  $quick_update_attrs.each do |setting|
-    m = setting.split(':')[0]; attrs = setting.split(':')[1].split(',')
-    attrs.each do |a|
-      define_method "update_#{m}_#{a}" do
-        eval %Q[
-          if new_#{a} = params[\"new_#{a}_\#{params[:id]}\"]
-            @#{m}.update_attribute(:#{a}, new_#{a})
-            put_notice t(:#{m}_updated_ok) + add_id(@#{m})
-          end
-          session[:path] ? go_back : go_#{m.pluralize}
-        ]
-      end
-    end
-  end
-
   # 更新交易下单的已实现损益
   def update_all_real_profits
     DealRecord.order('id desc').limit($real_records_limit).each do |dr|
@@ -554,6 +519,40 @@ class ApplicationController < ActionController::Base
             dr.update_attribute(:real_profit,to_n(real_profit,4).to_f)
           end
         end
+      end
+    end
+  end
+
+  # 建立回到目录页的方法
+  $models.each do |n|
+    define_method "go_#{n.pluralize}" do
+      eval("redirect_to controller: :#{n.pluralize}, action: :index")
+    end
+  end
+
+  # 建立各种通知消息的方法
+  $flashs.each do |type|
+    define_method "put_#{type}" do |msg|
+      eval %Q[
+        flash[:#{type}] ? flash[:#{type}].gsub!(\"(\#{now})\",'') : flash[:#{type}] = ''
+        flash[:#{type}] += \"\#{msg} (\#{now})\"
+        flash[:#{type}].gsub!(\"<_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>\",'')
+      ]
+    end
+  end
+
+  # 建立从列表中快速更新某个值的方法
+  $quick_update_attrs.each do |setting|
+    m = setting.split(':')[0]; attrs = setting.split(':')[1].split(',')
+    attrs.each do |a|
+      define_method "update_#{m}_#{a}" do
+        eval %Q[
+          if new_#{a} = params[\"new_#{a}_\#{params[:id]}\"]
+            @#{m}.update_attribute(:#{a}, new_#{a})
+            put_notice t(:#{m}_updated_ok) + add_id(@#{m})
+          end
+          session[:path] ? go_back : go_#{m.pluralize}
+        ]
       end
     end
   end

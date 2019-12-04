@@ -215,6 +215,7 @@ en:
   profit_p: Profit(%)
   cancel_order: Cancel Order
   cancel_order_ok: Cancel Order successfully!
+  get_price_error: Get Price Error!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

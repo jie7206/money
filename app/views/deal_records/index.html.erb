@@ -54,13 +54,15 @@
 <% end %>
   <tr class="thead">
     <td colspan="3">
-      <%= t(:price_now) %>: <%= to_n(price_now) if !@deal_records.empty? %>
+      <% if !@deal_records.empty? %>
+        <%= t(:price_now) %>: <%= link_to to_n(price_now), {controller: :main, action: :kline_chart}, {target: :blank} %>
+      <% end %>
     </td>
     <td align="right"><%= to_n(total_price/total_amount) if total_amount > 0 %></td>
     <td align="right"><%= to_n(total_amount,6) %></td>
     <td align="right"><%= to_n(total_cny_amount) %></td>
     <td align="right"><%= to_n(total_cny_amount_now) %></td>
-    <td align="right"><%= to_n(total_earn_or_loss) %></td>
+    <td align="right"><%= order_link to_n(total_earn_or_loss), total_amount %></td>
     <td align="right"><%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) %></td>
     <td align="right"><%= to_n(total_earn_limit,0) %></td>
     <td colspan="3" align="right"><%= to_n(total_real_profit,4) %></td>
@@ -68,8 +70,8 @@
 </table>
 <br/>
 <%= link_back_to_portfolios %>
-| <%= update_huobi_assets_link %>
 | <%= update_huobi_records_link %>
+| <%= update_huobi_assets_link %>
 | <%= link_to t(:new_deal_record), new_deal_record_path, { id: 'add_new_deal_record' } %>
 | <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
 <p/></p>

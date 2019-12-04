@@ -136,7 +136,7 @@ cn:
   delete_portfolio_confirm: 您确定要删除这笔组合吗？
   edit_portfolio: 编辑资产组合
   update_portfolio: 更新资产组合
-  update_all_portfolios: 更新全部资产组合
+  update_all_portfolios: 更新资产组合
   portfolio_index: 资产组合
   new_portfolio: 新建资产组合
   portfolio_created_ok: 资产组合新建成功！
@@ -159,7 +159,7 @@ cn:
   delete_record: 删除这笔记录
   delete_record_confirm: 您确定要删除这笔记录吗？
   all_records_updated_ok: 所有数值记录已更新！
-  update_all_data: 更新全部
+  update_all_data: 更新主要资料
   update_all_data_ok: 所有资料已更新！
   record_created_ok: 记录新建成功！
   record_updated_ok: 记录更新成功！
@@ -218,6 +218,7 @@ cn:
   profit_p: 获利率(%)
   cancel_order: 取消这笔下单
   cancel_order_ok: 取消下单成功！
+  get_price_error: 取得报价时遇到错误！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

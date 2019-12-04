@@ -1,3 +1,5 @@
+require 'json'
+
 class MainController < ApplicationController
 
   # 显示走势图
@@ -72,14 +74,19 @@ class MainController < ApplicationController
 
   # 火币下单确认页
   def place_order_confirm
-    session[:deal_record_id] = params[:id]
-    if deal_record = DealRecord.find(session[:deal_record_id])
-      @amount = deal_record.real_amount.floor(6)
-      if params[:type] == 'earn'
-        @price = deal_record.earn_limit_price
-      elsif params[:type] == 'loss'
-        @price = deal_record.loss_limit_price
+    if params[:id]
+      session[:deal_record_id] = params[:id]
+      if deal_record = DealRecord.find(session[:deal_record_id])
+        @amount = deal_record.real_amount.floor(6)
+        if params[:type] == 'earn'
+          @price = deal_record.earn_limit_price
+        elsif params[:type] == 'loss'
+          @price = deal_record.loss_limit_price
+        end
       end
+    elsif params[:amount]
+      @amount = params[:amount].to_f
+      @price = Currency.find_by_code('BTC').to_usd.floor(2)
     end
   end
 
@@ -118,6 +125,88 @@ class MainController < ApplicationController
     root = @huobi_api_170.balances
     respond_to do |format|
       format.json  { render :json => root }
+    end
+  end
+
+  # 返回K线数据（蜡烛图）
+  def get_kline
+    symbol = params[:symbol] ? params[:symbol] : "btcusdt"
+    period = params[:period] ? params[:period] : "5min"
+    size = params[:size] ? params[:size] : 200
+    @symbol_title = symbol_title(symbol)
+    @period_title = period_title(period)
+    begin
+      root = JSON.parse(`python btc_price.py symbol=#{symbol} period=#{period}  size=#{size}`)
+      return root["data"].reverse! if root["data"] and root["data"][0]
+    rescue
+      return []
+    end
+  end
+
+  # 显示K线图
+  def kline_chart
+    @raw_data = get_kline
+    if @raw_data and @raw_data.size > 0
+      @page_title = "#{@symbol_title} #{@period_title}K线走势图"
+      @timestamp = get_timestamp
+      # 建构K线图副标题
+      ma_str = ""
+      [5,10,20,30,60].each do |n|
+        ma_str += " MA#{n}: #{ma(n)}(#{pom(n)}%)"
+      end
+      buy_amount, sell_amount, buy_sell_rate = cal_buy_sell
+      @subcaption = "收: #{@raw_data[-1]["close"]} 高: #{@raw_data[-1]["high"]} 低: #{@raw_data[-1]["low"]} 中: #{mid(@raw_data[-1]["high"],@raw_data[-1]["low"])}#{ma_str} 买: #{buy_amount} 卖: #{sell_amount} 比: #{buy_sell_rate}"
+      render :layout => nil
+    else
+      return false
+    end
+  end
+
+  # 计算中间价
+  def mid(high, low)
+    return format("%.2f",(high.to_f+low.to_f)/2).to_f
+  end
+
+  # 计算买卖量
+  def cal_buy_sell(data=@raw_data)
+    buy_amount = sell_amount = 0
+    data.each do |item|
+      buy_amount += item["amount"].to_f if item["close"].to_f >= item["open"].to_f
+      sell_amount += item["amount"].to_f if item["close"].to_f < item["open"].to_f
+    end
+    return buy_amount.to_i, sell_amount.to_i, format("%.2f",buy_amount/sell_amount)
+  end
+
+  # 计算MA值
+  def ma(size, data=@raw_data, type="middle", dot=0) # 要算几个值的平均, 原始数据阵列, 价格类型,
+    if @raw_data.size and @raw_data.size > 0 # fix "divided by 0" bug
+      #小数点几位
+      size = @raw_data.size if size > @raw_data.size
+      temp = 0
+      data[size*-1..-1].each do |item|
+        if type == "middle" # 最高价与最低价的平均
+          middle_price = mid(item["high"], item["low"])
+          temp += middle_price
+        else
+          temp += item[type].to_f
+        end
+      end
+      return format("%.#{dot}f", temp/size)
+    end
+  end
+
+  # 计算现价与MA的溢价比例
+  def pom(size, price=@raw_data[-1]["close"].to_f, dot=2) # MA几, 最新收盘价, 小数点几位
+    ma = ma(size).to_f
+    return add_plus(format("%.#{dot}f", ((price-ma)/ma)*100))
+  end
+
+  # 如果没有负号，在前面显示+号
+  def add_plus(str)
+    if !str.index("-")
+      return "+"+str
+    else
+      return str
     end
   end
 

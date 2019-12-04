@@ -260,20 +260,11 @@ module ApplicationHelper
     raw(link_to(image_tag('chart.png',width:16),{controller: obj.class.name.pluralize.downcase.to_sym, action: :chart, id: obj.id},{target: :blank}))
   end
 
-  # 显示火币JSON回传讯息
-  def get_json(url)
-    resp = Net::HTTP.get(URI("https://#{$huobi_server}/"+url))
-    return JSON.parse(ActiveSupport::JSON.decode(resp.to_json))
-  end
-
   # 显示火币时间讯息使用
   def get_timestamp
-    root = get_json('v1/common/timestamp')
-    if root["status"] == "ok" and root["data"]
-      return root["data"].to_i/1000
-    else
-      return 0
-    end
+    timestamp = `python timestamp.py`
+    puts "timestamp = #{timestamp}"
+    return timestamp.to_i
   end
 
   # 将UTC time in millisecond显示成一般日期格式
@@ -327,9 +318,22 @@ module ApplicationHelper
     end
   end
 
+  # 火币下单链接
+  def order_link( text, amount = nil )
+    link_to text, controller: :main, action: :place_order_confirm, amount: amount
+  end
+
   # 建立查看火币下单链接
   def look_order_link( dr )
     link_to(dr.order_id, {controller: :main, action: :look_order, account: dr.account, id: dr.order_id},{target: :blank}) if dr.order_id and !dr.order_id.empty?
+  end
+
+  def symbol_title(symbol)
+    symbol.upcase.sub("USDT","/USDT").sub("HUSD","/HUSD")
+  end
+
+  def period_title(period)
+    period.sub("min","分钟").sub("hour","小时").sub("day","天").sub("week","周").sub("mon","月").sub("year","年")
   end
 
 end
