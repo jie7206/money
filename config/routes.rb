@@ -52,11 +52,12 @@ Rails.application.routes.draw do
   get 'clear_deal_records', to: 'deal_records#clear'
   get 'update_huobi_assets', to: 'main#update_huobi_assets'
   get 'update_huobi_records', to: 'main#update_huobi_records'
-  get 'place_order_confirm', to: 'main#place_order_confirm'
+  get 'place_order_form', to: 'main#place_order_form'
   get 'look_order', to: 'main#look_order'
   post 'place_order', to: 'main#place_order'
+  post 'order_calculate', to: 'main#order_calculate'
   get 'main/get_huobi_assets_test'
   get 'main/del_huobi_orders'
   get 'main/kline_chart'
 
-end 
+end

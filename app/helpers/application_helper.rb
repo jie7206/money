@@ -113,6 +113,11 @@ module ApplicationHelper
     select_tag "account", options_for_select([ "135", "170" ], account)
   end
 
+  # 选择交易的类型
+  def select_order_type
+    select_tag "type", options_for_select([ "buy-limit", "sell-limit" ])
+  end
+
   # 选择交易记录的类型
   def select_deal_record_type( obj )
     eval("obj.select :deal_type, ['buy','sell'].collect {|m| [m.upcase, m]}")
@@ -312,15 +317,15 @@ module ApplicationHelper
   # 显示火币下单链接(显示价格,个别数据具柄,earn_or_loss)
   def huobi_order_link( price, dr, el, link = true )
     if link
-    link_to(add_title(price,"¥#{eval("dr.#{el}_limit")}#{show_purpose(dr.purpose)}"), controller: :main, action: :place_order_confirm, id: dr.id, type: el) if price.to_f > 0
+    link_to(add_title(price,"¥#{eval("dr.#{el}_limit")}#{show_purpose(dr.purpose)}"), controller: :main, action: :place_order_form, id: dr.id, type: el) if price.to_f > 0
     else
       add_title(price,"¥#{eval("dr.#{el}_limit")}#{show_purpose(dr.purpose)}")
     end
   end
 
   # 火币下单链接
-  def order_link( text, amount = nil )
-    link_to text, controller: :main, action: :place_order_confirm, amount: amount
+  def order_link( amount = nil )
+    link_to t(:huobi_order), controller: :main, action: :place_order_form, amount: amount
   end
 
   # 建立查看火币下单链接
@@ -334,6 +339,11 @@ module ApplicationHelper
 
   def period_title(period)
     period.sub("min","分钟").sub("hour","小时").sub("day","天").sub("week","周").sub("mon","月").sub("year","年")
+  end
+
+  # 取得最新的比特币报价
+  def btc_price
+    Currency.find_by_code('BTC').to_usd.floor(2)
   end
 
 end

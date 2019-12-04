@@ -2,6 +2,8 @@ require 'json'
 
 class MainController < ApplicationController
 
+  skip_before_action :verify_authenticity_token, :only => [:order_calculate, :place_order]
+
   # 显示走势图
   def chart
     build_fusion_chart_data(get_class_name_by_login,1)
@@ -73,7 +75,7 @@ class MainController < ApplicationController
   end
 
   # 火币下单确认页
-  def place_order_confirm
+  def place_order_form
     if params[:id]
       session[:deal_record_id] = params[:id]
       if deal_record = DealRecord.find(session[:deal_record_id])
@@ -86,26 +88,36 @@ class MainController < ApplicationController
       end
     elsif params[:amount]
       @amount = params[:amount].to_f
-      @price = Currency.find_by_code('BTC').to_usd.floor(2)
+      @price = btc_price
+    else
+      @price = btc_price
     end
+    @btc_level = to_n(DealRecord.btc_level) # 显示目前仓位
+  end
+
+  # 执行下单试算
+  def order_calculate
+    put_notice 'OK!'
+    redirect_to place_order_form_path
   end
 
   # 执行火币下单
   def place_order
-    root = eval("@huobi_api_#{params[:account]}").new_order(params[:symbol],params[:type],params[:price],params[:amount])
-    if root["status"] == "ok" and order_id = root["data"] and !order_id.empty?
-      DealRecord.find(session[:deal_record_id]).update_attribute(:order_id,order_id)
-      put_notice "#{t(:place_order_ok)} #{t(:deal_record_order_id)}: #{order_id}"
-      session.delete(:deal_record_id)
-    else
-      put_notice t(:place_order_failure)
-    end
+    put_notice 'Test Place Order OK!'
+    # root = @huobi_api_170.new_order(params[:symbol],params[:type],params[:price],params[:amount])
+    # if root["status"] == "ok" and order_id = root["data"] and !order_id.empty?
+    #   DealRecord.find(session[:deal_record_id]).update_attribute(:order_id,order_id)
+    #   put_notice "#{t(:place_order_ok)} #{t(:deal_record_order_id)}: #{order_id}"
+    #   session.delete(:deal_record_id)
+    # else
+    #   put_notice t(:place_order_failure)
+    # end
     go_deal_records
   end
 
   # 查看火币下单情况
   def look_order
-    root = eval("@huobi_api_#{params[:account]}").order_status(params[:id])
+    root = @huobi_api_170.order_status(params[:id])
     render :json => root
   end
 

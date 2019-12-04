@@ -216,6 +216,11 @@ en:
   cancel_order: Cancel Order
   cancel_order_ok: Cancel Order successfully!
   get_price_error: Get Price Error!
+  huobi_order: Make Order
+  order_level: Level
+  order_price: Price
+  order_amount: Amount
+  order_calculate: Calculate
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

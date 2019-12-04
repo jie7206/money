@@ -206,7 +206,7 @@ cn:
   update_huobi_records: 更新记录与实现损益
   update_huobi_assets: 更新火币资产讯息
   property_clear_amount_ok: 金额已归零！
-  place_order_to_huobi: 下单到火币
+  place_order_to_huobi: 火币下单
   info_confirm: 确认页
   place_order_ok: 下单到火币已成功！
   place_order_failure: 下单到火币失败！
@@ -219,6 +219,11 @@ cn:
   cancel_order: 取消这笔下单
   cancel_order_ok: 取消下单成功！
   get_price_error: 取得报价时遇到错误！
+  huobi_order: 火币下单
+  order_level: 仓位
+  order_price: 价格
+  order_amount: 数量
+  order_calculate: 下单试算
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

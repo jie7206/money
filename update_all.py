@@ -75,5 +75,5 @@ if __name__ == '__main__':
         update_huobi_deal_records()  # 更新买入比特币的交易记录
         print("所有主要资料已更新！", sys.stdout)
     except:
-        print("网路不顺畅！请稍后再试", sys.stdout)
+        print("网路不顺畅，请稍后再试！", sys.stdout)
     CONN.close()

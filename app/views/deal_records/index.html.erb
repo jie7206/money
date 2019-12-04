@@ -62,7 +62,7 @@
     <td align="right"><%= to_n(total_amount,6) %></td>
     <td align="right"><%= to_n(total_cny_amount) %></td>
     <td align="right"><%= to_n(total_cny_amount_now) %></td>
-    <td align="right"><%= order_link to_n(total_earn_or_loss), total_amount %></td>
+    <td align="right"><%= to_n(total_earn_or_loss) %></td>
     <td align="right"><%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) %></td>
     <td align="right"><%= to_n(total_earn_limit,0) %></td>
     <td colspan="3" align="right"><%= to_n(total_real_profit,4) %></td>

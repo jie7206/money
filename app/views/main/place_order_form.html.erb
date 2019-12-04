@@ -1,0 +1,44 @@
+<h2><%= t(:place_order_to_huobi)+t(:info_confirm) %></h2>
+<script>
+  function submit_calculate() {
+    document.getElementById("place_order_form").action = '<%= order_calculate_path %>';
+    document.getElementById("place_order_form").submit();
+  }
+  function submit_order() {
+    document.getElementById("place_order_form").action = '<%= place_order_path %>';
+    document.getElementById("place_order_form").submit();
+  }
+</script>
+<%= form_tag("", method: :post, id: 'place_order_form') do -%>
+<table>
+  <tr><td colspan="2" class="thead"><%= Time.now.to_s(:db) %></td></tr>
+  <tr>
+    <td><%= t(:order_level) %>：</td>
+    <td align="center"><%= "#{@btc_level} %" %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_deal_type) %>：</td>
+    <td align="center"><%= select_order_type %></td>
+  </tr>
+  <tr>
+    <td><%= t(:deal_record_symbol) %>：</td>
+    <td><%= text_field_tag(:symbol,'btcusdt') %></td>
+  </tr>
+  <tr>
+    <td><%= t(:order_price) %>：</td>
+    <td><%= text_field_tag(:price,@price) %></td>
+  </tr>
+  <tr>
+    <td><%= t(:order_amount) %>：</td>
+    <td><%= text_field_tag(:amount,@amount) %></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="right" class="tfoot">
+      <%= button_tag( t(:order_calculate), type: 'button', onclick: 'submit_calculate()' ) %>&nbsp;
+      <%= button_tag( t(:place_order_to_huobi), type: 'button', onclick: 'submit_order()' ) %>
+    </td>
+  </tr>
+</table>
+<% end -%>
+<br/>
+<%= link_back_to_deal_records %>

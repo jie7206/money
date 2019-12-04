@@ -33,8 +33,15 @@ RSpec.describe '系统测试(DealRecords)', type: :system do
       earn_limit_price = deal_record.earn_limit_price
       expect(page).to have_content earn_limit_price
       click_link earn_limit_price
-      expect(current_path).to eq place_order_confirm_path
+      expect(current_path).to eq place_order_form_path
       expect(page.html).to include 'sell-limit'
+    end
+
+    specify '#177新增下单链接并能选择买卖种类及显示目前仓位大小' do
+      visit place_order_form_path
+      expect(page.html).to include 'buy-limit'
+      expect(page.html).to include 'sell-limit'
+      expect(page).to have_content DealRecord.btc_level
     end
 
   end

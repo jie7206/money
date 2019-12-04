@@ -31,6 +31,16 @@ class DealRecord < ApplicationRecord
 
   before_validation :set_default
 
+  # 显示目前仓位
+  def self.btc_level
+    sum = btc_amount_to = 0.0
+    Property.tagged_with('170').each do |p|
+      sum += p.amount_to
+      btc_amount_to = p.amount_to if p.name.include? 'BTC'
+    end
+    return btc_amount_to/sum*100
+  end
+
   # 显示币种
   def bi
     symbol.sub('usdt','').upcase
