@@ -180,6 +180,7 @@ en:
   deal_record_amount: Amount
   deal_record_fees: Fees
   deal_record_purpose: Purpose
+  deal_record_created: Created
   deal_record_earn_limit: Earn Limit
   deal_record_loss_limit: Loss Limit
   deal_record_earn_short: EarnL
@@ -221,6 +222,8 @@ en:
   order_price: Price
   order_amount: Amount
   order_calculate: Calculate
+  order_error: Order Parameters Error!
+  order_usdt: Money
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

@@ -2,8 +2,7 @@
 <table>
   <tr class="thead">
     <td width="15"></td>
-    <td><%= t(:deal_record_account) %></td>
-    <td><%= t(:deal_record_data_id) %></td>
+    <td><%= t(:deal_record_created) %></td>
     <td><%= t(:deal_record_price) %></td>
     <td><%= t(:deal_record_amount) %></td>
     <td><%= t(:exchange_to_cny) %></td>
@@ -22,8 +21,7 @@
 <% @deal_records.each do |dr| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
-    <td align="center"><%= dr.account %></td>
-    <td><%= link_edit_to(dr,dr.data_id.to_s[-7..-1]) %></td>
+    <td><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
     <td align="right"><%= price = to_n(dr.price) %></td>
     <td align="right"><%= amount = to_n(dr.amount,6) %></td>
     <td align="right"><%= cny_amount = to_n(dr.cny_amount,2) if !dr.real_profit %></td>
@@ -65,13 +63,11 @@
     <td align="right"><%= to_n(total_earn_or_loss) %></td>
     <td align="right"><%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) %></td>
     <td align="right"><%= to_n(total_earn_limit,0) %></td>
-    <td colspan="3" align="right"><%= to_n(total_real_profit,4) %></td>
+    <td colspan="2" align="right"><%= to_n(total_real_profit,4) %></td>
   </tr>
 </table>
 <br/>
 <%= link_back_to_portfolios %>
-| <%= update_huobi_records_link %>
-| <%= update_huobi_assets_link %>
 | <%= link_to t(:new_deal_record), new_deal_record_path, { id: 'add_new_deal_record' } %>
 | <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
 <p/></p>

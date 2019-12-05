@@ -5,6 +5,7 @@ RSpec.describe '系统测试(DealRecords)', type: :system do
   describe '管理员登入' do
 
     let!(:deal_record) { create(:deal_record) }
+    let!(:usdt) { create(:property, :usdt) }
 
     before { login_as_admin }
 
@@ -42,6 +43,11 @@ RSpec.describe '系统测试(DealRecords)', type: :system do
       expect(page.html).to include 'buy-limit'
       expect(page.html).to include 'sell-limit'
       expect(page).to have_content DealRecord.btc_level
+    end
+
+    specify '#178下单时输入数量并按下试算能显示成交后的仓位最后能成功送出订单' do
+      visit place_order_form_path
+      expect(page).to have_content DealRecord.usdt_amount
     end
 
   end

@@ -44,7 +44,7 @@ module ApplicationHelper
 
   # 默认的数字显示格式
   def to_n( number, pos=2 )
-    if number = number.to_f
+    if number.class != Array and number = number.to_f
       return number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))
     else
       return format("%.#{pos}f",0)
@@ -61,8 +61,12 @@ module ApplicationHelper
   end
 
   # 默认的时间显示格式
-  def to_t( time )
-    time.to_s(:db)
+  def to_t( time, simple = false )
+    if !simple
+      time.to_s(:db)
+    else
+      time.strftime("%y%m%d-%H%M%S")
+    end
   end
 
   # 点击后立刻选取所有文字
@@ -114,8 +118,8 @@ module ApplicationHelper
   end
 
   # 选择交易的类型
-  def select_order_type
-    select_tag "type", options_for_select([ "buy-limit", "sell-limit" ])
+  def select_order_type( deal_type )
+    select_tag "deal_type", options_for_select([ ["限价买", "buy-limit"], ["市价买", "buy-market"], ["限价卖", "sell-limit"], ["市价卖", "sell-market"] ], deal_type)
   end
 
   # 选择交易记录的类型

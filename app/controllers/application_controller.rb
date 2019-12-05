@@ -523,6 +523,21 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # 美元换台币
+  def usd2twd
+    return $twd_exchange_rate
+  end
+
+  # 美元换人民币
+  def usd2cny
+    return $cny_exchange_rate
+  end
+
+  # 人民币换台币
+  def cny2twd
+    return $twd_exchange_rate/$cny_exchange_rate
+  end
+
   # 建立回到目录页的方法
   $models.each do |n|
     define_method "go_#{n.pluralize}" do

@@ -57,6 +57,13 @@ FactoryBot.define do
       association :currency, :btc
     end
 
+    trait :usdt do
+      name { 'USDT' }
+      amount { 100.0 }
+      tag_list { '170' }
+      association :currency, :usdt
+    end
+
   end
 
 end

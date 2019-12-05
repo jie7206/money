@@ -86,32 +86,68 @@ class MainController < ApplicationController
           @price = deal_record.loss_limit_price
         end
       end
+      @deal_type = 'sell-limit'
     elsif params[:amount]
       @amount = params[:amount].to_f
       @price = btc_price
+      @deal_type = 'sell-limit'
     else
       @price = btc_price
+      @deal_type = 'buy-limit'
     end
+    default_order_info
+  end
+
+  # 默认的下单讯息
+  def default_order_info
     @btc_level = to_n(DealRecord.btc_level) # 显示目前仓位
+    @usdt_amount = to_n(DealRecord.usdt_amount) # 显示剩余资金
+  end
+
+  # 取得下单参数
+  def get_order_params
+    @deal_type = params[:deal_type]
+    @price = params[:price].to_f
+    @amount = params[:amount].to_f
   end
 
   # 执行下单试算
   def order_calculate
-    put_notice 'OK!'
-    redirect_to place_order_form_path
+    get_order_params
+    if @deal_type.include? 'buy' and DealRecord.usdt_amount - @price * @amount >= 0 \
+      and @price * @amount > 1
+      @usdt_amount = to_n(DealRecord.usdt_amount - @price * @amount)
+      @btc_level = to_n((DealRecord.twd_of_btc + @price * @amount * usd2twd) / DealRecord.twd_of_170 * 100)
+    elsif @deal_type.include? 'sell' and DealRecord.btc_amount - @amount >= 0 \
+      and @price * @amount > 1
+      @usdt_amount = to_n(DealRecord.usdt_amount + @price * @amount * 0.998)
+      @btc_level = to_n((DealRecord.twd_of_btc - @price * @amount * usd2twd) / DealRecord.twd_of_170 * 100)
+    else
+      flash.now[:warning] = t(:order_error)
+      @amount = ''
+      default_order_info
+    end
+    render :place_order_form
   end
 
   # 执行火币下单
   def place_order
-    put_notice 'Test Place Order OK!'
-    # root = @huobi_api_170.new_order(params[:symbol],params[:type],params[:price],params[:amount])
-    # if root["status"] == "ok" and order_id = root["data"] and !order_id.empty?
-    #   DealRecord.find(session[:deal_record_id]).update_attribute(:order_id,order_id)
-    #   put_notice "#{t(:place_order_ok)} #{t(:deal_record_order_id)}: #{order_id}"
-    #   session.delete(:deal_record_id)
-    # else
-    #   put_notice t(:place_order_failure)
-    # end
+    get_order_params
+    begin
+      root = JSON.parse(`python place_order.py symbol=btcusdt deal_type=#{@deal_type}  price=#{@price} amount=#{@amount}`)
+    rescue
+      root = []
+    end
+    #root = @huobi_api_170.new_order('btcusdt',@deal_type,@price,@amount)
+    if root["status"] == "ok" and order_id = root["data"] and !order_id.empty?
+      if session[:deal_record_id] and dr = DealRecord.find(session[:deal_record_id])
+        dr.update_attribute(:order_id,order_id)
+      end
+      put_notice "#{t(:place_order_ok)} #{t(:deal_record_order_id)}: #{order_id}"
+      session.delete(:deal_record_id)
+    else
+      put_notice t(:place_order_failure)
+    end
     go_deal_records
   end
 

@@ -36,6 +36,12 @@ FactoryBot.define do
       exchange_rate { 0.00010859 }
     end
 
+    trait :usdt do
+      name { '泰达币' }
+      code { 'USDT' }
+      exchange_rate { 1.0001 }
+    end
+
   end
 
 end

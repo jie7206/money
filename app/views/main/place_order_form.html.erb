@@ -1,4 +1,4 @@
-<h2><%= t(:place_order_to_huobi)+t(:info_confirm) %></h2>
+<h2><%= order_link %></h2>
 <script>
   function submit_calculate() {
     document.getElementById("place_order_form").action = '<%= order_calculate_path %>';
@@ -17,25 +17,29 @@
     <td align="center"><%= "#{@btc_level} %" %></td>
   </tr>
   <tr>
+    <td><%= t(:order_usdt) %>：</td>
+    <td align="center"><%= "#{@usdt_amount} USDT" %></td>
+  </tr>
+  <tr>
     <td><%= t(:deal_record_deal_type) %>：</td>
-    <td align="center"><%= select_order_type %></td>
+    <td align="center"><%= select_order_type(@deal_type) %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_symbol) %>：</td>
-    <td><%= text_field_tag(:symbol,'btcusdt') %></td>
+    <td><%= text_field_tag(:symbol, 'btcusdt', disabled: 'disabled') %></td>
   </tr>
   <tr>
     <td><%= t(:order_price) %>：</td>
-    <td><%= text_field_tag(:price,@price) %></td>
+    <td><%= text_field_tag(:price, @price, onclick: select_all) %></td>
   </tr>
   <tr>
     <td><%= t(:order_amount) %>：</td>
-    <td><%= text_field_tag(:amount,@amount) %></td>
+    <td><%= text_field_tag(:amount, @amount) %></td>
   </tr>
   <tr>
     <td colspan="2" align="right" class="tfoot">
-      <%= button_tag( t(:order_calculate), type: 'button', onclick: 'submit_calculate()' ) %>&nbsp;
-      <%= button_tag( t(:place_order_to_huobi), type: 'button', onclick: 'submit_order()' ) %>
+      <%= button_tag( t(:order_calculate), type: 'button', id: 'calculate_button', onclick: 'submit_calculate()' ) %>&nbsp;&nbsp;&nbsp;
+      <%= button_tag( t(:place_order_to_huobi), type: 'button', id: 'submit_button', onclick: 'submit_order()' ) %>
     </td>
   </tr>
 </table>

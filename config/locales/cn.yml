@@ -183,6 +183,7 @@ cn:
   deal_record_amount: 成交量
   deal_record_fees: 手续费用
   deal_record_purpose: 投资目的
+  deal_record_created: 下单时间
   deal_record_earn_limit: 止盈(¥)
   deal_record_loss_limit: 止损(¥)
   deal_record_earn_short: 止盈价
@@ -224,6 +225,8 @@ cn:
   order_price: 价格
   order_amount: 数量
   order_calculate: 下单试算
+  order_error: 下单参数有错误！
+  order_usdt: 资金
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

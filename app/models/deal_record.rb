@@ -31,14 +31,37 @@ class DealRecord < ApplicationRecord
 
   before_validation :set_default
 
-  # 显示目前仓位
+  # 回传火币170账号所有资产总值
+  def self.twd_of_170
+    twd_of_170 = 0.0
+    Property.tagged_with('170').each {|p| twd_of_170 += p.amount_to}
+    return twd_of_170
+  end
+
+  # 回传火币170账号所有持有的BTC资产
+  def self.twd_of_btc
+    twd_of_btc = 0.0
+    Property.tagged_with('170').each {|p| twd_of_btc = p.amount_to if p.name.include? 'BTC'}
+    return twd_of_btc
+  end
+
+  # 回传目前仓位
   def self.btc_level
-    sum = btc_amount_to = 0.0
+    return self.twd_of_btc/self.twd_of_170*100
+  end
+
+  # 回传剩余资金
+  def self.usdt_amount
     Property.tagged_with('170').each do |p|
-      sum += p.amount_to
-      btc_amount_to = p.amount_to if p.name.include? 'BTC'
+      return p.amount if p.name.include? 'USDT'
     end
-    return btc_amount_to/sum*100
+  end
+
+  # 回传剩余比特币
+  def self.btc_amount
+    Property.tagged_with('170').each do |p|
+      return p.amount if p.name.include? 'BTC'
+    end
   end
 
   # 显示币种

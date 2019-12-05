@@ -24,7 +24,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
     specify '#111[系统层]能在资产列表的金额栏位中直接输入值后按回车更新' do
       p = @ps[0]
-      fill_in "new_amount_#{p.id}", with: '57114.38'
+      fill_in "new_amount_#{p.id}", with: '57114.3849'
       find("#property_#{p.id}").click
       expect(page.html).to include '57114.38'
     end
