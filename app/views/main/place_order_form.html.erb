@@ -14,11 +14,11 @@
   <tr><td colspan="2" class="thead"><%= Time.now.to_s(:db) %></td></tr>
   <tr>
     <td><%= t(:order_level) %>：</td>
-    <td align="center"><%= "#{@btc_level} %" %></td>
+    <td align="center"><%= "#{@btc_level}% (#{@btc_amount})" %></td>
   </tr>
   <tr>
     <td><%= t(:order_usdt) %>：</td>
-    <td align="center"><%= "#{@usdt_amount} USDT" %></td>
+    <td align="center"><%= "#{@usdt_amount}U (¥#{@cny_amount})" %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_deal_type) %>：</td>
@@ -29,7 +29,7 @@
     <td><%= text_field_tag(:symbol, 'btcusdt', disabled: 'disabled') %></td>
   </tr>
   <tr>
-    <td><%= t(:order_price) %>：</td>
+    <td><%= link_to t(:order_price), {controller: :main, action: :kline_chart}, {target: :blank} %>：</td>
     <td><%= text_field_tag(:price, @price, onclick: select_all) %></td>
   </tr>
   <tr>
@@ -46,3 +46,4 @@
 <% end -%>
 <br/>
 <%= link_back_to_deal_records %>
+| <%= update_btc_exchange_rates_link %>

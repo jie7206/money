@@ -56,17 +56,14 @@ class ApplicationController < ActionController::Base
   # 从火币网取得某一数字货币的最新报价
   def get_huobi_price( symbol )
     begin
-      Timeout.timeout(20) do
-        url = "http://api.huobi.pro/market/history/kline?period=1min&size=1&symbol=#{symbol}"
-        return Regexp.new(/close\":(\d+)\.(\d+)/).match(get_uri_response(url)).to_a[0].split(':')[1].to_f.floor(4)
-      end
-    rescue
-      root = @huobi_api_170.history_kline(symbol.to_s,'1min',1)
-      if root["data"] and root["data"][0] # 不管什么情况，如果发生异常，则返回0
+      root = JSON.parse(`python huobi_price.py symbol=#{symbol} period=1min size=1`)
+      if root["data"] and root["data"][0]
         return format("%.2f",root["data"][0]["close"]).to_f
       else
         return 0
       end
+    rescue
+      return 0
     end
   end
 

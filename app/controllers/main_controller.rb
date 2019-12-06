@@ -100,8 +100,20 @@ class MainController < ApplicationController
 
   # 默认的下单讯息
   def default_order_info
+    @btc_amount = to_n(DealRecord.btc_amount, 4) # 显示BTC数量
     @btc_level = to_n(DealRecord.btc_level) # 显示目前仓位
     @usdt_amount = to_n(DealRecord.usdt_amount) # 显示剩余资金
+    usdt_to_cny
+  end
+
+  # 火币费率
+  def fee_rate
+    0.998
+  end
+
+  # USDT转CNY
+  def usdt_to_cny
+    @cny_amount = (@usdt_amount.to_f*usd2cny).to_i # 显示剩余资金(¥)
   end
 
   # 取得下单参数
@@ -117,16 +129,19 @@ class MainController < ApplicationController
     if @deal_type.include? 'buy' and DealRecord.usdt_amount - @price * @amount >= 0 \
       and @price * @amount > 1
       @usdt_amount = to_n(DealRecord.usdt_amount - @price * @amount)
-      @btc_level = to_n((DealRecord.twd_of_btc + @price * @amount * usd2twd) / DealRecord.twd_of_170 * 100)
+      @btc_level = to_n((DealRecord.twd_of_btc + @price * @amount * fee_rate * usd2twd) / DealRecord.twd_of_170 * 100)
+      @btc_amount = to_n(DealRecord.btc_amount + @amount * fee_rate, 4)
     elsif @deal_type.include? 'sell' and DealRecord.btc_amount - @amount >= 0 \
       and @price * @amount > 1
-      @usdt_amount = to_n(DealRecord.usdt_amount + @price * @amount * 0.998)
+      @usdt_amount = to_n(DealRecord.usdt_amount + @price * @amount * fee_rate)
       @btc_level = to_n((DealRecord.twd_of_btc - @price * @amount * usd2twd) / DealRecord.twd_of_170 * 100)
+      @btc_amount = to_n(DealRecord.btc_amount - @amount, 4)
     else
       flash.now[:warning] = t(:order_error)
       @amount = ''
       default_order_info
     end
+    usdt_to_cny
     render :place_order_form
   end
 
@@ -179,12 +194,12 @@ class MainController < ApplicationController
   # 返回K线数据（蜡烛图）
   def get_kline
     symbol = params[:symbol] ? params[:symbol] : "btcusdt"
-    period = params[:period] ? params[:period] : "5min"
+    period = params[:period] ? params[:period] : "1min"
     size = params[:size] ? params[:size] : 200
     @symbol_title = symbol_title(symbol)
     @period_title = period_title(period)
     begin
-      root = JSON.parse(`python btc_price.py symbol=#{symbol} period=#{period}  size=#{size}`)
+      root = JSON.parse(`python huobi_price.py symbol=#{symbol} period=#{period}  size=#{size}`)
       return root["data"].reverse! if root["data"] and root["data"][0]
     rescue
       return []
@@ -255,6 +270,13 @@ class MainController < ApplicationController
       return "+"+str
     else
       return str
+    end
+  end
+
+  def order_list
+    root = `python open_orders.py`
+    respond_to do |format|
+      format.json  { render :json => root }
     end
   end
 

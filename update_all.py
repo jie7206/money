@@ -6,9 +6,8 @@ from HuobiServices import *
 from datetime import datetime
 
 
-ACCOUNT_ID = 6582761
 SYMBOLS = [['usdt', 'usdthusd'], ['btc', 'btcusdt'], ['atom', 'atomusdt']]
-CONN = sqlite3.connect("./db/development.sqlite3")
+CONN = sqlite3.connect(DB)
 
 
 # 更新數字貨幣最新报价

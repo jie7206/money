@@ -224,6 +224,7 @@ en:
   order_calculate: Calculate
   order_error: Order Parameters Error!
   order_usdt: Money
+  order_list: Order List
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

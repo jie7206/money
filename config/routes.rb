@@ -59,5 +59,6 @@ Rails.application.routes.draw do
   get 'main/get_huobi_assets_test'
   get 'main/del_huobi_orders'
   get 'main/kline_chart'
+  get 'main/order_list'
 
 end

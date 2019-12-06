@@ -227,6 +227,7 @@ cn:
   order_calculate: 下单试算
   order_error: 下单参数有错误！
   order_usdt: 资金
+  order_list: 下单列表
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

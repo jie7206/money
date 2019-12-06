@@ -47,15 +47,7 @@ class CurrenciesController < ApplicationController
 
   # 更新比特币的汇率值
   def update_btc_exchange_rates
-    begin
-      if update_btc_price
-        update_portfolios_and_records
-      else
-        put_notice t(:get_price_error)
-      end
-    rescue Net::OpenTimeout
-      put_notice t(:get_price_error)
-    end
+    put_notice t(:get_price_error) if !update_btc_price
     go_back
   end
 

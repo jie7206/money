@@ -182,6 +182,11 @@ module ApplicationHelper
     link_to t(:update_house_price), {controller: :items, action: :update_house_price, path: request.fullpath}, {id:'update_house_price'}
   end
 
+  # 下单列表链接
+  def order_list_link
+    link_to t(:order_list), {controller: :main, action: :order_list, format: :json}, {id:'order_list'}
+  end
+
   # 资产标签云
   def get_tag_cloud
     @tags = Property.tag_counts_on(:tags)

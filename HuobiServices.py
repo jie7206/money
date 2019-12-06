@@ -3,8 +3,10 @@
 # @Author  : KlausQiu
 # @QQ      : 375235513
 # @github  : https://github.com/KlausQIU
-
 from Utils import *
+
+ACCOUNT_ID = 6582761  # 账号ID
+DB = "./db/development.sqlite3"  # 数据库位置
 
 '''
 Market data API
@@ -131,9 +133,6 @@ def get_accounts():
     path = "/v1/account/accounts"
     params = {}
     return api_key_get(params, path)
-
-
-ACCOUNT_ID = 6582761
 
 
 # 获取当前账户资产
@@ -285,7 +284,7 @@ def orders_matchresults(symbol, types=None, start_date=None, end_date=None, _fro
 
 
 # 查询所有当前帐号下未成交订单
-def open_orders(account_id, symbol, side='', size=10):
+def open_orders(account_id, symbol, size=10, side=''):
     """
     :param symbol:
     :return:
