@@ -1,0 +1,2 @@
+class OpenOrder < ApplicationRecord
+end

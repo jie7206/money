@@ -62,6 +62,7 @@ class DealRecord < ApplicationRecord
     Property.tagged_with('170').each do |p|
       return p.amount if p.name.include? 'BTC'
     end
+    return 0
   end
 
   # 显示币种
@@ -125,6 +126,9 @@ class DealRecord < ApplicationRecord
 
   # 清空下单编号
   def clear_order
+    if oo = OpenOrder.find_by_order_id(self.order_id)
+      oo.destroy
+    end
     update_attribute(:order_id,'')
   end
 

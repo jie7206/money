@@ -10,6 +10,7 @@
   }
 </script>
 <%= form_tag("", method: :post, id: 'place_order_form') do -%>
+<%= hidden_field_tag 'deal_record_id', @deal_record_id %>
 <table>
   <tr><td colspan="2" class="thead"><%= Time.now.to_s(:db) %></td></tr>
   <tr>
@@ -21,6 +22,14 @@
     <td align="center"><%= "#{@usdt_amount}U (¥#{@cny_amount})" %></td>
   </tr>
   <tr>
+    <td><%= t(:usdt_trade) %>：</td>
+    <td align="center"><%= @usdt_available %> USDT</td>
+  </tr>
+  <tr>
+    <td><%= t(:usdt_trade) %>：</td>
+    <td align="center"><%= @btc_available %> BTC</td>
+  </tr>
+  <tr>
     <td><%= t(:deal_record_deal_type) %>：</td>
     <td align="center"><%= select_order_type(@deal_type) %></td>
   </tr>
@@ -30,7 +39,7 @@
   </tr>
   <tr>
     <td><%= link_to t(:order_price), {controller: :main, action: :kline_chart}, {target: :blank} %>：</td>
-    <td><%= text_field_tag(:price, @price, onclick: select_all) %></td>
+    <td><%= text_field_tag(:price, @price) %></td>
   </tr>
   <tr>
     <td><%= t(:order_amount) %>：</td>
@@ -46,4 +55,6 @@
 <% end -%>
 <br/>
 <%= link_back_to_deal_records %>
+| <%= link_back_to_open_orders %>
 | <%= update_btc_exchange_rates_link %>
+<p>

@@ -4,9 +4,10 @@
 # @QQ      : 375235513
 # @github  : https://github.com/KlausQIU
 from Utils import *
+from datetime import datetime
 
 ACCOUNT_ID = 6582761  # 账号ID
-DB = "./db/development.sqlite3"  # 数据库位置
+DB = "/Users/lin/sites/money/db/development.sqlite3"  # 数据库位置
 
 '''
 Market data API
@@ -496,6 +497,19 @@ def margin_balance(symbol):
         params['symbol'] = symbol
 
     return api_key_get(params, url)
+
+
+# 取得现在时间
+def get_now():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+# 以数据库时间格式输出
+def db_time(timestamp):
+    if len(str(timestamp)) == 13:
+        timestamp = timestamp//1000
+    date_time = datetime.fromtimestamp(timestamp)
+    return date_time.strftime("%Y-%m-%d %H:%M:%S")
 
 
 if __name__ == '__main__':

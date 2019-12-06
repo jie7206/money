@@ -33,6 +33,11 @@ class DealRecordsController < ApplicationController
     end
   end
 
+  def update_deal_records
+    put_notice `python ./py/deal_records.py`
+    go_deal_records
+  end
+
   def destroy
     @deal_record.destroy
     put_notice t(:deal_record_destroyed_ok)

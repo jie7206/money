@@ -3,7 +3,8 @@ import sys
 import time
 import sqlite3
 from HuobiServices import *
-from datetime import datetime
+from deal_records import *
+from open_orders import *
 
 
 SYMBOLS = [['usdt', 'usdthusd'], ['btc', 'btcusdt'], ['atom', 'atomusdt']]
@@ -39,47 +40,12 @@ def update_all_huobi_assets():
         print("%s 资产更新为 %.4f" % (key.upper(), amounts[key]), sys.stdout)
 
 
-# 更新买入比特币的交易记录
-def update_huobi_deal_records():
-    count = 0
-    for deal_type in ['buy-limit', 'buy-market']:
-        for data in orders_matchresults('btcusdt', deal_type)['data']:
-            data_id = int(data['id'])
-            sql = "SELECT id FROM deal_records WHERE data_id = %i" % data_id
-            result = CONN.execute(sql)
-            if not len(result.fetchall()) == 1:
-                price = float(data['price'])
-                amount = float(data['filled-amount'])
-                fees = float(data['filled-fees'])
-                created_at = db_time(data['created-at'])
-                sql = "INSERT INTO deal_records (account, data_id, symbol, deal_type, price, amount, fees, \
-                        earn_limit, loss_limit, created_at, updated_at) VALUES ('170', %i, 'btcusdt', '%s', %f, %f, %f, 0, 0, '%s', '%s')" \
-                        % (data_id, deal_type, price, amount, fees, created_at, created_at)
-                CONN.execute(sql)
-                CONN.commit()
-                count += 1
-    if count > 0:
-        print("新增%i笔交易记录" % count, sys.stdout)
-
-
-# 取得现在时间
-def get_now():
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-
-# 以数据库时间格式输出
-def db_time(timestamp):
-    if len(str(timestamp)) == 13:
-        timestamp = timestamp//1000
-    date_time = datetime.fromtimestamp(timestamp)
-    return date_time.strftime("%Y-%m-%d %H:%M:%S")
-
-
 if __name__ == '__main__':
     try:
         update_prices()  # 更新數字貨幣最新报价
         update_all_huobi_assets()  # 更新火币所有账号的资产余额
         update_huobi_deal_records()  # 更新买入比特币的交易记录
+        update_open_orders()  # 更新未成交订单
         print("所有主要资料已更新！", sys.stdout)
     except:
         print("网路不顺畅，请稍后再试！", sys.stdout)

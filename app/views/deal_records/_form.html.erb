@@ -68,3 +68,4 @@
 <% if @deal_record.order_id and !@deal_record.order_id.empty? %>
 | <%= link_to(t(:cancel_order),controller: :main, action: :del_huobi_orders, order_id: @deal_record.order_id) %>
 <% end %>
+<p>

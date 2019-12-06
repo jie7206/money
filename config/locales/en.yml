@@ -225,6 +225,21 @@ en:
   order_error: Order Parameters Error!
   order_usdt: Money
   order_list: Order List
+  open_order_index: Order List
+  open_order_created: Created
+  open_order_id: ID
+  open_order_symbol: Symbol
+  open_order_price: Price
+  open_order_amount: Amount
+  open_order_type: Type
+  delete_open_order: Cancel Order
+  check_open_orders: Check Open Orders
+  clear_open_orders: Clear Open Orders
+  clear_open_orders_ok: Open orders was clear successfully!
+  destroy_open_order_ok: Open orders was destroy successfully!
+  delete_open_order_ok: Open orders was delete successfully!
+  delete_open_order_error: Cancel open order error!
+  usdt_trade: Available
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

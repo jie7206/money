@@ -2,8 +2,8 @@ module ApplicationHelper
 
   include ActsAsTaggableOn::TagsHelper
 
-  # 为哪些模型自动建立返回列表的链接以及执行返回列表的指令
-  $models = %w(property currency interest item portfolio record deal_record)
+  # 为哪些模型自动建立返回列表的链接以及执行返回列表的指令 eq. link_back_to_xxx, go_xxx
+  $models = %w(property currency interest item portfolio record deal_record open_order)
   # 为哪些类型的通知自动产生方法
   $flashs = %w(notice warning)
   # 建立从列表中快速更新某个值的方法
@@ -44,6 +44,11 @@ module ApplicationHelper
 
   # 默认的数字显示格式
   def to_n( number, pos=2 )
+    if number and number.class == String
+      if number.strip!
+        number.sub!("<_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>",'')
+      end
+    end
     if number.class != Array and number = number.to_f
       return number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))
     else
@@ -184,7 +189,12 @@ module ApplicationHelper
 
   # 下单列表链接
   def order_list_link
-    link_to t(:order_list), {controller: :main, action: :order_list, format: :json}, {id:'order_list'}
+    link_to t(:order_list), {controller: :open_orders}, {id:'open_orders'}
+  end
+
+  # 下单列表链接
+  def check_open_orders_link
+    link_to t(:check_open_orders), {controller: :open_orders, action: :check_open_order}, {id:'check_open_orders'}
   end
 
   # 资产标签云
@@ -276,7 +286,7 @@ module ApplicationHelper
 
   # 显示火币时间讯息使用
   def get_timestamp
-    timestamp = `python timestamp.py`
+    timestamp = `python ./py/timestamp.py`
     puts "timestamp = #{timestamp}"
     return timestamp.to_i
   end
@@ -338,8 +348,8 @@ module ApplicationHelper
   end
 
   # 建立查看火币下单链接
-  def look_order_link( dr )
-    link_to(dr.order_id, {controller: :main, action: :look_order, account: dr.account, id: dr.order_id},{target: :blank}) if dr.order_id and !dr.order_id.empty?
+  def look_order_link( dr, len = 11 )
+    link_to(dr.order_id[-11+(11-len)..-1], {controller: :main, action: :look_order, account: dr.account, id: dr.order_id},{target: :blank}) if dr.order_id and !dr.order_id.empty?
   end
 
   def symbol_title(symbol)

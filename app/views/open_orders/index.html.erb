@@ -1,0 +1,32 @@
+<h2><%= t(:order_list) %></h2>
+<table>
+  <tr class="thead">
+    <td width="15"></td>
+    <td><%= t(:open_order_created) %></td>
+    <td><%= t(:open_order_id) %></td>
+    <td><%= t(:open_order_symbol) %></td>
+    <td><%= t(:open_order_price) %></td>
+    <td><%= t(:open_order_amount) %></td>
+    <td><%= t(:open_order_type) %></td>
+    <td></td>
+  </tr>
+<% n = 1 %>
+<% @open_orders.each do |oo| %>
+  <tr <%= change_row_color %>>
+    <td align="right"><%= n %></td>
+    <td><%= to_t(oo.created_at,true) %></td>
+    <td><%= oo.order_id %></td>
+    <td><%= oo.symbol.upcase %></td>
+    <td><%= oo.price %></td>
+    <td><%= oo.amount %></td>
+    <td><%= oo.order_type %></td>
+    <td><%= link_to t(:delete_open_order), delete_open_order_path(oo) %></td>
+  </tr>
+<% end %>
+</table>
+<br/>
+<%= link_back_to_deal_records %>
+| <%= link_back_to_open_orders %>
+| <%= check_open_orders_link %>
+| <%= link_to t(:clear_open_orders), clear_open_orders_path, { id: 'clear_open_orders' } %>
+<p/></p>

@@ -228,6 +228,21 @@ cn:
   order_error: 下单参数有错误！
   order_usdt: 资金
   order_list: 下单列表
+  open_order_index: 下单列表
+  open_order_created: 下单时间
+  open_order_id: 下单编号
+  open_order_symbol: 币种
+  open_order_price: 价格
+  open_order_amount: 数量
+  open_order_type: 买卖别
+  delete_open_order: 撤消下单
+  check_open_orders: 同步火币下单
+  clear_open_orders: 清空下单记录
+  clear_open_orders_ok: 下单记录已清空！
+  destroy_open_order_ok: 下单记录已删除！
+  delete_open_order_ok: 已成功撤消下单！
+  delete_open_order_error: 撤消下单未成功！
+  usdt_trade: 可用
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

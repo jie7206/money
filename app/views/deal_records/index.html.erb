@@ -19,6 +19,7 @@
 <% total_price = total_amount = total_cny_amount = total_cny_amount_now = \
    total_earn_or_loss = total_earn_limit = total_real_profit = 0 %>
 <% @deal_records.each do |dr| %>
+  <% if total_amount <= DealRecord.btc_amount %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
@@ -37,7 +38,7 @@
         <%= huobi_order_link(earn_limit_price,dr,'earn',false) %>
       <% end %>
     </td>
-    <td align="right"><%= look_order_link(dr) %></td>
+    <td align="right"><%= look_order_link(dr,8) %></td>
     <td align="right"><%= real_profit = to_n(dr.real_profit,4) if dr.real_profit %></td>
   </tr>
   <% n += 1 %>
@@ -49,9 +50,10 @@
      total_earn_limit += earn_limit.to_i if !dr.real_profit
      total_real_profit += real_profit.to_f if dr.real_profit
   %>
+  <% end %>
 <% end %>
   <tr class="thead">
-    <td colspan="3">
+    <td colspan="2">
       <% if !@deal_records.empty? %>
         <%= t(:price_now) %>: <%= link_to to_n(price_now), {controller: :main, action: :kline_chart}, {target: :blank} %>
       <% end %>
@@ -63,12 +65,12 @@
     <td align="right"><%= to_n(total_earn_or_loss) %></td>
     <td align="right"><%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) %></td>
     <td align="right"><%= to_n(total_earn_limit,0) %></td>
-    <td colspan="2" align="right"><%= to_n(total_real_profit,4) %></td>
+    <td colspan="3" align="right"><%= to_n(total_real_profit,4) %></td>
   </tr>
 </table>
 <br/>
 <%= link_back_to_portfolios %>
+| <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
 | <%= update_btc_exchange_rates_link %>
-| <%= link_to t(:new_deal_record), new_deal_record_path, { id: 'add_new_deal_record' } %>
 | <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
 <p/></p>

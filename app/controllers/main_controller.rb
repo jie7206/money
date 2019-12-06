@@ -77,8 +77,8 @@ class MainController < ApplicationController
   # 火币下单确认页
   def place_order_form
     if params[:id]
-      session[:deal_record_id] = params[:id]
-      if deal_record = DealRecord.find(session[:deal_record_id])
+      @deal_record_id = params[:id]
+      if deal_record = DealRecord.find(@deal_record_id)
         @amount = deal_record.real_amount.floor(6)
         if params[:type] == 'earn'
           @price = deal_record.earn_limit_price
@@ -103,6 +103,7 @@ class MainController < ApplicationController
     @btc_amount = to_n(DealRecord.btc_amount, 4) # 显示BTC数量
     @btc_level = to_n(DealRecord.btc_level) # 显示目前仓位
     @usdt_amount = to_n(DealRecord.usdt_amount) # 显示剩余资金
+    @btc_available, @usdt_available = `python ./py/usdt_trade.py`.split(',').map {|n| to_n(n,4).to_f}
     usdt_to_cny
   end
 
@@ -119,23 +120,25 @@ class MainController < ApplicationController
   # 取得下单参数
   def get_order_params
     @deal_type = params[:deal_type]
+    @deal_record_id = params[:deal_record_id]
     @price = params[:price].to_f
     @amount = params[:amount].to_f
   end
 
   # 执行下单试算
   def order_calculate
+    default_order_info
     get_order_params
-    if @deal_type.include? 'buy' and DealRecord.usdt_amount - @price * @amount >= 0 \
+    if @deal_type.include? 'buy' and @usdt_available - @price * @amount >= 0 \
       and @price * @amount > 1
-      @usdt_amount = to_n(DealRecord.usdt_amount - @price * @amount)
+      @usdt_available = to_n(@usdt_available - @price * @amount)
       @btc_level = to_n((DealRecord.twd_of_btc + @price * @amount * fee_rate * usd2twd) / DealRecord.twd_of_170 * 100)
       @btc_amount = to_n(DealRecord.btc_amount + @amount * fee_rate, 4)
-    elsif @deal_type.include? 'sell' and DealRecord.btc_amount - @amount >= 0 \
+    elsif @deal_type.include? 'sell' and @btc_available - @amount >= 0 \
       and @price * @amount > 1
-      @usdt_amount = to_n(DealRecord.usdt_amount + @price * @amount * fee_rate)
+      @usdt_amount = to_n(@usdt_amount.to_f + @price * @amount * fee_rate)
       @btc_level = to_n((DealRecord.twd_of_btc - @price * @amount * usd2twd) / DealRecord.twd_of_170 * 100)
-      @btc_amount = to_n(DealRecord.btc_amount - @amount, 4)
+      @btc_available = to_n(@btc_available - @amount, 4)
     else
       flash.now[:warning] = t(:order_error)
       @amount = ''
@@ -149,33 +152,34 @@ class MainController < ApplicationController
   def place_order
     get_order_params
     begin
-      root = JSON.parse(`python place_order.py symbol=btcusdt deal_type=#{@deal_type}  price=#{@price} amount=#{@amount}`)
+      root = JSON.parse(`python ./py/place_order.py symbol=btcusdt deal_type=#{@deal_type}  price=#{@price} amount=#{@amount}`)
     rescue
-      root = []
+      root = nil
     end
-    #root = @huobi_api_170.new_order('btcusdt',@deal_type,@price,@amount)
-    if root["status"] == "ok" and order_id = root["data"] and !order_id.empty?
-      if session[:deal_record_id] and dr = DealRecord.find(session[:deal_record_id])
+    if root and root["status"] == "ok"
+      order_id = root["data"]
+      if @deal_record_id.to_i > 0 and dr = DealRecord.find(@deal_record_id)
         dr.update_attribute(:order_id,order_id)
       end
       put_notice "#{t(:place_order_ok)} #{t(:deal_record_order_id)}: #{order_id}"
-      session.delete(:deal_record_id)
+      put_notice `python ./py/open_orders.py`
+      go_open_orders
     else
       put_notice t(:place_order_failure)
+      go_deal_records
     end
-    go_deal_records
   end
 
   # 查看火币下单情况
   def look_order
-    root = @huobi_api_170.order_status(params[:id])
+    root = JSON.parse(`python ./py/look_order.py order_id=#{params[:id]}`)
     render :json => root
   end
 
   # 取消火币下单
   def del_huobi_orders
     order_id = params[:order_id]
-    root = @huobi_api_170.submitcancel(order_id)
+    root = JSON.parse(`python ./py/cancel_order.py order_id=#{order_id}`)
     if root["status"] == "ok"
       DealRecord.find_by_order_id(order_id).clear_order
       put_notice t(:cancel_order_ok)
@@ -199,7 +203,7 @@ class MainController < ApplicationController
     @symbol_title = symbol_title(symbol)
     @period_title = period_title(period)
     begin
-      root = JSON.parse(`python huobi_price.py symbol=#{symbol} period=#{period}  size=#{size}`)
+      root = JSON.parse(`python ./py/huobi_price.py symbol=#{symbol} period=#{period}  size=#{size}`)
       return root["data"].reverse! if root["data"] and root["data"][0]
     rescue
       return []
@@ -274,7 +278,7 @@ class MainController < ApplicationController
   end
 
   def order_list
-    root = `python open_orders.py`
+    root = `python ./py/open_orders.py`
     respond_to do |format|
       format.json  { render :json => root }
     end
