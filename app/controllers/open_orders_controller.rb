@@ -31,8 +31,13 @@ class OpenOrdersController < ApplicationController
 
   # 清空下单记录
   def clear
-    OpenOrder.delete_all
-    put_notice t(:clear_open_orders_ok)
+    root = JSON.parse(`python ./py/clear_orders.py symbol=btcusdt`)
+    if root["status"] == "ok"
+      OpenOrder.delete_all
+      put_notice t(:clear_open_orders_ok)+t(:delete_open_order_ok)+"(#{root["data"]["success-count"]}#{t(:bi)})"
+    else
+      put_notice t(:delete_open_order_error)
+    end
     go_open_orders
   end
 

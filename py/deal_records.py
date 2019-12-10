@@ -21,18 +21,15 @@ def update_huobi_deal_records():
                 price = float(data['price'])
                 amount = float(data['filled-amount'])
                 fees = float(data['filled-fees'])
-                earn_limit = int((fees*price+price*amount*0.002)*7.1)
+                earn_limit = float((fees*price+price*amount*0.002)*7.1)
                 created_at = db_time(data['created-at'])
                 sql = "INSERT INTO deal_records (account, data_id, symbol, deal_type, price, amount, fees, \
-                        earn_limit, loss_limit, created_at, updated_at) VALUES ('170', %i, 'btcusdt', '%s', %f, %f, %f, %i, 0, '%s', '%s')" \
+                        earn_limit, loss_limit, created_at, updated_at) VALUES ('170', %i, 'btcusdt', '%s', %f, %f, %f, %.4f, 0, '%s', '%s')" \
                         % (data_id, deal_type, price, amount, fees, earn_limit, created_at, created_at)
                 CONN.execute(sql)
                 CONN.commit()
                 count += 1
-    if count > 0:
-        print("新增%i笔交易记录！" % count, sys.stdout)
-    else:
-        print("无新增交易！", sys.stdout)
+    return count
 
 
 if __name__ == '__main__':

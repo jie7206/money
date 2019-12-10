@@ -16,10 +16,12 @@
   </tr>
 <% n = 1 %>
 <% if !@deal_records.empty? then price_now = @deal_records.first.price_now end %>
-<% total_price = total_amount = total_cny_amount = total_cny_amount_now = \
-   total_earn_or_loss = total_earn_limit = total_real_profit = 0 %>
+<%
+total_price = total_amount = total_cny_amount = total_cny_amount_now =  total_earn_or_loss = total_earn_limit = total_real_profit = 0
+btc_hold = DealRecord.btc_amount
+%>
 <% @deal_records.each do |dr| %>
-  <% if total_amount <= DealRecord.btc_amount %>
+  <%# if btc_hold > 0.0001 and total_amount <= btc_hold %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
@@ -29,7 +31,7 @@
     <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
     <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
     <td align="right"><%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %></td>
-    <td align="right"><%= earn_limit = dr.earn_limit if !dr.real_profit and dr.earn_limit > 0 %></td>
+    <td align="right"><%= earn_limit = to_n(dr.earn_limit,3) if !dr.real_profit and dr.earn_limit > 0 %></td>
     <% earn_limit_price = dr.earn_limit_price %>
     <td align="right" <%= if_red_bg(price_now,earn_limit_price) %>>
       <% if !dr.real_profit and (!dr.order_id or dr.order_id.empty?) %>
@@ -47,10 +49,10 @@
      total_cny_amount += cny_amount.to_f if !dr.real_profit
      total_cny_amount_now += cny_amount_now.to_f if !dr.real_profit
      total_earn_or_loss += earn_or_loss.to_f if !dr.real_profit
-     total_earn_limit += earn_limit.to_i if !dr.real_profit
+     total_earn_limit += earn_limit.to_f if !dr.real_profit
      total_real_profit += real_profit.to_f if dr.real_profit
   %>
-  <% end %>
+  <%# end %>
 <% end %>
   <tr class="thead">
     <td colspan="2">
@@ -64,13 +66,13 @@
     <td align="right"><%= to_n(total_cny_amount_now) %></td>
     <td align="right"><%= to_n(total_earn_or_loss) %></td>
     <td align="right"><%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) %></td>
-    <td align="right"><%= to_n(total_earn_limit,0) %></td>
+    <td align="right"><%= to_n(total_earn_limit,3) %></td>
     <td colspan="3" align="right"><%= to_n(total_real_profit,4) %></td>
   </tr>
 </table>
 <br/>
 <%= link_back_to_portfolios %>
-| <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
 | <%= update_btc_exchange_rates_link %>
+| <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
 | <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
 <p/></p>

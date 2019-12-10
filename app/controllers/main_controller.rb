@@ -107,11 +107,6 @@ class MainController < ApplicationController
     usdt_to_cny
   end
 
-  # 火币费率
-  def fee_rate
-    0.998
-  end
-
   # USDT转CNY
   def usdt_to_cny
     @cny_amount = (@usdt_amount.to_f*usd2cny).to_i # 显示剩余资金(¥)

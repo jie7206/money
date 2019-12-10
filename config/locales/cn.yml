@@ -237,7 +237,7 @@ cn:
   open_order_type: 买卖别
   delete_open_order: 撤消下单
   check_open_orders: 同步火币下单
-  clear_open_orders: 清空下单记录
+  clear_open_orders: 撤消全部下单并清空记录
   clear_open_orders_ok: 下单记录已清空！
   destroy_open_order_ok: 下单记录已删除！
   delete_open_order_ok: 已成功撤消下单！

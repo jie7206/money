@@ -5,6 +5,11 @@ class ApplicationController < ActionController::Base
   before_action :check_login, except: [ :login, :update_all_data ]
   before_action :summary, :memory_back, only: [ :index ]
 
+  # 火币费率
+  def fee_rate
+    1-0.0016
+  end
+
   # 更新主要资料
   def update_all_data
     put_notice `python ./py/update_all.py`

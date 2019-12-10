@@ -3,11 +3,12 @@
 # @Author  : KlausQiu
 # @QQ      : 375235513
 # @github  : https://github.com/KlausQIU
+from db import *
 from Utils import *
 from datetime import datetime
 
 ACCOUNT_ID = 6582761  # 账号ID
-DB = "/Users/lin/sites/money/db/development.sqlite3"  # 数据库位置
+DB = db_path()  # 数据库位置
 
 '''
 Market data API
@@ -305,7 +306,7 @@ def open_orders(account_id, symbol, size=10, side=''):
 
 
 # 批量取消符合条件的订单
-def cancel_open_orders(account_id, symbol, side='', size=10):
+def cancel_open_orders(account_id, symbol, side='', size=50):
     """
     :param symbol:
     :return:
@@ -510,6 +511,20 @@ def db_time(timestamp):
         timestamp = timestamp//1000
     date_time = datetime.fromtimestamp(timestamp)
     return date_time.strftime("%Y-%m-%d %H:%M:%S")
+
+
+# 取得比特币最新报价
+def get_btc_price(size=1):
+    try:
+        root = get_kline('btcusdt', '1min', size)
+        if root['status'] == 'ok':
+            sum_price = 0
+            for item in root["data"]:
+                sum_price += float(item["close"])
+            ave_price = sum_price/size
+            return float(root["data"][0]["close"]), ave_price
+    except:
+        return 0, 0
 
 
 if __name__ == '__main__':

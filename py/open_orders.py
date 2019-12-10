@@ -28,10 +28,7 @@ def update_open_orders():
             CONN.execute(sql)
             CONN.commit()
             count += 1
-    if count > 0:
-        print("新增%i笔下单记录！" % count, sys.stdout)
-    else:
-        print("无新增下单！", sys.stdout)
+    return count
 
 
 if __name__ == '__main__':
