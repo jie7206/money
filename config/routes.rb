@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  root 'properties#index'
+  root 'properties#huobi_assets'
 
   resources :properties do
     member do
@@ -68,5 +68,6 @@ Rails.application.routes.draw do
   get 'check_open_order', to: 'open_orders#check_open_order'
   get 'clear_open_orders', to: 'open_orders#clear'
   get 'update_deal_records', to: 'deal_records#update_deal_records'
+  get 'huobi_assets', to: 'properties#huobi_assets'
 
 end

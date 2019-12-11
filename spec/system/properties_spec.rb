@@ -283,7 +283,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
     specify '#156[系统层]通过资产组合更新了资产标签后应返回该资产组合而不是首页' do
       create_properties_with_tags
-      visit '/?tags=MYCASH'
+      visit '/properties?tags=MYCASH'
       click_on @twd_cash.name
       fill_in 'property[amount]', with: 10000.0
       find('#update_property').click

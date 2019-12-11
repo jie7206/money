@@ -10,12 +10,7 @@ class PropertiesController < ApplicationController
     if admin? and tags
       if mode = params[:mode] and !mode.empty?
         @properties = get_properties_from_tags(tags,extags,mode)
-        # 点击查看资产组合能记录等值台币等值人民币与资产占比讯息(因执行auto_update_all_data.rb而暂停)
-        # if @properties.size > 0 and pid = params[:pid] and pid.to_i > 0
-        #   update_portfolio_attributes( pid, @properties )
-        # end
-      elsif tags
-        # 由tag_cloud来的单一标签
+      elsif tags  # 由tag_cloud来的单一标签
         @properties = Property.tagged_with(tags.strip)
       end
       # 计算资产总值以供显示占比使用
@@ -24,6 +19,11 @@ class PropertiesController < ApplicationController
     else
       @properties = Property.all_sort admin?
     end
+  end
+
+  # 显示火币短线资产
+  def huobi_assets
+    redirect_to action: :index, tags: '170'
   end
 
   # 新建资产表单

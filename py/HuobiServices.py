@@ -513,6 +513,11 @@ def db_time(timestamp):
     return date_time.strftime("%Y-%m-%d %H:%M:%S")
 
 
+# 以数据库时间格式输出
+def to_t(input_time):
+    return input_time.strftime("%Y-%m-%d %H:%M:%S")
+
+
 # 取得比特币最新报价
 def get_btc_price(size=1):
     try:

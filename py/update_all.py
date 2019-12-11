@@ -15,12 +15,16 @@ CONN = sqlite3.connect(DB)
 def update_prices():
     count = 0
     for symbol in [s[1] for s in SYMBOLS]:
-        price = float(get_kline(symbol, '1min', 1)['data'][0]['close'])
-        sql = "UPDATE currencies SET exchange_rate = %.10f, updated_at = '%s' WHERE symbol = '%s'" % \
-              (1.0/price, get_now(), symbol)
-        CONN.execute(sql)
-        CONN.commit()
-        count += 1
+        try:
+            price = float(get_kline(symbol, '1min', 1)['data'][0]['close'])
+            if price > 0:
+                sql = "UPDATE currencies SET exchange_rate = %.10f, updated_at = '%s' WHERE symbol = '%s'" % \
+                      (1.0/price, get_now(), symbol)
+                CONN.execute(sql)
+                CONN.commit()
+                count += 1
+        except:
+            return count
     return count
 
 

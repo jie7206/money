@@ -13,7 +13,7 @@ class MainController < ApplicationController
   # 显示登入表单及接受登入表单
   def login
     if correct_pincode? and admin?
-      redirect_to portfolios_path
+      redirect_to root_path
     elsif correct_pincode?
       redirect_to root_path
     end
