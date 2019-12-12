@@ -48,6 +48,15 @@ class DealRecordsController < ApplicationController
     destroy
   end
 
+  def delete_invest_log
+    if File.exist? $auto_invest_log_path
+        File.delete $auto_invest_log_path
+        File.new $auto_invest_log_path, 'w+'
+        put_notice t(:delete_invest_log_ok)
+    end
+    go_deal_records
+  end
+
   # 清空交易记录
   def clear
     DealRecord.delete_all

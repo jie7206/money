@@ -30,6 +30,6 @@ def update_open_orders():
 
 if __name__ == '__main__':
     try:
-        update_open_orders()  # 查询未成交订单
+        print(update_open_orders(), sys.stdout)
     except:
         print("网路不顺畅，请稍后再试！", sys.stdout)

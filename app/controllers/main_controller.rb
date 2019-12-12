@@ -249,7 +249,7 @@ class MainController < ApplicationController
     else
       render plain: 'Connect Error!'
     end
-  end  
+  end
 
   # 计算中间价
   def mid(high, low)
@@ -299,11 +299,9 @@ class MainController < ApplicationController
     end
   end
 
-  def order_list
-    root = `python ./py/open_orders.py`
-    respond_to do |format|
-      format.json  { render :json => root }
-    end
+  # 183将Python脚本在控制台输出的讯息写到文档然后可以点击网页查看
+  def read_auto_invest_log
+    render plain: File.read($auto_invest_log_path)
   end
 
 end

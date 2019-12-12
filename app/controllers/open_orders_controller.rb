@@ -8,7 +8,11 @@ class OpenOrdersController < ApplicationController
 
   def check_open_order
     OpenOrder.delete_all
-    put_notice `python ./py/open_orders.py`
+    if new_open_orders = `python ./py/open_orders.py` and new_open_orders.to_i > 0
+        put_notice "新增#{new_open_orders}笔下单记录！"
+    else
+        put_notice "无新增下单！"
+    end
     go_open_orders
   end
 

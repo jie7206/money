@@ -243,6 +243,9 @@ cn:
   delete_open_order_ok: 已成功撤消下单！
   delete_open_order_error: 撤消下单未成功！
   usdt_trade: 可用
+  invest_log: 定投日志
+  clear_invest_log: 清空定投日志
+  delete_invest_log_ok: 定投日志已清空！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

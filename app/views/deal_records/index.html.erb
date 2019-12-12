@@ -69,7 +69,7 @@ btc_hold = DealRecord.btc_amount
   </tr>
 </table>
 <br/>
-<%= link_back_to_portfolios %>
+<%= link_to t(:clear_invest_log), delete_invest_log_path %>
 | <%= update_btc_exchange_rates_link %>
 | <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
 | <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>

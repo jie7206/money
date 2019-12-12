@@ -77,7 +77,7 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
     max_rate = 0.05
     now = datetime.datetime.now()
     u2c = usd_to_cny()
-    print("%s Invest Below: %.2f" % (get_now(), below_price))
+    print("%s Invest Between: %.2f ~ %.2f" % (get_now(), bottom_price, below_price))
     print("%i Digital Prices updated" % update_prices())
     trade_btc = float(get_trade_btc())
     if trade_btc < target_amount:
@@ -110,7 +110,6 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                     print("Remain Invest Hours: %.2f Hours" % remain_hours)
                     print("Empty USDT Time: ", empty_usdt_time)
                     if not test_price > 0:
-                        print(clear_orders())
                         print(place_new_order(price_now, "%.6f" % amount))
                         time.sleep(20)
                         deal_records = update_huobi_deal_records()

@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   def initialize
     super
     load_global_variables
-    ini_huobi # 初始化火币API
+    # ini_huobi # 初始化火币API
     Currency.add_or_renew_ex_rates # 方便汇率转换直接调用，无需再次查询数据库
   end
 
