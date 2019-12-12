@@ -1,1 +1,8 @@
-<p><p><%= show_fusion_chart %><p><p>
+<p><p>
+  <%= show_fusion_chart %>
+  <% if @show_period_link %>
+    <div id="period-bar" style="width:100%;text-align:center">
+      <%= period_link_for_chart(:line_chart) %>
+    </div>
+  <% end %>
+<p><p>

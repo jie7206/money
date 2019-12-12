@@ -197,6 +197,20 @@ module ApplicationHelper
     link_to t(:check_open_orders), {controller: :open_orders, action: :check_open_order}, {id:'check_open_orders'}
   end
 
+  # K线图链接
+  def kline_chart_link( text )
+    link_to text, {controller: :main, action: :kline_chart}, {target: :blank}
+  end
+
+  # K线图链接
+  def line_chart_link( symbol_code )
+    if !symbol_code.empty?
+      return raw(link_to symbol_code, {controller: :main, action: :line_chart, symbol: symbol_code.downcase}, {target: :blank})
+    else
+      return ''
+    end
+  end
+
   # 资产标签云
   def get_tag_cloud
     @tags = Property.tag_counts_on(:tags)
@@ -353,7 +367,9 @@ module ApplicationHelper
   end
 
   def symbol_title(symbol)
-    symbol.upcase.sub("USDT","/USDT").sub("HUSD","/HUSD")
+    s = symbol.upcase.sub("USDT","/USDT").sub("HUSD","/HUSD")
+    s = s[1..-1] if s[0] == "/"
+    return s
   end
 
   def period_title(period)
@@ -363,6 +379,15 @@ module ApplicationHelper
   # 取得最新的比特币报价
   def btc_price
     Currency.find_by_code('BTC').to_usd.floor(2)
+  end
+
+  # 显示切换分钟链接
+  def period_link_for_chart(action)
+    result = ""
+    %w[1min 5min 15min 30min 60min 4hour 1day 1week 1mon].each do |period|
+    result += "<span class='sub_text'>#{link_to period_title(period), action: action, symbol: params[:symbol], period: period}</span>"
+    end
+    return raw(result)
   end
 
 end

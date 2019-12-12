@@ -74,9 +74,7 @@ EOF
 <body>
     <div id="chart-container"></div>
     <div id="period-bar" style="width:100%;text-align:center">
-      <% %w[1min 5min 15min 30min 60min 4hour 1day 1week 1mon].each do |period| %>
-        <span class="sub_text"><%= link_to period_title(period), :action => :kline_chart, :symbol => params[:symbol], :period => period %></span>
-      <% end %>
+      <%= period_link_for_chart(:kline_chart) %>
       <span class="sub_text"><%= link_to("BTC/USDT", { :period => params[:period], :symbol => 'btcusdt' }, { :target => '_blank' }) %></span>
       <span class="sub_text"><%= link_to("BTC/HUSD", { :period => params[:period], :symbol => 'btchusd' }, { :target => '_blank' }) %></span>
     </div>
