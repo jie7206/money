@@ -263,6 +263,24 @@ class ApplicationController < ActionController::Base
     return nil
   end
 
+  # 设定线图最大值和最小值
+  def set_fusion_chart_max_and_min_value
+    factor = 1.5 # 调整上下值，让图好看点，值越小离边界越近，不可小于1
+    @min_value = @data_arr.min
+    @max_value = @data_arr.max
+    @newest_value = @data_arr.last
+    pos = @min_value < 1 ? 4 : 2 # 如果数值小于1，则显示小数点到4位，否则2位
+    if @min_value == @max_value
+      @top_value = to_n(@min_value*(1+(factor-1)),pos)
+      @bottom_value = to_n(@min_value*(1-(factor-1)),pos)
+    else
+      mid_value = (@max_value + @min_value)/2
+      center_diff = (@max_value - mid_value).abs #与中轴距离=最大值-中间值
+      @top_value = to_n(mid_value + center_diff*factor,pos) #新最大值=中间值+与中轴距离*调整因子
+      @bottom_value = to_n(mid_value - center_diff*factor,pos) #新最小值=中间值-与中轴距离*调整因子
+    end
+  end
+
   # 生成FusionCharts的XML资料
   def build_fusion_chart_data( class_name, oid )
     @name = class_name.index('Net') ? '资产总净值' : eval(class_name).find(oid).name
@@ -278,7 +296,7 @@ class ApplicationController < ActionController::Base
     @chart_data = ''
     today = Date.today
     start_date = today - $fusionchart_data_num.days
-    data_arr = [] # 为了找出最大值和最小值
+    @data_arr = [] # 为了找出最大值和最小值
     start_date.upto(today) do |date|
       this_value = find_rec_date_value(records,date,'value','updated_at')
       if this_value
@@ -287,24 +305,10 @@ class ApplicationController < ActionController::Base
       else
         this_value = last_value
       end
-      data_arr << this_value
+      @data_arr << this_value
       @chart_data += "<set label='#{date.strftime("%Y-%m-%d")}' value='#{this_value}' />"
     end
-    # 设定最大值和最小值
-    factor = 1.5 # 调整上下值，让图好看点，值越小离边界越近，不可小于1
-    @min_value = data_arr.min
-    @max_value = data_arr.max
-    @newest_value = data_arr.last
-    pos = @min_value < 1 ? 4 : 2 # 如果数值小于1，则显示小数点到4位，否则2位
-    if @min_value == @max_value
-      @top_value = to_n(@min_value*(1+(factor-1)),pos)
-      @bottom_value = to_n(@min_value*(1-(factor-1)),pos)
-    else
-      mid_value = (@max_value + @min_value)/2
-      center_diff = (@max_value - mid_value).abs #与中轴距离=最大值-中间值
-      @top_value = to_n(mid_value + center_diff*factor,pos) #新最大值=中间值+与中轴距离*调整因子
-      @bottom_value = to_n(mid_value - center_diff*factor,pos) #新最小值=中间值-与中轴距离*调整因子
-    end
+    set_fusion_chart_max_and_min_value
     @caption = "#{@name} #{$fusionchart_data_num}天走势图 最新 #{@newest_value} ( #{@min_value} ➠ #{@max_value} )"
   end
 

@@ -236,34 +236,20 @@ class MainController < ApplicationController
   def line_chart
     if prepare_chart_data
       @chart_data = ''
-      data_arr = []
+      @data_arr = []
       @raw_data.each do |data|
         this_value = data["close"]
-        data_arr << this_value
+        @data_arr << this_value
         @chart_data += "<set label='#{Time.at(data["id"]).strftime("%y%m%d %H:%M")}' value='#{this_value}' />"
       end
-      # 设定最大值和最小值
-      factor = 1.5 # 调整上下值，让图好看点，值越小离边界越近，不可小于1
-      @min_value = data_arr.min
-      @max_value = data_arr.max
-      @newest_value = data_arr.last
-      pos = @min_value < 1 ? 4 : 2 # 如果数值小于1，则显示小数点到4位，否则2位
-      if @min_value == @max_value
-        @top_value = to_n(@min_value*(1+(factor-1)),pos)
-        @bottom_value = to_n(@min_value*(1-(factor-1)),pos)
-      else
-        mid_value = (@max_value + @min_value)/2
-        center_diff = (@max_value - mid_value).abs #与中轴距离=最大值-中间值
-        @top_value = to_n(mid_value + center_diff*factor,pos) #新最大值=中间值+与中轴距离*调整因子
-        @bottom_value = to_n(mid_value - center_diff*factor,pos) #新最小值=中间值-与中轴距离*调整因子
-      end
+      set_fusion_chart_max_and_min_value
       @caption = "#{@page_title} 最新 #{@newest_value} ( #{@min_value} ➠ #{@max_value} )"
       @show_period_link = true
       render template: 'shared/chart'
     else
       render plain: 'Connect Error!'
     end
-  end
+  end  
 
   # 计算中间价
   def mid(high, low)
