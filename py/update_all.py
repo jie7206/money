@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 import sys
 import time
-import sqlite3
 from HuobiServices import *
 from deal_records import *
 from open_orders import *
-
-
-SYMBOLS = [['usdt', 'usdthusd'], ['btc', 'btcusdt'], ['atom', 'atomusdt'], ['ht', 'htusdt']]
-CONN = sqlite3.connect(DB)
 
 
 # 更新数字货币最新报价
@@ -65,4 +60,3 @@ if __name__ == '__main__':
         print("所有主要资料已更新！", sys.stdout)
     except:
         print("网路不顺畅，请稍后再试！", sys.stdout)
-    CONN.close()

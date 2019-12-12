@@ -6,9 +6,6 @@ import sqlite3
 from HuobiServices import *
 
 
-CONN = sqlite3.connect(DB)
-
-
 # 更新未成交订单
 def update_open_orders():
     count = 0
@@ -36,4 +33,3 @@ if __name__ == '__main__':
         update_open_orders()  # 查询未成交订单
     except:
         print("网路不顺畅，请稍后再试！", sys.stdout)
-    CONN.close()

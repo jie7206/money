@@ -3,12 +3,29 @@
 # @Author  : KlausQiu
 # @QQ      : 375235513
 # @github  : https://github.com/KlausQIU
+import sqlite3
 from db import *
 from Utils import *
 from datetime import datetime
 
 ACCOUNT_ID = 6582761  # 账号ID
+SYMBOLS = [['usdt', 'usdthusd'], ['btc', 'btcusdt'], ['atom', 'atomusdt'], ['ht', 'htusdt']]
 DB = db_path()  # 数据库位置
+DB_Local = db_path(local=True)  # 数据库位置
+try:
+    CONN = sqlite3.connect(DB)
+except:
+    CONN = sqlite3.connect(DB_Local)
+
+
+# 从SQLite文件中读取数据
+def select_db(sql):
+    cursor = CONN.cursor()          # 该例程创建一个 cursor，将在 Python 数据库编程中用到。
+    CONN.row_factory = sqlite3.Row  # 可访问列信息
+    cursor.execute(sql)             # 该例程执行一个 SQL 语句
+    rows = cursor.fetchall()        # 该例程获取查询结果集中所有（剩余）的行，返回一个列表。
+    return rows                     # print(rows[0][2]) # 选择某一列数据
+
 
 '''
 Market data API
@@ -518,22 +535,9 @@ def to_t(input_time):
     return input_time.strftime("%Y-%m-%d %H:%M:%S")
 
 
-# 取得比特币最新报价
-def get_btc_price(size=1):
-    try:
-        root = get_kline('btcusdt', '1min', size)
-        if root['status'] == 'ok':
-            sum_price = 0
-            for item in root["data"]:
-                sum_price += float(item["close"])
-            ave_price = sum_price/size
-            return float(root["data"][0]["close"]), ave_price
-    except:
-        return 0, 0
-
-
 if __name__ == '__main__':
     s = 'btcusdt'
     p = float(get_kline(s, '1min', 1)['data'][0]['close'])
     print(str(p)+" : "+str(1/p))
     print(orders_matchresults(s)['data'][0]['filled-amount'])
+    CONN.close()
