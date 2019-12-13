@@ -20,7 +20,7 @@
     <td><%= oo.symbol.upcase %></td>
     <td><%= oo.price %></td>
     <td><%= oo.amount %></td>
-    <td><%= to_n(oo.price*oo.amount,3) %></td>
+    <td align="right"><%= to_n(oo.price*oo.amount,2,round:true) %></td>
     <td><%= oo.order_type %></td>
     <td><%= link_to t(:delete_open_order), delete_open_order_path(oo) %></td>
   </tr>

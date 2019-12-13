@@ -53,8 +53,8 @@ btc_hold = DealRecord.btc_amount
       profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit
       earn_limit = to_n(dr.earn_limit,3) if !dr.real_profit and dr.earn_limit > 0
       real_profit = to_n(dr.real_profit,4) if dr.real_profit
+     end
   %>
-  <% end %>
   <% n += 1 %>
   <% total_price += price.to_f * amount.to_f
      total_amount += amount.to_f

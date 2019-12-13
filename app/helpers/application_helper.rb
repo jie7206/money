@@ -43,14 +43,18 @@ module ApplicationHelper
   end
 
   # 默认的数字显示格式
-  def to_n( number, pos=2 )
+  def to_n( number, pos=2, opt={} )
     if number and number.class == String
       if number.strip!
         number.sub!("<_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>",'')
       end
     end
     if number.class != Array and number = number.to_f
-      return number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))
+      if opt[:round]
+        return format("%.#{pos}f",number)
+      else
+        return number > 0 ? format("%.#{pos}f",number.floor(pos)) : format("%.#{pos}f",number.ceil(pos))
+      end
     else
       return format("%.#{pos}f",0)
     end
