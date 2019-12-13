@@ -21,27 +21,40 @@ total_price = total_amount = total_cny_amount = total_cny_amount_now =  total_ea
 btc_hold = DealRecord.btc_amount
 %>
 <% @deal_records.each do |dr| %>
-  <tr <%= change_row_color %>>
-    <td align="right"><%= n %></td>
-    <td><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
-    <td align="right"><%= price = to_n(dr.price) %></td>
-    <td align="right"><%= amount = to_n(dr.amount-dr.fees,6) %></td>
-    <td align="right"><%= cny_amount = to_n(dr.cny_amount,2) if !dr.real_profit %></td>
-    <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
-    <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
-    <td align="right"><%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %></td>
-    <td align="right"><%= earn_limit = to_n(dr.earn_limit,3) if !dr.real_profit and dr.earn_limit > 0 %></td>
-    <% earn_limit_price = dr.earn_limit_price %>
-    <td align="right" <%= if_red_bg(price_now,earn_limit_price) %>>
-      <% if !dr.real_profit and (!dr.order_id or dr.order_id.empty?) %>
-        <%= huobi_order_link(earn_limit_price,dr,'earn') %>
-      <% else %>
-        <%= huobi_order_link(earn_limit_price,dr,'earn',false) %>
-      <% end %>
-    </td>
-    <td align="right"><%= look_order_link(dr,8) %></td>
-    <td align="right"><%= real_profit = to_n(dr.real_profit,4) if dr.real_profit %></td>
-  </tr>
+  <% if n <= $deal_records_limit %>
+    <tr <%= change_row_color %>>
+      <td align="right"><%= n %></td>
+      <td><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
+      <td align="right"><%= price = to_n(dr.price) %></td>
+      <td align="right"><%= amount = to_n(dr.amount-dr.fees,6) %></td>
+      <td align="right"><%= cny_amount = to_n(dr.cny_amount,2) if !dr.real_profit %></td>
+      <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
+      <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
+      <td align="right"><%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %></td>
+      <td align="right"><%= earn_limit = to_n(dr.earn_limit,3) if !dr.real_profit and dr.earn_limit > 0 %></td>
+      <% earn_limit_price = dr.earn_limit_price %>
+      <td align="right" <%= if_red_bg(price_now,earn_limit_price) %>>
+        <% if !dr.real_profit and (!dr.order_id or dr.order_id.empty?) %>
+          <%= huobi_order_link(earn_limit_price,dr,'earn') %>
+        <% else %>
+          <%= huobi_order_link(earn_limit_price,dr,'earn',false) %>
+        <% end %>
+      </td>
+      <td align="right"><%= look_order_link(dr,8) %></td>
+      <td align="right"><%= real_profit = to_n(dr.real_profit,4) if dr.real_profit %></td>
+    </tr>
+  <%
+    else
+      price = to_n(dr.price)
+      amount = to_n(dr.amount-dr.fees,6)
+      cny_amount = to_n(dr.cny_amount,2) if !dr.real_profit
+      cny_amount_now = dr.cny_amount_now if !dr.real_profit
+      earn_or_loss = dr.earn_or_loss if !dr.real_profit
+      profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit
+      earn_limit = to_n(dr.earn_limit,3) if !dr.real_profit and dr.earn_limit > 0
+      real_profit = to_n(dr.real_profit,4) if dr.real_profit
+  %>
+  <% end %>
   <% n += 1 %>
   <% total_price += price.to_f * amount.to_f
      total_amount += amount.to_f
@@ -69,8 +82,7 @@ btc_hold = DealRecord.btc_amount
   </tr>
 </table>
 <br/>
-<%= link_to t(:clear_invest_log), delete_invest_log_path %>
-| <%= update_btc_exchange_rates_link %>
+<%= update_btc_exchange_rates_link %>
 | <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
 | <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
 <p/></p>

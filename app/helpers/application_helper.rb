@@ -211,6 +211,16 @@ module ApplicationHelper
     end
   end
 
+  # 定投记录链接
+  def invest_log_link
+    link_to t(:invest_log), invest_log_path
+  end
+
+  # 清空定投记录链接
+  def clear_invest_log_link
+    link_to t(:clear_invest_log), delete_invest_log_path
+  end
+
   # 资产标签云
   def get_tag_cloud
     @tags = Property.tag_counts_on(:tags)
@@ -384,9 +394,12 @@ module ApplicationHelper
   # 显示切换分钟链接
   def period_link_for_chart(action)
     result = ""
+    result += "<span class='sub_text'>#{link_to t(:currency_index), controller: :currencies}</span>"
     %w[1min 5min 15min 30min 60min 4hour 1day 1week 1mon].each do |period|
     result += "<span class='sub_text'>#{link_to period_title(period), action: action, symbol: params[:symbol], period: period}</span>"
     end
+    swap_action = action == :kline_chart ? :line_chart : :kline_chart
+    result += "<span class='sub_text'>#{link_to t(:swap_chart), action: swap_action, symbol: params[:symbol], period: params[:period]}</span>"
     return raw(result)
   end
 

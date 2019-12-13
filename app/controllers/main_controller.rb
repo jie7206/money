@@ -245,6 +245,7 @@ class MainController < ApplicationController
       set_fusion_chart_max_and_min_value
       @caption = "#{@page_title} 最新 #{@newest_value} ( #{@min_value} ➠ #{@max_value} )"
       @show_period_link = true
+      @no_header = true
       render template: 'shared/chart'
     else
       render plain: 'Connect Error!'

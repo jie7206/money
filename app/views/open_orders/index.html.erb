@@ -7,6 +7,7 @@
     <td><%= t(:open_order_symbol) %></td>
     <td><%= t(:open_order_price) %></td>
     <td><%= t(:open_order_amount) %></td>
+    <td><%= "USDT" %></td>
     <td><%= t(:open_order_type) %></td>
     <td></td>
   </tr>
@@ -19,6 +20,7 @@
     <td><%= oo.symbol.upcase %></td>
     <td><%= oo.price %></td>
     <td><%= oo.amount %></td>
+    <td><%= to_n(oo.price*oo.amount,3) %></td>
     <td><%= oo.order_type %></td>
     <td><%= link_to t(:delete_open_order), delete_open_order_path(oo) %></td>
   </tr>
@@ -26,6 +28,7 @@
 </table>
 <br/>
 <%= link_back_to_deal_records %>
+| <%= clear_invest_log_link %>
 | <%= link_back_to_open_orders %>
 | <%= check_open_orders_link %>
 | <%= link_to t(:clear_open_orders), clear_open_orders_path, { id: 'clear_open_orders' } %>

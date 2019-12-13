@@ -242,7 +242,8 @@ en:
   usdt_trade: Available
   invest_log: Invest Log
   clear_invest_log: Clear Invest Log
-  delete_invest_log_ok: Invest log was delete successfully!
+  delete_invest_log_ok: Invest log was clear successfully!
+  swap_chart: Swap Chart
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
 
   # 火币费率
   def fee_rate
-    1-0.0016
+    1-$fees_rate*0.8
   end
 
   # 更新主要资料
