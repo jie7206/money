@@ -54,7 +54,7 @@ class DealRecordsController < ApplicationController
         File.new $auto_invest_log_path, 'w+'
         put_notice t(:delete_invest_log_ok)
     end
-    go_deal_records
+    go_back
   end
 
   # 清空交易记录

@@ -223,7 +223,17 @@ module ApplicationHelper
 
   # 清空定投记录链接
   def clear_invest_log_link
-    link_to t(:clear_invest_log), delete_invest_log_path
+    link_to t(:clear_invest_log), delete_invest_log_path(path: request.fullpath)
+  end
+
+  # 撤消全部下单并清空记录链接
+  def clear_open_orders_link
+    link_to t(:clear_open_orders), clear_open_orders_path, { id: 'clear_open_orders' }
+  end
+
+  # 设置定投参数表单链接
+  def set_auto_invest_form_link
+    link_to t(:set_auto_invest_params), set_auto_invest_form_path, { id: 'set_auto_invest_form' }
   end
 
   # 资产标签云

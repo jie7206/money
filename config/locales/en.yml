@@ -246,6 +246,9 @@ en:
   swap_chart: Swap Chart
   see_kline: See KLine
   see_line: See Line
+  set_auto_invest_params: Setup Auto Invest Params
+  save_auto_invest_params: Save Auto Invest Params
+  set_auto_invest_params_ok: Auto Invest Params was save successfully!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

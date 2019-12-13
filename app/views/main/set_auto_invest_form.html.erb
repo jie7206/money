@@ -1,0 +1,11 @@
+<h2><%= t(:set_auto_invest_params) %></h2>
+<%= form_tag set_auto_invest_params_path, method: :post, id: 'set_auto_invest_form' do %>
+  <p>every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, test_price</p>
+  <div>
+    <span id="auto_invest_params_span">
+      <%= text_field_tag :auto_invest_params, @invest_params_value %>
+    </span>
+    <%= submit_tag t(:save_auto_invest_params), style: 'font-size: 1.2em' %>
+  </div>
+<% end %>
+<p/>

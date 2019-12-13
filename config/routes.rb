@@ -62,6 +62,8 @@ Rails.application.routes.draw do
   post 'place_order', to: 'main#place_order'
   post 'order_calculate', to: 'main#order_calculate'
   get 'invest_log', to: 'main#read_auto_invest_log'
+  get 'set_auto_invest_form', to: 'main#set_auto_invest_form'
+  post 'set_auto_invest_params', to: 'main#set_auto_invest_params'
   get 'delete_invest_log', to: 'deal_records#delete_invest_log'
   get 'check_open_order', to: 'open_orders#check_open_order'
   get 'clear_open_orders', to: 'open_orders#clear'

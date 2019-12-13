@@ -84,22 +84,14 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
         print(str2)
         ftext += str1+'\n'
         ftext += str2+'\n'
-        if test_price < 0:
-            str18 = "Get stop command, process terminated! bye~"
-            print(str18)
-            ftext += str18+'\n'
-            fobj.write(ftext)
-            return 0
         trade_btc = float(get_trade_btc())
         if trade_btc < target_amount:
             target_price = float(below_price)
             price_now = float(get_price_now())
-            mode = 'Now'
             if test_price > 0:
                 price_now = test_price
-                mode = 'TEST'
             if price_now > 0:
-                str3 = "BTC Price %s: %.2f, Every %i Sec" % (mode, price_now, every)
+                str3 = "BTC Price Now: %.2f" % price_now
                 print(str3)
                 ftext += str3+'\n'
                 if price_now <= target_price:
@@ -135,7 +127,7 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                         ftext += str6+'\n'
                         ftext += str7+'\n'
                         ftext += str8+'\n'
-                        if test_price == 0:
+                        if not test_price > 0:
                             str9 = place_new_order(price_now, "%.6f" % amount)
                             print(str9)
                             ftext += str9+'\n'
@@ -159,65 +151,71 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                             trade_btc, trade_btc*price_now*u2c, btc_ave_cost())
                         print(str12)
                         ftext += str12+'\n'
+                        if test_price > 0:
+                            return 0
                         if trade_btc < target_amount:
                             fobj.write(ftext)
                             return 1
                         else:
-                            str13 = "Already reach target amount, Invest PAUSE!"
+                            str13 = "Already reach target amount, YA! bye~"
                             print(str13)
                             ftext += str13+'\n'
                             fobj.write(ftext)
-                            return 1
+                            return 0
                     else:
-                        str17 = "Run out of USDT, Recharge to continue..."
+                        str17 = "Run out of USDT, Invest STOP! bye~"
                         print(str17)
                         ftext += str17+'\n'
-                        fobj.write(ftext)
-                        return 1
+                        if test_price == 0:
+                            fobj.write(ftext)
+                        return 0
                 else:
                     str14 = "Price greater than %2.f, wait %i seconds for next operate" % (
                         target_price, every)
                     print(str14)
                     ftext += str14+'\n'
-                    fobj.write(ftext)
-                    return 1
+                    if test_price > 0:
+                        return 0
+                    else:
+                        fobj.write(ftext)
+                        return 1
             else:
                 str15 = "Can't get price, wait %i seconds for next operate" % every
                 print(str15)
                 ftext += str15+'\n'
-                fobj.write(ftext)
-                return 1
+                if test_price > 0:
+                    return 0
+                else:
+                    fobj.write(ftext)
+                    return 1
         else:
-            str13 = "Already reach target amount, Invest PAUSE!"
             print(str13)
             ftext += str13+'\n'
             fobj.write(ftext)
-            return 1
+            return 0
 
 
 if __name__ == '__main__':
+    every = int(sys.argv[1])
+    below_price = float(sys.argv[2])
+    bottom_price = float(sys.argv[3])
+    ori_usdt = float(sys.argv[4])
+    factor = float(sys.argv[5])
+    target_amount = float(sys.argv[6])
+    min_usdt = float(sys.argv[7])  # 1.5
+    max_rate = float(sys.argv[8])  # 0.05
+    test_price = float(sys.argv[9])
     while True:
         try:
-            with open('auto_invest_params.txt', 'r') as fread:
-                every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, test_price = fread.read().strip().split(' ')
-                every = int(every)
-                below_price = float(below_price)
-                bottom_price = float(bottom_price)
-                ori_usdt = float(ori_usdt)
-                factor = float(factor)
-                target_amount = float(target_amount)
-                min_usdt = float(min_usdt)  # 1.5
-                max_rate = float(max_rate)  # 0.05
-                test_price = float(test_price)
-                code = exe_auto_invest(every, below_price, bottom_price, ori_usdt,
-                                       factor, target_amount, min_usdt, max_rate, test_price)
-                if code == 0:
-                    break
-                for remaining in range(every, 0, -1):
-                    sys.stdout.write("\r")
-                    sys.stdout.write("Please wait {:2d} seconds for next operate".format(remaining))
-                    sys.stdout.flush()
-                    time.sleep(1)
-                sys.stdout.write("\r                                                      \n")
+            code = exe_auto_invest(every, below_price, bottom_price, ori_usdt,
+                                   factor, target_amount, min_usdt, max_rate, test_price)
+            if code == 0:
+                break
+            for remaining in range(every, 0, -1):
+                sys.stdout.write("\r")
+                sys.stdout.write("Please wait {:2d} seconds for next operate".format(remaining))
+                sys.stdout.flush()
+                time.sleep(1)
+            sys.stdout.write("\r                                                      \n")
         except:
             time.sleep(every)

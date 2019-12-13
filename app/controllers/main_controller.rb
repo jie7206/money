@@ -305,4 +305,16 @@ class MainController < ApplicationController
     render plain: File.read($auto_invest_log_path)
   end
 
+  # 设置定投参数表单
+  def set_auto_invest_form
+    @invest_params_value = File.read($auto_invest_params_path).strip
+  end
+
+  # 设置定投参数
+  def set_auto_invest_params
+    File.open($auto_invest_params_path,'w').write(params[:auto_invest_params])
+    put_notice t(:set_auto_invest_params_ok)
+    go_open_orders
+  end
+
 end
