@@ -34,7 +34,7 @@ class DealRecordsController < ApplicationController
   end
 
   def update_deal_records
-    put_notice `python ./py/deal_records.py`
+    put_notice `python py/deal_records.py`
     go_deal_records
   end
 

@@ -63,8 +63,8 @@ class MainController < ApplicationController
 
   # 更新火币资产
   def update_huobi_assets
-    update_all_huobi_assets
-    redirect_to '/?tags=170'
+    exe_update_huobi_assets
+    go_back
   end
 
   # 更新火币交易记录
@@ -103,7 +103,7 @@ class MainController < ApplicationController
     @btc_amount = to_n(DealRecord.btc_amount, 4) # 显示BTC数量
     @btc_level = to_n(DealRecord.btc_level) # 显示目前仓位
     @usdt_amount = to_n(DealRecord.usdt_amount) # 显示剩余资金
-    @btc_available, @usdt_available = `python ./py/usdt_trade.py`.split(',').map {|n| to_n(n,4).to_f}
+    @btc_available, @usdt_available = `python py/usdt_trade.py`.split(',').map {|n| to_n(n,4).to_f}
     usdt_to_cny
   end
 
@@ -147,7 +147,7 @@ class MainController < ApplicationController
   def place_order
     get_order_params
     begin
-      root = JSON.parse(`python ./py/place_order.py symbol=btcusdt deal_type=#{@deal_type}  price=#{@price} amount=#{@amount}`)
+      root = JSON.parse(`python py/place_order.py symbol=btcusdt deal_type=#{@deal_type}  price=#{@price} amount=#{@amount}`)
     rescue
       root = nil
     end
@@ -157,7 +157,7 @@ class MainController < ApplicationController
         dr.update_attribute(:order_id,order_id)
       end
       put_notice "#{t(:place_order_ok)} #{t(:deal_record_order_id)}: #{order_id}"
-      put_notice `python ./py/open_orders.py`
+      put_notice `python py/open_orders.py`
       go_open_orders
     else
       put_notice t(:place_order_failure)
@@ -167,14 +167,14 @@ class MainController < ApplicationController
 
   # 查看火币下单情况
   def look_order
-    root = JSON.parse(`python ./py/look_order.py order_id=#{params[:id]}`)
+    root = JSON.parse(`python py/look_order.py order_id=#{params[:id]}`)
     render :json => root
   end
 
   # 取消火币下单
   def del_huobi_orders
     order_id = params[:order_id]
-    root = JSON.parse(`python ./py/cancel_order.py order_id=#{order_id}`)
+    root = JSON.parse(`python py/cancel_order.py order_id=#{order_id}`)
     if root["status"] == "ok"
       DealRecord.find_by_order_id(order_id).clear_order
       put_notice t(:cancel_order_ok)
@@ -198,7 +198,7 @@ class MainController < ApplicationController
     @symbol_title = symbol_title(symbol)
     @period_title = period_title(period)
     begin
-      root = JSON.parse(`python ./py/huobi_price.py symbol=#{symbol} period=#{period}  size=#{size}`)
+      root = JSON.parse(`python py/huobi_price.py symbol=#{symbol} period=#{period}  size=#{size}`)
       return root["data"].reverse! if root["data"] and root["data"][0]
     rescue
       return []

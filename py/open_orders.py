@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-import sys
-import time
-import json
-import sqlite3
 from HuobiServices import *
 
 
@@ -30,6 +26,6 @@ def update_open_orders():
 
 if __name__ == '__main__':
     try:
-        print(update_open_orders(), sys.stdout)
+        print("新增%i笔下单记录！" % update_open_orders(), sys.stdout)
     except:
         print("网路不顺畅，请稍后再试！", sys.stdout)

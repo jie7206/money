@@ -63,13 +63,13 @@ Rails.application.routes.draw do
   post 'order_calculate', to: 'main#order_calculate'
   get 'invest_log', to: 'main#read_auto_invest_log'
   get 'delete_invest_log', to: 'deal_records#delete_invest_log'
-  get 'main/get_huobi_assets_test'
-  get 'main/del_huobi_orders'
-  get 'main/kline_chart'
-  get 'main/line_chart'
   get 'check_open_order', to: 'open_orders#check_open_order'
   get 'clear_open_orders', to: 'open_orders#clear'
   get 'update_deal_records', to: 'deal_records#update_deal_records'
   get 'huobi_assets', to: 'properties#huobi_assets'
+  get 'main/get_huobi_assets_test'
+  get 'main/del_huobi_orders'
+  get 'main/kline_chart'
+  get 'main/line_chart'
 
 end

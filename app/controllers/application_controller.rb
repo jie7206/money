@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
 
   # 更新主要资料
   def update_all_data
-    put_notice `python ./py/update_all.py`
+    put_notice `python py/update_all.py`
     update_portfolios_and_records
     go_back
   end
@@ -61,7 +61,7 @@ class ApplicationController < ActionController::Base
   # 从火币网取得某一数字货币的最新报价
   def get_huobi_price( symbol )
     begin
-      root = JSON.parse(`python ./py/huobi_price.py symbol=#{symbol} period=1min size=1`)
+      root = JSON.parse(`python py/huobi_price.py symbol=#{symbol} period=1min size=1`)
       if root["data"] and root["data"][0]
         return format("%.2f",root["data"][0]["close"]).to_f
       else
@@ -161,6 +161,8 @@ class ApplicationController < ActionController::Base
     elsif session[:path]
       redirect_to session[:path]
       session.delete(:path)
+    else
+      redirect_to root_path
     end
   end
 
@@ -388,6 +390,11 @@ class ApplicationController < ActionController::Base
       end
       return result
     end
+  end
+
+  # 更新火币170账号的资产余额
+  def exe_update_huobi_assets
+    put_notice `python py/update_assets.py`
   end
 
   # 更新火币所有账号的资产余额

@@ -3,15 +3,20 @@
 # @Author  : KlausQiu
 # @QQ      : 375235513
 # @github  : https://github.com/KlausQIU
+import sys
+import json
 import sqlite3
 from db import *
 from Utils import *
 from datetime import datetime
 
-ACCOUNT_ID = 6582761  # 账号ID
+# 火币账号ID
+ACCOUNT_ID = 6582761
+# 更新火币资产与更新价格的范围
 SYMBOLS = [['usdt', 'usdthusd'], ['btc', 'btcusdt'], ['atom', 'atomusdt'], ['ht', 'htusdt']]
-DB = db_path()  # 数据库位置
-DB_Local = db_path(local=True)  # 数据库位置
+# 数据库位置
+DB = db_path()
+DB_Local = db_path(local=True)
 try:
     CONN = sqlite3.connect(DB)
 except:

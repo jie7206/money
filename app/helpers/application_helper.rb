@@ -315,7 +315,7 @@ module ApplicationHelper
 
   # 显示火币时间讯息使用
   def get_timestamp
-    timestamp = `python ./py/timestamp.py`
+    timestamp = `python py/timestamp.py`
     puts "timestamp = #{timestamp}"
     return timestamp.to_i
   end

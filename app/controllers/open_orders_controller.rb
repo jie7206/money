@@ -7,12 +7,7 @@ class OpenOrdersController < ApplicationController
   end
 
   def check_open_order
-    OpenOrder.delete_all
-    if new_open_orders = `python ./py/open_orders.py` and new_open_orders.to_i > 0
-        put_notice "新增#{new_open_orders}笔下单记录！"
-    else
-        put_notice "无新增下单！"
-    end
+    put_notice `python py/open_orders.py`
     go_open_orders
   end
 
@@ -23,7 +18,7 @@ class OpenOrdersController < ApplicationController
   end
 
   def delete
-    root = JSON.parse(`python ./py/cancel_order.py order_id=#{@open_order.order_id}`)
+    root = JSON.parse(`python py/cancel_order.py order_id=#{@open_order.order_id}`)
     if root["status"] == "ok"
       put_notice t(:delete_open_order_ok)
       dr.clear_order if dr = DealRecord.find_by_order_id(@open_order.order_id)
@@ -35,7 +30,7 @@ class OpenOrdersController < ApplicationController
 
   # 清空下单记录
   def clear
-    root = JSON.parse(`python ./py/clear_orders.py symbol=btcusdt`)
+    root = JSON.parse(`python py/clear_orders.py symbol=btcusdt`)
     if root["status"] == "ok"
       OpenOrder.delete_all
       put_notice t(:clear_open_orders_ok)+t(:delete_open_order_ok)+"(#{root["data"]["success-count"]}#{t(:bi)})"
