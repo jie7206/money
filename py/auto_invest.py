@@ -72,9 +72,7 @@ def btc_ave_cost():
     return round(sum_price/sum_amount, 2)
 
 
-def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_amount, test_price=0):
-    min_usdt = 2.0
-    max_rate = 0.05
+def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, test_price=0):
     fname = 'auto_invest_log.txt'
     ftext = '############################################################\n'
     with open(fname, 'a') as fobj:
@@ -169,14 +167,20 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                         target_price, every)
                     print(str14)
                     ftext += str14+'\n'
-                    fobj.write(ftext)
-                    return 1
+                    if test_price > 0:
+                        return 0
+                    else:
+                        fobj.write(ftext)
+                        return 1
             else:
                 str15 = "Can't get price, wait %i seconds for next operate" % every
                 print(str15)
                 ftext += str15+'\n'
-                fobj.write(ftext)
-                return 1
+                if test_price > 0:
+                    return 0
+                else:
+                    fobj.write(ftext)
+                    return 1
         else:
             print(str13)
             ftext += str13+'\n'
@@ -191,11 +195,13 @@ if __name__ == '__main__':
     ori_usdt = float(sys.argv[4])
     factor = float(sys.argv[5])
     target_amount = float(sys.argv[6])
-    test_price = float(sys.argv[7])
+    min_usdt = float(sys.argv[7])  # 1.5
+    max_rate = float(sys.argv[8])  # 0.05
+    test_price = float(sys.argv[9])
     while True:
         try:
             code = exe_auto_invest(every, below_price, bottom_price, ori_usdt,
-                                   factor, target_amount, test_price)
+                                   factor, target_amount, min_usdt, max_rate, test_price)
             if code == 0:
                 break
             for remaining in range(every, 0, -1):

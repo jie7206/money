@@ -247,6 +247,8 @@ cn:
   clear_invest_log: 清空日志
   delete_invest_log_ok: 定投日志已清空！
   swap_chart: 切换图表
+  see_kline: 看K线图
+  see_line: 看折线图
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

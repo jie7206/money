@@ -207,9 +207,10 @@ module ApplicationHelper
   end
 
   # K线图链接
-  def line_chart_link( symbol_code )
-    if !symbol_code.empty?
-      return raw(link_to symbol_code, {controller: :main, action: :line_chart, symbol: symbol_code.downcase}, {target: :blank})
+  def line_chart_link( currency, opt={} )
+    if !currency.symbol_code.empty?
+      text = opt[:show] == 'name' ? currency.name : currency.symbol_code
+      return raw(link_to text, {controller: :main, action: :line_chart, symbol: currency.symbol_code.downcase}, {target: :blank})
     else
       return ''
     end
@@ -403,7 +404,8 @@ module ApplicationHelper
     result += "<span class='sub_text'>#{link_to period_title(period), action: action, symbol: params[:symbol], period: period}</span>"
     end
     swap_action = action == :kline_chart ? :line_chart : :kline_chart
-    result += "<span class='sub_text'>#{link_to t(:swap_chart), action: swap_action, symbol: params[:symbol], period: params[:period]}</span>"
+    swap_label = swap_action == :kline_chart ? t(:see_kline) : t(:see_line)
+    result += "<span class='sub_text'>#{link_to swap_label, action: swap_action, symbol: params[:symbol], period: params[:period]}</span>"
     return raw(result)
   end
 

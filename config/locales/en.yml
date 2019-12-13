@@ -244,6 +244,8 @@ en:
   clear_invest_log: Clear Invest Log
   delete_invest_log_ok: Invest log was clear successfully!
   swap_chart: Swap Chart
+  see_kline: See KLine
+  see_line: See Line
   copyright: Copyright
   contact_email: Contact Email
   activerecord:
