@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 from HuobiServices import *
 from update_all import *
-import sys
-import time
-import datetime
 
 
 def get_price_now():
@@ -61,29 +58,32 @@ def get_trade_btc():
 
 def btc_ave_cost():
     rows = select_db("SELECT price, amount, fees FROM deal_records")
-    sum_price = sum_amount = 0
-    for row in rows:
-        price = row[0]
-        amount = row[1]
-        fees = row[2]
-        amount = amount - fees
-        sum_price += price*amount
-        sum_amount += amount
-    return round(sum_price/sum_amount, 2)
+    if len(rows) > 0:
+        sum_price = sum_amount = 0
+        for row in rows:
+            price = row[0]
+            amount = row[1]
+            fees = row[2]
+            amount = amount - fees
+            sum_price += price*amount
+            sum_amount += amount
+        return round(sum_price/sum_amount, 2)
+    else:
+        return 0
 
 
-def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, test_price=0):
+def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, time_line, test_price=0):
     fname = 'auto_invest_log.txt'
     ftext = '############################################################\n'
     with open(fname, 'a') as fobj:
-        now = datetime.datetime.now()
-        u2c = usd_to_cny()
+        now = datetime.now()
         str1 = "%s Invest Between: %.2f ~ %.2f" % (get_now(), bottom_price, below_price)
-        str2 = "%i Digital Prices updated" % update_prices()
         print(str1)
-        print(str2)
         ftext += str1+'\n'
-        ftext += str2+'\n'
+        if test_price == 0:
+            str2 = "%i Digital Prices updated" % update_prices()
+            print(str2)
+            ftext += str2+'\n'
         if test_price < 0:
             str18 = "Get stop command, process terminated! bye~"
             print(str18)
@@ -103,6 +103,7 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                 print(str3)
                 ftext += str3+'\n'
                 if price_now <= target_price:
+                    u2c = usd_to_cny()
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
@@ -118,7 +119,7 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                         usdt = round(usdt, 2)
                         amount = usdt/price_now
                         remain_hours = float(trade_usdt/usdt*every/3600)
-                        delta_hours = datetime.timedelta(hours=remain_hours)
+                        delta_hours = timedelta(hours=remain_hours)
                         empty_usdt_time = to_t(now + delta_hours)
                         str4 = "Total USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, trade_usdt*u2c)
                         str5 = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
@@ -140,7 +141,7 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                             print(str9)
                             ftext += str9+'\n'
                             time.sleep(20)
-                            deal_records = update_huobi_deal_records()
+                            deal_records = update_huobi_deal_records(time_line)
                             if deal_records > 0:
                                 str10 = "%i Deal Records added" % deal_records
                                 str11 = "%i Huobi Assets Updated" % update_all_huobi_assets()
@@ -198,8 +199,8 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
 if __name__ == '__main__':
     while True:
         try:
-            with open('auto_invest_params.txt', 'r') as fread:
-                every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, test_price = fread.read().strip().split(' ')
+            with open(PARAMS, 'r') as fread:
+                every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price = fread.read().strip().split(' ')
                 every = int(every)
                 below_price = float(below_price)
                 bottom_price = float(bottom_price)
@@ -208,9 +209,10 @@ if __name__ == '__main__':
                 target_amount = float(target_amount)
                 min_usdt = float(min_usdt)  # 1.5
                 max_rate = float(max_rate)  # 0.05
+                time_line = deal_date+' '+deal_time
                 test_price = float(test_price)
                 code = exe_auto_invest(every, below_price, bottom_price, ori_usdt,
-                                       factor, target_amount, min_usdt, max_rate, test_price)
+                                       factor, target_amount, min_usdt, max_rate, time_line, test_price)
                 if code == 0:
                     break
                 for remaining in range(every, 0, -1):
@@ -220,4 +222,4 @@ if __name__ == '__main__':
                     time.sleep(1)
                 sys.stdout.write("\r                                                      \n")
         except:
-            time.sleep(every)
+            time.sleep(60)

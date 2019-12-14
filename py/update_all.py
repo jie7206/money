@@ -26,18 +26,18 @@ def update_prices():
 
 if __name__ == '__main__':
     try:
-        print("%i 种数字货币报价已更新" % update_prices(), sys.stdout)
+        print("%i种数字货币报价已更新" % update_prices(), sys.stdout)
         updated_assets = update_all_huobi_assets()
         if updated_assets > 0:
-            print("%i 种数字资产余额已更新" % updated_assets, sys.stdout)
-        new_deal_records = update_huobi_deal_records()
+            print("%i种数字资产余额已更新" % updated_assets, sys.stdout)
+        new_deal_records = update_huobi_deal_records(get_time_line())
         if new_deal_records > 0:
-            print("新增 %i笔交易记录！" % new_deal_records, sys.stdout)
+            print("新增%i笔交易记录！" % new_deal_records, sys.stdout)
         else:
             print("无新增交易！", sys.stdout)
         new_open_orders = update_open_orders()
         if new_open_orders > 0:
-            print("新增 %i笔下单记录！" % new_open_orders, sys.stdout)
+            print("新增%i笔下单记录！" % new_open_orders, sys.stdout)
         else:
             print("无新增下单！", sys.stdout)
         print("所有主要资料已更新！", sys.stdout)

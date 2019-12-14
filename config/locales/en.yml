@@ -249,6 +249,8 @@ en:
   set_auto_invest_params: Setup Auto Invest Params
   save_auto_invest_params: Save Auto Invest Params
   set_auto_invest_params_ok: Auto Invest Params was save successfully!
+  set_auto_invest_params_error: Auto Invest Params Error!
+  show_all_deal_records: Show All Deal Records
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

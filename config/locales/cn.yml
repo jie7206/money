@@ -249,9 +249,11 @@ cn:
   swap_chart: 切换图表
   see_kline: 看K线图
   see_line: 看折线图
-  set_auto_invest_params: 设置定投参数
+  set_auto_invest_params: 设置定投参数与交易更新时间
   save_auto_invest_params: 储存定投参数
   set_auto_invest_params_ok: 定投参数已储存！
+  set_auto_invest_params_error: 定投参数储存时发生错误！
+  show_all_deal_records: 显示全部交易记录
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

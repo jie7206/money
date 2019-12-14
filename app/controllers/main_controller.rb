@@ -307,14 +307,20 @@ class MainController < ApplicationController
 
   # 设置定投参数表单
   def set_auto_invest_form
-    @invest_params_value = File.read($auto_invest_params_path).strip
+    @invest_params_value = File.read($auto_invest_params_path)
   end
 
   # 设置定投参数
   def set_auto_invest_params
-    File.open($auto_invest_params_path,'w').write(params[:auto_invest_params])
-    put_notice t(:set_auto_invest_params_ok)
-    go_open_orders
+    if text = params[:auto_invest_params] and text.split(' ').size == 11
+      File.open($auto_invest_params_path, 'w+') do |f|
+        f.write(text)
+      end
+      put_notice t(:set_auto_invest_params_ok)+"(#{text})"
+    else
+      put_notice t(:set_auto_invest_params_error)
+    end
+    redirect_to action: :set_auto_invest_form
   end
 
 end
