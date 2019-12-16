@@ -16,15 +16,15 @@ from datetime import timedelta
 ACCOUNT_ID = 6582761
 # 更新火币资产与更新价格的范围
 SYMBOLS = [['usdt', 'usdthusd'], ['btc', 'btcusdt'], ['atom', 'atomusdt'], ['ht', 'htusdt']]
-# 定投参数与交易更新时间设定档
-PARAMS = '/home/jie/sites/money/py/auto_invest_params.txt'
 # 数据库位置
 DB = db_path()
 DB_Local = db_path(local=True)
 try:
     CONN = sqlite3.connect(DB)
+    PARAMS = '/home/jie/sites/money/py/auto_invest_params.txt'
 except:
     CONN = sqlite3.connect(DB_Local)
+    PARAMS = '/Users/lin/sites/money/py/auto_invest_params_local.txt'
 
 
 # 从SQLite文件中读取数据
@@ -543,9 +543,8 @@ def db_time(timestamp):
 def to_t(input_time):
     return input_time.strftime("%Y-%m-%d %H:%M:%S")
 
+
 # 取得交易列表开始读取时间
-
-
 def get_time_line():
     with open(PARAMS, 'r') as fread:
         arr = fread.read().strip().split(' ')

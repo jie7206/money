@@ -79,24 +79,31 @@ def btc_ave_cost():
         return 0
 
 
-def place_order_process(test_price, price_now, amount, deal_type, fobj, ftext, time_line, u2c):
+def place_order_process(test_price, price_now, amount, deal_type, ftext, time_line, u2c):
     if test_price == 0:
-        str9 = place_new_order(price_now, "%.6f" % amount, deal_type)
-        print(str9)
-        ftext += str9+'\n'
-        time.sleep(30)
-        str10 = "%i Deal Records added" % update_huobi_deal_records(time_line)
-        print(str10)
-        ftext += str10+'\n'
-        str11 = "%i Open Orders added" % update_open_orders()
-        print(str11)
-        ftext += str11+'\n'
-    else:
-        str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price_now, amount, deal_type)
+        str = place_new_order(price_now, "%.6f" % amount, deal_type)
         print(str)
         ftext += str+'\n'
-        sim_profit_cny = (btc_total_value(price_now) - btc_total_cost())*u2c
-        str = "Sim Profit: %.2f CNY" % sim_profit_cny
+        time.sleep(30)
+        str = "%i Deal Records added" % update_huobi_deal_records(time_line)
+        print(str)
+        ftext += str+'\n'
+        str = "%i Open Orders added" % update_open_orders()
+        print(str)
+        ftext += str+'\n'
+        if deal_type == 'sell-limit':
+            clear_deal_records()
+            update_time_lime()
+            str = "Profit Earned: %.2f and All Deal Records Cleared" % profit_now
+            print(str)
+            ftext += str+'\n'
+    else:
+        if deal_type == 'sell-limit':
+            sim_profit_cny = (btc_total_value(price_now) - btc_total_cost())*u2c
+            str = "Sim Profit: %.2f CNY" % sim_profit_cny
+            print(str)
+            ftext += str+'\n'
+        str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price_now, amount, deal_type)
         print(str)
         ftext += str+'\n'
     trade_usdt = float(get_trade_usdt())
@@ -109,16 +116,14 @@ def place_order_process(test_price, price_now, amount, deal_type, fobj, ftext, t
         trade_btc, trade_btc*price_now*u2c, btc_ave_cost())
     print(str)
     ftext += str+'\n'
-    str12 = "%i Huobi Assets Updated, Process Execute Completed" % update_all_huobi_assets()
-    print(str12)
-    ftext += str12+'\n'
-    if trade_btc < target_amount:
-        fobj.write(ftext)
-    else:
-        str13 = "Already reach target amount, Invest PAUSE!"
-        print(str13)
-        ftext += str13+'\n'
-        fobj.write(ftext)
+    str = "%i Huobi Assets Updated, Process Execute Completed" % update_all_huobi_assets()
+    print(str)
+    ftext += str+'\n'
+    if trade_btc > target_amount:
+        str = "Already reach target amount, Invest PAUSE!"
+        print(str)
+        ftext += str+'\n'
+    return ftext
 
 
 def btc_total_cost():
@@ -142,22 +147,40 @@ def clear_deal_records():
     CONN.commit()
 
 
+def update_time_lime():
+    dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S").split(' ')
+    date_str = dt[0]
+    time_str = dt[1]
+    new_str = ''
+    try:
+        with open(PARAMS, 'r') as f:
+            arr = f.read().strip().split(' ')
+            arr[8] = date_str
+            arr[9] = time_str
+            new_str = ' '.join(arr)
+        with open(PARAMS, 'w+') as f:
+            f.write(new_str)
+        return 1
+    except:
+        return 0
+
+
 def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny):
     fname = 'auto_invest_log.txt'
-    ftext = '############################################################\n'
     with open(fname, 'a') as fobj:
+        ftext = '#############################################################\n'
         now = datetime.now()
-        str1 = "%s Invest Between: %.2f ~ %.2f" % (get_now(), bottom_price, below_price)
-        print(str1)
-        ftext += str1+'\n'
+        str = "%s Invest Between: %.2f ~ %.2f" % (get_now(), bottom_price, below_price)
+        print(str)
+        ftext += str+'\n'
         if test_price == 0:
-            str2 = "%i Digital Prices updated" % update_prices()
-            print(str2)
-            ftext += str2+'\n'
+            str = "%i Digital Prices updated" % update_prices()
+            print(str)
+            ftext += str+'\n'
         if test_price < 0:
-            str18 = "Get stop command, process terminated! bye~"
-            print(str18)
-            ftext += str18+'\n'
+            str = "Get stop command, process terminated! bye~"
+            print(str)
+            ftext += str+'\n'
             fobj.write(ftext)
             return 0
         trade_btc = float(get_trade_btc())
@@ -172,9 +195,9 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                 price_now = test_price
                 mode = 'TEST'
             if price_now > 0:
-                str3 = "BTC Price %s: %.2f, Every %i Sec" % (mode, price_now, every)
-                print(str3)
-                ftext += str3+'\n'
+                str = "BTC Price %s: %.2f, Every %i Sec" % (mode, price_now, every)
+                print(str)
+                ftext += str+'\n'
                 u2c = usd_to_cny()
                 if price_now <= target_price:
                     ori_usdt = float(ori_usdt)
@@ -194,58 +217,57 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                         remain_hours = float(trade_usdt/usdt*every/3600)
                         delta_hours = timedelta(hours=remain_hours)
                         empty_usdt_time = to_t(now + delta_hours)
-                        str4 = "Total USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, trade_usdt*u2c)
-                        str5 = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
-                        str6 = "Buy Amount: %.6f BTC (%.2f CNY)" % (amount, amount*price_now*u2c)
-                        str7 = "Remain Invest Hours: %.2f Hours" % remain_hours
-                        str8 = "Empty USDT Time: " + empty_usdt_time
-                        print(str4)
-                        print(str5)
-                        print(str6)
-                        print(str7)
-                        print(str8)
-                        ftext += str4+'\n'
-                        ftext += str5+'\n'
-                        ftext += str6+'\n'
-                        ftext += str7+'\n'
-                        ftext += str8+'\n'
-                        place_order_process(test_price, price_now, amount,
-                                            'buy-limit', fobj, ftext, time_line, u2c)
+                        str = "Total USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, trade_usdt*u2c)
+                        print(str)
+                        ftext += str+'\n'
+                        str = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
+                        print(str)
+                        ftext += str+'\n'
+                        str = "Buy Amount: %.6f BTC (%.2f CNY)" % (amount, amount*price_now*u2c)
+                        print(str)
+                        ftext += str+'\n'
+                        str = "Remain Invest Hours: %.2f Hours" % remain_hours
+                        print(str)
+                        ftext += str+'\n'
+                        str = "Empty USDT Time: " + empty_usdt_time
+                        print(str)
+                        ftext += str+'\n'
+                        ftext = place_order_process(
+                            test_price, price_now, amount, 'buy-limit', ftext, time_line, u2c)
+                        fobj.write(ftext)
                         return 1
                     else:
-                        str17 = "Run out of USDT, Recharge to continue..."
-                        print(str17)
-                        ftext += str17+'\n'
+                        str = "Run out of USDT or Price < %.2f, wait to continue..." % bottom
+                        print(str)
+                        ftext += str+'\n'
                         fobj.write(ftext)
                         return 1
                 else:
-                    str14 = "Price greater than %.2f, check if can sell..." % target_price
-                    print(str14)
-                    ftext += str14+'\n'
-                    fobj.write(ftext)
+                    str = "Price > %.2f, check if profit > %.2f then sell..." % (
+                        target_price, profit_cny)
+                    print(str)
+                    ftext += str+'\n'
                     profit_now = profit_cny_now(price_now, u2c)
                     if profit_now > profit_cny:
-                        place_order_process(test_price, price_now, get_trade_btc(),
-                                            'sell-limit', fobj, ftext, time_line, u2c)
-                        # clear_deal_records()
-                        # update_time_lime(get_now())
+                        ftext = place_order_process(
+                            test_price, price_now, get_trade_btc(), 'sell-limit', ftext, time_line, u2c)
                     else:
                         str = "Profit Now: %.2f is not greater than %.2f, sorry!" % (
                             profit_now, profit_cny)
                         print(str)
                         ftext += str+'\n'
-                        fobj.write(ftext)
+                    fobj.write(ftext)
                     return 1
             else:
-                str15 = "Can't get price, wait %i seconds for next operate" % every
-                print(str15)
-                ftext += str15+'\n'
+                str = "Can't get price, wait %i seconds for next operate" % every
+                print(str)
+                ftext += str+'\n'
                 fobj.write(ftext)
                 return 1
         else:
-            str13 = "Already reach target amount, Invest PAUSE!"
-            print(str13)
-            ftext += str13+'\n'
+            str = "Already reach target amount, Invest PAUSE!"
+            print(str)
+            ftext += str+'\n'
             fobj.write(ftext)
             return 1
 
@@ -277,4 +299,4 @@ if __name__ == '__main__':
                     time.sleep(1)
                 sys.stdout.write("\r                                                      \n")
         except:
-            time.sleep(60)
+            time.sleep(30)
