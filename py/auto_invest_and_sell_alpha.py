@@ -107,13 +107,19 @@ def place_order_process(test_price, price_now, amount, deal_type, ftext, time_li
         print(str)
         ftext += str+'\n'
     trade_usdt = float(get_trade_usdt())
-    str = "USDT Now: %.4f (%.2f CNY)" % (
-        trade_usdt, trade_usdt*u2c)
+    usdt_cny = trade_usdt*u2c
+    str = "USDT Trade Now: %.4f (%.2f CNY)" % (
+        trade_usdt, usdt_cny)
     print(str)
     ftext += str+'\n'
     trade_btc = float(get_trade_btc())
-    str = "BTC Now: %.8f (%.2f CNY) Ave: %.2f" % (
-        trade_btc, trade_btc*price_now*u2c, btc_ave_cost())
+    btc_cny = trade_btc*price_now*u2c
+    str = "BTC Trade Now: %.8f (%.2f CNY)" % (
+        trade_btc, btc_cny)
+    print(str)
+    ftext += str+'\n'
+    str = "BTC Level Now: %.2f%%  Ave Cost: %.2f USDT" % (
+        btc_hold_level(price_now, u2c), btc_ave_cost())
     print(str)
     ftext += str+'\n'
     str = "%i Huobi Assets Updated, Process Execute Completed" % update_all_huobi_assets()
@@ -165,6 +171,17 @@ def update_time_lime():
         return 0
 
 
+def btc_hold_level(price_now, u2c):
+    amounts = {'usdt': 0, 'btc': 0}
+    for item in get_balance(ACCOUNT_ID)['data']['list']:
+        for currency in ['usdt', 'btc']:
+            if item['currency'] == currency:
+                amounts[currency] += float(item['balance'])
+    btc_cny = price_now*amounts['btc']*u2c
+    usdt_cny = amounts['usdt']*u2c
+    return btc_cny/(btc_cny+usdt_cny)*100
+
+
 def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny):
     fname = 'auto_invest_log.txt'
     with open(fname, 'a') as fobj:
@@ -195,7 +212,7 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                 price_now = test_price
                 mode = 'TEST'
             if price_now > 0:
-                str = "BTC Price %s: %.2f, Every %i Sec" % (mode, price_now, every)
+                str = "BTC Price %s: %.2f Every %i Sec" % (mode, price_now, every)
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
@@ -217,9 +234,9 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                         remain_hours = float(trade_usdt/usdt*every/3600)
                         delta_hours = timedelta(hours=remain_hours)
                         empty_usdt_time = to_t(now + delta_hours)
-                        str = "Total USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, trade_usdt*u2c)
+                        usdt_cny = trade_usdt*u2c
+                        str = "Total USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, usdt_cny)
                         print(str)
-                        ftext += str+'\n'
                         str = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
                         print(str)
                         ftext += str+'\n'

@@ -34,7 +34,11 @@ class DealRecord < ApplicationRecord
   # 回传火币170账号所有资产总值
   def self.twd_of_170
     twd_of_170 = 0.0
-    Property.tagged_with('170').each {|p| twd_of_170 += p.amount_to}
+    Property.tagged_with('170').each do |p|
+      if p.name.include? 'BTC' or p.name.include? 'USDT'
+        twd_of_170 += p.amount_to
+      end
+    end
     return twd_of_170
   end
 
