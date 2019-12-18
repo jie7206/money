@@ -52,8 +52,9 @@ class PropertiesController < ApplicationController
 
   # 储存更新资产
   def update
+    params[:property][:amount].gsub!(',','')
     if @property.update_attributes(property_params)
-      put_notice t(:property_updated_ok) + add_id(@property)
+      put_notice t(:property_updated_ok) + add_id(@property) + add_amount(@property)
       session[:path] ? go_back : go_properties
     else
       render action: :edit

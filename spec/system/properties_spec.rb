@@ -29,6 +29,13 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page.html).to include '57114.38'
     end
 
+    specify '#188更新资产金额时能自动将逗号去掉' do
+      p = @ps[0]
+      fill_in "new_amount_#{p.id}", with: '1,157,114.3849'
+      find("#property_#{p.id}").click
+      expect(page.html).to include '1157114.38'
+    end
+
     specify '#114[系统层]资产列表能显示以人民币计算的资产总净值' do
       expect(page).to have_selector '#properties_net_value_cny', \
         text: Property.net_value(:cny).to_i
@@ -160,6 +167,13 @@ RSpec.describe '系统测试(Properties)', type: :system do
         fill_in 'property[amount]', with: 1000.9865
         find('#update_property').click
         expect(page.html).to include '1000.9'
+        expect(page).to have_selector '.alert-notice'
+      end
+
+      specify '#188更新资产金额时能自动将逗号去掉' do
+        fill_in 'property[amount]', with: '1,205,412.00'
+        find('#update_property').click
+        expect(page.html).to include '1205412'
         expect(page).to have_selector '.alert-notice'
       end
 

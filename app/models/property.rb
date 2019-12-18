@@ -18,7 +18,7 @@ class Property < ApplicationRecord
   validates \
     :amount,
       presence: {
-        message: $property_amount_blank_err },
+        message: $property_amount_blank_err } ,
       numericality: {
         message: $property_amount_nan_err }
 

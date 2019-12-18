@@ -168,7 +168,12 @@ class ApplicationController < ActionController::Base
 
   # 在通知讯息后面加上物件的ID
   def add_id( object )
-    " ID: #{object.id}"
+    " id: #{object.id}"
+  end
+
+  # 在通知讯息后面加上物件的ID
+  def add_amount( object )
+    " amount: #{object.amount}"
   end
 
   # 从标签设定值取出相应的资产数据集
@@ -576,8 +581,9 @@ class ApplicationController < ActionController::Base
       define_method "update_#{m}_#{a}" do
         eval %Q[
           if new_#{a} = params[\"new_#{a}_\#{params[:id]}\"]
+            new_#{a}.gsub!(',','')
             @#{m}.update_attribute(:#{a}, new_#{a})
-            put_notice t(:#{m}_updated_ok) + add_id(@#{m})
+            put_notice t(:#{m}_updated_ok) + add_id(@#{m}) + add_amount(@#{m})
           end
           session[:path] ? go_back : go_#{m.pluralize}
         ]
