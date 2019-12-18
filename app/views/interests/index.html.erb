@@ -4,6 +4,7 @@
   <tr class="thead">
     <td width="15"></td>
     <td><%= t(:property_name) %></td>
+    <td><%= t(:interest_benjin) %></td>
     <td width="100"><%= t(:interest_start_date) %></td>
     <td width="100"><%= t(:interest_rate) %></td>
     <td width="100"><%= t(:interest_amount) %></td>
@@ -16,6 +17,7 @@
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(interest, interest.property.name) %></td>
+    <td align="right"><%= to_n(interest.property.amount.abs) %></td>
     <td><%= interest.start_date.to_s(:db) %></td>
     <td align="right"><%= to_n(interest.rate, 2) %></td>
     <td align="right"><%= to_n(interest.amount, 0) %></td>
@@ -26,7 +28,7 @@
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="8" class="thead">
+    <td colspan="9" class="thead">
       <%= t(:total_interests_amount) %>：
       <span id="interest_total_twd"><%= @interest_total_twd %></span> <%= t(:twd) %>
       (<span id="interest_total_cny"><%= @interest_total_cny %></span> <%= t(:cny) %>)

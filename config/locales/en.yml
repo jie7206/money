@@ -77,6 +77,7 @@ en:
   interest_rate: Year Rate(%)
   interest_amount: Interest Amount
   interest_currency: Interest Currency
+  interest_benjin: Capital
   new_interest: Add New Interest
   delete_interest: Delete This Interest
   delete_interest_confirm: Are you SURE?
