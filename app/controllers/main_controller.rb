@@ -194,7 +194,7 @@ class MainController < ApplicationController
   def get_kline
     symbol = params[:symbol] ? params[:symbol] : "btcusdt"
     period = params[:period] ? params[:period] : "5min"
-    size = params[:size] ? params[:size] : 200
+    size = params[:size] ? params[:size] : $chart_data_size
     @symbol_title = symbol_title(symbol)
     @period_title = period_title(period)
     begin

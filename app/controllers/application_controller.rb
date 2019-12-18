@@ -28,7 +28,6 @@ class ApplicationController < ActionController::Base
   def initialize
     super
     load_global_variables
-    # ini_huobi # 初始化火币API
     Currency.add_or_renew_ex_rates # 方便汇率转换直接调用，无需再次查询数据库
   end
 
@@ -289,7 +288,7 @@ class ApplicationController < ActionController::Base
   end
 
   # 生成FusionCharts的XML资料
-  def build_fusion_chart_data( class_name, oid )
+  def build_fusion_chart_data( class_name, oid, chart_data_size = $chart_data_size )
     @name = class_name.index('Net') ? '资产总净值' : eval(class_name).find(oid).name
     records = Record.where(["class_name = ? and oid = ? and updated_at >= ?",class_name,oid,Date.today-$fusionchart_data_num.days]).order('updated_at')
     # 依照资料笔数的多寡来决定如何取图表中第一个值
@@ -300,10 +299,11 @@ class ApplicationController < ActionController::Base
       else
         last_value = records.first.value
     end
-    @chart_data = ''
     today = Date.today
     start_date = today - $fusionchart_data_num.days
+    @chart_data = ''
     @data_arr = [] # 为了找出最大值和最小值
+    @chart_data_arr = []
     start_date.upto(today) do |date|
       this_value = find_rec_date_value(records,date,'value','updated_at')
       if this_value
@@ -313,9 +313,13 @@ class ApplicationController < ActionController::Base
         this_value = last_value
       end
       @data_arr << this_value
-      @chart_data += "<set label='#{date.strftime("%Y-%m-%d")}' value='#{this_value}' />"
+      @chart_data_arr << [date.strftime("%Y-%m-%d"), this_value]
     end
     set_fusion_chart_max_and_min_value
+    @chart_data_arr = @chart_data_arr[-$chart_data_size..-1]
+    (0..($chart_data_size-1)).each do |i|
+      @chart_data += "<set label='#{@chart_data_arr[i][0]}' value='#{@chart_data_arr[i][1]}' />"
+    end
     @caption = "#{@name} #{$fusionchart_data_num}天走势图 最新 #{@newest_value} ( #{@min_value} ➠ #{@max_value} )"
   end
 
