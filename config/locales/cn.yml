@@ -33,7 +33,7 @@ cn:
   positive_property: 资产
   negative_property: 负债
   property_is_hidden: 设为隐藏
-  property_index: 资产负债表
+  property_index: 资产列表
   back_to: 返回
   edit_property: 编辑资产
   update_property: 更新资产
@@ -160,7 +160,7 @@ cn:
   delete_record: 删除这笔记录
   delete_record_confirm: 您确定要删除这笔记录吗？
   all_records_updated_ok: 所有数值记录已更新！
-  update_all_data: 更新主要资料
+  update_all_data: 更新资料
   update_all_data_ok: 所有资料已更新！
   record_created_ok: 记录新建成功！
   record_updated_ok: 记录更新成功！
@@ -252,9 +252,13 @@ cn:
   see_line: 看折线图
   set_auto_invest_params: 设置定投参数与交易更新时间
   save_auto_invest_params: 储存定投参数
-  set_auto_invest_params_ok: 定投参数已储存！
+  set_auto_invest_params_ok: 定投参数更新成功！
   set_auto_invest_params_error: 定投参数储存时发生错误！
   show_all_deal_records: 显示全部交易记录
+  update_system_params: 更新系统参数
+  save_system_params: 储存系统参数
+  update_system_params_ok: 系统参数更新成功！
+  update_system_params_error: 系统参数更新时发生错误！
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

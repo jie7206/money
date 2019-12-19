@@ -32,5 +32,6 @@
 /config/master.key
 /spec/examples.txt
 /config/global_variables.txt
+/config/system_params.txt
 /py/Utils.py
 /py/Utils.pyc

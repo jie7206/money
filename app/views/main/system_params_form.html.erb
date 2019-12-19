@@ -1,0 +1,12 @@
+<h2><%= t(:update_system_params) %></h2>
+<%= form_tag update_system_params_path, method: :post, id: 'update_system_params_form' do %>
+  <div>
+    <span id="update_system_params_span">
+      <%= text_area_tag :system_params_content, @system_params_content, rows: 21, cols: 80 %>
+    </span>
+    <div align="center" style="width:60%;padding:1em">
+      <%= submit_tag t(:save_system_params), style: 'font-size: 1.2em' %>
+    </div>
+  </div>
+<% end %>
+<p/>

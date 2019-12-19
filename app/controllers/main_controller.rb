@@ -323,4 +323,22 @@ class MainController < ApplicationController
     redirect_to action: :set_auto_invest_form
   end
 
+  # 设置系统参数表单
+  def system_params_form
+    @system_params_content = File.read($system_params_path)
+  end
+
+  # 更新系统参数
+  def update_system_params
+    if text = params[:system_params_content] and text.size > 10
+      File.open($system_params_path, 'w+') do |f|
+        f.write(text)
+      end
+      put_notice t(:update_system_params_ok)
+    else
+      put_notice t(:update_system_params_error)
+    end
+    redirect_to action: :system_params_form
+  end
+
 end

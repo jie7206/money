@@ -64,6 +64,8 @@ Rails.application.routes.draw do
   get 'invest_log', to: 'main#read_auto_invest_log'
   get 'set_auto_invest_form', to: 'main#set_auto_invest_form'
   post 'set_auto_invest_params', to: 'main#set_auto_invest_params'
+  get 'system_params_form', to: 'main#system_params_form'
+  post 'update_system_params', to: 'main#update_system_params'
   get 'delete_invest_log', to: 'deal_records#delete_invest_log'
   get 'check_open_order', to: 'open_orders#check_open_order'
   get 'clear_open_orders', to: 'open_orders#clear'

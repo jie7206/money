@@ -236,6 +236,11 @@ module ApplicationHelper
     link_to t(:set_auto_invest_params), set_auto_invest_form_path, { id: 'set_auto_invest_form' }
   end
 
+  # 更新系统参数表单链接
+  def system_params_form_link
+    link_to t(:update_system_params), system_params_form_path, { id: 'system_params_form' }
+  end
+
   # 资产标签云
   def get_tag_cloud
     @tags = Property.tag_counts_on(:tags)
@@ -308,10 +313,10 @@ module ApplicationHelper
         var myChart = new FusionCharts({
           \"type\": \"line\",
           \"renderAt\": \"chartContainer\",
-          \"width\": \"95%\",
+          \"width\": \"100%\",
           \"height\": \"450\",
           \"dataFormat\": \"xml\",
-          \"dataSource\": \"<chart yAxisMinValue='#{@bottom_value}' yAxisMaxvalue='#{@top_value}' animation='0' caption='#{@caption}' xaxisname='　' yaxisname='' formatNumberScale='0' formatNumber ='0' palettecolors='#CC0000' bgColor='#F0E68C' canvasBgColor='#F0E68C' valuefontcolor='#000000' showValues='0' borderalpha='0' canvasborderalpha='0' theme='fint' useplotgradientcolor='0' plotborderalpha='0' placevaluesinside='0' rotatevalues='1'  captionpadding='12' showaxislines='0' axislinealpha='0' divlinealpha='0' lineThickness='3' drawAnchors='1'>#{@chart_data}</chart>\"
+          \"dataSource\": \"<chart yAxisMinValue='#{@bottom_value}' yAxisMaxvalue='#{@top_value}' animation='0' caption='#{@caption}' xaxisname='　' yaxisname='' formatNumberScale='0' formatNumber ='0' palettecolors='#CC0000' bgColor='#F0E68C' canvasBgColor='#F0E68C' valuefontcolor='#000000' showValues='0' borderalpha='0' canvasborderalpha='0' theme='fint' useplotgradientcolor='0' plotborderalpha='0' placevaluesinside='0' rotatevalues='1'  captionpadding='5' showaxislines='0' axislinealpha='0' divlinealpha='0' lineThickness='3' drawAnchors='1'>#{@chart_data}</chart>\"
         });
       myChart.render();
     });

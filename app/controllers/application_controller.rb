@@ -5,34 +5,17 @@ class ApplicationController < ActionController::Base
   before_action :check_login, except: [ :login, :update_all_data ]
   before_action :summary, :memory_back, only: [ :index ]
 
-  # 火币费率
-  def fee_rate
-    1-$fees_rate*0.8
-  end
-
-  # 更新主要资料
-  def update_all_data
-    put_notice `python py/update_all.py`
-    update_portfolios_and_records
-    go_back
-  end
-
-  # 火币API初始化
-  def ini_huobi
-    [135,170].each do |pno|
-      eval("@huobi_api_#{pno} = Huobi.new($acckey_#{pno},$seckey_#{pno},$accid_#{pno},$huobi_server)")
-    end
-  end
-
   # 初始化设置
   def initialize
     super
+    $system_params_path = "#{Rails.root}/config/system_params.txt"
     load_global_variables
     Currency.add_or_renew_ex_rates # 方便汇率转换直接调用，无需再次查询数据库
   end
 
   # 读入网站所有的全局参数设定
   def load_global_variables
+    eval(File.open($system_params_path,'r').read)
     eval(File.open("#{Rails.root}/config/global_variables.txt",'r').read)
   end
 
@@ -44,6 +27,18 @@ class ApplicationController < ActionController::Base
   # 如果不是管理员则回到登入页重新登入
   def check_admin
     redirect_to login_path if !admin?
+  end
+
+  # 火币费率
+  def fee_rate
+    1-$fees_rate
+  end
+
+  # 更新主要资料
+  def update_all_data
+    put_notice `python py/update_all.py`
+    update_portfolios_and_records
+    go_back
   end
 
   # 显示当前时间
@@ -399,96 +394,6 @@ class ApplicationController < ActionController::Base
   # 更新火币170账号的资产余额
   def exe_update_huobi_assets
     put_notice `python py/update_assets.py`
-  end
-
-  # 更新火币所有账号的资产余额
-  def update_all_huobi_assets
-    count = 0; clear_symbols = []
-    # ['135','170'].each do |pno|
-    ['170'].each do |pno|
-    # 1.读取并整理火币资产数据成[{:code=>"husd",:amount=>"0.00005986"}]格式
-      # 原始数据，包含trade与frozen两种type
-      assets_arr_ori = get_huobi_assets(eval("@huobi_api_#{pno}"))
-      # 合并trade与frozen两种type
-      assets_arr_sum = sum_huobi_assets(assets_arr_ori)
-    # 2.更新资产中相关的数据，若无则自动新增
-      if assets_arr_sum and assets_arr_sum.size > 0
-        properties = Property.tagged_with(pno)
-        assets_arr_sum.each do |a|
-          if property = (properties.select {|p| p.name.index(a[:code]) and p.name.index("火币资产 #{phone_number(pno)}")}.first)
-            # 更新
-            property.update_attribute(:amount,a[:amount])
-            count += 1
-          else
-            # 新建
-            Property.create(
-              name: "火币资产 #{phone_number(pno)}: #{a[:code]}",
-              amount: a[:amount],
-              currency_id: get_or_create_currency(a[:code]),
-              tag_list: pno
-            )
-            count += 1
-          end
-        end
-      end
-    # 3.若回传的火币资产已无该币种，则将其对应的资产金额归零
-      if assets_arr_sum and assets_arr_sum.size > 0
-        huobi_symbols = assets_arr_sum.map {|a| a[:code]}
-        property_symbols = properties.map {|p| p.name.split(': ')[1]}
-        if should_clear_symbols = property_symbols-huobi_symbols \
-          and should_clear_symbols.size > 0
-          should_clear_symbols.each do |symbol|
-            property_id = properties.select{|p| p.name.index(symbol)}.first.id
-            Property.clear_amount(property_id)
-            clear_symbols << symbol
-          end
-        end
-      end
-    end
-    put_notice "#{count}#{t(:xiang)}#{t(:huobi_assets_updated_ok)}" if count > 0
-    put_notice "#{clear_symbols.join(',')} #{t(:property_clear_amount_ok)}" if clear_symbols.size > 0
-    return count
-  end
-
-  # 更新火币所有账号的交易记录
-  def update_huobi_deal_records
-    count = 0
-    symbol = 'btcusdt'
-    # ['135','170'].each do |pno|
-    ['170'].each do |pno|
-      count += add_huobi_deal_records(eval("@huobi_api_#{pno}"),pno,symbol)
-    end
-    put_notice "#{count}#{t(:bi)}#{t(:huobi_deal_records_created_ok)}"
-    return count
-  end
-
-  # 连线读取火币账号的交易记录并自动新增
-  def add_huobi_deal_records( huobi_obj, account, symbol )
-    count = 0
-    (1..$rec_days).each do |n| # 读取最近几天历史交易记录(限BTC与限价买单)
-      start_date = (Date.today-n.days).strftime("%Y-%m-%d")
-      end_date = (Date.today-(n-1).days).strftime("%Y-%m-%d")
-      root = huobi_obj.history_matchresults(symbol,start_date,end_date)
-      if root["status"] == "ok"
-        root["data"].each do |data|
-          data_id = data["id"]
-          if !DealRecord.find_by_data_id(data_id)
-            DealRecord.create(
-              account: account,
-              data_id: data_id,
-              symbol: symbol,
-              deal_type: data["type"],
-              price: data["price"].to_f,
-              amount: data["filled-amount"].to_f,
-              fees: data["filled-fees"].to_f,
-              earn_limit: 0,
-              loss_limit: 0 )
-            count += 1
-          end
-        end
-      end
-    end
-    return count
   end
 
   # 更新所有的资产组合栏位数据和所有模型的数值记录

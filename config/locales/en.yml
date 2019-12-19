@@ -249,9 +249,13 @@ en:
   see_line: See Line
   set_auto_invest_params: Setup Auto Invest Params
   save_auto_invest_params: Save Auto Invest Params
-  set_auto_invest_params_ok: Auto Invest Params was save successfully!
-  set_auto_invest_params_error: Auto Invest Params Error!
+  set_auto_invest_params_ok: Auto Invest Params updated successfully!
+  set_auto_invest_params_error: Auto Invest Params updated Error!
   show_all_deal_records: Show All Deal Records
+  update_system_params: Update System Params
+  save_system_params: Save System Params
+  update_system_params_ok: System Params updated successfully!
+  update_system_params_error: System Params updated Error!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:
