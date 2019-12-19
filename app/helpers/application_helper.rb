@@ -241,6 +241,11 @@ module ApplicationHelper
     link_to t(:update_system_params), system_params_form_path, { id: 'system_params_form' }
   end
 
+  # 火币测试链接
+  def test_huobi_link
+    link_to t(:test_huobi), '/test_huobi.json', { id: 'test_huobi' }
+  end
+
   # 资产标签云
   def get_tag_cloud
     @tags = Property.tag_counts_on(:tags)

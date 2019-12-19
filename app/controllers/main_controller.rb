@@ -184,7 +184,7 @@ class MainController < ApplicationController
 
   # API测试
   def get_huobi_assets_test
-    root = @huobi_api_170.balances
+    root = `python py/HuobiServices.py`
     respond_to do |format|
       format.json  { render :json => root }
     end

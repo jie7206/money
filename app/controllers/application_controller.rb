@@ -37,6 +37,7 @@ class ApplicationController < ActionController::Base
   # 更新主要资料
   def update_all_data
     put_notice `python py/update_all.py`
+    update_legal_exchange_rates
     update_portfolios_and_records
     go_back
   end

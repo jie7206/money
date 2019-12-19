@@ -552,8 +552,4 @@ def get_time_line():
 
 
 if __name__ == '__main__':
-    s = 'btcusdt'
-    p = float(get_kline(s, '1min', 1)['data'][0]['close'])
-    print(str(p)+" : "+str(1/p))
-    print(orders_matchresults(s)['data'][0]['filled-amount'])
-    CONN.close()
+    json.dump(get_balance(ACCOUNT_ID), sys.stdout)

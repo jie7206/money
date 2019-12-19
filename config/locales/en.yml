@@ -256,6 +256,7 @@ en:
   save_system_params: Save System Params
   update_system_params_ok: System Params updated successfully!
   update_system_params_error: System Params updated Error!
+  test_huobi: Test Huobi
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

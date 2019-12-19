@@ -238,7 +238,7 @@ cn:
   open_order_type: 买卖别
   delete_open_order: 撤消下单
   check_open_orders: 同步火币下单
-  clear_open_orders: 撤消全部下单并清空记录
+  clear_open_orders: 撤消全部下单
   clear_open_orders_ok: 下单记录已清空！
   destroy_open_order_ok: 下单记录已删除！
   delete_open_order_ok: 已成功撤消下单！
@@ -250,7 +250,7 @@ cn:
   swap_chart: 切换图表
   see_kline: 看K线图
   see_line: 看折线图
-  set_auto_invest_params: 设置定投参数与交易更新时间
+  set_auto_invest_params: 更新定投参数
   save_auto_invest_params: 储存定投参数
   set_auto_invest_params_ok: 定投参数更新成功！
   set_auto_invest_params_error: 定投参数储存时发生错误！
@@ -259,6 +259,7 @@ cn:
   save_system_params: 储存系统参数
   update_system_params_ok: 系统参数更新成功！
   update_system_params_error: 系统参数更新时发生错误！
+  test_huobi: 测试火币
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
