@@ -293,7 +293,9 @@ if __name__ == '__main__':
     while True:
         try:
             with open(PARAMS, 'r') as fread:
-                every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny = fread.read().strip().split(' ')
+                params_str = fread.read().strip()
+                every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny = params_str.split(
+                    ' ')
                 every = int(every)
                 below_price = float(below_price)
                 bottom_price = float(bottom_price)
@@ -314,6 +316,13 @@ if __name__ == '__main__':
                     sys.stdout.write("Please wait {:2d} seconds for next operate".format(remaining))
                     sys.stdout.flush()
                     time.sleep(1)
+                    if remaining % 10 == 0:
+                       with open(PARAMS, 'r') as f:
+                           line_str = f.read().strip()
+                           if line_str != params_str:
+                               break
+#                    else:
+#                        continue
                 sys.stdout.write("\r                                                      \n")
         except:
             time.sleep(30)
