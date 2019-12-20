@@ -22,7 +22,7 @@
   <% else %>
     <td align="right"><%= render 'update_amount', property: property %></td>
   <% end %>
-    <td align="center"><%= line_chart_link(property.currency,show:'name') %></td>
+    <td align="center"><%= line_chart_link(property.currency,show:'name',name:true) %></td>
     <td align="right"><%= property.currency.rate_or_price %></td>
     <td align="right"><%= amount_twd=to_n(property.amount_to,0) %></td>
     <td align="right"><%= amount_cny=to_n(property.amount_to(:cny),0) %></td>

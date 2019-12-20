@@ -74,8 +74,11 @@ cn:
   interest_rate_type_err: 利率值必须是数字且不能为负！
   interest_index: 利息列表
   interest_start_date: 利息起算日
-  interest_rate: 年化利率(%)
+  interest_rate: 年利率
   interest_amount: 利息金额
+  interest_amount_year: 年付息
+  interest_amount_month: 月付息
+  interest_amount_day: 日付息
   interest_currency: 利息币别
   interest_benjin: 本金
   new_interest: 新建利息

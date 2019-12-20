@@ -1,4 +1,4 @@
-<h2><%= kline_chart_link(t(:deal_record_index)) %></h2>
+<h2><%= link_to t(:deal_record_index), {controller: :main, action: :line_chart, symbol: 'btcusdt'}, {target: :blank} %></h2>
 <table>
   <tr class="thead">
     <td width="15"></td>

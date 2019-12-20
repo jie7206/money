@@ -6,10 +6,13 @@
     <td><%= t(:property_name) %></td>
     <td><%= t(:interest_benjin) %></td>
     <td width="100"><%= t(:interest_start_date) %></td>
-    <td width="100"><%= t(:interest_rate) %></td>
-    <td width="100"><%= t(:interest_amount) %></td>
-    <td width="100"><%= t(:interest_currency) %></td>
-    <td width="100"><%= t(:exchange_to_twd) %></td>
+    <td width="50"><%= t(:interest_rate) %></td>
+    <td width="80"><%= t(:interest_amount) %></td>
+    <td width="70"><%= t(:interest_currency) %></td>
+    <td width="80"><%= t(:exchange_to_twd) %></td>
+    <td width="80"><%= t(:interest_amount_year) %></td>
+    <td width="80"><%= t(:interest_amount_month) %></td>
+    <td width="80"><%= t(:interest_amount_day) %></td>
     <td width="50"><%= t(:chart) %></td>
   </tr>
 <% n = 1 %>
@@ -17,18 +20,21 @@
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
     <td><%= link_edit_to(interest, interest.property.name) %></td>
-    <td align="right"><%= to_n(interest.property.amount.abs) %></td>
-    <td><%= interest.start_date.to_s(:db) %></td>
+    <td align="right"><%= to_n(interest.property.amount.abs,1) %></td>
+    <td align="right"><%= interest.start_date.to_s(:db) %></td>
     <td align="right"><%= to_n(interest.rate, 2) %></td>
     <td align="right"><%= to_n(interest.amount, 0) %></td>
-    <td align="right"><%= interest.currency_name %></td>
-    <td align="right"><%= interest.amount_to(:twd) %></td>
+    <td align="center"><%= interest.currency_name %></td>
+    <td align="right"><%= interest.amount_to %></td>
+    <td align="right"><%= interest.ave_year %><br>¥<%= interest.ave_year(:cny) %></td>
+    <td align="right"><%= interest.ave_month %><br>¥<%= interest.ave_month(:cny) %></td>
+    <td align="right"><%= interest.ave_day %><br>¥<%= interest.ave_day(:cny) %></td>
     <td align="center"><%= chart_link(interest) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
   <tr>
-    <td colspan="9" class="thead">
+    <td colspan="12" class="thead">
       <%= t(:total_interests_amount) %>：
       <span id="interest_total_twd"><%= @interest_total_twd %></span> <%= t(:twd) %>
       (<span id="interest_total_cny"><%= @interest_total_cny %></span> <%= t(:cny) %>)

@@ -47,4 +47,16 @@ class Interest < ApplicationRecord
     "#{property.name}利息"
   end
 
+  def ave_year( target_code = :twd )
+    ave_day(target_code)*365
+  end
+
+  def ave_month( target_code = :twd )
+    ave_day(target_code)*31
+  end
+
+  def ave_day( target_code = :twd )
+    (property.amount.to_f * (rate.to_f/100/365) * (target_rate(target_code)/property.currency.exchange_rate)).abs.to_i
+  end
+
 end

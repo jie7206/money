@@ -211,6 +211,8 @@ module ApplicationHelper
     if !currency.symbol_code.empty?
       text = opt[:show] == 'name' ? currency.name : currency.symbol_code
       return raw(link_to text, {controller: :main, action: :line_chart, symbol: currency.symbol_code.downcase}, {target: :blank})
+    elsif opt[:name]
+      return currency.name
     else
       return ''
     end

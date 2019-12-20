@@ -76,6 +76,9 @@ en:
   interest_start_date: Start Date
   interest_rate: Year Rate(%)
   interest_amount: Interest Amount
+  interest_amount_year: Interest Amount Year
+  interest_amount_month: Interest Amount Month
+  interest_amount_day: Interest Amount Day
   interest_currency: Interest Currency
   interest_benjin: Capital
   new_interest: Add New Interest
