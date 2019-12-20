@@ -7,7 +7,7 @@ from open_orders import *
 
 
 def fees_rate():
-    return 1-0.002*0.8
+    return 1-0.002
 
 
 def get_price_now():
@@ -293,8 +293,8 @@ if __name__ == '__main__':
     while True:
         try:
             with open(PARAMS, 'r') as fread:
-                ori_params_str = fread.read().strip()
-                every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny = ori_params_str.split(
+                params_str = fread.read().strip()
+                every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny = params_str.split(
                     ' ')
                 every = int(every)
                 below_price = float(below_price)
@@ -316,6 +316,11 @@ if __name__ == '__main__':
                     sys.stdout.write("Please wait {:2d} seconds for next operate".format(remaining))
                     sys.stdout.flush()
                     time.sleep(1)
+                    if remaining % 10 == 0:
+                        with open(PARAMS, 'r') as f:
+                            line_str = f.read().strip()
+                            if line_str != params_str:
+                                break
                 sys.stdout.write("\r                                                      \n")
         except:
             time.sleep(30)

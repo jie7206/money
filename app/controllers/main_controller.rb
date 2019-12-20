@@ -312,7 +312,7 @@ class MainController < ApplicationController
 
   # 设置定投参数
   def set_auto_invest_params
-    if text = params[:auto_invest_params] and text.split(' ').size == 12
+    if text = params[:auto_invest_params] and text.split(' ').size > 10
       File.open($auto_invest_params_path, 'w+') do |f|
         f.write(text)
       end
