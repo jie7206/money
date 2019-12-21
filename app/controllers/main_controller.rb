@@ -318,7 +318,7 @@ class MainController < ApplicationController
       end
       put_notice t(:set_auto_invest_params_ok)+"(#{text})"
     else
-      put_notice t(:set_auto_invest_params_error)
+      put_notice t(:set_auto_invest_params_error)+"(#{$exe_auto_invest_params_size})"
     end
     redirect_to action: :set_auto_invest_form
   end
