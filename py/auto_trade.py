@@ -7,7 +7,7 @@ from open_orders import *
 
 
 def fees_rate():
-    return 1-0.002
+    return 1-0.002*0.8
 
 
 def get_price_now():
@@ -182,7 +182,7 @@ def btc_hold_level(price_now, u2c):
     return btc_cny/(btc_cny+usdt_cny)*100
 
 
-def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny):
+def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, min_sec_rate, max_sec_rate):
     fname = 'auto_invest_log.txt'
     with open(fname, 'a') as fobj:
         ftext = '#############################################################\n'
@@ -212,7 +212,7 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                 price_now = test_price
                 mode = 'TEST'
             if price_now > 0:
-                str = "BTC Price %s: %.2f Every %i Sec" % (mode, price_now, every)
+                str = "BTC Price %s: %.2f" % (mode, price_now)
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
@@ -221,8 +221,12 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
                     max_usdt = ori_usdt*max_rate
-                    if trade_usdt > min_usdt and price_now - bottom > 0:
-                        usdt = (ori_usdt/(((price_now-bottom)/100)**2))*factor
+                    if trade_usdt > min_usdt and price_now - bottom >= 0:
+                        # Caculate USDT and Amount
+                        price_diff = price_now - bottom
+                        if price_now - bottom < 1:
+                            price_diff = 1
+                        usdt = (ori_usdt/((price_diff)/100)**2)*factor
                         if usdt < min_usdt:
                             usdt = min_usdt
                         if usdt > max_usdt:
@@ -231,12 +235,18 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                                 usdt = trade_usdt
                         usdt = round(usdt, 2)
                         amount = usdt/price_now
-                        remain_hours = float(trade_usdt/usdt*every/3600)
+                        # Caculate New Seconds Period
+                        min_sec = every_sec*min_sec_rate
+                        new_sec = min_sec + every_sec*(max_sec_rate-min_sec_rate) * \
+                            ((price_now-bottom_price)/(below_price-bottom_price))
+                        every_sec = int(new_sec)
+                        remain_hours = float(trade_usdt/usdt*every_sec/3600)
                         delta_hours = timedelta(hours=remain_hours)
                         empty_usdt_time = to_t(now + delta_hours)
                         usdt_cny = trade_usdt*u2c
                         str = "Total USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, usdt_cny)
                         print(str)
+                        ftext += str+'\n'
                         str = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
                         print(str)
                         ftext += str+'\n'
@@ -249,16 +259,20 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                         str = "Empty USDT Time: " + empty_usdt_time
                         print(str)
                         ftext += str+'\n'
+                        str = "Seconds Updated: %i Sec | %.1f Min | %.1f Hour" % (
+                            every_sec, every_sec/60, every_sec/3600)
+                        print(str)
+                        ftext += str+'\n'
                         ftext = place_order_process(
                             test_price, price_now, amount, 'buy-limit', ftext, time_line, u2c)
                         fobj.write(ftext)
-                        return 1
+                        return every_sec
                     else:
                         str = "Run out of USDT or Price < %.2f, wait to continue..." % bottom
                         print(str)
                         ftext += str+'\n'
                         fobj.write(ftext)
-                        return 1
+                        return every_sec
                 else:
                     str = "Price > %.2f, check if profit > %.2f then sell..." % (
                         target_price, profit_cny)
@@ -274,19 +288,19 @@ def exe_auto_invest(every, below_price, bottom_price, ori_usdt, factor, target_a
                         print(str)
                         ftext += str+'\n'
                     fobj.write(ftext)
-                    return 1
+                    return every_sec
             else:
-                str = "Can't get price, wait %i seconds for next operate" % every
+                str = "Can't get price, wait %i seconds for next operate" % every_sec
                 print(str)
                 ftext += str+'\n'
                 fobj.write(ftext)
-                return 1
+                return every_sec
         else:
             str = "Already reach target amount, Invest PAUSE!"
             print(str)
             ftext += str+'\n'
             fobj.write(ftext)
-            return 1
+            return every_sec
 
 
 if __name__ == '__main__':
@@ -294,9 +308,9 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, min_sec_rate, max_sec_rate = params_str.split(
                     ' ')
-                every = int(every)
+                every_sec = int(every_sec)
                 below_price = float(below_price)
                 bottom_price = float(bottom_price)
                 ori_usdt = float(ori_usdt)
@@ -307,20 +321,24 @@ if __name__ == '__main__':
                 time_line = deal_date+' '+deal_time
                 test_price = float(test_price)
                 profit_cny = float(profit_cny)
-                code = exe_auto_invest(every, below_price, bottom_price, ori_usdt,
-                                       factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny)
+                min_sec_rate = float(min_sec_rate)
+                max_sec_rate = float(max_sec_rate)
+                code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
+                                       factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, min_sec_rate, max_sec_rate)
                 if code == 0:
                     break
-                for remaining in range(every, 0, -1):
-                    sys.stdout.write("\r")
-                    sys.stdout.write("Please wait {:2d} seconds for next operate".format(remaining))
-                    sys.stdout.flush()
-                    time.sleep(1)
-                    if remaining % 10 == 0:
-                        with open(PARAMS, 'r') as f:
-                            line_str = f.read().strip()
-                            if line_str != params_str:
-                                break
-                sys.stdout.write("\r                                                      \n")
+                else:
+                    for remaining in range(int(code), 0, -1):
+                        sys.stdout.write("\r")
+                        sys.stdout.write(
+                            "Please wait {:2d} seconds for next operate".format(remaining))
+                        sys.stdout.flush()
+                        time.sleep(1)
+                        if remaining % 10 == 0:
+                            with open(PARAMS, 'r') as f:
+                                line_str = f.read().strip()
+                                if line_str != params_str:
+                                    break
+                    sys.stdout.write("\r                                                      \n")
         except:
             time.sleep(30)
