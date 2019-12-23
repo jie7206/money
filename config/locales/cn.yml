@@ -263,6 +263,8 @@ cn:
   update_system_params_ok: 系统参数更新成功！
   update_system_params_error: 系统参数更新时发生错误！
   test_huobi: 测试火币
+  ave_cost: 均价
+  profit_now: 损益
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

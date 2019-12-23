@@ -71,8 +71,8 @@ def btc_ave_cost():
             price = row[0]
             amount = row[1]
             fees = row[2]
-            amount = amount - fees
             sum_price += price*amount
+            amount = amount - fees
             sum_amount += amount
         return round(sum_price/sum_amount, 2)
     else:
@@ -282,8 +282,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                         fobj.write(ftext)
                         return every_sec
                 else:
-                    str = "Price > %.2f, check if profit > %.2f then sell..." % (
-                        target_price, profit_cny)
+                    str = "Price > %.2f, Check if it can be sold..." % target_price
                     print(str)
                     ftext += str+'\n'
                     profit_now = profit_cny_now(price_now, u2c)
@@ -291,7 +290,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                         ftext = place_order_process(
                             test_price, price_now, get_trade_btc(), 'sell-limit', ftext, time_line, u2c)
                     else:
-                        str = "Profit Now: %.2f is not greater than %.2f, sorry!" % (
+                        str = "Profit Now: %.2f <= %.2f So don't sell" % (
                             profit_now, profit_cny)
                         print(str)
                         ftext += str+'\n'

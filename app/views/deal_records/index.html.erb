@@ -26,7 +26,7 @@ btc_hold = DealRecord.btc_amount
       <td align="right"><%= n %></td>
       <td><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
       <td align="right"><%= price = to_n(dr.price) %></td>
-      <td align="right"><%= amount = to_n(dr.amount-dr.fees,6) %></td>
+      <td align="right"><%= amount = to_n(dr.amount,6) %></td>
       <td align="right"><%= cny_amount = to_n(dr.cny_amount,2) if !dr.real_profit %></td>
       <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
       <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
@@ -46,7 +46,7 @@ btc_hold = DealRecord.btc_amount
   <%
     else
       price = to_n(dr.price)
-      amount = to_n(dr.amount-dr.fees,6)
+      amount = to_n(dr.amount,6)
       cny_amount = to_n(dr.cny_amount,2) if !dr.real_profit
       cny_amount_now = dr.cny_amount_now if !dr.real_profit
       earn_or_loss = dr.earn_or_loss if !dr.real_profit
@@ -71,7 +71,7 @@ btc_hold = DealRecord.btc_amount
         <%= t(:price_now) %>: <%= kline_chart_link(to_n(price_now)) %>
       <% end %>
     </td>
-    <td align="right"><%= to_n(total_price/total_amount) if total_amount > 0 %></td>
+    <td align="right"><%= to_n(total_price/(total_amount*(1-$fees_rate))) if total_amount > 0 %></td>
     <td align="right"><%= to_n(total_amount,6) %></td>
     <td align="right"><%= to_n(total_cny_amount) %></td>
     <td align="right"><%= to_n(total_cny_amount_now) %></td>

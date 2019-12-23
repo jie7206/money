@@ -69,6 +69,34 @@ class DealRecord < ApplicationRecord
     return 0
   end
 
+  # 回传总成本
+  def self.total_cost
+    total_cost = 0
+    all.each {|dr| total_cost += dr.price*dr.amount}
+    return total_cost
+  end
+
+  # 回传均价
+  def self.ave_cost
+    total_amount = 0
+    all.each {|dr| total_amount += dr.amount - dr.fees}
+    if total_amount > 0
+      return self.total_cost/total_amount
+    else
+      return 0
+    end
+  end
+
+  # 回传损益
+  def self.profit_cny
+    if total_amount = self.btc_amount and total_amount > 0.0001
+        btc_total_value = (1/$btc_exchange_rate)*total_amount
+        return (btc_total_value-self.total_cost)*self.new.usdt_to_cny
+    else
+        return 0
+    end
+  end
+
   # 显示币种
   def bi
     symbol.sub('usdt','').upcase

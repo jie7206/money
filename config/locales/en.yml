@@ -260,6 +260,8 @@ en:
   update_system_params_ok: System Params updated successfully!
   update_system_params_error: System Params updated Error!
   test_huobi: Test Huobi
+  ave_cost: Ave Cost
+  profit_now: Profit Now
   copyright: Copyright
   contact_email: Contact Email
   activerecord:
