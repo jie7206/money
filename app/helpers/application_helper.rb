@@ -416,15 +416,19 @@ module ApplicationHelper
   # 取得最新的比特币报价
   def btc_price
     begin
-      root = `python py/huobi_price.py symbol=btcusdt period=1min size=1`
+      root = JSON.parse(`python py/huobi_price.py symbol=btcusdt period=1min size=1`)
       if root["data"] and root["data"][0]
         return format("%.2f",root["data"][0]["close"]).to_f
       else
-        return Currency.find_by_code('BTC').to_usd.floor(2)
+        return btc_price_local
       end
     rescue
-      return Currency.find_by_code('BTC').to_usd.floor(2)
+      return btc_price_local
     end
+  end
+
+  def btc_price_local
+    Currency.find_by_code('BTC').to_usd.floor(2)
   end
 
   # 显示切换分钟链接
