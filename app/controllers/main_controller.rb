@@ -202,7 +202,7 @@ class MainController < ApplicationController
   # 返回K线数据（蜡烛图）
   def get_kline
     symbol = params[:symbol] ? params[:symbol] : "btcusdt"
-    period = params[:period] ? params[:period] : "5min"
+    period = params[:period] ? params[:period] : $default_chart_period
     size = params[:size] ? params[:size] : $chart_data_size
     @symbol_title = symbol_title(symbol)
     @period_title = period_title(period)
