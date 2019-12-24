@@ -79,7 +79,7 @@ class DealRecord < ApplicationRecord
   # 回传均价
   def self.ave_cost
     total_amount = 0
-    all.each {|dr| total_amount += dr.amount - dr.fees}
+    all.where('auto_sell = 0').each {|dr| total_amount += dr.amount - dr.fees}
     if total_amount > 0
       return self.total_cost/total_amount
     else
@@ -88,13 +88,21 @@ class DealRecord < ApplicationRecord
   end
 
   # 回传损益
-  def self.profit_cny(btc_price=1/$btc_exchange_rate)
-    if total_amount = self.btc_amount and total_amount > 0.0001
-        btc_total_value = btc_price*total_amount
-        return (btc_total_value-self.total_cost)*self.new.usdt_to_cny
+  def self.profit_cny(input_price=1/$btc_exchange_rate)
+    if total_amount = self.btc_amount and total_amount > 0.00000001
+        input_price = 0 if !input_price
+        btc_total_value = input_price*total_amount
+        return (btc_total_value.to_f-self.total_cost)*self.new.usdt_to_cny
     else
         return 0
     end
+  end
+
+  # 所有已实现损益
+  def self.total_real_profit
+    result = 0
+    all.where('auto_sell = 1').each {|dr| result += dr.real_profit}
+    return result
   end
 
   # 显示币种

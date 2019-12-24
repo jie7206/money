@@ -255,6 +255,7 @@ en:
   set_auto_invest_params_ok: Auto Invest Params updated successfully!
   set_auto_invest_params_error: Auto Invest Params updated Error!
   show_all_deal_records: Show All Deal Records
+  show_sell_deal_records: Show Sell Deal Records
   update_system_params: Update System Params
   save_system_params: Save System Params
   update_system_params_ok: System Params updated successfully!

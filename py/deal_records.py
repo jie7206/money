@@ -38,7 +38,7 @@ def update_huobi_deal_records(time_line='2019-12-14 12:00:00'):
                     created_at = db_time(data['created-at'])
                     if created_at > time_line:
                         sql = "INSERT INTO deal_records (account, data_id, symbol, deal_type, price, amount, fees, \
-                                earn_limit, loss_limit, created_at, updated_at) VALUES ('170', %i, 'btcusdt', '%s', %f, %f, %f, %.4f, 0, '%s', '%s')" \
+                                earn_limit, loss_limit, created_at, updated_at, auto_sell) VALUES ('170', %i, 'btcusdt', '%s', %f, %f, %f, %.4f, 0, '%s', '%s', 0)" \
                                 % (data_id, deal_type, price, amount, fees, earn_limit, created_at, created_at)
                         CONN.execute(sql)
                         CONN.commit()

@@ -4,7 +4,13 @@ class DealRecordsController < ApplicationController
   before_action :set_deal_record, only: [:edit, :update, :destroy, :delete]
 
   def index
-    @deal_records = DealRecord.order('created_at desc')
+    if params[:show_all]
+      @deal_records = DealRecord.order('created_at desc')
+    elsif params[:show_sell]
+      @deal_records = DealRecord.where('auto_sell = 1').order('created_at desc')
+    else
+      @deal_records = DealRecord.where('auto_sell = 0').order('created_at desc')
+    end
   end
 
   def new
@@ -59,8 +65,8 @@ class DealRecordsController < ApplicationController
 
   # 清空交易记录
   def clear
-    DealRecord.delete_all
-    put_notice t(:clear_deal_records_ok)
+    n = DealRecord.where(auto_sell:0).delete_all
+    put_notice t(:clear_deal_records_ok) + "(#{n}#{t(:bi)})"
     go_deal_records
   end
 
@@ -71,7 +77,7 @@ class DealRecordsController < ApplicationController
     end
 
     def deal_record_params
-      params.require(:deal_record).permit(:account, :data_id, :symbol, :deal_type, :price, :amount, :fees, :purpose, :loss_limit, :earn_limit, :auto_sell, :order_id)
+      params.require(:deal_record).permit(:account, :data_id, :symbol, :deal_type, :price, :amount, :fees, :purpose, :loss_limit, :earn_limit, :auto_sell, :order_id, :real_profit)
     end
 
 end

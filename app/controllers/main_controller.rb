@@ -84,6 +84,8 @@ class MainController < ApplicationController
           @price = deal_record.earn_limit_price
         elsif params[:type] == 'loss'
           @price = deal_record.loss_limit_price
+        else
+          @price = btc_price
         end
       end
       @deal_type = 'sell-limit'
@@ -109,7 +111,7 @@ class MainController < ApplicationController
     @usdt_amount = to_n(DealRecord.usdt_amount) # 显示剩余资金
     @btc_available, @usdt_available = `python py/usdt_trade.py`.split(',').map {|n| to_n(n,6).to_f}
     @ave_cost = to_n(DealRecord.ave_cost)
-    @profit_cny = @price.nil? ? to_n(DealRecord.profit_cny) : to_n(DealRecord.profit_cny(@price))
+    @profit_cny = to_n(DealRecord.profit_cny(@price.to_f))
     usdt_to_cny
   end
 
@@ -141,7 +143,7 @@ class MainController < ApplicationController
       @usdt_amount = to_n(@usdt_amount.to_f + @price * @amount * fee_rate)
       @btc_level = to_n((DealRecord.twd_of_btc - @price * @amount * usd2twd) / DealRecord.twd_of_170 * 100)
       @btc_available = to_n(@btc_available - @amount, 6)
-      @profit_cny = to_n(DealRecord.profit_cny(@price))
+      @profit_cny = to_n(DealRecord.profit_cny(@price.to_f))
     else
       flash.now[:warning] = t(:order_error)
       @amount = ''

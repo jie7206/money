@@ -1,4 +1,4 @@
-<h2><%= link_to t(:deal_record_index), {controller: :main, action: :line_chart, symbol: 'btcusdt'}, {target: :blank} %></h2>
+<h2><%= link_to t(:deal_record_index), deal_records_path %></h2>
 <table>
   <tr class="thead">
     <td width="15"></td>
@@ -21,7 +21,7 @@ total_price = total_amount = total_cny_amount = total_cny_amount_now =  total_ea
 btc_hold = DealRecord.btc_amount
 %>
 <% @deal_records.each do |dr| %>
-  <% if n <= $deal_records_limit or params[:show_all] %>
+  <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] %>
     <tr <%= change_row_color %>>
       <td align="right"><%= n %></td>
       <td><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
@@ -33,11 +33,9 @@ btc_hold = DealRecord.btc_amount
       <td align="right"><%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %></td>
       <td align="right"><%= earn_limit = to_n(dr.earn_limit,3) if !dr.real_profit and dr.earn_limit > 0 %></td>
       <% earn_limit_price = dr.earn_limit_price %>
-      <td align="right" <%= if_red_bg(price_now,earn_limit_price) %>>
+      <td align="right" <%= if_red_bg(price_now,earn_limit_price) if !dr.real_profit %>>
         <% if !dr.real_profit and (!dr.order_id or dr.order_id.empty?) %>
           <%= huobi_order_link(earn_limit_price,dr,'earn') %>
-        <% else %>
-          <%= huobi_order_link(earn_limit_price,dr,'earn',false) %>
         <% end %>
       </td>
       <td align="right"><%= look_order_link(dr,8) %></td>
@@ -72,18 +70,19 @@ btc_hold = DealRecord.btc_amount
       <% end %>
     </td>
     <td align="right"><%= to_n(DealRecord.ave_cost) if total_amount > 0 %></td>
-    <td align="right"><%= to_n(DealRecord.btc_amount,6) %></td>
-    <td align="right"><%= to_n(total_cny_amount) %></td>
-    <td align="right"><%= to_n(total_cny_amount_now) %></td>
-    <td align="right"><%= link_to to_n(DealRecord.profit_cny), place_order_form_path(sell_all:1) %></td>
-    <td align="right"><%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) %></td>
-    <td align="right"><%= to_n(total_earn_limit,3) %></td>
-    <td colspan="3" align="right"><%= to_n(total_real_profit,4) %></td>
+    <td align="right"><%= link_to to_n(DealRecord.btc_amount,6), place_order_form_path(sell_all:1) %></td>
+    <td align="right"><%= to_n(total_cny_amount) if !params[:show_sell] %></td>
+    <td align="right"><%= to_n(total_cny_amount_now) if !params[:show_sell] %></td>
+    <td align="right"><%= link_to to_n(DealRecord.profit_cny), place_order_form_path(sell_all:1) if !params[:show_sell] %></td>
+    <td align="right"><%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
+    <td align="right"><%= to_n(total_earn_limit,3) if !params[:show_sell] %></td>
+    <td colspan="3" align="right"><%= to_n(DealRecord.total_real_profit,4) %></td>
   </tr>
 </table>
 <br/>
 <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
-| <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
+| <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
 | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
 <%= update_btc_huobi_portfolios_link %>
+| <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
 <p/></p>

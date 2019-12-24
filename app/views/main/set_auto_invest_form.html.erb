@@ -1,6 +1,22 @@
 <h2><%= t(:set_auto_invest_params) %></h2>
 <%= form_tag set_auto_invest_params_path, method: :post, id: 'set_auto_invest_form' do %>
-  <p>every, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price</p>
+  <ol>
+    <li>几秒执行一次</li>
+    <li>多少价位以下执行买入</li>
+    <li>跌破多少价位停止买入</li>
+    <li>原有的USDT</li>
+    <li>买入价格调整参数</li>
+    <li>累积多少比特币后停止买入</li>
+    <li>至少买入多少USDT</li>
+    <li>至多买入不超过原有USDT的百分比</li>
+    <li>交易记录日期</li>
+    <li>交易记录时间</li>
+    <li>测试价格</li>
+    <li>单次获利的目标值(CNY)</li>
+    <li>单次最多卖出笔数</li>
+    <li>时间间隔最小参数</li>
+    <li>时间间隔最大参数</li>
+  </ol>
   <div>
     <span id="auto_invest_params_span">
       <%= text_field_tag :auto_invest_params, @invest_params_value %>

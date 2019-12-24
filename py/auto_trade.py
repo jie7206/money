@@ -7,7 +7,7 @@ from open_orders import *
 
 
 def fees_rate():
-    return 1-0.002*0.8
+    return 1-0.002
 
 
 def get_price_now():
@@ -71,8 +71,8 @@ def btc_ave_cost():
             price = row[0]
             amount = row[1]
             fees = row[2]
-            amount = amount - fees
             sum_price += price*amount
+            amount = amount - fees
             sum_amount += amount
         return round(sum_price/sum_amount, 2)
     else:
@@ -114,12 +114,13 @@ def place_order_process(test_price, price_now, amount, deal_type, ftext, time_li
     ftext += str+'\n'
     trade_btc = float(get_trade_btc())
     btc_cny = trade_btc*price_now*u2c
-    str = "BTC Trade Now: %.8f (%.2f CNY)" % (
+    str = "BTC  Trade Now: %.8f (%.2f CNY)" % (
         trade_btc, btc_cny)
     print(str)
     ftext += str+'\n'
-    str = "BTC Level Now: %.2f%%  Ave Cost: %.2f USDT" % (
-        btc_hold_level(price_now, u2c), btc_ave_cost())
+    profit_now = profit_cny_now(price_now, u2c)
+    str = "BTC  Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
+        btc_hold_level(price_now, u2c), btc_ave_cost(), profit_now)
     print(str)
     ftext += str+'\n'
     str = "%i Huobi Assets Updated, Process Execute Completed" % update_all_huobi_assets()
@@ -180,6 +181,17 @@ def btc_hold_level(price_now, u2c):
     btc_cny = price_now*amounts['btc']*u2c
     usdt_cny = amounts['usdt']*u2c
     return btc_cny/(btc_cny+usdt_cny)*100
+
+
+def print_next_exe_time(every_sec, ftext):
+    next_hours = float(every_sec/3600)
+    delta_next_hours = timedelta(hours=next_hours)
+    next_exe_time = to_t(datetime.now() + delta_next_hours)
+    str = "Next Time: %s (%.2f M | %.2f H)" % (
+        next_exe_time, every_sec/60, every_sec/3600)
+    print(str)
+    ftext += str+'\n'
+    return ftext
 
 
 def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, min_sec_rate, max_sec_rate):
@@ -244,23 +256,18 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                         delta_hours = timedelta(hours=remain_hours)
                         empty_usdt_time = to_t(now + delta_hours)
                         usdt_cny = trade_usdt*u2c
-                        str = "Total USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, usdt_cny)
+                        str = "Total  USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, usdt_cny)
                         print(str)
                         ftext += str+'\n'
                         str = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
                         print(str)
                         ftext += str+'\n'
-                        str = "Buy Amount: %.6f BTC (%.2f CNY)" % (amount, amount*price_now*u2c)
+                        str = "Buy  Amount: %.6f BTC (%.2f CNY)" % (amount, amount*price_now*u2c)
                         print(str)
                         ftext += str+'\n'
-                        str = "Remain Invest Hours: %.2f Hours" % remain_hours
-                        print(str)
-                        ftext += str+'\n'
-                        str = "Empty USDT Time: " + empty_usdt_time
-                        print(str)
-                        ftext += str+'\n'
-                        str = "Seconds Updated: %i Sec | %.1f Min | %.1f Hour" % (
-                            every_sec, every_sec/60, every_sec/3600)
+                        ftext = print_next_exe_time(every_sec, ftext)
+                        str = "Zero Time: %s (%.2f H | %.2f D)" % (
+                            empty_usdt_time, remain_hours, remain_hours/24)
                         print(str)
                         ftext += str+'\n'
                         ftext = place_order_process(
@@ -271,11 +278,11 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                         str = "Run out of USDT or Price < %.2f, wait to continue..." % bottom
                         print(str)
                         ftext += str+'\n'
+                        ftext = print_next_exe_time(every_sec, ftext)
                         fobj.write(ftext)
                         return every_sec
                 else:
-                    str = "Price > %.2f, check if profit > %.2f then sell..." % (
-                        target_price, profit_cny)
+                    str = "Price > %.2f, Check if it can be sold..." % target_price
                     print(str)
                     ftext += str+'\n'
                     profit_now = profit_cny_now(price_now, u2c)
@@ -283,10 +290,11 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                         ftext = place_order_process(
                             test_price, price_now, get_trade_btc(), 'sell-limit', ftext, time_line, u2c)
                     else:
-                        str = "Profit Now: %.2f is not greater than %.2f, sorry!" % (
+                        str = "Profit Now: %.2f <= %.2f So don't sell" % (
                             profit_now, profit_cny)
                         print(str)
                         ftext += str+'\n'
+                    ftext = print_next_exe_time(every_sec, ftext)
                     fobj.write(ftext)
                     return every_sec
             else:
