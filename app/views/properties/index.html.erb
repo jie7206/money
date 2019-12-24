@@ -3,7 +3,6 @@
   <%= render 'properties_table', properties: @properties, show_summary: @show_summary %>
 <% end %>
 <p>
-  <%= link_to t(:new_property), new_property_path, { id: 'add_new_property' } %> |
-  <%= update_btc_exchange_rates_link %> |
-  <%= update_huobi_assets_link %>
+  <%= link_to t(:new_property), new_property_path, { id: 'add_new_property' } %>
+  <%= update_btc_huobi_portfolios_link %>
 </p>

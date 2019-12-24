@@ -91,6 +91,10 @@ class MainController < ApplicationController
       @amount = params[:amount].to_f
       @price = btc_price
       @deal_type = 'sell-limit'
+    elsif params[:sell_all]
+      @amount = to_n(DealRecord.btc_amount, 6)
+      @price = btc_price
+      @deal_type = 'sell-limit'
     else
       @price = btc_price
       @deal_type = 'buy-limit'
@@ -100,12 +104,12 @@ class MainController < ApplicationController
 
   # 默认的下单讯息
   def default_order_info
-    @btc_amount = to_n(DealRecord.btc_amount, 4) # 显示BTC数量
+    @btc_amount = to_n(DealRecord.btc_amount, 6) # 显示BTC数量
     @btc_level = to_n(DealRecord.btc_level) # 显示目前仓位
     @usdt_amount = to_n(DealRecord.usdt_amount) # 显示剩余资金
-    @btc_available, @usdt_available = `python py/usdt_trade.py`.split(',').map {|n| to_n(n,4).to_f}
+    @btc_available, @usdt_available = `python py/usdt_trade.py`.split(',').map {|n| to_n(n,6).to_f}
     @ave_cost = to_n(DealRecord.ave_cost)
-    @profit_cny = to_n(DealRecord.profit_cny)
+    @profit_cny = @price.nil? ? to_n(DealRecord.profit_cny) : to_n(DealRecord.profit_cny(@price))
     usdt_to_cny
   end
 
@@ -130,19 +134,21 @@ class MainController < ApplicationController
       and @price * @amount > 1
       @usdt_available = to_n(@usdt_available - @price * @amount)
       @btc_level = to_n((DealRecord.twd_of_btc + @price * @amount * fee_rate * usd2twd) / DealRecord.twd_of_170 * 100)
-      @btc_amount = to_n(DealRecord.btc_amount + @amount * fee_rate, 4)
+      @btc_amount = to_n(DealRecord.btc_amount + @amount * fee_rate, 6)
       @ave_cost = to_n((DealRecord.total_cost+@price*@amount)/(@btc_amount.to_f))
-    elsif @deal_type.include? 'sell' and @btc_available - @amount >= 0 \
-      and @price * @amount > 1
+    elsif @deal_type.include? 'sell' and @price * @amount > 1
+      @amount = @btc_available if @btc_available - @amount < 0
       @usdt_amount = to_n(@usdt_amount.to_f + @price * @amount * fee_rate)
       @btc_level = to_n((DealRecord.twd_of_btc - @price * @amount * usd2twd) / DealRecord.twd_of_170 * 100)
-      @btc_available = to_n(@btc_available - @amount, 4)
+      @btc_available = to_n(@btc_available - @amount, 6)
+      @profit_cny = to_n(DealRecord.profit_cny(@price))
     else
       flash.now[:warning] = t(:order_error)
       @amount = ''
       default_order_info
     end
     usdt_to_cny
+    @btc_level = 0 if @btc_level.to_f < 0
     render :place_order_form
   end
 

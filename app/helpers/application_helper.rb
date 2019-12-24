@@ -248,6 +248,13 @@ module ApplicationHelper
     link_to t(:test_huobi), '/test_huobi.json', { id: 'test_huobi' }
   end
 
+  # 与资产更新相关的链接
+  def update_btc_huobi_portfolios_link
+    raw(' | ' + update_btc_exchange_rates_link + \
+    ' | ' + update_huobi_assets_link + \
+    ' | ' + update_all_portfolios_link)
+  end
+
   # 资产标签云
   def get_tag_cloud
     @tags = Property.tag_counts_on(:tags)

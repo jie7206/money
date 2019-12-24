@@ -23,7 +23,7 @@
   </tr>
   <tr>
     <td><%= t(:usdt_trade) %>：</td>
-    <td align="center"><u class="su"><%= @usdt_available %>(<%= to_n(@usdt_available.to_f-@usdt_amount.to_f,1)%>) U</u></td>
+    <td align="center"><u class="su"><%= @usdt_available %>(<%= to_n((@usdt_available.to_f-@usdt_amount.to_f).abs,1)%>) U</u></td>
   </tr>
   <tr>
     <td><%= t(:usdt_trade) %>：</td>

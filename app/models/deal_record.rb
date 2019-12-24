@@ -88,9 +88,9 @@ class DealRecord < ApplicationRecord
   end
 
   # 回传损益
-  def self.profit_cny
+  def self.profit_cny(btc_price=1/$btc_exchange_rate)
     if total_amount = self.btc_amount and total_amount > 0.0001
-        btc_total_value = (1/$btc_exchange_rate)*total_amount
+        btc_total_value = btc_price*total_amount
         return (btc_total_value-self.total_cost)*self.new.usdt_to_cny
     else
         return 0
