@@ -194,7 +194,6 @@ def batch_sell_process(test_price, price_now, ftext, time_line, u2c, profit_cny,
     if len(rows) > 0:
         ids = []
         sell_amount = 0
-        count = 0
         created_at = ''
         ave_cost = btc_ave_cost()
         sell_price = round(price_now*0.9997, 2)
@@ -204,22 +203,24 @@ def batch_sell_process(test_price, price_now, ftext, time_line, u2c, profit_cny,
             created_at = row[2]
             ids.append(id)
             sell_amount += amount
-            sell_profit = (sell_price-ave_cost)*sell_amount*u2c
+            sell_profit = (sell_price-ave_cost)*sell_amount*fees_rate()*u2c
             if sell_profit > profit_cny:
                 # 提交订单
                 ftext = place_order_process(test_price, sell_price,
                                             sell_amount, 'sell-limit', ftext, time_line, u2c)
                 # 如果提交成功，将这些交易记录标示为已自动卖出并更新下单编号及已实现损益
                 if test_price == 0 and len(ORDER_ID) > 0:
-                    real_profit = round(sell_profit/len(ids), 2)
-                    for id in ids:
-                        sql = "UPDATE deal_records SET auto_sell = 1, order_id = '%s', real_profit = %.2f, updated_at = '%s' WHERE id = %i" % (
-                            ORDER_ID, real_profit, get_now(), id)
+                    real_profit = round(sell_profit, 4)
+                    sql = "UPDATE deal_records SET auto_sell = 1, order_id = '%s', real_profit = %.2f, updated_at = '%s' WHERE id = %i" % (
+                        ORDER_ID, real_profit, get_now(), ids[-1])
+                    CONN.execute(sql)
+                    CONN.commit()
+                    for id in ids[0:-1]:
+                        sql = "DELETE FROM deal_records WHERE id = %i" % id
                         CONN.execute(sql)
                         CONN.commit()
-                        count += 1
                     ORDER_ID = ''
-                    str = "%i Deal Records Auto Sold" % count
+                    str = "%i Deal Records Auto Sold and Combined" % len(ids)
                     print(str)
                     ftext += str+'\n'
                     # 更新记录time_line文档
