@@ -69,10 +69,17 @@ class DealRecord < ApplicationRecord
     return 0
   end
 
+  # 回传剩余比特币
+  def self.total_amount
+    total_amount = 0
+    all.where('auto_sell = 0').each {|dr| total_amount += dr.amount-dr.fees}
+    return total_amount
+  end
+
   # 回传总成本
   def self.total_cost
     total_cost = 0
-    all.each {|dr| total_cost += dr.price*dr.amount}
+    all.where('auto_sell = 0').each {|dr| total_cost += dr.price*dr.amount}
     return total_cost
   end
 
@@ -89,7 +96,7 @@ class DealRecord < ApplicationRecord
 
   # 回传损益
   def self.profit_cny(input_price=1/$btc_exchange_rate)
-    if total_amount = self.btc_amount and total_amount > 0.00000001
+    if total_amount = self.total_amount and total_amount > 0.00000001
         input_price = 0 if !input_price
         btc_total_value = input_price*total_amount
         return (btc_total_value.to_f-self.total_cost)*self.new.usdt_to_cny

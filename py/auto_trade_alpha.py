@@ -12,6 +12,14 @@ def fees_rate():
     return 1-0.002
 
 
+def buy_price_rate():
+    return 1.0002
+
+
+def sell_price_rate():
+    return 0.9998
+
+
 def get_price_now():
     try:
         return float(get_kline('btcusdt', '1min', 1)['data'][0]['close'])
@@ -64,7 +72,18 @@ def get_trade_btc():
                 return float(item['balance'])
                 break
     except:
-        return '0'
+        return 0
+
+
+def get_total_btc():
+    try:
+        amount = 0
+        for item in get_balance(ACCOUNT_ID)['data']['list']:
+            if item['currency'] == 'btc':
+                amount += float(item['balance'])
+        return amount
+    except:
+        return 0
 
 
 def btc_ave_cost():
@@ -83,20 +102,21 @@ def btc_ave_cost():
         return 0
 
 
-def place_order_process(test_price, price_now, amount, deal_type, ftext, time_line, u2c):
+def place_order_process(test_price, price, amount, deal_type, ftext, time_line, u2c):
     if test_price == 0:
-        str = place_new_order("%.2f" % price_now, "%.6f" % amount, deal_type)
+        str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
         print(str)
         ftext += str+'\n'
         time.sleep(10)
-        str = "%i Deal Records added" % update_huobi_deal_records(time_line)
-        print(str)
-        ftext += str+'\n'
+        if deal_type.find('buy-limit') > -1:
+            str = "%i Deal Records added" % update_huobi_deal_records(time_line)
+            print(str)
+            ftext += str+'\n'
         str = "%i Open Orders added" % update_open_orders()
         print(str)
         ftext += str+'\n'
     else:
-        str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price_now, amount, deal_type)
+        str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price, amount, deal_type)
         print(str)
         ftext += str+'\n'
     trade_usdt = float(get_trade_usdt())
@@ -106,17 +126,17 @@ def place_order_process(test_price, price_now, amount, deal_type, ftext, time_li
     print(str)
     ftext += str+'\n'
     trade_btc = float(get_trade_btc())
-    btc_cny = trade_btc*price_now*u2c
+    btc_cny = trade_btc*price*u2c
     str = "BTC  Trade Now: %.8f (%.2f CNY)" % (
         trade_btc, btc_cny)
     print(str)
     ftext += str+'\n'
-    profit_now = profit_cny_now(price_now, u2c)
+    profit_now = profit_cny_now(price, u2c)
     str = "BTC  Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
-        btc_hold_level(price_now, u2c), btc_ave_cost(), profit_now)
+        btc_hold_level(price, u2c), btc_ave_cost(), profit_now)
     print(str)
     ftext += str+'\n'
-    str = "%i Huobi Assets Updated, Process Execute Completed" % update_all_huobi_assets()
+    str = "%i Huobi Assets Updated, Send Order Process Completed" % update_all_huobi_assets()
     print(str)
     ftext += str+'\n'
     if trade_btc > target_amount:
@@ -126,17 +146,12 @@ def place_order_process(test_price, price_now, amount, deal_type, ftext, time_li
     return ftext
 
 
-def btc_total_cost():
-    return btc_ave_cost()*get_trade_btc()
-
-
-def btc_total_value(price):
-    return price*get_trade_btc()*fees_rate()
-
-
-def profit_cny_now(price_now, u2c):
-    if get_trade_btc() > 0.0001:
-        return round((btc_total_value(price_now)-btc_total_cost())*u2c, 2)
+def profit_cny_now(price, u2c):
+    total_btc_amount = get_total_btc()
+    if total_btc_amount > 0.00000001:
+        btc_total_value = price*total_btc_amount*fees_rate()
+        btc_total_cost = btc_ave_cost()*total_btc_amount
+        return round((btc_total_value-btc_total_cost)*u2c, 2)
     else:
         return 0
 
@@ -165,13 +180,13 @@ def update_time_line(time_str):
         return 0
 
 
-def btc_hold_level(price_now, u2c):
+def btc_hold_level(price, u2c):
     amounts = {'usdt': 0, 'btc': 0}
     for item in get_balance(ACCOUNT_ID)['data']['list']:
         for currency in ['usdt', 'btc']:
             if item['currency'] == currency:
                 amounts[currency] += float(item['balance'])
-    btc_cny = price_now*amounts['btc']*u2c
+    btc_cny = price*amounts['btc']*u2c
     usdt_cny = amounts['usdt']*u2c
     return btc_cny/(btc_cny+usdt_cny)*100
 
@@ -187,7 +202,7 @@ def print_next_exe_time(every_sec, ftext):
     return ftext
 
 
-def batch_sell_process(test_price, price_now, ftext, time_line, u2c, profit_cny, max_sell_count):
+def batch_sell_process(test_price, price, ftext, time_line, u2c, profit_cny, max_sell_count):
     global ORDER_ID
     rows = select_db(
         "SELECT id, amount-fees as amount, created_at FROM deal_records WHERE auto_sell = 0 ORDER BY created_at ASC LIMIT %i" % max_sell_count)
@@ -196,7 +211,7 @@ def batch_sell_process(test_price, price_now, ftext, time_line, u2c, profit_cny,
         sell_amount = 0
         created_at = ''
         ave_cost = btc_ave_cost()
-        sell_price = round(price_now*0.9997, 2)
+        sell_price = round(price*sell_price_rate(), 2)
         for row in rows:
             id = row[0]
             amount = row[1]
@@ -211,8 +226,8 @@ def batch_sell_process(test_price, price_now, ftext, time_line, u2c, profit_cny,
                 # 如果提交成功，将这些交易记录标示为已自动卖出并更新下单编号及已实现损益
                 if test_price == 0 and len(ORDER_ID) > 0:
                     real_profit = round(sell_profit, 4)
-                    sql = "UPDATE deal_records SET auto_sell = 1, order_id = '%s', real_profit = %.2f, updated_at = '%s' WHERE id = %i" % (
-                        ORDER_ID, real_profit, get_now(), ids[-1])
+                    sql = "UPDATE deal_records SET auto_sell = 1, order_id = '%s', price = %.2f, amount = %.6f, real_profit = %.2f, updated_at = '%s' WHERE id = %i" % (
+                        ORDER_ID, ave_cost, sell_amount, real_profit, get_now(), ids[-1])
                     CONN.execute(sql)
                     CONN.commit()
                     for id in ids[0:-1]:
@@ -220,7 +235,8 @@ def batch_sell_process(test_price, price_now, ftext, time_line, u2c, profit_cny,
                         CONN.execute(sql)
                         CONN.commit()
                     ORDER_ID = ''
-                    str = "%i Deal Records Auto Sold and Combined" % len(ids)
+                    str = "%i Deal Records Auto Sold and Combined, Sold Profit: %.2f CNY" % (
+                        len(ids), sell_profit)
                     print(str)
                     ftext += str+'\n'
                     # 更新记录time_line文档
@@ -314,7 +330,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                         print(str)
                         ftext += str+'\n'
                         ftext = place_order_process(
-                            test_price, price_now, amount, 'buy-limit', ftext, time_line, u2c)
+                            test_price, round(price_now*buy_price_rate(), 2), amount, 'buy-limit', ftext, time_line, u2c)
                         ORDER_ID = ''
                         fobj.write(ftext)
                         return every_sec
