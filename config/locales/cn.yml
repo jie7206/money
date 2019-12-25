@@ -253,7 +253,7 @@ cn:
   swap_chart: 切换图表
   see_kline: 看K线图
   see_line: 看折线图
-  set_auto_invest_params: 更新定投参数
+  set_auto_invest_params: 定投参数
   save_auto_invest_params: 储存定投参数
   set_auto_invest_params_ok: 定投参数更新成功！
   set_auto_invest_params_error: 定投参数储存时发生错误！
@@ -261,7 +261,7 @@ cn:
   show_sell_deal_records: 全部卖出记录
   zip_sell_deal_records: 压缩卖出记录
   zip_sell_records_ok: 压缩卖出记录成功！
-  update_system_params: 更新系统参数
+  update_system_params: 系统参数
   save_system_params: 储存系统参数
   update_system_params_ok: 系统参数更新成功！
   update_system_params_error: 系统参数更新时发生错误！

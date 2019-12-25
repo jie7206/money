@@ -202,24 +202,27 @@ def print_next_exe_time(every_sec, ftext):
     return ftext
 
 
-def batch_sell_process(test_price, price, ftext, time_line, u2c, profit_cny, max_sell_count):
+def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, profit_cny, max_sell_count):
     global ORDER_ID
     rows = select_db(
         "SELECT id, amount-fees as amount, created_at FROM deal_records WHERE auto_sell = 0 ORDER BY created_at ASC LIMIT %i" % max_sell_count)
     if len(rows) > 0:
         ids = []
         sell_amount = 0
+        sell_count = 0
         created_at = ''
         ave_cost = btc_ave_cost()
         sell_price = round(price*sell_price_rate(), 2)
+        profit_cny = (1+(price-base_price)**2/10000)*profit_cny
         for row in rows:
             id = row[0]
             amount = row[1]
             created_at = row[2]
             ids.append(id)
             sell_amount += amount
+            sell_count += 1
             sell_profit = (sell_price-ave_cost)*sell_amount*fees_rate()*u2c
-            if sell_profit > profit_cny:
+            if sell_profit > profit_cny or sell_count == max_sell_count:
                 # 提交订单
                 ftext = place_order_process(test_price, sell_price,
                                             sell_amount, 'sell-limit', ftext, time_line, u2c)
@@ -245,7 +248,8 @@ def batch_sell_process(test_price, price, ftext, time_line, u2c, profit_cny, max
                     print(str)
                     ftext += str+'\n'
                 else:
-                    str = "Sim Update %i Deal Records" % len(ids)
+                    str = "Sim Update %i Deal Records with Profit: %.2f CNY" % (
+                        len(ids), sell_profit)
                     print(str)
                     ftext += str+'\n'
                 break
@@ -347,7 +351,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                     ftext += str+'\n'
                     profit_now = profit_cny_now(price_now, u2c)
                     if profit_now > profit_cny:
-                        ftext = batch_sell_process(test_price, price_now,
+                        ftext = batch_sell_process(test_price, price_now, below_price,
                                                    ftext, time_line, u2c, profit_cny, max_sell_count)
                         ftext = print_next_exe_time(every_sec, ftext)
                         fobj.write(ftext)
