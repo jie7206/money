@@ -256,6 +256,8 @@ en:
   set_auto_invest_params_error: Auto Invest Params updated Error!
   show_all_deal_records: Show All Deal Records
   show_sell_deal_records: Show Sell Deal Records
+  zip_sell_deal_records: Zip Sell Deal Records
+  zip_sell_records_ok: Zip Sell Deal Records successfully!
   update_system_params: Update System Params
   save_system_params: Save System Params
   update_system_params_ok: System Params updated successfully!

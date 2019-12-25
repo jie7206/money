@@ -83,6 +83,7 @@ btc_hold = DealRecord.btc_amount
 <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
 | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
 | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
+| <%= link_to t(:zip_sell_deal_records), zip_sell_records_path %>
 <%= update_btc_huobi_portfolios_link %>
 | <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
 <p/></p>

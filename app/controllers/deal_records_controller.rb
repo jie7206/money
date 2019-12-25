@@ -70,6 +70,28 @@ class DealRecordsController < ApplicationController
     go_deal_records
   end
 
+  # 压缩卖出记录将所有的卖出记录累计成一笔
+  def zip_sell_records
+    price = amount = real_profit = 0
+    rs = DealRecord.where(auto_sell:1).order('created_at')
+    keep_id = rs.last.id
+    count = rs.size
+    rs.each do |r|
+      price += r.price * r.amount
+      amount += r.amount
+      real_profit += r.real_profit
+      r.destroy if r.id != keep_id
+    end
+    price = (price/amount).round(2)
+    DealRecord.find(keep_id).update_attributes(
+      price: price,
+      amount: amount,
+      real_profit: real_profit
+    )
+    put_notice t(:zip_sell_records_ok) + "(#{count}#{t(:bi)})"
+    go_deal_records
+  end
+
   private
 
     def set_deal_record

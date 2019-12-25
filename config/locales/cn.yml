@@ -259,6 +259,8 @@ cn:
   set_auto_invest_params_error: 定投参数储存时发生错误！
   show_all_deal_records: 全部交易记录
   show_sell_deal_records: 全部卖出记录
+  zip_sell_deal_records: 压缩卖出记录
+  zip_sell_records_ok: 压缩卖出记录成功！
   update_system_params: 更新系统参数
   save_system_params: 储存系统参数
   update_system_params_ok: 系统参数更新成功！
