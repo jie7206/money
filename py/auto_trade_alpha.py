@@ -256,7 +256,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
         return ftext
 
 
-def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
+def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
     global ORDER_ID
     fname = 'auto_invest_log.txt'
     with open(fname, 'a') as fobj:
@@ -296,7 +296,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
                     max_usdt = ori_usdt*max_rate
-                    if trade_usdt > min_usdt and price_now - bottom >= 0:
+                    if trade_usdt > min_usdt and price_now - bottom >= 0 and trade_usdt - min_usdt_keep > 0:
                         # Caculate USDT and Amount
                         price_diff = price_now - bottom
                         if price_now - bottom < 1:
@@ -339,7 +339,8 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                         fobj.write(ftext)
                         return every_sec
                     else:
-                        str = "Run out of USDT or Price < %.2f, wait to continue..." % bottom
+                        str = "USDT <= %.2f or Price < %.2f, wait until next time..." % (
+                            min_usdt_keep, bottom)
                         print(str)
                         ftext += str+'\n'
                         ftext = print_next_exe_time(every_sec, ftext)
@@ -383,16 +384,17 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
                 bottom_price = float(bottom_price)
                 ori_usdt = float(ori_usdt)
                 factor = float(factor)
+                min_usdt_keep = float(min_usdt_keep)
                 target_amount = float(target_amount)
-                min_usdt = float(min_usdt)  # 1.5
-                max_rate = float(max_rate)  # 0.05
+                min_usdt = float(min_usdt)
+                max_rate = float(max_rate)
                 time_line = deal_date+' '+deal_time
                 test_price = float(test_price)
                 profit_cny = float(profit_cny)
@@ -400,7 +402,7 @@ if __name__ == '__main__':
                 min_sec_rate = float(min_sec_rate)
                 max_sec_rate = float(max_sec_rate)
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
-                                       factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
+                                       factor, min_usdt_keep, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
                 if code == 0:
                     break
                 else:
