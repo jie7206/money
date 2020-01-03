@@ -548,7 +548,7 @@ def to_t(input_time):
 def get_time_line():
     with open(PARAMS, 'r') as fread:
         arr = fread.read().strip().split(' ')
-        return arr[8]+' '+arr[9]
+        return arr[9]+' '+arr[10]
 
 
 if __name__ == '__main__':

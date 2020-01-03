@@ -1,23 +1,17 @@
 ############################################################
-2019-12-12 20:00:04 Invest Between: 6700.00 ~ 7200.00
-3 Digital Prices updated
-BTC Price Now: 7195.80
-Total USDT: 634.8896 USDT (4455.21 CNY)
-Invest Cost: 4.4423 USDT (31.17 CNY)
-Buy Amount: 0.000617 BTC (31.17 CNY)
-Remain Invest Hours: 47.64 Hours
-############################################################
-2019-12-12 20:03:33 Invest Between: 6700.00 ~ 7200.00
+2020-01-03 22:56:13 Invest Between: 6700.00 ~ 7400.00
 2 Digital Prices updated
-BTC Price Now: 7208.99
-Price greater than 7200, wait 1200 seconds for next operate
-############################################################
-2019-12-12 20:04:22 Invest Between: 6700.00 ~ 7300.00
-4 Digital Prices updated
-BTC Price Now: 7205.18
-Total USDT: 631.2759 USDT (4429.85 CNY)
-Invest Cost: 4.2789 USDT (30.03 CNY)
-Buy Amount: 0.000594 BTC (30.03 CNY)
-Remain Invest Hours: 49.18 Hours
-Empty USDT Time: 2019-12-14 21:15:02
-BTC Now: 0.21431452 (10835.94 CNY) Ave: 7261.91
+BTC Price Now: 7260.02
+Total  USDT: 1449.0567 USDT (10083.12 CNY)
+Invest Cost: 2.3200 USDT (16.14 CNY)
+Buy  Amount: 0.000320 BTC (16.14 CNY)
+Next Time: 2020-01-04 00:00:07 (63.90 M | 1.06 H)
+Zero Time: 2020-01-31 16:07:44 (665.19 H | 27.72 D)
+Send Order(62712788520) successfully
+Buy Below Price Updated to: 7260.02
+10 Deal Records added
+0 Open Orders added
+USDT Trade Now: 1446.7336 (10066.95 CNY)
+BTC  Trade Now: 0.00096342 (48.68 CNY) Total: 10115.64 CNY
+BTC  Level Now: 0.48%  Ave: 7039.78 Profit Now: 1.39 CNY
+4 Huobi Assets Updated, Send Order Process Completed

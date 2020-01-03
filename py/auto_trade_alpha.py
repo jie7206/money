@@ -13,11 +13,11 @@ def fees_rate():
 
 
 def buy_price_rate():
-    return 1.0004
+    return 1.0003
 
 
 def sell_price_rate():
-    return 0.9996
+    return 0.9997
 
 
 def get_price_now():
@@ -109,6 +109,13 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
         ftext += str+'\n'
         time.sleep(10)
         if deal_type.find('buy-limit') > -1:
+            # 更新记录below_price文档
+            real_price = price/buy_price_rate()
+            new_below_price = "%.2f" % real_price
+            update_below_price(new_below_price)
+            str = "Buy Below Price Updated to: %s" % new_below_price
+            print(str)
+            ftext += str+'\n'
             str = "%i Deal Records added" % update_huobi_deal_records(time_line)
             print(str)
             ftext += str+'\n'
@@ -170,8 +177,21 @@ def update_time_line(time_str):
     try:
         with open(PARAMS, 'r') as f:
             arr = f.read().strip().split(' ')
-            arr[8] = date_str
-            arr[9] = time_str
+            arr[9] = date_str
+            arr[10] = time_str
+            new_str = ' '.join(arr)
+        with open(PARAMS, 'w+') as f:
+            f.write(new_str)
+        return 1
+    except:
+        return 0
+
+
+def update_below_price(new_below_price):
+    try:
+        with open(PARAMS, 'r') as f:
+            arr = f.read().strip().split(' ')
+            arr[1] = new_below_price
             new_str = ' '.join(arr)
         with open(PARAMS, 'w+') as f:
             f.write(new_str)
