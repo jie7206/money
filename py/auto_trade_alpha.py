@@ -13,11 +13,11 @@ def fees_rate():
 
 
 def buy_price_rate():
-    return 1.0002
+    return 1.0004
 
 
 def sell_price_rate():
-    return 0.9998
+    return 0.9996
 
 
 def get_price_now():
@@ -127,8 +127,8 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
     ftext += str+'\n'
     trade_btc = float(get_trade_btc())
     btc_cny = trade_btc*price*u2c
-    str = "BTC  Trade Now: %.8f (%.2f CNY)" % (
-        trade_btc, btc_cny)
+    str = "BTC  Trade Now: %.8f (%.2f CNY) Total: %.2f CNY" % (
+        trade_btc, btc_cny, usdt_cny+btc_cny)
     print(str)
     ftext += str+'\n'
     profit_now = profit_cny_now(price, u2c)
