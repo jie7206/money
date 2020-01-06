@@ -10,11 +10,11 @@
       <%= link_to t(:interest_index), interests_path %> |
       <% if admin? %>
         <%= set_auto_invest_form_link %> |
+        <%= invest_log_link %> |
         <%= order_list_link %> |
         <%= link_to t(:deal_record_index), deal_records_path %> |
         <%= link_to t(:record_index), records_path %> |
         <%= update_all_data_link %> |
-        <%= invest_log_link %> |
         <%= clear_invest_log_link %> |
       <% end %>
       <%= link_to t(:logout), logout_path, { id: 'logout' } %>

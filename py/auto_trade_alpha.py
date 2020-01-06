@@ -4,8 +4,10 @@ from update_all import *
 from update_assets import *
 from deal_records import *
 from open_orders import *
+from huobi_price import *
 
 ORDER_ID = ''
+FORCE_BUY = False
 
 
 def fees_rate():
@@ -13,7 +15,7 @@ def fees_rate():
 
 
 def buy_price_rate():
-    return 1.0003
+    return 1.0005
 
 
 def sell_price_rate():
@@ -24,8 +26,7 @@ def get_price_now():
     try:
         return float(get_kline('btcusdt', '1min', 1)['data'][0]['close'])
     except:
-        data = select_db("SELECT exchange_rate FROM currencies WHERE code = 'BTC'")
-        return round(1/float(data[0][0]), 2)
+        return 0
 
 
 def usd_to_cny():
@@ -103,19 +104,20 @@ def btc_ave_cost():
 
 
 def place_order_process(test_price, price, amount, deal_type, ftext, time_line, u2c):
+    global min_price_period
+    global below_price
     if test_price == 0:
         str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
         print(str)
         ftext += str+'\n'
-        time.sleep(10)
+        time.sleep(20)
         if deal_type.find('buy-limit') > -1:
-            # 更新记录below_price文档
-            real_price = price/buy_price_rate()
-            new_below_price = "%.2f" % real_price
-            update_below_price(new_below_price)
-            str = "Buy Below Price Updated to: %s" % new_below_price
-            print(str)
-            ftext += str+'\n'
+            min_price = get_min_price(min_price_period)
+            if min_price > 0 and min_price != below_price:
+                update_below_price("%.2f" % min_price)
+                str = "Below Price Updated to: %.2f" % min_price
+                print(str)
+                ftext += str+'\n'
             str = "%i Deal Records added" % update_huobi_deal_records(time_line)
             print(str)
             ftext += str+'\n'
@@ -276,8 +278,20 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
         return ftext
 
 
+def get_min_price(size):
+    try:
+        arr = []
+        root = get_huobi_price('btcusdt', '1min', size)
+        for data in root["data"]:
+            arr.append(data["low"])
+        return min(arr)
+    except:
+        return 0
+
+
 def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
     global ORDER_ID
+    global FORCE_BUY
     fname = 'auto_invest_log.txt'
     with open(fname, 'a') as fobj:
         ftext = '#############################################################\n'
@@ -311,7 +325,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
-                if price_now <= target_price:
+                if price_now <= target_price or FORCE_BUY == True:
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
@@ -356,6 +370,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_
                         ftext = place_order_process(
                             test_price, round(price_now*buy_price_rate(), 2), amount, 'buy-limit', ftext, time_line, u2c)
                         ORDER_ID = ''
+                        FORCE_BUY = False
                         fobj.write(ftext)
                         return every_sec
                     else:
@@ -386,11 +401,11 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_
                         fobj.write(ftext)
                         return every_sec
             else:
-                str = "Can't get price, wait %i seconds for next operate" % every_sec
+                str = "Can't get price, wait 10 seconds for next operate"
                 print(str)
                 ftext += str+'\n'
                 fobj.write(ftext)
-                return every_sec
+                return 10
         else:
             str = "Already reach target amount, Invest PAUSE!"
             print(str)
@@ -404,7 +419,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -421,6 +436,8 @@ if __name__ == '__main__':
                 max_sell_count = int(max_sell_count)
                 min_sec_rate = float(min_sec_rate)
                 max_sec_rate = float(max_sec_rate)
+                detect_sec = int(detect_sec)
+                min_price_period = int(min_price_period)
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
                                        factor, min_usdt_keep, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
                 if code == 0:
@@ -430,9 +447,19 @@ if __name__ == '__main__':
                         sys.stdout.write("\r")
                         sys.stdout.write(
                             "Please wait {:2d} seconds for next operate".format(remaining))
-                        sys.stdout.flush()
+                        # sys.stdout.flush()
                         time.sleep(1)
-                        if remaining % 10 == 0:
+                        if remaining % detect_sec == 0:
+                            price_now = float(get_price_now())
+                            min_price = get_min_price(min_price_period)
+                            if price_now > 0 and min_price > 0:
+                                sys.stdout.write("\r")
+                                sys.stdout.write("price_now: %.2f min_price_of_%imins: %.2f        " %
+                                                 (price_now, min_price_period, min_price))
+                                sys.stdout.write("\n")
+                                if price_now <= min_price:
+                                    FORCE_BUY = True
+                                    break
                             with open(PARAMS, 'r') as f:
                                 line_str = f.read().strip()
                                 if line_str[0:4] != params_str[0:4]:
