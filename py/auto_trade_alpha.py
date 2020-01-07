@@ -106,6 +106,7 @@ def btc_ave_cost():
 def place_order_process(test_price, price, amount, deal_type, ftext, time_line, u2c):
     global min_price_period
     global below_price
+    global min_price_period
     if test_price == 0:
         str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
         print(str)
@@ -140,14 +141,24 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
         trade_btc, btc_cny, usdt_cny+btc_cny)
     print(str)
     ftext += str+'\n'
+    btc_level_now = btc_hold_level(price, u2c)
     profit_now = profit_cny_now(price, u2c)
     str = "BTC  Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
-        btc_hold_level(price, u2c), btc_ave_cost(), profit_now)
+        btc_level_now, btc_ave_cost(), profit_now)
     print(str)
     ftext += str+'\n'
-    str = "%i Huobi Assets Updated, Send Order Process Completed" % update_all_huobi_assets()
-    print(str)
-    ftext += str+'\n'
+    if test_price == 0:
+        new_min_price_period = int(btc_level_now/2)
+        if new_min_price_period < 2:
+            new_min_price_period = 2
+        update_min_price_period(new_min_price_period)
+        min_price_period = new_min_price_period
+        str = "Minimum Price Period Updated to: %i Minutes" % new_min_price_period
+        print(str)
+        ftext += str+'\n'
+        str = "%i Huobi Assets Updated, Send Order Process Completed" % update_all_huobi_assets()
+        print(str)
+        ftext += str+'\n'
     if trade_btc > target_amount:
         str = "Already reach target amount, Invest PAUSE!"
         print(str)
@@ -194,6 +205,19 @@ def update_below_price(new_below_price):
         with open(PARAMS, 'r') as f:
             arr = f.read().strip().split(' ')
             arr[1] = new_below_price
+            new_str = ' '.join(arr)
+        with open(PARAMS, 'w+') as f:
+            f.write(new_str)
+        return 1
+    except:
+        return 0
+
+
+def update_min_price_period(new_value):
+    try:
+        with open(PARAMS, 'r') as f:
+            arr = f.read().strip().split(' ')
+            arr[17] = str(new_value)
             new_str = ' '.join(arr)
         with open(PARAMS, 'w+') as f:
             f.write(new_str)
