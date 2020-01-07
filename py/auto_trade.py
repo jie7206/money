@@ -4,20 +4,29 @@ from update_all import *
 from update_assets import *
 from deal_records import *
 from open_orders import *
+from huobi_price import *
 
 ORDER_ID = ''
+FORCE_BUY = False
 
 
 def fees_rate():
     return 1-0.002
 
 
+def buy_price_rate():
+    return 1.0005
+
+
+def sell_price_rate():
+    return 0.9997
+
+
 def get_price_now():
     try:
         return float(get_kline('btcusdt', '1min', 1)['data'][0]['close'])
     except:
-        data = select_db("SELECT exchange_rate FROM currencies WHERE code = 'BTC'")
-        return round(1/float(data[0][0]), 2)
+        return 0
 
 
 def usd_to_cny():
@@ -64,7 +73,18 @@ def get_trade_btc():
                 return float(item['balance'])
                 break
     except:
-        return '0'
+        return 0
+
+
+def get_total_btc():
+    try:
+        amount = 0
+        for item in get_balance(ACCOUNT_ID)['data']['list']:
+            if item['currency'] == 'btc':
+                amount += float(item['balance'])
+        return amount
+    except:
+        return 0
 
 
 def btc_ave_cost():
@@ -83,20 +103,29 @@ def btc_ave_cost():
         return 0
 
 
-def place_order_process(test_price, price_now, amount, deal_type, ftext, time_line, u2c):
+def place_order_process(test_price, price, amount, deal_type, ftext, time_line, u2c):
+    global min_price_period
+    global below_price
     if test_price == 0:
-        str = place_new_order("%.2f" % price_now, "%.6f" % amount, deal_type)
+        str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
         print(str)
         ftext += str+'\n'
-        time.sleep(10)
-        str = "%i Deal Records added" % update_huobi_deal_records(time_line)
-        print(str)
-        ftext += str+'\n'
+        time.sleep(20)
+        if deal_type.find('buy-limit') > -1:
+            min_price = get_min_price(min_price_period)
+            if min_price > 0 and min_price != below_price:
+                update_below_price("%.2f" % min_price)
+                str = "Below Price Updated to: %.2f" % min_price
+                print(str)
+                ftext += str+'\n'
+            str = "%i Deal Records added" % update_huobi_deal_records(time_line)
+            print(str)
+            ftext += str+'\n'
         str = "%i Open Orders added" % update_open_orders()
         print(str)
         ftext += str+'\n'
     else:
-        str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price_now, amount, deal_type)
+        str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price, amount, deal_type)
         print(str)
         ftext += str+'\n'
     trade_usdt = float(get_trade_usdt())
@@ -106,17 +135,17 @@ def place_order_process(test_price, price_now, amount, deal_type, ftext, time_li
     print(str)
     ftext += str+'\n'
     trade_btc = float(get_trade_btc())
-    btc_cny = trade_btc*price_now*u2c
-    str = "BTC  Trade Now: %.8f (%.2f CNY)" % (
-        trade_btc, btc_cny)
+    btc_cny = trade_btc*price*u2c
+    str = "BTC  Trade Now: %.8f (%.2f CNY) Total: %.2f CNY" % (
+        trade_btc, btc_cny, usdt_cny+btc_cny)
     print(str)
     ftext += str+'\n'
-    profit_now = profit_cny_now(price_now, u2c)
+    profit_now = profit_cny_now(price, u2c)
     str = "BTC  Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
-        btc_hold_level(price_now, u2c), btc_ave_cost(), profit_now)
+        btc_hold_level(price, u2c), btc_ave_cost(), profit_now)
     print(str)
     ftext += str+'\n'
-    str = "%i Huobi Assets Updated, Process Execute Completed" % update_all_huobi_assets()
+    str = "%i Huobi Assets Updated, Send Order Process Completed" % update_all_huobi_assets()
     print(str)
     ftext += str+'\n'
     if trade_btc > target_amount:
@@ -126,17 +155,12 @@ def place_order_process(test_price, price_now, amount, deal_type, ftext, time_li
     return ftext
 
 
-def btc_total_cost():
-    return btc_ave_cost()*get_trade_btc()
-
-
-def btc_total_value(price):
-    return price*get_trade_btc()*fees_rate()
-
-
-def profit_cny_now(price_now, u2c):
-    if get_trade_btc() > 0.0001:
-        return round((btc_total_value(price_now)-btc_total_cost())*u2c, 2)
+def profit_cny_now(price, u2c):
+    total_btc_amount = get_total_btc()
+    if total_btc_amount > 0.00000001:
+        btc_total_value = price*total_btc_amount*fees_rate()
+        btc_total_cost = btc_ave_cost()*total_btc_amount
+        return round((btc_total_value-btc_total_cost)*u2c, 2)
     else:
         return 0
 
@@ -155,8 +179,8 @@ def update_time_line(time_str):
     try:
         with open(PARAMS, 'r') as f:
             arr = f.read().strip().split(' ')
-            arr[8] = date_str
-            arr[9] = time_str
+            arr[9] = date_str
+            arr[10] = time_str
             new_str = ' '.join(arr)
         with open(PARAMS, 'w+') as f:
             f.write(new_str)
@@ -165,13 +189,26 @@ def update_time_line(time_str):
         return 0
 
 
-def btc_hold_level(price_now, u2c):
+def update_below_price(new_below_price):
+    try:
+        with open(PARAMS, 'r') as f:
+            arr = f.read().strip().split(' ')
+            arr[1] = new_below_price
+            new_str = ' '.join(arr)
+        with open(PARAMS, 'w+') as f:
+            f.write(new_str)
+        return 1
+    except:
+        return 0
+
+
+def btc_hold_level(price, u2c):
     amounts = {'usdt': 0, 'btc': 0}
     for item in get_balance(ACCOUNT_ID)['data']['list']:
         for currency in ['usdt', 'btc']:
             if item['currency'] == currency:
                 amounts[currency] += float(item['balance'])
-    btc_cny = price_now*amounts['btc']*u2c
+    btc_cny = price*amounts['btc']*u2c
     usdt_cny = amounts['usdt']*u2c
     return btc_cny/(btc_cny+usdt_cny)*100
 
@@ -187,39 +224,44 @@ def print_next_exe_time(every_sec, ftext):
     return ftext
 
 
-def batch_sell_process(test_price, price_now, ftext, time_line, u2c, profit_cny, max_sell_count):
+def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, profit_cny, max_sell_count):
     global ORDER_ID
     rows = select_db(
         "SELECT id, amount-fees as amount, created_at FROM deal_records WHERE auto_sell = 0 ORDER BY created_at ASC LIMIT %i" % max_sell_count)
     if len(rows) > 0:
         ids = []
         sell_amount = 0
-        count = 0
+        sell_count = 0
         created_at = ''
         ave_cost = btc_ave_cost()
-        sell_price = round(price_now*0.9997, 2)
+        sell_price = round(price*sell_price_rate(), 2)
+        profit_cny = (1+(price-base_price)**2/10000)*profit_cny
         for row in rows:
             id = row[0]
             amount = row[1]
             created_at = row[2]
             ids.append(id)
             sell_amount += amount
+            sell_count += 1
             sell_profit = (sell_price-ave_cost)*sell_amount*fees_rate()*u2c
-            if sell_profit > profit_cny:
+            if sell_profit > profit_cny or sell_count == max_sell_count:
                 # 提交订单
                 ftext = place_order_process(test_price, sell_price,
                                             sell_amount, 'sell-limit', ftext, time_line, u2c)
                 # 如果提交成功，将这些交易记录标示为已自动卖出并更新下单编号及已实现损益
                 if test_price == 0 and len(ORDER_ID) > 0:
-                    real_profit = round(sell_profit/len(ids), 2)
-                    for id in ids:
-                        sql = "UPDATE deal_records SET auto_sell = 1, order_id = '%s', real_profit = %.2f, updated_at = '%s' WHERE id = %i" % (
-                            ORDER_ID, real_profit, get_now(), id)
+                    real_profit = round(sell_profit, 4)
+                    sql = "UPDATE deal_records SET auto_sell = 1, order_id = '%s', price = %.2f, amount = %.6f, real_profit = %.2f, updated_at = '%s' WHERE id = %i" % (
+                        ORDER_ID, ave_cost, sell_amount, real_profit, get_now(), ids[-1])
+                    CONN.execute(sql)
+                    CONN.commit()
+                    for id in ids[0:-1]:
+                        sql = "DELETE FROM deal_records WHERE id = %i" % id
                         CONN.execute(sql)
                         CONN.commit()
-                        count += 1
                     ORDER_ID = ''
-                    str = "%i Deal Records Auto Sold" % count
+                    str = "%i Deal Records Auto Sold and Combined, Sold Profit: %.2f CNY" % (
+                        len(ids), sell_profit)
                     print(str)
                     ftext += str+'\n'
                     # 更新记录time_line文档
@@ -228,15 +270,28 @@ def batch_sell_process(test_price, price_now, ftext, time_line, u2c, profit_cny,
                     print(str)
                     ftext += str+'\n'
                 else:
-                    str = "Sim Update %i Deal Records" % len(ids)
+                    str = "Sim Update %i Deal Records with Profit: %.2f CNY" % (
+                        len(ids), sell_profit)
                     print(str)
                     ftext += str+'\n'
                 break
         return ftext
 
 
-def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
+def get_min_price(size):
+    try:
+        arr = []
+        root = get_huobi_price('btcusdt', '1min', size)
+        for data in root["data"]:
+            arr.append(data["low"])
+        return min(arr)
+    except:
+        return 0
+
+
+def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
     global ORDER_ID
+    global FORCE_BUY
     fname = 'auto_invest_log.txt'
     with open(fname, 'a') as fobj:
         ftext = '#############################################################\n'
@@ -270,12 +325,12 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
-                if price_now <= target_price:
+                if price_now <= target_price or FORCE_BUY == True:
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
                     max_usdt = ori_usdt*max_rate
-                    if trade_usdt > min_usdt and price_now - bottom >= 0:
+                    if trade_usdt > min_usdt and price_now - bottom >= 0 and trade_usdt - min_usdt_keep > 0:
                         # Caculate USDT and Amount
                         price_diff = price_now - bottom
                         if price_now - bottom < 1:
@@ -313,12 +368,14 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                         print(str)
                         ftext += str+'\n'
                         ftext = place_order_process(
-                            test_price, price_now, amount, 'buy-limit', ftext, time_line, u2c)
+                            test_price, round(price_now*buy_price_rate(), 2), amount, 'buy-limit', ftext, time_line, u2c)
                         ORDER_ID = ''
+                        FORCE_BUY = False
                         fobj.write(ftext)
                         return every_sec
                     else:
-                        str = "Run out of USDT or Price < %.2f, wait to continue..." % bottom
+                        str = "USDT <= %.2f or Price < %.2f, wait until next time..." % (
+                            min_usdt_keep, bottom)
                         print(str)
                         ftext += str+'\n'
                         ftext = print_next_exe_time(every_sec, ftext)
@@ -330,7 +387,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                     ftext += str+'\n'
                     profit_now = profit_cny_now(price_now, u2c)
                     if profit_now > profit_cny:
-                        ftext = batch_sell_process(test_price, price_now,
+                        ftext = batch_sell_process(test_price, price_now, below_price,
                                                    ftext, time_line, u2c, profit_cny, max_sell_count)
                         ftext = print_next_exe_time(every_sec, ftext)
                         fobj.write(ftext)
@@ -344,11 +401,11 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, targ
                         fobj.write(ftext)
                         return every_sec
             else:
-                str = "Can't get price, wait %i seconds for next operate" % every_sec
+                str = "Can't get price, wait 10 seconds for next operate"
                 print(str)
                 ftext += str+'\n'
                 fobj.write(ftext)
-                return every_sec
+                return 10
         else:
             str = "Already reach target amount, Invest PAUSE!"
             print(str)
@@ -362,24 +419,27 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
                 bottom_price = float(bottom_price)
                 ori_usdt = float(ori_usdt)
                 factor = float(factor)
+                min_usdt_keep = float(min_usdt_keep)
                 target_amount = float(target_amount)
-                min_usdt = float(min_usdt)  # 1.5
-                max_rate = float(max_rate)  # 0.05
+                min_usdt = float(min_usdt)
+                max_rate = float(max_rate)
                 time_line = deal_date+' '+deal_time
                 test_price = float(test_price)
                 profit_cny = float(profit_cny)
                 max_sell_count = int(max_sell_count)
                 min_sec_rate = float(min_sec_rate)
                 max_sec_rate = float(max_sec_rate)
+                detect_sec = int(detect_sec)
+                min_price_period = int(min_price_period)
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
-                                       factor, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
+                                       factor, min_usdt_keep, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
                 if code == 0:
                     break
                 else:
@@ -387,9 +447,19 @@ if __name__ == '__main__':
                         sys.stdout.write("\r")
                         sys.stdout.write(
                             "Please wait {:2d} seconds for next operate".format(remaining))
-                        sys.stdout.flush()
+                        # sys.stdout.flush()
                         time.sleep(1)
-                        if remaining % 10 == 0:
+                        if remaining % detect_sec == 0:
+                            price_now = float(get_price_now())
+                            min_price = get_min_price(min_price_period)
+                            if price_now > 0 and min_price > 0:
+                                sys.stdout.write("\r")
+                                sys.stdout.write("price_now: %.2f min_price_of_%imins: %.2f        " %
+                                                 (price_now, min_price_period, min_price))
+                                sys.stdout.write("\n")
+                                if price_now <= min_price:
+                                    FORCE_BUY = True
+                                    break
                             with open(PARAMS, 'r') as f:
                                 line_str = f.read().strip()
                                 if line_str[0:4] != params_str[0:4]:

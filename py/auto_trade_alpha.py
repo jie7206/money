@@ -110,7 +110,7 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
         str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
         print(str)
         ftext += str+'\n'
-        time.sleep(20)
+        time.sleep(10)
         if deal_type.find('buy-limit') > -1:
             min_price = get_min_price(min_price_period)
             if min_price > 0 and min_price != below_price:
@@ -227,32 +227,37 @@ def print_next_exe_time(every_sec, ftext):
 def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, profit_cny, max_sell_count):
     global ORDER_ID
     rows = select_db(
-        "SELECT id, amount-fees as amount, created_at FROM deal_records WHERE auto_sell = 0 ORDER BY created_at ASC LIMIT %i" % max_sell_count)
+        "SELECT id, amount-fees as amount, created_at, price FROM deal_records WHERE auto_sell = 0 ORDER BY created_at ASC LIMIT %i" % max_sell_count)
     if len(rows) > 0:
         ids = []
         sell_amount = 0
         sell_count = 0
+        sell_profit_total = 0
+        sum_for_ave = 0
+        cost_price_ave = 0
         created_at = ''
-        ave_cost = btc_ave_cost()
         sell_price = round(price*sell_price_rate(), 2)
         profit_cny = (1+(price-base_price)**2/10000)*profit_cny
         for row in rows:
             id = row[0]
             amount = row[1]
             created_at = row[2]
+            cost_price = row[3]
             ids.append(id)
-            sell_amount += amount
             sell_count += 1
-            sell_profit = (sell_price-ave_cost)*sell_amount*fees_rate()*u2c
-            if sell_profit > profit_cny or sell_count == max_sell_count:
+            sell_profit_total += (sell_price-cost_price)*amount*fees_rate()*u2c
+            sell_amount += amount
+            sum_for_ave += cost_price*amount
+            cost_price_ave = round(sum_for_ave/sell_amount, 2)
+            if sell_profit_total > profit_cny or sell_count == max_sell_count:
                 # 提交订单
                 ftext = place_order_process(test_price, sell_price,
                                             sell_amount, 'sell-limit', ftext, time_line, u2c)
                 # 如果提交成功，将这些交易记录标示为已自动卖出并更新下单编号及已实现损益
                 if test_price == 0 and len(ORDER_ID) > 0:
-                    real_profit = round(sell_profit, 4)
+                    real_profit = round(sell_profit_total, 4)
                     sql = "UPDATE deal_records SET auto_sell = 1, order_id = '%s', price = %.2f, amount = %.6f, real_profit = %.2f, updated_at = '%s' WHERE id = %i" % (
-                        ORDER_ID, ave_cost, sell_amount, real_profit, get_now(), ids[-1])
+                        ORDER_ID, cost_price_ave, sell_amount, real_profit, get_now(), ids[-1])
                     CONN.execute(sql)
                     CONN.commit()
                     for id in ids[0:-1]:
@@ -261,7 +266,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                         CONN.commit()
                     ORDER_ID = ''
                     str = "%i Deal Records Auto Sold and Combined, Sold Profit: %.2f CNY" % (
-                        len(ids), sell_profit)
+                        len(ids), sell_profit_total)
                     print(str)
                     ftext += str+'\n'
                     # 更新记录time_line文档
@@ -271,7 +276,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                     ftext += str+'\n'
                 else:
                     str = "Sim Update %i Deal Records with Profit: %.2f CNY" % (
-                        len(ids), sell_profit)
+                        len(ids), sell_profit_total)
                     print(str)
                     ftext += str+'\n'
                 break
