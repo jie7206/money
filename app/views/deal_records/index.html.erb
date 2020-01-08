@@ -79,7 +79,8 @@ btc_hold = DealRecord.btc_amount
     <td align="right"><%= to_n(total_cny_amount) if !params[:show_sell] %></td>
     <td align="right"><%= to_n(DealRecord.btc_cny) if !params[:show_sell] %></td>
     <td align="right"><%= to_n(total_earn_limit,3) if !params[:show_sell] %></td>
-    <td colspan="2" align="right"><%= to_n(DealRecord.total_real_profit,4) %></td>
+    <td align="right">仓位值：<%= to_n(DealRecord.btc_level) %>%</td>
+    <td align="right"><%= to_n(DealRecord.total_real_profit,4) %></td>
   </tr>
 </table>
 <br/>
