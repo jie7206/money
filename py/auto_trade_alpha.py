@@ -125,42 +125,42 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
         str = "%i Open Orders added" % update_open_orders()
         print(str)
         ftext += str+'\n'
+        trade_usdt = float(get_trade_usdt())
+        if trade_usdt > 0:
+            usdt_cny = trade_usdt*u2c
+            str = "USDT Trade Now: %.4f (%.2f CNY)" % (
+                trade_usdt, usdt_cny)
+            print(str)
+            ftext += str+'\n'
+            trade_btc = float(get_trade_btc())
+            btc_cny = trade_btc*price*u2c
+            str = "BTC  Trade Now: %.8f (%.2f CNY) Total: %.2f CNY" % (
+                trade_btc, btc_cny, usdt_cny+btc_cny)
+            print(str)
+            ftext += str+'\n'
+            btc_level_now = btc_hold_level(price, u2c)
+            profit_now = profit_cny_now(price, u2c)
+            str = "BTC  Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
+                btc_level_now, btc_ave_cost(), profit_now)
+            print(str)
+            ftext += str+'\n'
+            new_min_price_period = int(btc_level_now/2)
+            if new_min_price_period < 2:
+                new_min_price_period = 2
+            update_min_price_period(new_min_price_period)
+            min_price_period = new_min_price_period
+            str = "Minimum Price Period Updated to: %i Minutes" % new_min_price_period
+            print(str)
+            ftext += str+'\n'
+            str = "%i Huobi Assets Updated, Send Order Process Completed" % update_all_huobi_assets()
+            print(str)
+            ftext += str+'\n'
+            if trade_btc > target_amount:
+                str = "Already reach target amount, Invest PAUSE!"
+                print(str)
+                ftext += str+'\n'
     else:
         str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price, amount, deal_type)
-        print(str)
-        ftext += str+'\n'
-    trade_usdt = float(get_trade_usdt())
-    usdt_cny = trade_usdt*u2c
-    str = "USDT Trade Now: %.4f (%.2f CNY)" % (
-        trade_usdt, usdt_cny)
-    print(str)
-    ftext += str+'\n'
-    trade_btc = float(get_trade_btc())
-    btc_cny = trade_btc*price*u2c
-    str = "BTC  Trade Now: %.8f (%.2f CNY) Total: %.2f CNY" % (
-        trade_btc, btc_cny, usdt_cny+btc_cny)
-    print(str)
-    ftext += str+'\n'
-    btc_level_now = btc_hold_level(price, u2c)
-    profit_now = profit_cny_now(price, u2c)
-    str = "BTC  Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
-        btc_level_now, btc_ave_cost(), profit_now)
-    print(str)
-    ftext += str+'\n'
-    if test_price == 0:
-        new_min_price_period = int(btc_level_now/2)
-        if new_min_price_period < 2:
-            new_min_price_period = 2
-        update_min_price_period(new_min_price_period)
-        min_price_period = new_min_price_period
-        str = "Minimum Price Period Updated to: %i Minutes" % new_min_price_period
-        print(str)
-        ftext += str+'\n'
-        str = "%i Huobi Assets Updated, Send Order Process Completed" % update_all_huobi_assets()
-        print(str)
-        ftext += str+'\n'
-    if trade_btc > target_amount:
-        str = "Already reach target amount, Invest PAUSE!"
         print(str)
         ftext += str+'\n'
     return ftext
@@ -323,7 +323,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_
     global FORCE_BUY
     fname = 'auto_invest_log.txt'
     with open(fname, 'a') as fobj:
-        ftext = '#############################################################\n'
+        ftext = '###########################################################\n'
         now = datetime.now()
         str = "%s Invest Between: %.2f ~ %.2f" % (get_now(), bottom_price, below_price)
         print(str)
@@ -403,8 +403,8 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_
                         fobj.write(ftext)
                         return every_sec
                     else:
-                        str = "USDT <= %.2f or Price < %.2f, wait until next time..." % (
-                            min_usdt_keep, bottom)
+                        str = "USDT: %.2f <= %.2f or Price < %.2f, wait until next time..." % (trade_usdt,
+                                                                                               min_usdt_keep, bottom)
                         print(str)
                         ftext += str+'\n'
                         ftext = print_next_exe_time(every_sec, ftext)
