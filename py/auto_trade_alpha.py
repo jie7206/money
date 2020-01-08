@@ -8,6 +8,7 @@ from huobi_price import *
 
 ORDER_ID = ''
 FORCE_BUY = False
+LOG_FILE = 'auto_invest_log.txt'
 
 
 def fees_rate():
@@ -321,9 +322,10 @@ def get_min_price(size):
 def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
     global ORDER_ID
     global FORCE_BUY
-    fname = 'auto_invest_log.txt'
-    with open(fname, 'a') as fobj:
-        ftext = '###########################################################\n'
+    global LOG_FILE
+    with open(LOG_FILE, 'a') as fobj:
+        sline = "-"*60
+        ftext = sline+'\n'
         now = datetime.now()
         str = "%s Invest Between: %.2f ~ %.2f" % (get_now(), bottom_price, below_price)
         print(str)
