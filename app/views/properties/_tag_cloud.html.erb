@@ -1,5 +1,5 @@
-<p style="margin-top:20px">
+<div id="tag_clouds">
 <% tag_cloud(@tags, %w(tag_cloud_1 tag_cloud_2 tag_cloud_3 tag_cloud_4)) do |tag, css_class| %>
   <%= link_to tag.name, { controller: :properties, action: :index, tags: tag.name }, class: css_class %>
 <% end %>
-</p>
+</div>

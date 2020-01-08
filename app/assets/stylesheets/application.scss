@@ -72,13 +72,24 @@ pre {
 #login_form {
   margin-top: 1em;
 }
-#site_nav, #site_nav2 {
+#site_nav {
   position: absolute;
   right: 1em;
   margin-top: 0.2em;
   small {
     font-size: 0.85em;
   }
+}
+#site_nav2 {
+  position: absolute;
+  right: 1em;
+  margin-top: 0.7em;
+  small {
+    font-size: 0.85em;
+  }
+}
+#tag_clouds {
+  margin-top: 2.5em;
 }
 #auto_invest_params_span {
   margin: 1em;

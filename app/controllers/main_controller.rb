@@ -316,8 +316,9 @@ class MainController < ApplicationController
     @content = File.read($auto_invest_log_path)
     line = '-'*60
     if @content.include? line
-      newest_log = @content.split(line)[-1].strip
-      @content = newest_log + "\n" + @content
+      # newest_log = @content.split(line)[-1].strip
+      @content = @content.split(line).reverse.join(line)
+      # @content = newest_log + "\n" + @content
     end
   end
 

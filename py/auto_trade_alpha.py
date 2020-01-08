@@ -108,6 +108,7 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
     global min_price_period
     global below_price
     global min_price_period
+    global min_price_period_tune
     if test_price == 0:
         str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
         print(str)
@@ -145,7 +146,7 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
                 btc_level_now, btc_ave_cost(), profit_now)
             print(str)
             ftext += str+'\n'
-            new_min_price_period = int(btc_level_now/2)
+            new_min_price_period = int(btc_level_now/min_price_period_tune)
             if new_min_price_period < 2:
                 new_min_price_period = 2
             update_min_price_period(new_min_price_period)
@@ -450,7 +451,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period, min_price_period_tune = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -469,6 +470,7 @@ if __name__ == '__main__':
                 max_sec_rate = float(max_sec_rate)
                 detect_sec = int(detect_sec)
                 min_price_period = int(min_price_period)
+                min_price_period_tune = float(min_price_period_tune)
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
                                        factor, min_usdt_keep, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
                 if code == 0:
