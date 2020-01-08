@@ -10,7 +10,6 @@
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
     <td><%= t(:deal_record_earn_limit) %></td>
-    <td><%= t(:deal_record_earn_short) %></td>
     <td><%= t(:updated_time) %></td>
     <td><%= t(:deal_record_real_profit) %></td>
   </tr>
@@ -34,12 +33,14 @@ btc_hold = DealRecord.btc_amount
       <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
       <td align="right"><%= earn_limit = to_n(dr.earn_limit,3) if !dr.real_profit and dr.earn_limit > 0 %></td>
       <% earn_limit_price = dr.earn_limit_price %>
-      <td align="right" <%= if_red_bg(price_now,earn_limit_price) if !dr.real_profit %>>
+      <% updated_at_str = to_time(dr.updated_at) %>
+      <td align="right">
         <% if !dr.real_profit and (!dr.order_id or dr.order_id.empty?) %>
-          <%= huobi_order_link(earn_limit_price,dr,'earn') %>
+          <%= huobi_order_link(updated_at_str,dr,'earn') %>
+        <% else %>
+          <%= updated_at_str %>
         <% end %>
       </td>
-      <td align="right"><%= to_time(dr.updated_at) %></td>
       <td align="right"><%= real_profit = to_n(dr.real_profit,4) if dr.real_profit %></td>
     </tr>
   <%
@@ -78,7 +79,7 @@ btc_hold = DealRecord.btc_amount
     <td align="right"><%= to_n(total_cny_amount) if !params[:show_sell] %></td>
     <td align="right"><%= to_n(DealRecord.btc_cny) if !params[:show_sell] %></td>
     <td align="right"><%= to_n(total_earn_limit,3) if !params[:show_sell] %></td>
-    <td colspan="3" align="right"><%= to_n(DealRecord.total_real_profit,4) %></td>
+    <td colspan="2" align="right"><%= to_n(DealRecord.total_real_profit,4) %></td>
   </tr>
 </table>
 <br/>

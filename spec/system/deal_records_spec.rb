@@ -31,9 +31,9 @@ RSpec.describe '系统测试(DealRecords)', type: :system do
 
     specify '#169[系统层]点击止盈价或止损价能快速自动下单卖出' do
       visit deal_records_path
-      earn_limit_price = deal_record.earn_limit_price
-      expect(page).to have_content earn_limit_price
-      click_link earn_limit_price
+      updated_at = deal_record.updated_at.to_s(:db)
+      expect(page).to have_content updated_at
+      click_link updated_at
       expect(current_path).to eq place_order_form_path
       expect(page.html).to include 'sell-limit'
     end

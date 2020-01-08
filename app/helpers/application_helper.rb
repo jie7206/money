@@ -80,7 +80,7 @@ module ApplicationHelper
 
   # 默认的时间显示格式
   def to_time( time )
-    time.strftime("%H:%M:%S")
+    time.strftime("%Y-%m-%d %H:%M:%S")
   end
 
   # 点击后立刻选取所有文字

@@ -136,13 +136,13 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
             ftext += str+'\n'
             trade_btc = float(get_trade_btc())
             btc_cny = trade_btc*price*u2c
-            str = "BTC  Trade Now: %.8f (%.2f CNY) Total: %.2f CNY" % (
+            str = "BTC Trade Now: %.8f (%.2f CNY) Total: %.2f CNY" % (
                 trade_btc, btc_cny, usdt_cny+btc_cny)
             print(str)
             ftext += str+'\n'
             btc_level_now = btc_hold_level(price, u2c)
             profit_now = profit_cny_now(price, u2c)
-            str = "BTC  Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
+            str = "BTC Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
                 btc_level_now, btc_ave_cost(), profit_now)
             print(str)
             ftext += str+'\n'
@@ -320,7 +320,7 @@ def get_min_price(size):
         return 0
 
 
-def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
+def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
     global ORDER_ID
     global FORCE_BUY
     global LOG_FILE
@@ -362,7 +362,8 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
                     max_usdt = ori_usdt*max_rate
-                    if trade_usdt > min_usdt and price_now - bottom >= 0 and trade_usdt - min_usdt_keep > 0:
+                    btc_level_now = btc_hold_level(price_now, u2c)
+                    if trade_usdt > min_usdt and price_now - bottom >= 0 and btc_level_now < max_buy_level:
                         # Caculate USDT and Amount
                         price_diff = price_now - bottom
                         if price_now - bottom < 1:
@@ -385,6 +386,9 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_
                         delta_hours = timedelta(hours=remain_hours)
                         empty_usdt_time = to_t(now + delta_hours)
                         usdt_cny = trade_usdt*u2c
+                        str = "BTC Level Before Send Order: %.2f%%" % btc_level_now
+                        print(str)
+                        ftext += str+'\n'
                         str = "Total  USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, usdt_cny)
                         print(str)
                         ftext += str+'\n'
@@ -406,8 +410,8 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, min_
                         fobj.write(ftext)
                         return every_sec
                     else:
-                        str = "USDT: %.2f <= %.2f or Price < %.2f, wait until next time..." % (trade_usdt,
-                                                                                               min_usdt_keep, bottom)
+                        str = "BTC Level: %.2f > %.2f or Price < %.2f, wait until next time..." % (
+                            btc_level_now, max_buy_level, bottom)
                         print(str)
                         ftext += str+'\n'
                         ftext = print_next_exe_time(every_sec, ftext)
@@ -451,14 +455,14 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, min_usdt_keep, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period, min_price_period_tune = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period, min_price_period_tune = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
                 bottom_price = float(bottom_price)
                 ori_usdt = float(ori_usdt)
                 factor = float(factor)
-                min_usdt_keep = float(min_usdt_keep)
+                max_buy_level = float(max_buy_level)
                 target_amount = float(target_amount)
                 min_usdt = float(min_usdt)
                 max_rate = float(max_rate)
@@ -472,7 +476,7 @@ if __name__ == '__main__':
                 min_price_period = int(min_price_period)
                 min_price_period_tune = float(min_price_period_tune)
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
-                                       factor, min_usdt_keep, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
+                                       factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
                 if code == 0:
                     break
                 else:
