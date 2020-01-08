@@ -58,6 +58,7 @@ Rails.application.routes.draw do
   get 'delete_invest_log', to: 'deal_records#delete_invest_log'
   get 'update_deal_records', to: 'deal_records#update_deal_records'
   get 'zip_sell_records', to: 'deal_records#zip_sell_records'
+  get 'send_sell_deal_records', to: 'deal_records#send_sell_deal_records'
   get 'update_huobi_assets', to: 'main#update_huobi_assets'
   get 'update_huobi_records', to: 'main#update_huobi_records'
   get 'place_order_form', to: 'main#place_order_form'

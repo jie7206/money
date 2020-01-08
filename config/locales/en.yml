@@ -258,6 +258,9 @@ en:
   show_sell_deal_records: Show Sell Deal Records
   zip_sell_deal_records: Zip Sell Deal Records
   zip_sell_records_ok: Zip Sell Deal Records successfully!
+  send_sell_deal_records: Send Sell Deal Records
+  send_sell_deal_records_ok: Send Sell Deal Records successfully!
+  send_sell_deal_records_error: Send Sell Deal Records Error!
   update_system_params: Update System Params
   save_system_params: Save System Params
   update_system_params_ok: System Params updated successfully!

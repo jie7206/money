@@ -4,11 +4,11 @@
     <td width="15"></td>
     <td><%= t(:deal_record_created) %></td>
     <td><%= t(:deal_record_price) %></td>
+    <td><%= t(:earn_or_loss) %></td>
+    <td><%= t(:profit_p) %></td>
     <td><%= t(:deal_record_amount) %></td>
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
-    <td><%= t(:earn_or_loss) %></td>
-    <td><%= t(:profit_p) %></td>
     <td><%= t(:deal_record_earn_limit) %></td>
     <td><%= t(:deal_record_earn_short) %></td>
     <td><%= t(:updated_time) %></td>
@@ -26,11 +26,12 @@ btc_hold = DealRecord.btc_amount
       <td align="right"><%= n %></td>
       <td><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
       <td align="right"><%= price = to_n(dr.price) %></td>
-      <td align="right"><%= amount = to_n(dr.amount,6) %></td>
-      <td align="right"><%= cny_amount = to_n(dr.cny_amount,2) if !dr.real_profit %></td>
-      <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
       <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
+      <% cny_amount = to_n(dr.cny_amount,2) %>
       <td align="right"><%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %></td>
+      <td align="right"><%= amount = to_n(dr.amount,6) %></td>
+      <td align="right"><%= cny_amount if !dr.real_profit %></td>
+      <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
       <td align="right"><%= earn_limit = to_n(dr.earn_limit,3) if !dr.real_profit and dr.earn_limit > 0 %></td>
       <% earn_limit_price = dr.earn_limit_price %>
       <td align="right" <%= if_red_bg(price_now,earn_limit_price) if !dr.real_profit %>>
@@ -70,11 +71,12 @@ btc_hold = DealRecord.btc_amount
       <% end %>
     </td>
     <td align="right"><%= to_n(DealRecord.ave_cost) if total_amount > 0 %></td>
+    <% profit_cny = to_n(DealRecord.profit_cny) %>
+    <td align="right"><%= link_to profit_cny, place_order_form_path(sell_all:1) if !params[:show_sell] %></td>
+    <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
     <td align="right"><%= link_to to_n(DealRecord.btc_amount,6), place_order_form_path(sell_all:1) %></td>
     <td align="right"><%= to_n(total_cny_amount) if !params[:show_sell] %></td>
-    <td align="right"><%= to_n(total_cny_amount_now) if !params[:show_sell] %></td>
-    <td align="right"><%= link_to to_n(DealRecord.profit_cny), place_order_form_path(sell_all:1) if !params[:show_sell] %></td>
-    <td align="right"><%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
+    <td align="right"><%= to_n(DealRecord.btc_cny) if !params[:show_sell] %></td>
     <td align="right"><%= to_n(total_earn_limit,3) if !params[:show_sell] %></td>
     <td colspan="3" align="right"><%= to_n(DealRecord.total_real_profit,4) %></td>
   </tr>
@@ -85,5 +87,5 @@ btc_hold = DealRecord.btc_amount
 | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
 | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
 | <%= link_to t(:zip_sell_deal_records), zip_sell_records_path %>
-| <%= link_to t(:clear_deal_records), clear_deal_records_path, { id: 'clear_deal_records' } %>
+| <%= link_to t(:send_sell_deal_records), send_sell_deal_records_path %>
 <p/></p>

@@ -330,10 +330,7 @@ class MainController < ApplicationController
   # 设置定投参数
   def set_auto_invest_params
     if text = params[:auto_invest_params] and text.split(' ').size == $exe_auto_invest_params_size
-      File.open($auto_invest_params_path, 'w+') do |f|
-        f.write(text)
-      end
-      put_notice t(:set_auto_invest_params_ok)+"(#{text})"
+      write_to_auto_trade_params text
     else
       put_notice t(:set_auto_invest_params_error)+"(#{$exe_auto_invest_params_size})"
     end

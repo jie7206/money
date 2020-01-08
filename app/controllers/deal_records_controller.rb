@@ -92,6 +92,21 @@ class DealRecordsController < ApplicationController
     go_deal_records
   end
 
+  # 执行卖出下单以弥补自动交易买入后延迟卖出的不足
+  def send_sell_deal_records
+    params_values = File.read($auto_invest_params_path).split(' ')
+    if DealRecord.profit_cny > params_values[12].to_f and DealRecord.first.price_now > params_values[1].to_f
+      sec = params_values[0]
+      params_values[0] = sec[-1] == '0' ? sec[0..-2]+'1' : sec[0..-2]+'0'
+      write_to_auto_trade_params params_values.join(' ')
+      put_notice t(:send_sell_deal_records_ok)
+      sleep 20
+    else
+      put_notice t(:send_sell_deal_records_error)
+    end
+    redirect_to invest_log_path
+  end
+
   private
 
     def set_deal_record

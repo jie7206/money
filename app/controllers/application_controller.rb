@@ -324,7 +324,7 @@ class ApplicationController < ActionController::Base
   def update_btc_price
     if btc_price = get_huobi_price('btcusdt') and btc_price > 0
       Currency.find_by_code('BTC').update_price(btc_price)
-      put_notice t(:update_btc_price_ok)
+      # put_notice t(:update_btc_price_ok)
       return true
     else
       return false
@@ -459,6 +459,14 @@ class ApplicationController < ActionController::Base
   # 人民币换台币
   def cny2twd
     return $twd_exchange_rate/$cny_exchange_rate
+  end
+
+  # 写入定投参数
+  def write_to_auto_trade_params( text )
+    File.open($auto_invest_params_path, 'w+') do |f|
+      f.write(text)
+    end
+    put_notice t(:set_auto_invest_params_ok)
   end
 
   # 建立回到目录页的方法

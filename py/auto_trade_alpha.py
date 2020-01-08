@@ -115,15 +115,15 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
         ftext += str+'\n'
         time.sleep(10)
         if deal_type.find('buy-limit') > -1:
+            str = "%i Deal Records added" % update_huobi_deal_records(time_line)
+            print(str)
+            ftext += str+'\n'
             min_price = get_min_price(min_price_period)
             if min_price > 0 and min_price != below_price:
                 update_below_price("%.2f" % min_price)
                 str = "Below Price Updated to: %.2f" % min_price
                 print(str)
                 ftext += str+'\n'
-            str = "%i Deal Records added" % update_huobi_deal_records(time_line)
-            print(str)
-            ftext += str+'\n'
         str = "%i Open Orders added" % update_open_orders()
         print(str)
         ftext += str+'\n'

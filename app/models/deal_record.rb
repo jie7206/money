@@ -42,6 +42,16 @@ class DealRecord < ApplicationRecord
     return twd_of_170
   end
 
+  # 回传火币170账号的BTC现值
+  def self.btc_cny
+    Property.tagged_with('170').each do |p|
+      if p.name.include? 'BTC'
+        return p.amount_to(:cny)
+      end
+    end
+    return 0
+  end
+
   # 回传火币170账号所有持有的BTC资产
   def self.twd_of_btc
     twd_of_btc = 0.0

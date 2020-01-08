@@ -63,7 +63,7 @@ cn:
   exchange_to_twd: 等值台币
   exchange_to_cny: 等值人民币
   now_to_cny: 现值人民币
-  earn_or_loss: 浮动盈亏
+  earn_or_loss: 盈亏
   total_properties_amount: 资产总净值
   twd: 新台币
   cny: 人民币
@@ -220,7 +220,7 @@ cn:
   update_btc_price_ok: 比特币价格已更新！
   update_btc_exchange_rates: 更新比特币报价
   update_btc: 更新比特币
-  profit_p: 获利率(%)
+  profit_p: 利率%
   cancel_order: 取消这笔下单
   cancel_order_ok: 取消下单成功！
   get_price_error: 取得报价时遇到错误！
@@ -261,6 +261,9 @@ cn:
   show_sell_deal_records: 全部卖出记录
   zip_sell_deal_records: 压缩卖出记录
   zip_sell_records_ok: 压缩卖出记录成功！
+  send_sell_deal_records: 执行卖出下单
+  send_sell_deal_records_ok: 执行卖出下单成功！
+  send_sell_deal_records_error: 尚未达到可执行卖出的条件！
   update_system_params: 系统参数
   save_system_params: 储存系统参数
   update_system_params_ok: 系统参数更新成功！
