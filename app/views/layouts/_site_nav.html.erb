@@ -1,6 +1,7 @@
 <% if login? %>
   <nav id="<%= id %>">
     <small>
+      <%= link_to t(:deal_record_index), deal_records_path %> |
       <%= link_back_to_properties %> |
       <% if admin? %>
         <%= link_to t(:portfolio_index), portfolios_path %> |
@@ -11,7 +12,6 @@
       <% if admin? %>
         <%= set_auto_invest_form_link %> |
         <%= invest_log_link %> |
-        <%= link_to t(:deal_record_index), deal_records_path %> |
         <%= order_list_link %> |
         <%= link_to t(:record_index), records_path %> |
         <%= update_all_data_link %> |

@@ -10,7 +10,7 @@ RSpec.describe '系统测试(Main)', type: :system do
       expect(page).to have_selector '#pincode'
       fill_in 'pincode', with: $pincode
       find('#login').click
-      expect(current_path).to eq properties_path
+      expect(current_path).to eq root_path
     end
 
     specify 'PIN码输入错误之后会提示错误讯息' do
@@ -35,7 +35,7 @@ RSpec.describe '系统测试(Main)', type: :system do
       visit login_path
       fill_in 'pincode', with: "#{$pincode}:#{$admincode}"
       find('#login').click
-      expect(current_path).to eq properties_path
+      expect(current_path).to eq root_path
       within '#site_nav' do
         find('#logout').click
       end

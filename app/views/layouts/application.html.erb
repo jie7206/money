@@ -2,6 +2,9 @@
 <html>
   <head>
     <title><%= site_name %></title>
+    <% if @auto_refresh_sec and @auto_refresh_sec > 0 %>
+    <meta http-equiv="refresh" content="<%=@auto_refresh_sec%>">
+    <% end %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>

@@ -456,4 +456,14 @@ module ApplicationHelper
     return raw(result)
   end
 
+  # 获取单次最多卖出笔数
+  def get_max_sell_count
+    File.read($auto_invest_params_path).split(' ')[13].to_i
+  end
+
+  # 获取未卖出的交易笔数
+  def get_unsell_deal_records_count
+    DealRecord.unsell_count
+  end
+
 end

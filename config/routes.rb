@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  root 'properties#huobi_assets'
+  root 'deal_records#index'
 
   resources :properties do
     member do

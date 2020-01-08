@@ -324,7 +324,6 @@ class ApplicationController < ActionController::Base
   def update_btc_price
     if btc_price = get_huobi_price('btcusdt') and btc_price > 0
       Currency.find_by_code('BTC').update_price(btc_price)
-      # put_notice t(:update_btc_price_ok)
       return true
     else
       return false

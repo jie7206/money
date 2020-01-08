@@ -122,6 +122,11 @@ class DealRecord < ApplicationRecord
     return result
   end
 
+  # 获取未卖出的交易笔数
+  def self.unsell_count
+    all.where('auto_sell = 0').size
+  end
+
   # 显示币种
   def bi
     symbol.sub('usdt','').upcase

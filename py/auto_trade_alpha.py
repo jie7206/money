@@ -124,9 +124,6 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
                 str = "Below Price Updated to: %.2f" % min_price
                 print(str)
                 ftext += str+'\n'
-        str = "%i Open Orders added" % update_open_orders()
-        print(str)
-        ftext += str+'\n'
         trade_usdt = float(get_trade_usdt())
         if trade_usdt > 0:
             usdt_cny = trade_usdt*u2c
@@ -357,7 +354,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
-                if price_now <= target_price or FORCE_BUY == True:
+                if price_now < target_price or FORCE_BUY == True:
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
