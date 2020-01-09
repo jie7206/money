@@ -111,10 +111,12 @@ class DealRecordsController < ApplicationController
       set_invest_params(0,swap_sec)
       put_notice t(:send_sell_deal_records_ok)
       sleep 20
+      redirect_to invest_log_path
     else
       put_notice t(:send_sell_deal_records_error)
+      go_deal_records
     end
-    redirect_to invest_log_path
+
   end
 
   # 交易列表新增执行停损功能

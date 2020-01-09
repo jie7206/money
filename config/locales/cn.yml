@@ -265,7 +265,7 @@ cn:
   send_sell_deal_records_ok: 执行收割成功！
   send_sell_deal_records_error: 尚未达到可收割的条件！
   send_stop_loss: 单笔卖出
-  send_stop_loss_ok: 单笔卖出成功！
+  send_stop_loss_ok: 单笔卖出已执行！
   send_stop_loss_error: 单笔卖出失败！
   update_system_params: 系统参数
   save_system_params: 储存系统参数

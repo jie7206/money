@@ -513,6 +513,10 @@ if __name__ == '__main__':
                         # sys.stdout.flush()
                         time.sleep(1)
                         if remaining % detect_sec == 0:
+                            with open(PARAMS, 'r') as f:
+                                line_str = f.read().strip()
+                                if line_str[0:4] != params_str[0:4]:
+                                    break
                             price_now = float(get_price_now())
                             min_price = get_min_price(min_price_period)
                             if price_now > 0 and min_price > 0:
@@ -522,10 +526,6 @@ if __name__ == '__main__':
                                 sys.stdout.write("\n")
                                 if price_now <= min_price:
                                     FORCE_BUY = True
-                                    break
-                            with open(PARAMS, 'r') as f:
-                                line_str = f.read().strip()
-                                if line_str[0:4] != params_str[0:4]:
                                     break
                     sys.stdout.write("\r                                                      \n")
         except:
