@@ -460,12 +460,38 @@ class ApplicationController < ActionController::Base
     return $twd_exchange_rate/$cny_exchange_rate
   end
 
-  # 写入定投参数
-  def write_to_auto_trade_params( text )
-    File.open($auto_invest_params_path, 'w+') do |f|
-      f.write(text)
+  # 获取定投参数的值
+  def get_invest_params( index )
+    File.read($auto_invest_params_path).split(' ')[index]
+  end
+
+  # 储存定投参数的值
+  def set_invest_params( index, value )
+    begin
+      params_values = File.read($auto_invest_params_path).split(' ')
+      params_values[index] = value
+      write_invest_params params_values.join(' ')
+      return true
+    rescue
+      return false
     end
-    put_notice t(:set_auto_invest_params_ok)
+  end
+
+  # 写入定投参数
+  def write_invest_params( text )
+    begin
+      File.open($auto_invest_params_path, 'w+') do |f|
+        f.write(text)
+      end
+      return true
+    rescue
+      return false
+    end
+  end
+
+  # 获取单次最多卖出笔数
+  def get_max_sell_count
+    get_invest_params(13).to_i
   end
 
   # 建立回到目录页的方法

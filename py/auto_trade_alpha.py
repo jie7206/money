@@ -8,7 +8,9 @@ from huobi_price import *
 
 ORDER_ID = ''
 FORCE_BUY = False
+FORCE_SELL = False
 LOG_FILE = 'auto_invest_log.txt'
+LINE_MARKS = "-"*70
 
 
 def fees_rate():
@@ -225,6 +227,19 @@ def update_min_price_period(new_value):
         return 0
 
 
+def reset_force_to_sell():
+    try:
+        with open(PARAMS, 'r') as f:
+            arr = f.read().strip().split(' ')
+            arr[19] = '0'
+            new_str = ' '.join(arr)
+        with open(PARAMS, 'w+') as f:
+            f.write(new_str)
+        return 1
+    except:
+        return 0
+
+
 def btc_hold_level(price, u2c):
     amounts = {'usdt': 0, 'btc': 0}
     for item in get_balance(ACCOUNT_ID)['data']['list']:
@@ -320,9 +335,11 @@ def get_min_price(size):
 def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
     global ORDER_ID
     global FORCE_BUY
+    global FORCE_SELL
     global LOG_FILE
+    global LINE_MARKS
     with open(LOG_FILE, 'a') as fobj:
-        sline = "-"*60
+        sline = LINE_MARKS
         ftext = sline+'\n'
         now = datetime.now()
         str = "%s Invest Between: %.2f ~ %.2f" % (get_now(), bottom_price, below_price)
@@ -354,7 +371,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
-                if price_now < target_price or FORCE_BUY == True:
+                if FORCE_BUY == True or price_now < target_price:
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
@@ -415,24 +432,33 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         fobj.write(ftext)
                         return every_sec
                 else:
-                    str = "Price > %.2f, Check if it can be sold..." % target_price
-                    print(str)
-                    ftext += str+'\n'
-                    profit_now = profit_cny_now(price_now, u2c)
-                    if profit_now > profit_cny:
-                        ftext = batch_sell_process(test_price, price_now, below_price,
-                                                   ftext, time_line, u2c, profit_cny, max_sell_count)
+                    if FORCE_SELL == True:
+                        ftext = batch_sell_process(0, price_now, below_price,
+                                                   ftext, time_line, u2c, -100000, 1)
                         ftext = print_next_exe_time(every_sec, ftext)
+                        FORCE_SELL = False
+                        reset_force_to_sell()
                         fobj.write(ftext)
                         return every_sec
                     else:
-                        str = "Profit Now: %.2f <= %.2f So don't sell" % (
-                            profit_now, profit_cny)
+                        str = "Price > %.2f, Check if it can be sold..." % target_price
                         print(str)
                         ftext += str+'\n'
-                        ftext = print_next_exe_time(every_sec, ftext)
-                        fobj.write(ftext)
-                        return every_sec
+                        profit_now = profit_cny_now(price_now, u2c)
+                        if profit_now > profit_cny:
+                            ftext = batch_sell_process(test_price, price_now, below_price,
+                                                       ftext, time_line, u2c, profit_cny, max_sell_count)
+                            ftext = print_next_exe_time(every_sec, ftext)
+                            fobj.write(ftext)
+                            return every_sec
+                        else:
+                            str = "Profit Now: %.2f <= %.2f So don't sell" % (
+                                profit_now, profit_cny)
+                            print(str)
+                            ftext += str+'\n'
+                            ftext = print_next_exe_time(every_sec, ftext)
+                            fobj.write(ftext)
+                            return every_sec
             else:
                 str = "Can't get price, wait 10 seconds for next operate"
                 print(str)
@@ -452,7 +478,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period, min_price_period_tune = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period, min_price_period_tune, force_to_sell = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -472,6 +498,9 @@ if __name__ == '__main__':
                 detect_sec = int(detect_sec)
                 min_price_period = int(min_price_period)
                 min_price_period_tune = float(min_price_period_tune)
+                force_to_sell = int(force_to_sell)
+                if force_to_sell > 0:
+                    FORCE_SELL = True
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
                                        factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
                 if code == 0:

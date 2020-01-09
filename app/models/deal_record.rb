@@ -127,6 +127,15 @@ class DealRecord < ApplicationRecord
     all.where('auto_sell = 0').size
   end
 
+  # 第一笔未卖出交易记录的损益值(¥)
+  def self.first_profit
+    if self.unsell_count > 0
+      return where('auto_sell = 0').first.earn_or_loss
+    else
+      return 0
+    end
+  end
+
   # 显示币种
   def bi
     symbol.sub('usdt','').upcase

@@ -324,6 +324,11 @@ module ApplicationHelper
         </tr>"
   end
 
+  # 显示资产净值链接
+  def show_net_value_link
+    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank)}</span> (<span id=\"properties_net_value_cny\">#{@properties_net_value_cny.to_i}</span>)"
+  end
+
   # Fusioncharts属性大全: http://wenku.baidu.com/link?url=JUwX7IJwCbYMnaagerDtahulirJSr5ASDToWeehAqjQPfmRqFmm8wb5qeaS6BsS7w2_hb6rCPmeig2DBl8wzwb2cD1O0TCMfCpwalnoEDWa
   def show_fusion_chart
     raw "<div id=\"chartContainer\"></div><p>
@@ -456,14 +461,18 @@ module ApplicationHelper
     return raw(result)
   end
 
-  # 获取单次最多卖出笔数
-  def get_max_sell_count
-    File.read($auto_invest_params_path).split(' ')[13].to_i
-  end
-
   # 获取未卖出的交易笔数
   def get_unsell_deal_records_count
     DealRecord.unsell_count
+  end
+
+  # 显示定投参数的设定值链接
+  def invest_params_setting_link( index, min, max, step, pos = 0 )
+    result = ''
+    (min..max).step(step).each do |n|
+      result += to_n(n,pos)+' '
+    end
+    return result
   end
 
 end

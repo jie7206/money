@@ -1,26 +1,129 @@
 <h2><%= t(:set_auto_invest_params) %></h2>
 <%= form_tag set_auto_invest_params_path, method: :post, id: 'set_auto_invest_form' do %>
-  <ol>
-    <li>几秒执行一次</li>
-    <li>多少价位以下执行买入</li>
-    <li>跌破多少价位停止买入</li>
-    <li>原有的USDT</li>
-    <li>买入价格调整参数</li>
-    <li>到达多少仓位则停止自动买入</li>
-    <li>累积多少比特币后停止买入</li>
-    <li>单笔至少买入多少USDT</li>
-    <li>单笔至多买入不超过原有USDT的百分比</li>
-    <li>交易记录日期</li>
-    <li>交易记录时间</li>
-    <li>测试价格</li>
-    <li>单次获利的目标值(CNY)</li>
-    <li>单次最多卖出笔数</li>
-    <li>时间间隔最小参数</li>
-    <li>时间间隔最大参数</li>
-    <li>几秒钟侦测参数变化</li>
-    <li>更新几分钟内的最低价</li>
-    <li>更新几分钟内的最低价调整参数(追价时可适当调高一些)</li>
-  </ol>
+  <% n = 0 %>
+  <table>
+    <tr>
+      <td><%= n %></td>
+      <td>每隔几秒自动执行一次</td>
+      <td><%= invest_params_setting_link(0,600,10800,600) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>多少价位以下执行买入</td>
+      <td><%= invest_params_setting_link(1,7000,10400,200) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>跌破多少价位停止买入</td>
+      <td><%= invest_params_setting_link(2,5000,11000,500) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>原有参与投资的泰达币</td>
+      <td><%= invest_params_setting_link(3,200,3800,200) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>单笔买入价格调整参数</td>
+      <td><%= invest_params_setting_link(4,0.1,2.7,0.1,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>自动买入的最大仓位值</td>
+      <td><%= invest_params_setting_link(5,5,100,5) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>买入比特币的最大总值</td>
+      <td><%= invest_params_setting_link(6,0.1,2.7,0.1,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>单笔买入泰达币最小值</td>
+      <td><%= invest_params_setting_link(7,1.0,3.6,0.1,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>单笔买入泰达币最大率</td>
+      <td><%= invest_params_setting_link(8,0.01,0.21,0.01,2) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>更新交易列表记录日期</td>
+      <td></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>更新交易列表记录时间</td>
+      <td></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>用于测试的比特币价格</td>
+      <td><%= invest_params_setting_link(11,7000,10400,200) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>单次获利人民币目标值</td>
+      <td><%= invest_params_setting_link(12,-130,130,10) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>单次获利最多卖出笔数</td>
+      <td><%= invest_params_setting_link(13,1,35,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>时间间隔的倍数最小值</td>
+      <td><%= invest_params_setting_link(14,0.1,2.7,0.1,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>时间间隔的倍数最大值</td>
+      <td><%= invest_params_setting_link(15,1.0,3.6,0.1,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>每几秒钟侦测参数变化</td>
+      <td><%= invest_params_setting_link(16,1,35,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>监控几分钟内的最低价</td>
+      <td><%= invest_params_setting_link(17,5,140,5) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>上一个参数的微调参数</td>
+      <td><%= invest_params_setting_link(18,0.1,2.7,0.1,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>是否强制执行停损卖出</td>
+      <td><%= invest_params_setting_link(19,0,1,1) %></td>
+      <% n += 1 %>
+    </tr>
+  </table>
+  <p>
   <div>
     <span id="auto_invest_params_span">
       <%= text_field_tag :auto_invest_params, @invest_params_value %>

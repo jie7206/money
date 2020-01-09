@@ -261,6 +261,9 @@ en:
   send_sell_deal_records: Send Sell Deal Records
   send_sell_deal_records_ok: Send Sell Deal Records successfully!
   send_sell_deal_records_error: Send Sell Deal Records Error!
+  send_stop_loss: Send Stop Loss
+  send_stop_loss_ok: Send Stop Loss successfully!
+  send_stop_loss_error: Send Stop Loss Error!
   update_system_params: Update System Params
   save_system_params: Save System Params
   update_system_params_ok: System Params updated successfully!

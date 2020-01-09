@@ -13,6 +13,9 @@ class DealRecordsController < ApplicationController
       @auto_refresh_sec = $auto_refresh_sec_for_deal_records
       @deal_records = DealRecord.where('auto_sell = 0').order('created_at desc')
     end
+    summary
+    @get_max_sell_count = get_max_sell_count
+    @first_deal_record_profit = DealRecord.first_profit
   end
 
   def new
@@ -94,18 +97,32 @@ class DealRecordsController < ApplicationController
     go_deal_records
   end
 
+  # 定投秒数尾数是0则回传1反之亦然
+  def swap_sec
+    sec = get_invest_params(0)
+    return sec[-1] == '0' ? sec[0..-2]+'1' : sec[0..-2]+'0'
+  end
+
   # 执行卖出下单以弥补自动交易买入后延迟卖出的不足
   def send_sell_deal_records
-    params_values = File.read($auto_invest_params_path).split(' ')
-    if DealRecord.profit_cny > params_values[12].to_f and DealRecord.first.price_now > params_values[1].to_f
-      sec = params_values[0]
-      params_values[0] = sec[-1] == '0' ? sec[0..-2]+'1' : sec[0..-2]+'0'
-      write_to_auto_trade_params params_values.join(' ')
+    below_price = get_invest_params(1).to_f
+    profit = get_invest_params(12).to_f
+    if DealRecord.profit_cny > profit and DealRecord.first.price_now > below_price
+      set_invest_params(0,swap_sec)
       put_notice t(:send_sell_deal_records_ok)
       sleep 20
     else
       put_notice t(:send_sell_deal_records_error)
     end
+    redirect_to invest_log_path
+  end
+
+  # 交易列表新增执行停损功能
+  def send_stop_loss
+    set_invest_params(19,'1')
+    set_invest_params(0,swap_sec)
+    put_notice t(:send_stop_loss_ok)
+    sleep 20
     redirect_to invest_log_path
   end
 

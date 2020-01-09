@@ -314,7 +314,7 @@ class MainController < ApplicationController
   # 183将Python脚本在控制台输出的讯息写到文档然后可以点击网页查看
   def read_auto_invest_log
     @content = File.read($auto_invest_log_path)
-    line = '-'*60
+    line = '-'*70
     if @content.include? line
       # newest_log = @content.split(line)[-1].strip
       @content = @content.split(line).reverse.join(line)
@@ -330,7 +330,8 @@ class MainController < ApplicationController
   # 设置定投参数
   def set_auto_invest_params
     if text = params[:auto_invest_params] and text.split(' ').size == $exe_auto_invest_params_size
-      write_to_auto_trade_params text
+      write_invest_params text
+      put_notice t(:set_auto_invest_params_ok)
     else
       put_notice t(:set_auto_invest_params_error)+"(#{$exe_auto_invest_params_size})"
     end
