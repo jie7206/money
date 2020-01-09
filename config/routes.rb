@@ -69,6 +69,7 @@ Rails.application.routes.draw do
   get 'invest_log', to: 'main#read_auto_invest_log'
   get 'set_auto_invest_form', to: 'main#set_auto_invest_form'
   post 'set_auto_invest_params', to: 'main#set_auto_invest_params'
+  get 'setup_invest_param', to: 'main#setup_invest_param'
   get 'system_params_form', to: 'main#system_params_form'
   post 'update_system_params', to: 'main#update_system_params'
   get 'test_huobi', to: 'main#get_huobi_assets_test'

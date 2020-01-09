@@ -371,7 +371,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
-                if FORCE_BUY == True or price_now < target_price:
+                if FORCE_BUY == True or (FORCE_SELL == False and price_now < target_price):
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)

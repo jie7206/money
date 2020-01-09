@@ -326,7 +326,7 @@ module ApplicationHelper
 
   # 显示资产净值链接
   def show_net_value_link
-    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank)}</span> (<span id=\"properties_net_value_cny\">#{@properties_net_value_cny.to_i}</span>)"
+    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank, title: @properties_net_growth_ave_month.to_i.to_s+'/月 '+t(:twd))}</span> (<span id=\"properties_net_value_cny\" title=\"#{t(:cny)}\">#{@properties_net_value_cny.to_i}</span>)"
   end
 
   # Fusioncharts属性大全: http://wenku.baidu.com/link?url=JUwX7IJwCbYMnaagerDtahulirJSr5ASDToWeehAqjQPfmRqFmm8wb5qeaS6BsS7w2_hb6rCPmeig2DBl8wzwb2cD1O0TCMfCpwalnoEDWa
@@ -466,13 +466,20 @@ module ApplicationHelper
     DealRecord.unsell_count
   end
 
+  # 获取定投参数的值
+  def get_invest_params( index )
+    File.read($auto_invest_params_path).split(' ')[index]
+  end
+
   # 显示定投参数的设定值链接
-  def invest_params_setting_link( index, min, max, step, pos = 0 )
+  def invest_params_setup_link( index, min, max, step, pos = 0 )
     result = ''
     (min..max).step(step).each do |n|
-      result += to_n(n,pos)+' '
+      value = to_n(n.floor(pos),pos)
+      style = value == get_invest_params(index) ? 'invest_param_select' : ''
+      result += link_to(value, setup_invest_param_path(i:index,v:value), class: style) + ' '
     end
-    return result
+    return raw(result)
   end
 
 end

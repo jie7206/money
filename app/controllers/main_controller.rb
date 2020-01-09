@@ -335,7 +335,18 @@ class MainController < ApplicationController
     else
       put_notice t(:set_auto_invest_params_error)+"(#{$exe_auto_invest_params_size})"
     end
-    redirect_to action: :set_auto_invest_form
+    redirect_to set_auto_invest_form_path
+  end
+
+  # 快速设置定投参数
+  def setup_invest_param
+    if index = params[:i] and index.to_i < $exe_auto_invest_params_size and value = params[:v]
+      set_invest_params( index, value )
+      put_notice t(:set_auto_invest_params_ok) + "#{index}:#{value}"
+    else
+      put_notice t(:set_auto_invest_params_error)
+    end
+    redirect_to set_auto_invest_form_path
   end
 
   # 设置系统参数表单

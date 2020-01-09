@@ -82,9 +82,10 @@ btc_hold = DealRecord.btc_amount
     <td align="right"><%= show_net_value_link if admin? %></td>
     <% total_real_profit = DealRecord.total_real_profit %>
     <% total_net_profit = total_real_profit + profit_cny.to_f %>
+    <% date_diff = (Date.today - $trade_start_time.to_date).to_i %>
     <td align="right">
       <% if admin? %>
-        <%= to_n(total_real_profit,0) %>/<%= to_n(total_net_profit,0) %>
+        <span title="已实现绩效：¥<%= to_n(total_real_profit/date_diff*30,2) %>/月"><%= to_n(total_real_profit,0) %></span>/<span title="净损益绩效：¥<%= to_n(total_net_profit/date_diff*30,2) %>/月"><%= to_n(total_net_profit,0) %></span>
       <% else %>
         <%= to_n(total_net_profit*$net_profit_discount,0) %>
       <% end %>
