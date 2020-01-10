@@ -227,7 +227,7 @@ def update_min_price_period(new_value):
         return 0
 
 
-def reset_force_to_sell():
+def reset_force_sell():
     try:
         with open(PARAMS, 'r') as f:
             arr = f.read().strip().split(' ')
@@ -332,6 +332,27 @@ def get_min_price(size):
         return 0
 
 
+def reset_force_trade():
+    global ORDER_ID
+    global FORCE_BUY
+    global FORCE_SELL
+    ORDER_ID = ''
+    FORCE_BUY = False
+    FORCE_SELL = False
+
+
+def last_order_interval():
+    try:
+        rows = select_db(
+            "SELECT created_at FROM deal_records WHERE auto_sell = 0 ORDER BY created_at DESC LIMIT 1")
+        start_time = datetime.strptime(rows[0][0], "%Y-%m-%d %H:%M:%S")
+        end_time = datetime.strptime(get_now(), "%Y-%m-%d %H:%M:%S")
+        total_seconds = (end_time - start_time).total_seconds()
+        return int(total_seconds)
+    except:
+        return 0
+
+
 def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
     global ORDER_ID
     global FORCE_BUY
@@ -371,7 +392,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
-                if FORCE_BUY == True or (FORCE_SELL == False and price_now < target_price):
+                if (last_order_interval() > every_sec) and (FORCE_BUY == True or (FORCE_SELL == False and price_now < target_price)):
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
@@ -419,29 +440,31 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         ftext += str+'\n'
                         ftext = place_order_process(
                             test_price, round(price_now*buy_price_rate(), 2), amount, 'buy-limit', ftext, time_line, u2c)
-                        ORDER_ID = ''
-                        FORCE_BUY = False
+                        reset_force_trade()
                         fobj.write(ftext)
                         return every_sec
                     else:
-                        str = "BTC Level: %.2f > %.2f or Price < %.2f, wait until next time..." % (
-                            btc_level_now, max_buy_level, bottom)
+                        str = "BTC Level: %.2f > %.2f or Price < %.2f or Buy Time < %i" % (
+                            btc_level_now, max_buy_level, bottom, every_sec)
                         print(str)
                         ftext += str+'\n'
                         ftext = print_next_exe_time(every_sec, ftext)
                         fobj.write(ftext)
+                        reset_force_trade()
+                        reset_force_sell()
                         return every_sec
                 else:
                     if FORCE_SELL == True:
                         ftext = batch_sell_process(0, price_now, below_price,
                                                    ftext, time_line, u2c, -100000, 1)
                         ftext = print_next_exe_time(every_sec, ftext)
-                        FORCE_SELL = False
-                        reset_force_to_sell()
+                        reset_force_trade()
+                        reset_force_sell()
                         fobj.write(ftext)
                         return every_sec
                     else:
-                        str = "Price > %.2f, Check if it can be sold..." % target_price
+                        str = "Buy Time < %i or Price > %.2f, Check to sell..." % (
+                            every_sec, target_price)
                         print(str)
                         ftext += str+'\n'
                         profit_now = profit_cny_now(price_now, u2c)
@@ -501,6 +524,8 @@ if __name__ == '__main__':
                 force_to_sell = int(force_to_sell)
                 if force_to_sell > 0:
                     FORCE_SELL = True
+                else:
+                    FORCE_SELL = False
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
                                        factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
                 if code == 0:
@@ -524,7 +549,7 @@ if __name__ == '__main__':
                                 sys.stdout.write("price_now: %.2f min_price_of_%imins: %.2f        " %
                                                  (price_now, min_price_period, min_price))
                                 sys.stdout.write("\n")
-                                if price_now <= min_price:
+                                if price_now <= min_price and last_order_interval() > every_sec:
                                     FORCE_BUY = True
                                     break
                     sys.stdout.write("\r                                                      \n")
