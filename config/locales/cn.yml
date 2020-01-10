@@ -193,7 +193,7 @@ cn:
   deal_record_earn_short: 止盈价
   deal_record_loss_short: 止损价
   deal_record_order_id: 下单编号
-  deal_record_real_profit: 已实现/净损益
+  deal_record_real_profit: 已实现|净损益
   price_now: 现价
   deal_record_auto_sell: 自动卖出
   edit_deal_record: 编辑交易记录

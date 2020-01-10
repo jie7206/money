@@ -339,7 +339,10 @@ def min_price_in(index, size):
         for data in root["data"]:
             a.append(data["low"])
         a.reverse()
-        if len(a)+index == a.index(min(a)):
+        price_now = float(get_price_now())
+        if index == 0 and price_now < min(a):
+            return [min(a), a, True]
+        elif len(a)+index == a.index(min(a)):
             return [min(a), a, True]
         else:
             return [min(a), a, False]
