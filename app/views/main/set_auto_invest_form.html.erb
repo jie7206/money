@@ -5,7 +5,7 @@
     <tr>
       <td><%= n %></td>
       <td>每隔几秒自动执行一次</td>
-      <td><%= invest_params_setup_link(0,600,10800,600) %></td>
+      <td><%= invest_params_setup_link(0,600,6000,300) %></td>
       <% n += 1 %>
     </tr>
     <tr>
@@ -120,6 +120,12 @@
       <td><%= n %></td>
       <td>是否强制执行停损卖出</td>
       <td><%= invest_params_setup_link(19,0,1,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>触底反弹买进的索引值</td>
+      <td><%= invest_params_setup_link(20,-1,-28,-1) %></td>
       <% n += 1 %>
     </tr>
   </table>

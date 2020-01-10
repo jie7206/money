@@ -115,7 +115,7 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
         str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
         print(str)
         ftext += str+'\n'
-        time.sleep(10)
+        time.sleep(3)
         if deal_type.find('buy-limit') > -1:
             str = "%i Deal Records added" % update_huobi_deal_records(time_line)
             print(str)
@@ -332,6 +332,21 @@ def get_min_price(size):
         return 0
 
 
+def min_price_in(index, size):
+    try:
+        a = []
+        root = get_huobi_price('btcusdt', '1min', size)
+        for data in root["data"]:
+            a.append(data["low"])
+        a.reverse()
+        if len(a)+index == a.index(min(a)):
+            return [min(a), a, True]
+        else:
+            return [min(a), a, False]
+    except:
+        return [False, False, False]
+
+
 def reset_force_trade():
     global ORDER_ID
     global FORCE_BUY
@@ -483,11 +498,11 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                             fobj.write(ftext)
                             return every_sec
             else:
-                str = "Can't get price, wait 10 seconds for next operate"
+                str = "Can't get price, wait 5 seconds for next operate"
                 print(str)
                 ftext += str+'\n'
                 fobj.write(ftext)
-                return 10
+                return 5
         else:
             str = "Already reach target amount, Invest PAUSE!"
             print(str)
@@ -501,7 +516,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period, min_price_period_tune, force_to_sell = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period, min_price_period_tune, force_to_sell, min_price_index = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -522,6 +537,7 @@ if __name__ == '__main__':
                 min_price_period = int(min_price_period)
                 min_price_period_tune = float(min_price_period_tune)
                 force_to_sell = int(force_to_sell)
+                min_price_index = int(min_price_index)
                 if force_to_sell > 0:
                     FORCE_SELL = True
                 else:
@@ -543,13 +559,14 @@ if __name__ == '__main__':
                                 if line_str[0:4] != params_str[0:4]:
                                     break
                             price_now = float(get_price_now())
-                            min_price = get_min_price(min_price_period)
+                            min_price, arr, min_price_in_wish = min_price_in(
+                                min_price_index, min_price_period)
                             if price_now > 0 and min_price > 0:
                                 sys.stdout.write("\r")
-                                sys.stdout.write("price_now: %.2f min_price_of_%imins: %.2f        " %
-                                                 (price_now, min_price_period, min_price))
+                                sys.stdout.write("now: %.2f %im_min: %.2f %s" %
+                                                 (price_now, min_price_period, min_price, arr[min_price_index-4:-1]))
                                 sys.stdout.write("\n")
-                                if price_now <= min_price and last_order_interval() > every_sec:
+                                if min_price_in_wish and last_order_interval() > every_sec:
                                     FORCE_BUY = True
                                     break
                     sys.stdout.write("\r                                                      \n")
