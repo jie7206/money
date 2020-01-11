@@ -15,7 +15,7 @@ class DealRecordsController < ApplicationController
     end
     summary
     @get_max_sell_count = get_max_sell_count
-    @first_deal_record_profit = DealRecord.first_profit
+    @top_deal_record_profit = to_n(DealRecord.top_n_profit(@get_max_sell_count))
   end
 
   def new
@@ -107,8 +107,9 @@ class DealRecordsController < ApplicationController
   def send_sell_deal_records
     below_price = get_invest_params(1).to_f
     profit = get_invest_params(12).to_f
-    if DealRecord.profit_cny > profit and DealRecord.first.price_now > below_price
-      set_invest_params(0,swap_sec)
+    max_sell_count = get_invest_params(13).to_i
+    if max_sell_count > 0 and DealRecord.profit_cny > profit
+      setup_sell_params
       put_notice t(:send_sell_deal_records_ok)
       sleep 20
       redirect_to invest_log_path
@@ -116,13 +117,17 @@ class DealRecordsController < ApplicationController
       put_notice t(:send_sell_deal_records_error)
       go_deal_records
     end
+  end
 
+  # 为卖出下单准备参数
+  def setup_sell_params
+    set_invest_params(19,'1')
+    set_invest_params(0,swap_sec)
   end
 
   # 交易列表新增执行停损功能
   def send_stop_loss
-    set_invest_params(19,'1')
-    set_invest_params(0,swap_sec)
+    setup_sell_params
     put_notice t(:send_stop_loss_ok)
     sleep 20
     redirect_to invest_log_path

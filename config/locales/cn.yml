@@ -263,10 +263,10 @@ cn:
   zip_sell_records_ok: 压缩卖出记录成功！
   send_sell_deal_records: 执行收割
   send_sell_deal_records_ok: 执行收割成功！
-  send_sell_deal_records_error: 尚未达到可收割的条件！
-  send_stop_loss: 单笔卖出
-  send_stop_loss_ok: 单笔卖出已执行！
-  send_stop_loss_error: 单笔卖出失败！
+  send_sell_deal_records_error: 执行失败！尚未达到可收割的获利值或卖出笔数设置为0
+  send_stop_loss: 强制卖出
+  send_stop_loss_ok: 强制卖出已执行！
+  send_stop_loss_error: 强制卖出失败！
   update_system_params: 系统参数
   save_system_params: 储存系统参数
   update_system_params_ok: 系统参数更新成功！

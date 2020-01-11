@@ -127,13 +127,22 @@ class DealRecord < ApplicationRecord
     all.where('auto_sell = 0').size
   end
 
-  # 第一笔未卖出交易记录的损益值(¥)
-  def self.first_profit
+  # 最初第几笔未卖出交易记录的损益值(¥)
+  def self.top_n_profit( n )
     if self.unsell_count > 0
-      return where('auto_sell = 0').first.earn_or_loss
+      result = 0
+      where('auto_sell = 0').limit(n).each do |dr|
+        result += dr.earn_or_loss.to_f
+      end
+      return result
     else
       return 0
     end
+  end
+
+  # 第一笔未卖出交易记录的损益值(¥)
+  def self.first_profit
+    return self.top_n_profit(1)
   end
 
   # 显示币种
