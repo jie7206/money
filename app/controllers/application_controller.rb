@@ -494,6 +494,12 @@ class ApplicationController < ActionController::Base
     get_invest_params(13).to_i
   end
 
+  # 定投秒数尾数是0则回传1反之亦然
+  def swap_sec
+    sec = get_invest_params(0)
+    return sec[-1] == '0' ? sec[0..-2]+'1' : sec[0..-2]+'0'
+  end
+
   # 建立回到目录页的方法
   $models.each do |n|
     define_method "go_#{n.pluralize}" do

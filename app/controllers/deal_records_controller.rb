@@ -97,12 +97,6 @@ class DealRecordsController < ApplicationController
     go_deal_records
   end
 
-  # 定投秒数尾数是0则回传1反之亦然
-  def swap_sec
-    sec = get_invest_params(0)
-    return sec[-1] == '0' ? sec[0..-2]+'1' : sec[0..-2]+'0'
-  end
-
   # 执行卖出下单以弥补自动交易买入后延迟卖出的不足
   def send_sell_deal_records
     below_price = get_invest_params(1).to_f

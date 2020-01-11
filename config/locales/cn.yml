@@ -255,7 +255,7 @@ cn:
   see_line: 看折线图
   set_auto_invest_params: 定投参数
   save_auto_invest_params: 储存定投参数
-  set_auto_invest_params_ok: 定投参数更新成功！
+  set_auto_invest_params_ok: 定投参数更新成功并在几秒钟后生效！
   set_auto_invest_params_error: 定投参数储存时发生错误！
   show_all_deal_records: 全部记录
   show_sell_deal_records: 卖出记录

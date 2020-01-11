@@ -341,7 +341,8 @@ class MainController < ApplicationController
   # 快速设置定投参数
   def setup_invest_param
     if index = params[:i] and index.to_i < $exe_auto_invest_params_size and value = params[:v]
-      set_invest_params( index, value )
+      set_invest_params(index,value)
+      set_invest_params(0,swap_sec)
       put_notice t(:set_auto_invest_params_ok) + "#{index}:#{value}"
     else
       put_notice t(:set_auto_invest_params_error)
