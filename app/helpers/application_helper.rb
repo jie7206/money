@@ -472,12 +472,14 @@ module ApplicationHelper
   end
 
   # 显示定投参数的设定值链接
-  def invest_params_setup_link( index, min, max, step, pos = 0 )
+  def invest_params_setup_link( index, min, max, step, pos = 0, pass_value = nil )
     result = ''
     (min..max).step(step).each do |n|
       value = to_n(n.floor(pos),pos)
       style = value == get_invest_params(index) ? 'invest_param_select' : ''
-      result += link_to(value, setup_invest_param_path(i:index,v:value), class: style) + ' '
+      if value != pass_value
+        result += link_to(value, setup_invest_param_path(i:index,v:value), class: style) + ' '
+      end
     end
     return raw(result)
   end

@@ -5,7 +5,8 @@
     <tr>
       <td><%= n %></td>
       <td width="163">每隔几秒自动执行一次</td>
-      <td><span class="invest_param_select"><%= get_invest_params(0) %></span> <%= invest_params_setup_link(0,600,5700,300) %></td>
+      <% every_sec = get_invest_params(0) %>
+      <td><span class="invest_param_select"><%= every_sec %></span> <%= invest_params_setup_link(0,600,5700,300,0,every_sec) %></td>
       <% n += 1 %>
     </tr>
     <tr>
@@ -113,7 +114,7 @@
     <tr>
       <td><%= n %></td>
       <td>上一个参数的微调参数</td>
-      <td><%= invest_params_setup_link(18,0.1,2.7,0.1,1) %></td>
+      <td><%= invest_params_setup_link(18,0,2.6,0.1,1) %></td>
       <% n += 1 %>
     </tr>
     <tr>

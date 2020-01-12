@@ -145,14 +145,15 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
                 btc_level_now, btc_ave_cost(), profit_now)
             print(str)
             ftext += str+'\n'
-            new_min_price_period = int(btc_level_now/min_price_period_tune)
-            if new_min_price_period < 2:
-                new_min_price_period = 2
-            update_min_price_period(new_min_price_period)
-            min_price_period = new_min_price_period
-            str = "Minimum Price Period Updated to: %i Minutes" % new_min_price_period
-            print(str)
-            ftext += str+'\n'
+            if min_price_period_tune > 0:
+                new_min_price_period = int(btc_level_now/min_price_period_tune)
+                if new_min_price_period < 2:
+                    new_min_price_period = 2
+                update_min_price_period(new_min_price_period)
+                min_price_period = new_min_price_period
+                str = "Minimum Price Period Updated to: %i Minutes" % new_min_price_period
+                print(str)
+                ftext += str+'\n'
             str = "%i Huobi Assets Updated, Send Order Process Completed" % update_all_huobi_assets()
             print(str)
             ftext += str+'\n'
