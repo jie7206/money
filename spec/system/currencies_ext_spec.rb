@@ -53,10 +53,8 @@ RSpec.describe '连外测试(Currencies)', type: :system do
     end
 
     specify '#176[系统层]将火币资产与报价改成调用Python来获取并更新数据库' do
-      visit currencies_path
-      within "#site_nav" do
-        find('#update_all_data').click
-      end
+      visit portfolios_path
+      find('#update_huobi_assets').click
       expect(page).to have_selector '.alert-notice'
     end
 
