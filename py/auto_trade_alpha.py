@@ -228,6 +228,19 @@ def update_min_price_period(new_value):
         return 0
 
 
+def setup_force_sell():
+    try:
+        with open(PARAMS, 'r') as f:
+            arr = f.read().strip().split(' ')
+            arr[19] = '1'
+            new_str = ' '.join(arr)
+        with open(PARAMS, 'w+') as f:
+            f.write(new_str)
+        return 1
+    except:
+        return 0
+
+
 def reset_force_sell():
     try:
         with open(PARAMS, 'r') as f:
@@ -350,16 +363,18 @@ def min_price_in(idx, size):
         for data in root["data"]:
             a.append(data["low"])
         a.reverse()
-        if idx == 0 and price_now <= min(a):
-            return [price_now, min(a), a, True]
+        if price_now >= max(a):
+            return [price_now, min(a), max(a), a, False, True]
+        elif idx == 0 and price_now <= min(a):
+            return [price_now, min(a), max(a), a, True, False]
         elif idx == 0 and price_now >= min(a):
-            return [price_now, min(a), a, False]
+            return [price_now, min(a), max(a), a, False, False]
         elif len(a)+idx == a.index(min(a)):
-            return [price_now, min(a), a, True]
+            return [price_now, min(a), max(a), a, True, False]
         else:
-            return [price_now, min(a), a, False]
+            return [price_now, min(a), max(a), a, False, False]
     except:
-        return [0, 0, [], False]
+        return [0, 0, 0, [], False, False]
 
 
 def reset_force_trade():
@@ -583,13 +598,16 @@ if __name__ == '__main__':
                                 line_str = f.read().strip()
                                 if line_str[0:4] != params_str[0:4]:
                                     break
-                            price_now, min_price, arr, min_price_in_wish = min_price_in(
+                            price_now, min_price, max_price, arr, min_price_in_wish, price_ge_max = min_price_in(
                                 min_price_index, min_price_period)
                             if price_now > 0 and min_price > 0:
                                 sys.stdout.write("\r")
-                                sys.stdout.write("now: %.2f %im_min: %.2f buy: %s %s" %
-                                                 (price_now, min_price_period, min_price, min_price_in_wish, arr[min_price_index-4:-1]))
+                                sys.stdout.write("now: %.2f %im_min: %.2f max: %.2f %s" %
+                                                 (price_now, min_price_period, min_price, max_price, arr[min_price_index-4:-1]))
                                 sys.stdout.write("\n")
+                                if price_ge_max and last_sell_interval() > every_sec:
+                                    setup_force_sell()
+                                    break
                                 if min_price_in_wish and last_order_interval() > every_sec:
                                     FORCE_BUY = True
                                     break
