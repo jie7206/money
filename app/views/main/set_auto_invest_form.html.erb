@@ -12,13 +12,13 @@
     <tr>
       <td><%= n %></td>
       <td>多少价位以下执行买入</td>
-      <td><%= invest_params_setup_link(1,7300,9000,100) %></td>
+      <td>无需设定</td>
       <% n += 1 %>
     </tr>
     <tr>
       <td><%= n %></td>
       <td>跌破多少价位停止买入</td>
-      <td><%= invest_params_setup_link(2,6300,8000,100) %></td>
+      <td><%= invest_params_setup_link(2,(@price_now*0.8).to_i/100*100,@price_now*1.2,100) %></td>
       <% n += 1 %>
     </tr>
     <tr>
@@ -30,13 +30,13 @@
     <tr>
       <td valign="top"><%= n %></td>
       <td valign="top">单笔买入价格调整参数</td>
-      <td><%= invest_params_setup_link(4,0.01,1.0,0.01,2) %></td>
+      <td><%= invest_params_setup_link(4,0.01,2.0,0.01,2) %></td>
       <% n += 1 %>
     </tr>
     <tr>
-      <td><%= n %></td>
-      <td>自动买入的最大仓位值</td>
-      <td><%= invest_params_setup_link(5,5,100,5) %></td>
+      <td valign="top"><%= n %></td>
+      <td valign="top">自动买入的最大仓位值</td>
+      <td><%= invest_params_setup_link(5,0,100,1) %></td>
       <% n += 1 %>
     </tr>
     <tr>
@@ -60,13 +60,13 @@
     <tr>
       <td><%= n %></td>
       <td>更新交易列表记录日期</td>
-      <td></td>
+      <td>无需设定</td>
       <% n += 1 %>
     </tr>
     <tr>
       <td><%= n %></td>
       <td>更新交易列表记录时间</td>
-      <td></td>
+      <td>无需设定</td>
       <% n += 1 %>
     </tr>
     <tr>
@@ -120,7 +120,7 @@
     <tr>
       <td><%= n %></td>
       <td>是否强制执行停损卖出</td>
-      <td><%= invest_params_setup_link(19,0,1,1) %></td>
+      <td>无需设定</td>
       <% n += 1 %>
     </tr>
     <tr>

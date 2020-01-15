@@ -325,6 +325,7 @@ class MainController < ApplicationController
   # 设置定投参数表单
   def set_auto_invest_form
     @invest_params_value = File.read($auto_invest_params_path)
+    @price_now = DealRecord.first.price_now
   end
 
   # 设置定投参数

@@ -120,7 +120,7 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
             print(str)
             ftext += str+'\n'
             if min_price_period > 0:
-                min_price = get_min_price(min_price_period)
+                min_price, max_price = get_min_price(min_price_period)
                 if min_price > 0 and min_price != below_price:
                     update_below_price("%.2f" % min_price)
                     str = "Below Price Updated to: %.2f" % min_price
@@ -344,7 +344,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
     return ftext
 
 
-def get_min_price(size):
+def get_min_max_price(size):
     try:
         arr = []
         if size == 0:
@@ -352,7 +352,7 @@ def get_min_price(size):
         root = get_huobi_price('btcusdt', '1min', size)
         for data in root["data"]:
             arr.append(data["low"])
-        return min(arr)
+        return [min(arr), max(arr)]
     except:
         return 0
 
@@ -421,6 +421,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
     global LOG_FILE
     global LINE_MARKS
     global min_price
+    global max_price
     global min_price_period
     with open(LOG_FILE, 'a') as fobj:
         sline = LINE_MARKS
@@ -451,7 +452,8 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 price_now = test_price
                 mode = 'TEST'
             if price_now > 0:
-                str = "BTC Price %s: %.2f Minimum Price: %.2f" % (mode, price_now, min_price)
+                str = "Price %s: %.2f Min: %.2f Max: %.2f Within: %i Minutes" % (
+                    mode, price_now, min_price, max_price, min_price_period)
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
@@ -584,7 +586,7 @@ if __name__ == '__main__':
                 min_price_period_tune = float(min_price_period_tune)
                 force_to_sell = int(force_to_sell)
                 min_price_index = int(min_price_index)
-                min_price = get_min_price(min_price_period)
+                min_price, max_price = get_min_max_price(min_price_period)
                 if force_to_sell > 0:
                     FORCE_SELL = True
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
