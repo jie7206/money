@@ -415,7 +415,7 @@ def last_order_interval():
         total_seconds = (end_time - start_time).total_seconds()
         return int(total_seconds)
     except:
-        return 0
+        return last_sell_interval()
 
 
 def last_sell_interval():
@@ -427,7 +427,7 @@ def last_sell_interval():
         total_seconds = (end_time - start_time).total_seconds()
         return int(total_seconds)
     except:
-        return 0
+        return 100000
 
 
 def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate):
