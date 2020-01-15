@@ -463,7 +463,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                     bottom = float(bottom_price)
                     max_usdt = ori_usdt*max_rate
                     btc_level_now = btc_hold_level(price_now, u2c)
-                    if trade_usdt > min_usdt and price_now - bottom >= 0 and btc_level_now < max_buy_level:
+                    if max_buy_level > 0 and trade_usdt > min_usdt and price_now - bottom >= 0 and btc_level_now < max_buy_level:
                         # Caculate USDT and Amount
                         price_diff = price_now - bottom
                         if price_now - bottom < 1:
@@ -509,8 +509,9 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         fobj.write(ftext)
                         return every_sec
                     else:
-                        str = "BTC Level: %.2f > %.2f or Price < %.2f or Buy Time < %i" % (
-                            btc_level_now, max_buy_level, bottom, every_sec)
+                        str = "STOP Buy Process! Because Max Buy Level = 0\n"
+                        str += "or Over %.2f%% or Price < %.2f or Buy Time < %i" % (
+                            max_buy_level, bottom, every_sec)
                         print(str)
                         ftext += str+'\n'
                         ftext = print_next_exe_time(every_sec, ftext)
