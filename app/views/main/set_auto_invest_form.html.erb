@@ -107,14 +107,20 @@
     </tr>
     <tr>
       <td valign="top"><%= n %></td>
-      <td valign="top">监控几分钟内的最低价</td>
+      <td valign="top">买入几分钟内的最低价</td>
       <td><%= invest_params_setup_link(17,0,180,1) %></td>
       <% n += 1 %>
     </tr>
     <tr>
+      <td valign="top"><%= n %></td>
+      <td valign="top">卖出几分钟内的最高价</td>
+      <td><%= invest_params_setup_link(18,0,180,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
       <td><%= n %></td>
-      <td>上一个参数的微调参数</td>
-      <td><%= invest_params_setup_link(18,0,2.6,0.1,1) %></td>
+      <td>上两个参数的微调参数</td>
+      <td><%= invest_params_setup_link(19,0,2.6,0.1,1) %></td>
       <% n += 1 %>
     </tr>
     <tr>
@@ -126,7 +132,7 @@
     <tr>
       <td><%= n %></td>
       <td>触底反弹买进的索引值</td>
-      <td><%= invest_params_setup_link(20,0,-27,-1) %></td>
+      <td><%= invest_params_setup_link(21,0,-27,-1) %></td>
       <% n += 1 %>
     </tr>
   </table>

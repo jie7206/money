@@ -2,7 +2,7 @@
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
-    <td><%= t(:deal_record_created) %></td>
+    <td width="135"><%= t(:deal_record_created) %></td>
     <td><%= t(:deal_record_price) %></td>
     <td><%= t(:earn_or_loss) %></td>
     <td><%= t(:profit_p) %></td>
@@ -14,7 +14,7 @@
     <td><%= t(:deal_record_real_profit) %></td>
   </tr>
 <% n = 1 %>
-<% if !@deal_records.empty? then price_now = @deal_records.first.price_now end %>
+<% price_now = DealRecord.first.price_now if DealRecord.first %>
 <%
 total_price = total_amount = total_cny_amount = total_cny_amount_now =  total_earn_or_loss = total_earn_limit = total_real_profit = 0
 btc_hold = DealRecord.btc_amount
@@ -67,9 +67,9 @@ btc_hold = DealRecord.btc_amount
 <% end %>
   <tr class="thead">
     <td colspan="2">
-      <% if !@deal_records.empty? %>
+      <%# if !@deal_records.empty? %>
         <%= kline_chart_link(to_n(price_now)) %> (<%= to_n(DealRecord.btc_level) %>%)
-      <% end %>
+      <%# end %>
     </td>
     <td align="right"><%= to_n(DealRecord.ave_cost) if total_amount > 0 %></td>
     <% profit_cny = to_n(DealRecord.profit_cny) %>

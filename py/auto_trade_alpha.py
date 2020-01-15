@@ -108,8 +108,8 @@ def btc_ave_cost():
 
 def place_order_process(test_price, price, amount, deal_type, ftext, time_line, u2c):
     global below_price
-    global min_price_period
-    global min_price_period_tune
+    global buy_price_period
+    global price_period_tune
     if test_price == 0:
         str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
         print(str)
@@ -119,8 +119,8 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
             str = "%i Deal Records added" % update_huobi_deal_records(time_line)
             print(str)
             ftext += str+'\n'
-            if min_price_period > 0:
-                min_price, max_price = get_min_price(min_price_period)
+            if buy_price_period > 0:
+                min_price, max_price = get_min_max_price(buy_price_period)
                 if min_price > 0 and min_price != below_price:
                     update_below_price("%.2f" % min_price)
                     str = "Below Price Updated to: %.2f" % min_price
@@ -145,13 +145,13 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
                 btc_level_now, btc_ave_cost(), profit_now)
             print(str)
             ftext += str+'\n'
-            if min_price_period > 0 and min_price_period_tune > 0:
-                new_min_price_period = int(btc_level_now/min_price_period_tune)
-                if new_min_price_period < 2:
-                    new_min_price_period = 2
-                update_min_price_period(new_min_price_period)
-                min_price_period = new_min_price_period
-                str = "Minimum Price Period Updated to: %i Minutes" % new_min_price_period
+            if buy_price_period > 0 and price_period_tune > 0:
+                new_buy_price_period = int(btc_level_now/price_period_tune)
+                if new_buy_price_period < 2:
+                    new_buy_price_period = 2
+                update_buy_price_period(new_buy_price_period)
+                buy_price_period = new_buy_price_period
+                str = "Minimum Price Period Updated to: %i Minutes" % new_buy_price_period
                 print(str)
                 ftext += str+'\n'
             str = "%i Huobi Assets Updated, Send Order Process Completed" % update_all_huobi_assets()
@@ -215,7 +215,7 @@ def update_below_price(new_below_price):
         return 0
 
 
-def update_min_price_period(new_value):
+def update_buy_price_period(new_value):
     try:
         with open(PARAMS, 'r') as f:
             arr = f.read().strip().split(' ')
@@ -232,7 +232,7 @@ def setup_force_sell():
     try:
         with open(PARAMS, 'r') as f:
             arr = f.read().strip().split(' ')
-            arr[19] = '1'
+            arr[20] = '1'
             new_str = ' '.join(arr)
         with open(PARAMS, 'w+') as f:
             f.write(new_str)
@@ -245,7 +245,7 @@ def reset_force_sell():
     try:
         with open(PARAMS, 'r') as f:
             arr = f.read().strip().split(' ')
-            arr[19] = '0'
+            arr[20] = '0'
             new_str = ' '.join(arr)
         with open(PARAMS, 'w+') as f:
             f.write(new_str)
@@ -367,18 +367,34 @@ def min_price_in(idx, size):
         for data in root["data"]:
             a.append(data["low"])
         a.reverse()
-        if price_now >= max(a):
-            return [price_now, min(a), max(a), a, False, True]
-        elif idx == 0 and price_now <= min(a):
-            return [price_now, min(a), max(a), a, True, False]
+        if idx == 0 and price_now <= min(a):
+            return [price_now, min(a), max(a), a, True]
         elif idx == 0 and price_now >= min(a):
-            return [price_now, min(a), max(a), a, False, False]
+            return [price_now, min(a), max(a), a, False]
         elif len(a)+idx == a.index(min(a)):
-            return [price_now, min(a), max(a), a, True, False]
+            return [price_now, min(a), max(a), a, True]
         else:
-            return [price_now, min(a), max(a), a, False, False]
+            return [price_now, min(a), max(a), a, False]
     except:
-        return [0, 0, 0, [], False, False]
+        return [0, 0, 0, [], False]
+
+
+def max_price_now(size):
+    try:
+        a = []
+        if size == 0:
+            size = 1
+        root = get_huobi_price('btcusdt', '1min', size)
+        price_now = float(root['data'][0]['close'])
+        for data in root["data"]:
+            a.append(data["high"])
+        a.reverse()
+        if price_now >= max(a):
+            return True
+        else:
+            return False
+    except:
+        return False
 
 
 def reset_force_trade():
@@ -422,7 +438,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
     global LINE_MARKS
     global min_price
     global max_price
-    global min_price_period
+    global buy_price_period
     with open(LOG_FILE, 'a') as fobj:
         sline = LINE_MARKS
         ftext = sline+'\n'
@@ -453,11 +469,11 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 mode = 'TEST'
             if price_now > 0:
                 str = "Price %s: %.2f Min: %.2f Max: %.2f Within: %i Minutes" % (
-                    mode, price_now, min_price, max_price, min_price_period)
+                    mode, price_now, min_price, max_price, buy_price_period)
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
-                if (FORCE_BUY == True or min_price_period == 0) and last_order_interval() > every_sec:
+                if (FORCE_BUY == True or buy_price_period == 0) and last_order_interval() > every_sec:
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
@@ -565,7 +581,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, min_price_period, min_price_period_tune, force_to_sell, min_price_index = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, price_period_tune, force_to_sell, min_price_index = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -583,11 +599,12 @@ if __name__ == '__main__':
                 min_sec_rate = float(min_sec_rate)
                 max_sec_rate = float(max_sec_rate)
                 detect_sec = int(detect_sec)
-                min_price_period = int(min_price_period)
-                min_price_period_tune = float(min_price_period_tune)
+                buy_price_period = int(buy_price_period)
+                sell_price_period = int(sell_price_period)
+                price_period_tune = float(price_period_tune)
                 force_to_sell = int(force_to_sell)
                 min_price_index = int(min_price_index)
-                min_price, max_price = get_min_max_price(min_price_period)
+                min_price, max_price = get_min_max_price(buy_price_period)
                 if force_to_sell > 0:
                     FORCE_SELL = True
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
@@ -599,7 +616,7 @@ if __name__ == '__main__':
                         sys.stdout.write("\r")
                         sys.stdout.write(
                             "Please wait {:2d} seconds for next operate".format(remaining))
-                        if min_price_period == 0:
+                        if buy_price_period == 0:
                             sys.stdout.flush()
                         time.sleep(1)
                         if remaining % detect_sec == 0:
@@ -608,15 +625,15 @@ if __name__ == '__main__':
                                 line_str = f.read().strip()
                                 if line_str[0:4] != params_str[0:4]:
                                     break
-                            if min_price_period > 0:
-                                price_now, min_price, max_price, arr, min_price_in_wish, price_ge_max = min_price_in(
-                                    min_price_index, min_price_period)
+                            if buy_price_period > 0:
+                                price_now, min_price, max_price, arr, min_price_in_wish = min_price_in(
+                                    min_price_index, buy_price_period)
                                 if price_now > 0 and min_price > 0:
                                     sys.stdout.write("\r")
                                     sys.stdout.write("now: %.2f %im_min: %.2f max: %.2f %s" %
-                                                     (price_now, min_price_period, min_price, max_price, arr[min_price_index-4:-1]))
+                                                     (price_now, buy_price_period, min_price, max_price, arr[min_price_index-4:-1]))
                                     sys.stdout.write("\n")
-                                    if price_ge_max and last_sell_interval() > every_sec:
+                                    if max_price_now(sell_price_period) and last_sell_interval() > every_sec:
                                         setup_force_sell()
                                         break
                                     if min_price_in_wish and last_order_interval() > every_sec:
