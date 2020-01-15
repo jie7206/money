@@ -29,8 +29,15 @@ btc_hold = DealRecord.btc_amount
       <% cny_amount = to_n(dr.cny_amount,2) %>
       <td align="right"><%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %></td>
       <td align="right"><%= amount = to_n(dr.amount,6) %></td>
-      <td align="right"><%= cny_amount if !dr.real_profit %></td>
-      <td align="right"><%= cny_amount_now = dr.cny_amount_now if !dr.real_profit%></td>
+      <td align="right"><%= cny_amount %></td>
+      <%
+        if !dr.real_profit
+          cny_amount_now = dr.cny_amount_now
+        else
+          cny_amount_now = to_n(cny_amount.to_f + dr.real_profit.to_f)
+        end
+      %>
+      <td align="right"><%= cny_amount_now %></td>
       <td align="right"><%= earn_limit = to_n(dr.earn_limit,3) if !dr.real_profit and dr.earn_limit > 0 %></td>
       <% earn_limit_price = dr.earn_limit_price %>
       <% updated_at_str = to_time(dr.updated_at) %>
