@@ -260,6 +260,11 @@ module ApplicationHelper
     ' | ' + update_all_portfolios_link)
   end
 
+  # 清空未卖出的交易记录
+  def clear_deal_records_link
+    link_to t(:clear_deal_records), clear_deal_records_path
+  end
+
   # 资产标签云
   def get_tag_cloud
     @tags = Property.tag_counts_on(:tags)

@@ -107,6 +107,7 @@ btc_hold = DealRecord.btc_amount
     | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
     | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
     | <%= link_to t(:zip_sell_deal_records), zip_sell_records_path %>
+    | <%= clear_deal_records_link %>
     |
     <% if max_sell_count = get_invest_params(13).to_i and max_sell_count > 0 %>
       <%= link_to t(:send_sell_deal_records)+"(#{@get_max_sell_count}/#{get_unsell_deal_records_count})", send_sell_deal_records_path %> |

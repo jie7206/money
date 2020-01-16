@@ -206,10 +206,10 @@ cn:
   deal_record_earn_limit_type_err: 止盈额度必须为正数！
   deal_record_loss_limit_type_err: 止损额度必须为正数！
   huobi_deal_records_created_ok: 火币交易记录已新建！
-  clear_deal_records: 清空交易记录
+  clear_deal_records: 清空未卖出
   clear_deal_records_ok: 未卖出的交易记录已全部清空！
   update_huobi_records: 更新记录与实现损益
-  update_huobi_assets: 更新火币资产讯息
+  update_huobi_assets: 更新火币资产
   property_clear_amount_ok: 金额已归零！
   place_order_to_huobi: 火币下单
   info_confirm: 确认页
@@ -218,7 +218,7 @@ cn:
   order_done: 已成交
   order_undone: 未成交
   update_btc_price_ok: 比特币价格已更新！
-  update_btc_exchange_rates: 更新比特币报价
+  update_btc_exchange_rates: 更新比特币
   update_btc: 更新比特币
   profit_p: 利率%
   cancel_order: 取消这笔下单

@@ -131,7 +131,7 @@ class DealRecord < ApplicationRecord
   def self.top_n_profit( n )
     if self.unsell_count > 0
       result = 0
-      where('auto_sell = 0').limit(n).each do |dr|
+      where('auto_sell = 0').order('created_at').limit(n).each do |dr|
         result += dr.earn_or_loss.to_f
       end
       return result
