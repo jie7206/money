@@ -16,8 +16,8 @@
       <% n += 1 %>
     </tr>
     <tr>
-      <td><%= n %></td>
-      <td>跌破多少价位停止买入</td>
+      <td valign="top"><%= n %></td>
+      <td valign="top">跌破多少价位停止买入</td>
       <td><%= invest_params_setup_link(2,(@price_now*0.8).to_i/100*100,@price_now*1.2,100) %></td>
       <% n += 1 %>
     </tr>
@@ -70,9 +70,10 @@
       <% n += 1 %>
     </tr>
     <tr>
-      <td><%= n %></td>
-      <td>用于测试的比特币价格</td>
-      <td><%= invest_params_setup_link(11,0,9000,500) %></td>
+      <td valign="top"><%= n %></td>
+      <td valign="top">用于测试的比特币价格</td>
+      <% test_price = get_invest_params(11) %>
+      <td><span class="invest_param_select"><%= test_price %></span> <%= invest_params_setup_link(11,(@price_now*0.8).to_i/100*100,@price_now*1.2,50) %></td>
       <% n += 1 %>
     </tr>
     <tr>

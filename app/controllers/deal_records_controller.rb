@@ -114,7 +114,7 @@ class DealRecordsController < ApplicationController
 
   # 为卖出下单准备参数
   def setup_sell_params
-    set_invest_params(19,'1')
+    set_invest_params(20,'1')
     set_invest_params(0,swap_sec)
   end
 
