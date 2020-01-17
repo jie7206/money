@@ -469,7 +469,7 @@ class ApplicationController < ActionController::Base
   def set_invest_params( index, value )
     begin
       params_values = File.read($auto_invest_params_path).split(' ')
-      params_values[index.to_i] = value
+      params_values[index.to_i] = value.to_s
       write_invest_params params_values.join(' ')
       return true
     rescue

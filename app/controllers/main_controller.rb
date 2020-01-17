@@ -344,6 +344,12 @@ class MainController < ApplicationController
     if index = params[:i] and index.to_i < $exe_auto_invest_params_size and value = params[:v]
       set_invest_params(index,value)
       set_invest_params(0,swap_sec)
+      # 定价的策略和买最低价的策略无法并存
+      if index.to_i == 1 and get_invest_params(1).to_i > 0
+        set_invest_params(17,0)
+      elsif index.to_i == 17 and get_invest_params(17).to_i > 0
+        set_invest_params(1,0)
+      end
       put_notice t(:set_auto_invest_params_ok) + "#{index}:#{value}"
     else
       put_notice t(:set_auto_invest_params_error)

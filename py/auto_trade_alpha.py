@@ -207,10 +207,12 @@ def update_below_price(new_below_price):
     try:
         with open(PARAMS, 'r') as f:
             arr = f.read().strip().split(' ')
-            arr[1] = new_below_price
+            arr[1] = str(new_below_price)
             new_str = ' '.join(arr)
         with open(PARAMS, 'w+') as f:
             f.write(new_str)
+        if new_below_price > 0:  # 定价的策略和买最低价的策略无法并存
+            update_buy_price_period(0)
         return 1
     except:
         return 0
@@ -224,6 +226,8 @@ def update_buy_price_period(new_value):
             new_str = ' '.join(arr)
         with open(PARAMS, 'w+') as f:
             f.write(new_str)
+        if new_value > 0:  # 定价的策略和买最低价的策略无法并存
+            update_below_price(0)
         return 1
     except:
         return 0
@@ -465,7 +469,10 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
         sline = LINE_MARKS
         ftext = sline+'\n'
         now = datetime.now()
-        str = "%s Invest Between: %.2f ~ %.2f" % (get_now(), bottom_price, below_price)
+        if below_price > 0:
+            str = "%s Invest Between: %.2f ~ %.2f" % (get_now(), bottom_price, below_price)
+        else:
+            str = "%s Invest Between: %.2f ~ AUTO" % (get_now(), bottom_price)
         print(str)
         ftext += str+'\n'
         str = "%i Digital Prices updated" % update_prices()
@@ -490,7 +497,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
-                if test_price > 0 or ((FORCE_BUY == True or buy_price_period == 0) and last_order_interval() > every_sec):
+                if test_price > 0 or ((FORCE_BUY == True or price_now <= below_price) and last_order_interval() > every_sec):
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
@@ -607,7 +614,7 @@ if __name__ == '__main__':
                 max_buy_level = float(max_buy_level)
                 target_amount = float(target_amount)
                 min_usdt = float(min_usdt)
-                max_rate = float(max_rate)
+                max_rate = float(max_rate)/100
                 time_line = deal_date+' '+deal_time
                 test_price = float(test_price)
                 profit_cny = float(profit_cny)
