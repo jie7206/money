@@ -120,13 +120,6 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
             str = "%i Deal Records added" % update_huobi_deal_records(time_line)
             print(str)
             ftext += str+'\n'
-            if buy_price_period > 0:
-                min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
-                if min_price > 0 and min_price != below_price:
-                    update_below_price("%.2f" % min_price)
-                    str = "Below Price Updated to: %.2f" % min_price
-                    print(str)
-                    ftext += str+'\n'
         trade_usdt = float(get_trade_usdt())
         if trade_usdt > 0:
             usdt_cny = trade_usdt*u2c
