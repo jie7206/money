@@ -4,9 +4,9 @@
   <table width="<%=$default_table_width%>">
     <tr>
       <td><%= n %></td>
-      <td width="163">每隔几秒自动执行一次</td>
-      <% every_sec = get_invest_params(0) %>
-      <td><span class="invest_param_select"><%= every_sec %></span> <%= invest_params_setup_link(0,600,5700,300,0,every_sec) %></td>
+      <td width="163">每隔几秒自动买入一次</td>
+      <% every_sec_to_buy = get_invest_params(0) %>
+      <td><span class="invest_param_select"><%= every_sec_to_buy %></span> <%= invest_params_setup_link(0,600,5700,300,0,every_sec_to_buy) %></td>
       <% n += 1 %>
     </tr>
     <%
@@ -140,6 +140,13 @@
       <td><%= n %></td>
       <td>触底反弹买进的索引值</td>
       <td><%= invest_params_setup_link(21,0,-27,-1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td><%= n %></td>
+      <td>每隔几秒自动卖出一次</td>
+      <% every_sec_for_sell = get_invest_params(22) %>
+      <td><span class="invest_param_select"><%= every_sec_for_sell %></span> <%= invest_params_setup_link(22,600,5700,300,0,every_sec_for_sell) %></td>
       <% n += 1 %>
     </tr>
   </table>

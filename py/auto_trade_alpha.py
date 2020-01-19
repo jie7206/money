@@ -458,6 +458,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
     global min_price
     global max_price
     global buy_price_period
+    global every_sec_for_sell
     with open(LOG_FILE, 'a') as fobj:
         sline = LINE_MARKS
         ftext = sline+'\n'
@@ -552,7 +553,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         reset_force_sell()
                         return every_sec
                 else:
-                    if FORCE_SELL == True:
+                    if FORCE_SELL == True and last_sell_interval() > every_sec_for_sell:
                         ftext = batch_sell_process(0, price_now, below_price,
                                                    ftext, time_line, u2c, -100000, max_sell_count)
                         ftext = print_next_exe_time(every_sec, ftext)
@@ -564,7 +565,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         print(str)
                         ftext += str+'\n'
                         profit_now = profit_cny_now(price_now, u2c)
-                        if max_sell_count > 0 and profit_now > profit_cny and last_sell_interval() > every_sec:
+                        if max_sell_count > 0 and profit_now > profit_cny and last_sell_interval() > every_sec_for_sell:
                             ftext = batch_sell_process(test_price, price_now, below_price,
                                                        ftext, time_line, u2c, profit_cny, max_sell_count)
                             ftext = print_next_exe_time(every_sec, ftext)
@@ -572,10 +573,10 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                             return every_sec
                         else:
                             str = "Profit: %.2f < %.2f or Sell Count = 0 or Sell Time < %i" % (
-                                profit_now, profit_cny, every_sec)
+                                profit_now, profit_cny, every_sec_for_sell)
                             print(str)
                             ftext += str+'\n'
-                            ftext = print_next_exe_time(every_sec, ftext)
+                            ftext = print_next_exe_time(every_sec_for_sell, ftext)
                             fobj.write(ftext)
                             return every_sec
             else:
@@ -597,7 +598,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, price_period_tune, force_to_sell, min_price_index = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, price_period_tune, force_to_sell, min_price_index, every_sec_for_sell = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -620,6 +621,7 @@ if __name__ == '__main__':
                 price_period_tune = float(price_period_tune)
                 force_to_sell = int(force_to_sell)
                 min_price_index = int(min_price_index)
+                every_sec_for_sell = int(every_sec_for_sell)
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 if force_to_sell > 0:
                     FORCE_SELL = True
@@ -663,7 +665,7 @@ if __name__ == '__main__':
                                         break
                             if sell_price_period > 0:
                                 price_now, max_price, max_price_in_wish = max_price_in(sell_price_period)
-                                over_time = last_sell_interval() > every_sec
+                                over_time = last_sell_interval() > every_sec_for_sell
                                 if price_now > 0 and max_price > 0:
                                     sys.stdout.write("\r")
                                     sys.stdout.write("now: %.2f %im_max: %.2f over_time: %s                 " % (price_now, sell_price_period, max_price, over_time))
