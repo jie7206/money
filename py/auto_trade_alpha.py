@@ -425,7 +425,7 @@ def reset_force_trade():
     FORCE_SELL = False
 
 
-def last_order_interval():
+def last_buy_interval():
     try:
         rows = select_db(
             "SELECT created_at FROM deal_records WHERE auto_sell = 0 ORDER BY created_at DESC LIMIT 1")
@@ -479,7 +479,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
             return 0
         trade_btc = float(get_trade_btc())
         if trade_btc < target_amount:
-            price_now = float(get_price_now())
+            price_now = get_price_now()
             if price_now > 0:
                 if test_price > 0:
                     str = "Test Price: %.2f Now: %.2f %i_Min: %.2f %i_Max: %.2f" % (test_price, price_now, buy_price_period, min_price, sell_price_period, max_price)
@@ -490,7 +490,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 print(str)
                 ftext += str+'\n'
                 u2c = usd_to_cny()
-                if test_price > 0 or ((FORCE_BUY == True or price_now <= below_price) and last_order_interval() > every_sec):
+                if test_price > 0 or ((FORCE_BUY == True or price_now <= below_price) and last_buy_interval() > every_sec):
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
@@ -642,22 +642,33 @@ if __name__ == '__main__':
                                 line_str = f.read().strip()
                                 if line_str[0:4] != params_str[0:4]:
                                     break
+                            if below_price > 0:
+                                price_now = get_price_now()
+                                over_time = last_buy_interval() > every_sec
+                                sys.stdout.write("\r")
+                                sys.stdout.write("now: %.2f below_price: %.2f over_time: %s                " % (price_now, below_price, over_time))
+                                sys.stdout.write("\n")
+                                if price_now > 0 and price_now < below_price and over_time:
+                                    FORCE_BUY = True
+                                    break
                             if buy_price_period > 0:
                                 price_now, min_price, min_price_in_wish = min_price_in(min_price_index, buy_price_period)
+                                over_time = last_buy_interval() > every_sec
                                 if price_now > 0 and min_price > 0:
                                     sys.stdout.write("\r")
-                                    sys.stdout.write("now: %.2f %im_min: %.2f                    " % (price_now, buy_price_period, min_price))
+                                    sys.stdout.write("now: %.2f %im_min: %.2f over_time: %s                 " % (price_now, buy_price_period, min_price, over_time))
                                     sys.stdout.write("\n")
-                                    if min_price_in_wish and last_order_interval() > every_sec:
+                                    if min_price_in_wish and over_time:
                                         FORCE_BUY = True
                                         break
                             if sell_price_period > 0:
                                 price_now, max_price, max_price_in_wish = max_price_in(sell_price_period)
+                                over_time = last_sell_interval() > every_sec
                                 if price_now > 0 and max_price > 0:
                                     sys.stdout.write("\r")
-                                    sys.stdout.write("now: %.2f %im_max: %.2f                    " % (price_now, sell_price_period, max_price))
+                                    sys.stdout.write("now: %.2f %im_max: %.2f over_time: %s                 " % (price_now, sell_price_period, max_price, over_time))
                                     sys.stdout.write("\n")
-                                    if max_price_in_wish and last_sell_interval() > every_sec:
+                                    if max_price_in_wish and over_time:
                                         setup_force_sell()
                                         break
                     sys.stdout.write("\r                                                      \n")
