@@ -74,9 +74,7 @@ btc_hold = DealRecord.btc_amount
 <% end %>
   <tr class="thead">
     <td colspan="2">
-      <%# if !@deal_records.empty? %>
-        <%= kline_chart_link(to_n(price_now)) %> (<%= to_n(DealRecord.btc_level) %>%)
-      <%# end %>
+      <%= kline_chart_link(to_n(price_now)) %> (<%= to_n(DealRecord.btc_level) %>%)
     </td>
     <td align="right"><%= to_n(DealRecord.ave_cost) if total_amount > 0 %></td>
     <% profit_cny = to_n(DealRecord.profit_cny) %>
@@ -85,8 +83,7 @@ btc_hold = DealRecord.btc_amount
     <td align="right"><%= link_to to_n(DealRecord.btc_amount,6), place_order_form_path(sell_all:1) %></td>
     <td align="right"><%= to_n(total_cny_amount) if !params[:show_sell] %></td>
     <td align="right"><%= to_n(DealRecord.btc_cny) if !params[:show_sell] %></td>
-    <td align="right"><%= to_n(total_earn_limit,3) if !params[:show_sell] %></td>
-    <td align="right"><%= show_net_value_link if admin? %></td>
+    <td align="right" colspan="2"><%= show_net_value_link if admin? %></td>
     <% total_real_profit = DealRecord.total_real_profit %>
     <% total_net_profit = total_real_profit + profit_cny.to_f %>
     <% date_diff = (Date.today - $trade_start_time.to_date).to_i %>

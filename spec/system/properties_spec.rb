@@ -69,7 +69,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
     end
 
     specify '#143[系统层]资产列表能显示3月底以来资产净值平均月增减额度' do
-      expect(page).to have_selector '#net_growth_ave_month', text: Property.net_growth_ave_month.to_i
+      expect(page).to have_selector '#net_growth_ave_month'
     end
 
     specify '#150[系统层]若资产为数字货币默认金额显示小数点8位否则显示2位' do

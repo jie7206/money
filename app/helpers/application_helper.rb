@@ -331,7 +331,7 @@ module ApplicationHelper
 
   # 显示资产净值链接
   def show_net_value_link
-    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank, title: @properties_net_growth_ave_month.to_i.to_s+'/月 '+t(:twd))}</span> (<span id=\"properties_net_value_cny\" title=\"#{t(:cny)}\">#{@properties_net_value_cny.to_i}</span>)"
+    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank)}</span>|<span id=\"properties_net_value_cny\" title=\"#{t(:cny)}\">#{@properties_net_value_cny.to_i}</span>&nbsp;<span id=\"net_growth_ave_month\" title=\"#{@properties_net_growth_ave_month} TWD/月\">#{@properties_net_growth_ave_month_cny}</span>/月"
   end
 
   # Fusioncharts属性大全: http://wenku.baidu.com/link?url=JUwX7IJwCbYMnaagerDtahulirJSr5ASDToWeehAqjQPfmRqFmm8wb5qeaS6BsS7w2_hb6rCPmeig2DBl8wzwb2cD1O0TCMfCpwalnoEDWa

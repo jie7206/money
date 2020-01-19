@@ -247,7 +247,8 @@ class ApplicationController < ActionController::Base
     @properties_lixi_twd = Property.lixi :twd, admin_hash(admin)
     @properties_value_twd = Property.value :twd, admin_hash(admin,only_positive: true)
     @properties_loan_twd = Property.value :twd, admin_hash(admin,only_negative: true)
-    @properties_net_growth_ave_month = Property.net_growth_ave_month :twd, admin_hash(admin)
+    @properties_net_growth_ave_month = (Property.net_growth_ave_month :twd, admin_hash(admin)).to_i
+    @properties_net_growth_ave_month_cny = (Property.net_growth_ave_month :cny, admin_hash(admin)).to_i
     # 访问资产负债表时能自动写入资产净值到数值记录表
     Property.record get_class_name_by_login, 1, @properties_net_value_twd.to_i
   end

@@ -83,4 +83,9 @@ class ApplicationRecord < ActiveRecord::Base
     target_rate(:cny).to_f/target_rate(:usdt)
   end
 
+  # 新台币换成人民币
+  def twd_to_cny
+    target_rate(:cny).to_f/target_rate(:twd)
+  end
+
 end

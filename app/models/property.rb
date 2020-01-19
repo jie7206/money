@@ -51,7 +51,12 @@ class Property < ApplicationRecord
 
   # 资产列表能显示3月底以来资产净值平均月增减额度
   def self.net_growth_ave_month( target_code = :twd, options = {} )
-    (net_value(target_code,options)-$net_start_value)/pass_days*30
+    if target_code == :twd
+      start_value = $net_start_value
+    elsif target_code == :cny
+      start_value = $net_start_value * self.new.twd_to_cny
+    end
+    (net_value(target_code,options)-start_value)/pass_days*30
   end
 
   # 取出所有数据集并按照等值台币由大到小排序
