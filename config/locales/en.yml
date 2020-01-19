@@ -271,6 +271,17 @@ en:
   test_huobi: Test Huobi
   ave_cost: Ave Cost
   profit_now: Profit Now
+  trial_list: Trial List
+  date_diff: Diff
+  date: Date
+  month_cost: Month Cost
+  begin_price: BPrice
+  begin_amount: BAmount
+  begin_balance: Begin
+  month_grow_rate: Grow Rate
+  end_price: EPrice
+  end_amount: EAmount
+  end_balance: End
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

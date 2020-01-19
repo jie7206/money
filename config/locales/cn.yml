@@ -274,6 +274,17 @@ cn:
   test_huobi: 测试火币
   ave_cost: 均价
   profit_now: 损益
+  trial_list: 收支试算
+  date_diff: 天数
+  date: 日期
+  month_cost: 支出
+  begin_price: 月初报价
+  begin_amount: 月初总量
+  begin_balance: 月初余额
+  month_grow_rate: 增长
+  end_price: 月末报价
+  end_amount: 月末总量
+  end_balance: 月末余额
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

@@ -10,6 +10,8 @@
       <%= link_to t(:interest_index), interests_path %> |
       <% if admin? %>
         <%= link_to t(:deal_record_index), deal_records_path %> |
+        <%= link_to t(:trial_list), trial_list_path %> |
+        <%= system_params_form_link %> |
         <%= set_auto_invest_form_link %> |
         <%= invest_log_link %> |
         <%= order_list_link %> |

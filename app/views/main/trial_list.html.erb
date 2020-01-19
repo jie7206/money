@@ -1,0 +1,47 @@
+<%
+def cal_btc_capital
+  @btc_capital = (@btc_price*@btc_amount*@usdt2cny).to_i
+end
+
+def btc_capital_twd
+  (@btc_capital*@cny2twd).to_i
+end
+%>
+<h2><%= t(:trial_list) %></h2>
+<table width="<%=$default_table_width%>">
+  <tr class="thead">
+    <td><%= t(:date_diff)%></td>
+    <td><%= t(:date)%></td>
+    <td><%= t(:month_cost)%></td>
+    <td><%= t(:begin_price)%></td>
+    <td><%= t(:begin_amount)%></td>
+    <td><%= t(:begin_balance)%></td>
+    <td><%= t(:exchange_to_twd)%></td>
+    <td><%= t(:month_grow_rate)%></td>
+    <td><%= t(:end_price)%></td>
+    <td><%= t(:end_amount)%></td>
+    <td><%= t(:end_balance)%></td>
+    <td><%= t(:exchange_to_twd)%></td>
+  </tr>
+  <% cal_btc_capital %>
+  <% (0..12*$trial_total_years).each do |n| %>
+    <tr <%= change_row_color %>>
+      <% this_date = Date.today.at_beginning_of_month+n.month %>
+      <td align="center"><%= (this_date - Date.today).to_i %></td>
+      <td align="center"><%= to_d(this_date,true) %></td>
+      <td align="right"><%= $trial_life_month_cost_cny %></td>
+      <td align="right"><%= to_n(@btc_price) %></td>
+      <td align="right"><%= to_n(@btc_amount,8) %></td>
+      <td align="right"><%= @btc_capital = @btc_capital - $trial_life_month_cost_cny %></td>
+      <td align="right"><%= btc_capital_twd %></td>
+      <td align="right"><%= to_n($trial_btc_month_grow_rate*100) %>%</td>
+      <% @btc_amount -= $trial_life_month_cost_cny/@usdt2cny/@btc_price %>
+      <% @btc_price = @btc_price.to_f * (1+$trial_btc_month_grow_rate) %>
+      <td align="right"><%= to_n(@btc_price) %></td>
+      <td align="right"><%= to_n(@btc_amount,8) %></td>
+      <td align="right"><%= cal_btc_capital %></td>
+      <td align="right"><%= btc_capital_twd %></td>
+    </tr>
+  <% end %>
+</table>
+<p>

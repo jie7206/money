@@ -375,4 +375,12 @@ class MainController < ApplicationController
     redirect_to action: :system_params_form
   end
 
+  # 输入比特币每月增长利率以及每月生活费计算能维持多少年
+  def trial_list
+    @btc_price = DealRecord.first.price_now if DealRecord.first
+    @btc_amount = Property.tagged_with('冷钱包').sum {|p| p.amount}
+    @usdt2cny = DealRecord.first.usdt_to_cny
+    @cny2twd = DealRecord.first.cny_to_twd
+  end
+
 end
