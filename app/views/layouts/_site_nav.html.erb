@@ -2,6 +2,7 @@
   <nav id="<%= id %>">
     <small>
       <%= link_back_to_properties %> |
+      <%= link_to t(:trial_list), trial_list_path %> |
       <% if admin? %>
         <%= link_to t(:portfolio_index), portfolios_path %> |
       <% end %>
@@ -10,7 +11,7 @@
       <%= link_to t(:interest_index), interests_path %> |
       <% if admin? %>
         <%= link_to t(:deal_record_index), deal_records_path %> |
-        <%= link_to t(:trial_list), trial_list_path %> |
+
         <%= system_params_form_link %> |
         <%= set_auto_invest_form_link %> |
         <%= invest_log_link %> |

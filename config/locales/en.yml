@@ -272,9 +272,11 @@ en:
   ave_cost: Ave Cost
   profit_now: Profit Now
   trial_list: Trial List
+  myage: Age
   date_diff: Diff
   date: Date
   month_cost: Month Cost
+  month_sell: Month Sell
   begin_price: BPrice
   begin_amount: BAmount
   begin_balance: Begin

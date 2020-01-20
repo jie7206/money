@@ -378,7 +378,13 @@ class MainController < ApplicationController
   # 输入比特币每月增长利率以及每月生活费计算能维持多少年
   def trial_list
     @btc_price = DealRecord.first.price_now if DealRecord.first
-    @btc_amount = Property.tagged_with('冷钱包').sum {|p| p.amount}
+    if admin?
+      @btc_amount = $trial_btc_amount_admin
+      @month_cost = $trial_life_month_cost_cny_admin
+    else
+      @btc_amount = $trial_btc_amount
+      @month_cost = $trial_life_month_cost_cny
+    end
     @usdt2cny = DealRecord.first.usdt_to_cny
     @cny2twd = DealRecord.first.cny_to_twd
   end
