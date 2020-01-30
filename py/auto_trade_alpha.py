@@ -18,11 +18,11 @@ def fees_rate():
 
 
 def buy_price_rate():
-    return 1.0005
+    return 1.0003
 
 
 def sell_price_rate():
-    return 0.9997
+    return 0.9998
 
 
 def get_price_now():
@@ -32,10 +32,14 @@ def get_price_now():
         return 0
 
 
-def usd_to_cny():
+def usd2cny():
     data = select_db("SELECT exchange_rate FROM currencies WHERE code = 'CNY'")
     return round(data[0][0], 4)
 
+
+def usdt2usd():
+    data = select_db("SELECT exchange_rate FROM currencies WHERE code = 'USDT'")
+    return round(1/data[0][0], 4)
 
 def place_new_order(price, amount, deal_type):
     global ORDER_ID
@@ -47,7 +51,7 @@ def place_new_order(price, amount, deal_type):
         else:
             return root
     except:
-        return 'Some unknow error happened when place_new_order!'
+        return 'Some unknow error happened when Place New Order!'
 
 
 def clear_orders():
@@ -287,10 +291,23 @@ def print_next_exe_time(every_sec, ftext):
     return ftext
 
 
+# 检查是否超出设定的卖出额度，若超出则少卖一些
+def check_sell_amount(sell_price, sell_amount, usdt_now, sell_max_usd):
+    over_sell = False
+    ut2u = usdt2usd()
+    if (usdt_now + sell_price*sell_amount*fees_rate())*ut2u > sell_max_usd:
+        sell_amount = round((sell_max_usd/ut2u-usdt_now)/sell_price/fees_rate(), 6)
+        over_sell = True
+    return sell_amount, over_sell
+
+
 def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, profit_cny, max_sell_count):
-    if max_sell_count > 0:
-        global ORDER_ID
-        global FORCE_SELL
+    global ORDER_ID
+    global FORCE_SELL
+    global sell_max_cny
+    usdt_now = get_trade_usdt()
+    sell_max_usd = sell_max_cny/u2c
+    if max_sell_count > 0 and usdt_now < sell_max_usd:
         rows = select_db(
             "SELECT id, amount-fees as amount, created_at, price FROM deal_records WHERE auto_sell = 0 ORDER BY created_at ASC LIMIT %i" % max_sell_count)
         if len(rows) > 0:
@@ -318,6 +335,8 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                     continue
                 else:
                     if sell_profit_total > profit_cny or sell_count == max_sell_count:
+                        # 检查是否超出设定的卖出额度，若超出则少卖一些
+                        sell_amount, over_sell = check_sell_amount(sell_price, sell_amount, usdt_now, sell_max_usd)
                         # 提交订单
                         ftext = place_order_process(test_price, sell_price,
                                                     sell_amount, 'sell-limit', ftext, time_line, u2c)
@@ -338,10 +357,19 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                             print(str)
                             ftext += str+'\n'
                             # 更新记录time_line文档
-                            update_time_line(created_at)
-                            str = "Time Line Updated to: %s" % created_at
-                            print(str)
-                            ftext += str+'\n'
+                            if over_sell:
+                                rs = select_db(
+                                    "SELECT created_at FROM deal_records WHERE auto_sell = 0 ORDER BY created_at DESC LIMIT 1")
+                                update_time_line(rs[0][0])
+                                clear_deal_records()
+                                str = "Time Line Updated to: %s And Clear Records!" % created_at
+                                print(str)
+                                ftext += str+'\n'
+                            else:
+                                update_time_line(created_at)
+                                str = "Time Line Updated to: %s" % created_at
+                                print(str)
+                                ftext += str+'\n'
                         else:
                             str = "Sim Update %i Deal Records with Profit: %.2f CNY" % (
                                 len(ids), sell_profit_total)
@@ -349,7 +377,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                             ftext += str+'\n'
                         break
     else:
-        str = "Stop Sell Process Because Max Sell Count = 0"
+        str = "Stop Sell Because Max Sell Count = 0 or USDT > Max Sell"
         print(str)
         ftext += str+'\n'
     return ftext
@@ -490,7 +518,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                     str = "Price Now: %.2f %i_Min: %.2f %i_Max: %.2f" % (price_now, buy_price_period, min_price, sell_price_period, max_price)
                 print(str)
                 ftext += str+'\n'
-                u2c = usd_to_cny()
+                u2c = usd2cny()
                 if test_price > 0 or ((FORCE_BUY == True or price_now <= below_price) and last_buy_interval() > every_sec):
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
@@ -598,7 +626,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, price_period_tune, force_to_sell, min_price_index, every_sec_for_sell = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, price_period_tune, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -622,6 +650,7 @@ if __name__ == '__main__':
                 force_to_sell = int(force_to_sell)
                 min_price_index = int(min_price_index)
                 every_sec_for_sell = int(every_sec_for_sell)
+                sell_max_cny = int(sell_max_cny)
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 if force_to_sell > 0:
                     FORCE_SELL = True

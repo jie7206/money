@@ -30,7 +30,8 @@
     <tr>
       <td valign="top"><%= n %></td>
       <td valign="top">原有参与投资的泰达币</td>
-      <td><%= invest_params_setup_link(3,100,5000,100) %></td>
+      <% ori_usdt = get_invest_params(3) %>
+      <td><span class="invest_param_select"><%= ori_usdt %></span> <%= invest_params_setup_link(3,100,5000,100) %></td>
       <% n += 1 %>
     </tr>
     <tr>
@@ -85,7 +86,7 @@
     <tr>
       <td valign="top"><%= n %></td>
       <td valign="top">单次获利人民币目标值</td>
-      <td><%= invest_params_setup_link(12,0,500,5) %></td>
+      <td><%= invest_params_setup_link(12,10,1000,10) %></td>
       <% n += 1 %>
     </tr>
     <tr>
@@ -147,6 +148,12 @@
       <td>每隔几秒自动卖出一次</td>
       <% every_sec_for_sell = get_invest_params(22) %>
       <td><span class="invest_param_select"><%= every_sec_for_sell %></span> <%= invest_params_setup_link(22,300,5700,300,0,every_sec_for_sell) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr>
+      <td valign="top"><%= n %></td>
+      <td valign="top">赎回多少本金停止卖出</td>
+      <td><%= invest_params_setup_link(23,1000,6000,50) %></td>
       <% n += 1 %>
     </tr>
   </table>
