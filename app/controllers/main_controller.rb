@@ -384,11 +384,11 @@ class MainController < ApplicationController
   def trial_list
     @btc_price = DealRecord.first.price_now if DealRecord.first
     if admin?
-      @btc_amount = $trial_btc_amount_admin
+      @btc_amount = $trial_btc_amount_admin > 0 ? $trial_btc_amount_admin : Property.find(23).amount
       @month_cost = $trial_life_month_cost_cny_admin
       @month_cost_start = $trial_month_cost_start_date_admin
     else
-      @btc_amount = $trial_btc_amount
+      @btc_amount = $trial_btc_amount > 0 ? $trial_btc_amount : Property.find(24).amount
       @month_cost = $trial_life_month_cost_cny
       @month_cost_start = $trial_month_cost_start_date
     end
