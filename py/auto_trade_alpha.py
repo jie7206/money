@@ -414,7 +414,7 @@ def min_price_in(idx, size):
         for data in root["data"]:
             a.append(data["low"])
         a.reverse()
-        if idx == 0 and price_now <= min(a):
+        if idx == 0 and int(price_now) <= int(min(a)):
             return [price_now, min(a), True]
         elif idx == 0 and price_now >= min(a):
             return [price_now, min(a), False]

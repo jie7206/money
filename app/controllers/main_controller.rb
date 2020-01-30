@@ -328,11 +328,16 @@ class MainController < ApplicationController
     @price_now = DealRecord.first.price_now
   end
 
+
+  def show_set_auto_invest_params_ok
+    t(:set_auto_invest_params_ok).sub('几',get_invest_params(16))
+  end
+
   # 设置定投参数
   def set_auto_invest_params
     if text = params[:auto_invest_params] and text.split(' ').size == $exe_auto_invest_params_size
       write_invest_params text
-      put_notice t(:set_auto_invest_params_ok)
+      put_notice show_set_auto_invest_params_ok
     else
       put_notice t(:set_auto_invest_params_error)+"(#{$exe_auto_invest_params_size})"
     end
@@ -350,7 +355,7 @@ class MainController < ApplicationController
       elsif index.to_i == 17 and get_invest_params(17).to_i > 0
         set_invest_params(1,0)
       end
-      put_notice t(:set_auto_invest_params_ok) + "#{index}:#{value}"
+      put_notice show_set_auto_invest_params_ok + "#{index} ➠ #{value}"
     else
       put_notice t(:set_auto_invest_params_error)
     end
