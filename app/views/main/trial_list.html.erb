@@ -35,13 +35,18 @@ end
       <td align="center"><%= to_d(this_date,true) %></td>
       <td align="right">$<%= to_n(@btc_price,0) %></td>
       <td align="right"><%= to_n(@btc_amount,8) %></td>
-      <td align="right">¥<%= to_n(@month_cost,0) %></td>
-      <td align="right"><%= to_n(month_sell,6) %></td>
+      <td align="right">
+        <% if this_date > @month_cost_start %>
+          <span title="<%=to_n(@month_cost*@cny2twd,0)%>"><%='¥'+to_n(@month_cost,0)%></span>
+        <% end %>
+      </td>
+      <td align="right"><%= to_n(month_sell,6) if this_date > @month_cost_start %></td>
       <td align="right">¥<%= @btc_capital = @btc_capital - @month_cost %></td>
       <td align="right"><%= btc_capital_twd %></td>
       <td align="right"><%= to_n($trial_btc_month_grow_rate*100) %>%</td>
-      <% @btc_amount -= month_sell %>
+      <% @btc_amount -= month_sell if this_date > @month_cost_start %>
       <% @btc_price = @btc_price.to_f * (1+$trial_btc_month_grow_rate) %>
+      <% @btc_price = $trial_btc_max_price if @btc_price > $trial_btc_max_price %>
       <% @month_cost = (@month_cost.to_f * (1+$trial_cost_month_grow_rate)).to_i %>
       <td align="right">$<%= to_n(@btc_price,0) %></td>
       <td align="right">¥<%= cal_btc_capital %></td>

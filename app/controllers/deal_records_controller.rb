@@ -107,7 +107,7 @@ class DealRecordsController < ApplicationController
       sleep $wait_send_sec
       redirect_to invest_log_path
     else
-      put_notice t(:send_sell_deal_records_error)
+      put_notice t(:send_sell_deal_records_error)+"(¥#{profit.to_i})"
       go_deal_records
     end
   end
@@ -128,11 +128,14 @@ class DealRecordsController < ApplicationController
 
   # 交易列表新增卖到回本功能
   def sell_to_back
+    ori_goal = get_invest_params(12)
     ori_count = get_invest_params(13)
+    set_invest_params(12,'1000000')
     set_invest_params(13,DealRecord.unsell_count.to_s)
     setup_sell_params
     put_notice t(:sell_to_back_ok)
     sleep $wait_send_sec
+    set_invest_params(12,ori_goal)
     set_invest_params(13,ori_count)
     redirect_to invest_log_path
   end

@@ -280,7 +280,7 @@ module ApplicationHelper
     btc_and_usdt_to_cny = DealRecord.btc_and_usdt_to_cny.to_i
     net_profit_cny = btc_and_usdt_to_cny - sell_max_cny
     if DealRecord.unsell_count > 0 and net_profit_cny > 0
-      link_to t(:sell_to_back)+"¥#{sell_max_cny}(#{net_profit_cny})", sell_to_back_path
+      link_to t(:sell_to_back)+"¥#{sell_max_cny}(+#{net_profit_cny})", sell_to_back_path
     end
   end
 

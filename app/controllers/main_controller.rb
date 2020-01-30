@@ -381,9 +381,11 @@ class MainController < ApplicationController
     if admin?
       @btc_amount = $trial_btc_amount_admin
       @month_cost = $trial_life_month_cost_cny_admin
+      @month_cost_start = $trial_month_cost_start_date_admin
     else
       @btc_amount = $trial_btc_amount
       @month_cost = $trial_life_month_cost_cny
+      @month_cost_start = $trial_month_cost_start_date
     end
     @usdt2cny = DealRecord.first.usdt_to_cny
     @cny2twd = DealRecord.first.cny_to_twd
