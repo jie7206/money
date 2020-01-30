@@ -206,6 +206,7 @@ en:
   clear_deal_records: Clear Deal Records
   clear_deal_records_ok: Deal Records was successfully cleared!
   update_huobi_records: Update Huobi Deal Records
+  huobi_assets: Huobi Assets
   update_huobi_assets: Update Huobi Assets
   property_clear_amount_ok: Amount have cleared!
   place_order_to_huobi: Place Order To Huobi
@@ -284,6 +285,8 @@ en:
   end_price: EPrice
   end_amount: EAmount
   end_balance: End
+  sell_to_back: Sell to Back
+  sell_to_back_ok: Sell to Back Executed successfully!
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

@@ -82,7 +82,7 @@ btc_hold = DealRecord.btc_amount
     <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
     <td align="right"><%= link_to to_n(DealRecord.btc_amount,6), place_order_form_path(sell_all:1) %></td>
     <td align="right"><%= to_n(total_cny_amount) if !params[:show_sell] %></td>
-    <td align="right"><%= to_n(DealRecord.btc_cny) if !params[:show_sell] %></td>
+    <td align="right"><%= to_n(total_cny_amount_now) if !params[:show_sell] %></td>
     <td align="right" colspan="2"><%= show_net_value_link if admin? %></td>
     <% total_real_profit = DealRecord.total_real_profit %>
     <% total_net_profit = total_real_profit + profit_cny.to_f %>
@@ -99,16 +99,16 @@ btc_hold = DealRecord.btc_amount
 <br/>
 <% if admin? %>
   <div id="func_link" style="width:<%=$default_table_width%>px">
-    <%= update_btc_huobi_portfolios_link %>
+    <%= update_btc_exchange_rates_link %>
     | <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
     | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
     | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
     | <%= link_to t(:zip_sell_deal_records), zip_sell_records_path %>
     | <%= clear_deal_records_link %>
-    |
-    <% if max_sell_count = get_invest_params(13).to_i and max_sell_count > 0 %>
-      <%= link_to t(:send_sell_deal_records)+"(#{@get_max_sell_count}/#{get_unsell_deal_records_count})", send_sell_deal_records_path %> |
-      <%= link_to t(:send_stop_loss)+"(#{@get_max_sell_count}/#{@top_deal_record_profit}/#{(@top_deal_record_profit.to_f+total_real_profit.to_f).to_i})", send_stop_loss_path %> |
+    | <%= sell_to_back_link %>
+    <% if max_sell_count = get_invest_params(13).to_i and max_sell_count > 0 and DealRecord.unsell_count > 0 %>
+      | <%= link_to t(:send_sell_deal_records)+"(#{@get_max_sell_count}/#{get_unsell_deal_records_count})", send_sell_deal_records_path %> |
+      <%= link_to t(:send_stop_loss)+"(#{@get_max_sell_count}/#{@top_deal_record_profit}/#{(@top_deal_record_profit.to_f+total_real_profit.to_f).to_i})", send_stop_loss_path %>
     <% end %>
   </div>
 <% end %>

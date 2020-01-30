@@ -69,6 +69,7 @@ class DealRecord < ApplicationRecord
     Property.tagged_with('170').each do |p|
       return p.amount if p.name.include? 'USDT'
     end
+    return 0
   end
 
   # 回传剩余比特币
@@ -77,6 +78,15 @@ class DealRecord < ApplicationRecord
       return p.amount if p.name.include? 'BTC'
     end
     return 0
+  end
+
+  # 回传剩余比特币
+  def self.btc_and_usdt_to_cny
+    result = 0
+    Property.tagged_with('170').each do |p|
+      result += p.amount_to(:cny) if p.name.include? 'BTC' or p.name.include? 'USDT'
+    end
+    return result
   end
 
   # 回传剩余比特币

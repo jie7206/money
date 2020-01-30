@@ -61,6 +61,7 @@ Rails.application.routes.draw do
   get 'zip_sell_records', to: 'deal_records#zip_sell_records'
   get 'send_sell_deal_records', to: 'deal_records#send_sell_deal_records'
   get 'send_stop_loss', to: 'deal_records#send_stop_loss'
+  get 'sell_to_back', to: 'deal_records#sell_to_back'
   get 'update_huobi_assets', to: 'main#update_huobi_assets'
   get 'update_huobi_records', to: 'main#update_huobi_records'
   get 'place_order_form', to: 'main#place_order_form'

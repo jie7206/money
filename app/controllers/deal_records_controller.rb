@@ -104,7 +104,7 @@ class DealRecordsController < ApplicationController
     if max_sell_count > 0 and DealRecord.profit_cny > profit
       setup_sell_params
       put_notice t(:send_sell_deal_records_ok)
-      sleep 20
+      sleep $wait_send_sec
       redirect_to invest_log_path
     else
       put_notice t(:send_sell_deal_records_error)
@@ -122,7 +122,18 @@ class DealRecordsController < ApplicationController
   def send_stop_loss
     setup_sell_params
     put_notice t(:send_stop_loss_ok)
-    sleep 20
+    sleep $wait_send_sec
+    redirect_to invest_log_path
+  end
+
+  # 交易列表新增卖到回本功能
+  def sell_to_back
+    ori_count = get_invest_params(13)
+    set_invest_params(13,DealRecord.unsell_count.to_s)
+    setup_sell_params
+    put_notice t(:sell_to_back_ok)
+    sleep $wait_send_sec
+    set_invest_params(13,ori_count)
     redirect_to invest_log_path
   end
 

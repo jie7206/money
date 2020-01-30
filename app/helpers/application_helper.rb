@@ -274,6 +274,16 @@ module ApplicationHelper
     link_to t(:clear_deal_records), clear_deal_records_path
   end
 
+  # 卖到回本
+  def sell_to_back_link
+    sell_max_cny = get_invest_params(23).to_i
+    btc_and_usdt_to_cny = DealRecord.btc_and_usdt_to_cny.to_i
+    net_profit_cny = btc_and_usdt_to_cny - sell_max_cny
+    if DealRecord.unsell_count > 0 and net_profit_cny > 0
+      link_to t(:sell_to_back)+"¥#{sell_max_cny}(#{net_profit_cny})", sell_to_back_path
+    end
+  end
+
   # 资产标签云
   def get_tag_cloud
     @tags = Property.tag_counts_on(:tags)
