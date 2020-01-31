@@ -35,4 +35,4 @@
 <% end %>
 <br/>
 <%= link_back_to_properties %>
-<%= link_to_delete(@property) if !@property.locked? %>
+<%= link_to_delete(@property) if admin? and !@property.locked? %>

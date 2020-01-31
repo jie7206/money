@@ -88,6 +88,10 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page).to have_content digital_price
     end
 
+    specify '#252不可删除的资产名称旁边有一个🔒图示以提醒该资产项目不可被删除' do
+      expect(page).to have_content '🔒', count: 1
+    end
+
   end
 
   describe '新增资产' do
@@ -145,7 +149,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
 
   end
 
-  describe '修改与删除资产' do
+  describe '修改资产' do
 
     let!(:property) { create(:property) }
 
@@ -181,12 +185,6 @@ RSpec.describe '系统测试(Properties)', type: :system do
         locked_p = create(:property, :usd_locked)
         visit edit_property_path(locked_p)
         expect(page).not_to have_selector '#delete_property'
-      end
-
-      specify '能通过表单删除一笔资产记录' do
-        find('#delete_property').click
-        expect(page).not_to have_content property.name
-        expect(page).to have_selector '.alert-notice'
       end
 
     end
@@ -250,6 +248,14 @@ RSpec.describe '系统测试(Properties)', type: :system do
       expect(page).not_to have_content Property.net_value(:twd, include_hidden: false).to_i
     end
 
+    specify '以管理员登入才能通过表单删除一笔资产记录' do
+      p = @ps[0]
+      click_on p.name
+      find('#delete_property').click
+      expect(page).not_to have_content p.name
+      expect(page).to have_selector '.alert-notice'
+    end
+
     specify '#122[系统层]以管理员登入才可以将资产设为隐藏的资产' do
       p = @ps[0]
       p.is_hidden = false
@@ -277,6 +283,7 @@ RSpec.describe '系统测试(Properties)', type: :system do
       fill_in 'pincode', with: "#{$pincode}"
       find('#login').click
       visit edit_property_path(p)
+      expect(page).not_to have_selector '#property_is_locked'
       expect(page).not_to have_selector '#delete_property'
     end
 

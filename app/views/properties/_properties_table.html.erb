@@ -16,7 +16,7 @@
 <% properties.each do |property| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
-    <td><%= link_edit_to(property,property.name,session[:path],title: property.tag_list) %></td>
+    <td><%= link_edit_to(property,property.name,session[:path],title: property.tag_list) %> <%= '🔒' if property.locked? %></td>
   <% if property.item %>
     <td align="right"><%= link_to to_n(property.amount), edit_item_path(property.item,path:properties_path) %></td>
   <% else %>
