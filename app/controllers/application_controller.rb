@@ -312,7 +312,8 @@ class ApplicationController < ActionController::Base
       @chart_data += "<set label='#{date.strftime("%Y-%m-%d")}' value='#{this_value}' />"
     end
     set_fusion_chart_max_and_min_value
-    @caption = "#{@name} #{$fusionchart_data_num}天走势图 最新 #{@newest_value} ( #{@min_value} ➠ #{@max_value} )"
+    t2c = Property.new.twd_to_cny
+    @caption = "#{@name} #{$fusionchart_data_num}天走势图 最新 #{@newest_value} | #{(@newest_value*t2c).to_i} ( #{@min_value} | #{(@min_value*t2c).to_i} ➠ #{@max_value} | #{(@max_value*t2c).to_i} )"
   end
 
   # 显示走势图
