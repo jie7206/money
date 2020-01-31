@@ -1,7 +1,7 @@
 class PropertiesController < ApplicationController
 
   before_action :set_property, only: [:edit, :update, :update_amount, :destroy, :delete]
-  #after_action :update_all_portfolio_attributes, only: [:create, :update, :update_amount, :destroy]
+  after_action :update_all_portfolio_attributes, only: [:create, :destroy]
 
   # 资产负债列表
   def index

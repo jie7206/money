@@ -188,8 +188,8 @@ cn:
   deal_record_fees: 手续费用
   deal_record_purpose: 投资目的
   deal_record_created: 下单时间
-  deal_record_earn_limit: 止盈(¥)
-  deal_record_loss_limit: 止损(¥)
+  deal_record_earn_limit: 止盈
+  deal_record_loss_limit: 止损
   deal_record_earn_short: 止盈价
   deal_record_loss_short: 止损价
   deal_record_order_id: 下单编号

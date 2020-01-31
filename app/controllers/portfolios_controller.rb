@@ -1,6 +1,6 @@
 class PortfoliosController < ApplicationController
 
-  before_action :check_admin, except: [:update_all_portfolio_attributes]
+  before_action :check_admin, except: [:update_portfolios_and_records]
   before_action :set_portfolio, only: [:edit, :update, :destroy, :delete]
   after_action :update_all_portfolio_attributes, only: [:create]
 
