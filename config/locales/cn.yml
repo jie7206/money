@@ -33,6 +33,7 @@ cn:
   positive_property: 资产
   negative_property: 负债
   property_is_hidden: 设为隐藏
+  property_is_locked: 不可删除
   property_index: 资产列表
   back_to: 返回
   edit_property: 编辑资产

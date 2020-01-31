@@ -5,6 +5,7 @@ FactoryBot.define do
     name { '现金' }
     amount { 10000.0 }
     is_hidden { false }
+    is_locked { false }
     tag_list { '个人资产' }
     association :currency, :krw
 
@@ -24,6 +25,13 @@ FactoryBot.define do
       name { '个人比特币' }
       amount { 10000.0 }
       is_hidden { true }
+      association :currency, :usd
+    end
+
+    trait :usd_locked do
+      name { '私人比特币' }
+      amount { 10000.0 }
+      is_locked { true }
       association :currency, :usd
     end
 

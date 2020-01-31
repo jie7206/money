@@ -20,6 +20,10 @@
     <td><%= f.check_box(:is_hidden) %></td>
   </tr>
   <tr>
+    <td><%= t(:property_is_locked) %>：</td>
+    <td><%= f.check_box(:is_locked) %></td>
+  </tr>
+  <tr>
     <td><%= t(:property_tag_list) %>：</td>
     <td><%= f.text_field(:tag_list,size:40,placeholder:'请用空格分开每一个标签') %></td>
   </tr>
@@ -31,4 +35,4 @@
 <% end %>
 <br/>
 <%= link_back_to_properties %>
-<%= link_to_delete(@property) %>
+<%= link_to_delete(@property) if !@property.locked? %>

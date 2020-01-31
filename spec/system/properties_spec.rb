@@ -177,6 +177,12 @@ RSpec.describe '系统测试(Properties)', type: :system do
         expect(page).to have_selector '.alert-notice'
       end
 
+      specify '#251若资产项目有不可删除的属性则在该资产编辑页面里不显示删除链接' do
+        locked_p = create(:property, :usd_locked)
+        visit edit_property_path(locked_p)
+        expect(page).not_to have_selector '#delete_property'
+      end
+
       specify '能通过表单删除一笔资产记录' do
         find('#delete_property').click
         expect(page).not_to have_content property.name
@@ -257,6 +263,21 @@ RSpec.describe '系统测试(Properties)', type: :system do
       find('#login').click
       visit properties_path
       expect(page).not_to have_content p.name
+    end
+
+    specify '#251以管理员登入才可以将资产设为不可删除的资产' do
+      p = @ps[0]
+      p.is_locked = false
+      click_on p.name
+      find('#property_is_locked').click
+      find('#update_property').click
+      within '#site_nav' do
+        find('#logout').click
+      end
+      fill_in 'pincode', with: "#{$pincode}"
+      find('#login').click
+      visit edit_property_path(p)
+      expect(page).not_to have_selector '#delete_property'
     end
 
     specify '#126[系统层]一般登入与管理员看到的资产占比是不同的' do

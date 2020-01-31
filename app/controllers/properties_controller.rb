@@ -93,7 +93,7 @@ class PropertiesController < ApplicationController
     def property_params
       if admin?
         params[:property][:tag_list].gsub!(' ',',') if !params[:property][:tag_list].nil?
-        params.require(:property).permit(:name,:amount,:currency_id,:is_hidden,:tag_list)
+        params.require(:property).permit(:name,:amount,:currency_id,:is_hidden,:is_locked,:tag_list)
       else
         params.require(:property).permit(:name,:amount,:currency_id)
       end

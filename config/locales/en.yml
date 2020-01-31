@@ -33,6 +33,7 @@ en:
   positive_property: Property
   negative_property: Loan
   property_is_hidden: Set as Hidden Property
+  property_is_locked: Set as Locked Property
   property_index: Balance Sheet
   back_to: Back To
   edit_property: Edit Property
