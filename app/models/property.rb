@@ -92,9 +92,19 @@ class Property < ApplicationRecord
     update_attribute(:is_hidden, true)
   end
 
+  # 将此资产设置为不可删除资产
+  def set_as_locked
+    update_attribute(:is_locked, true)
+  end
+
   # 回传此资产是否为隐藏资产
   def hidden?
     is_hidden
+  end
+
+  # 回传此资产是否为不可删除资产
+  def locked?
+    is_locked
   end
 
   # 除了数字资产以小数点8位显示外其余为小数点2位

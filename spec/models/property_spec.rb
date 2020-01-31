@@ -71,6 +71,12 @@ RSpec.describe '模型测试(Property)', type: :model do
       expect(Property.all_visible).not_to include property
     end
 
+    specify '#250资产模型新增不可删除属性以免某些使用的资产因删除而导致系统无法使用' do
+      property = @ps[0]
+      property.set_as_locked
+      expect(property.reload).to be_locked
+    end
+
     specify '#120[模型层]资产模型能计算不包含隐藏资产的总净值' do
       expect(Property.value(:twd,include_hidden: false).to_i).to \
         eq property_total_value_to(:twd,nil,include_hidden: false).to_i
