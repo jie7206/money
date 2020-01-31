@@ -221,7 +221,7 @@ cn:
   update_btc_price_ok: 比特币价格已更新！
   update_btc_exchange_rates: 更新比特币
   update_btc: 更新比特币
-  profit_p: 利率%
+  profit_p: 利率
   cancel_order: 取消这笔下单
   cancel_order_ok: 取消下单成功！
   get_price_error: 取得报价时遇到错误！

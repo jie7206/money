@@ -61,7 +61,7 @@ class DealRecord < ApplicationRecord
 
   # 回传目前仓位
   def self.btc_level
-    return self.twd_of_btc/self.twd_of_170*100
+    return (self.twd_of_btc/self.twd_of_170)*100
   end
 
   # 回传剩余资金
