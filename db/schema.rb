@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_31_134515) do
+ActiveRecord::Schema.define(version: 2020_02_01_091308) do
 
   create_table "currencies", force: :cascade do |t|
     t.string "name"
@@ -123,6 +123,20 @@ ActiveRecord::Schema.define(version: 2020_01_31_134515) do
     t.string "name"
     t.integer "taggings_count", default: 0
     t.index ["name"], name: "index_tags_on_name", unique: true
+  end
+
+  create_table "trial_lists", force: :cascade do |t|
+    t.date "trial_date"
+    t.decimal "begin_price"
+    t.decimal "begin_amount"
+    t.integer "month_cost"
+    t.decimal "month_sell"
+    t.integer "begin_balance"
+    t.integer "begin_balance_twd"
+    t.decimal "month_grow_rate"
+    t.decimal "end_price"
+    t.integer "end_balance"
+    t.integer "end_balance_twd"
   end
 
 end
