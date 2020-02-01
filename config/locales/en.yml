@@ -288,6 +288,9 @@ en:
   end_balance: End
   sell_to_back: Sell to Back
   sell_to_back_ok: Sell to Back Executed successfully!
+  save_trials_to_db: Save Trials To DB
+  save_trials_to_db_ok: Save Trials To DB successfully!
+  have_reached: Reached
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

@@ -29,9 +29,10 @@ li {
   <li>rake db:create:all</li>
   <li>rake db:test:clone_structure</li>
   <li>rails generate scaffold guest_book name:string message:text is_vip:boolean income:decimal important:integer data:binary user:references</li>
-  <li>rails g migration add_column_to_cook_book_langs order_by_id:boolean</li>
+  <li>rails generate migration add_column_to_cook_book_langs order_by_id:boolean</li>
   <li>rails generate model Topic --skip-migration</li>
-  <li>rails generate model Topic title:string money:integer --skip-timestamps</li>
+  <li>rails generate model Topic title:string money:integer</li>
+  <li>rails generate resource TrialList --skip</li>
   <li>rails destroy model Topic</li>
   <li>rails generate controller customers index show new edit create update destroy</li>
   <li>rails generate controller 'admin/manage' index</li>

@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :trial_lists
   root 'deal_records#index'
 
   resources :properties do
@@ -47,7 +48,6 @@ Rails.application.routes.draw do
   get '/logout', to: 'main#logout'
   get '/chart', to: 'main#chart'
   get 'update_huobi_data', to: 'main#update_huobi_data'
-  get 'trial_list', to: 'main#trial_list'
   get 'update_all_data', to: 'properties#update_all_data'
   get 'update_all_exchange_rates', to: 'currencies#update_all_exchange_rates'
   get 'update_all_legal_exchange_rates', to: 'currencies#update_all_legal_exchange_rates'
@@ -81,5 +81,6 @@ Rails.application.routes.draw do
   get 'main/del_huobi_orders'
   get 'main/kline_chart'
   get 'main/line_chart'
+  get 'save_trials_to_db', to: 'trial_lists#save_trials_to_db'
 
 end

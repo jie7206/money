@@ -291,6 +291,9 @@ cn:
   end_balance: 月末额
   sell_to_back: 卖至回本
   sell_to_back_ok: 卖到回本下单已执行！
+  save_trials_to_db: 将试算结果存入数据库
+  save_trials_to_db_ok: 已将试算结果存入数据库！
+  have_reached: 已达成
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

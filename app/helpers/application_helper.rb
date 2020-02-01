@@ -508,4 +508,24 @@ module ApplicationHelper
     return raw(result)
   end
 
+  # 用于收支试算函数
+  def cal_btc_capital
+    @btc_capital = (@btc_price*@btc_amount*@usdt2cny).to_i
+  end
+
+  # 用于收支试算函数
+  def btc_capital_twd
+    (@btc_capital*@cny2twd).to_i
+  end
+
+  # 检查最新的比特币报价是否已达成数据库储存的理财目标
+  def check_trial_reached( trial_date, end_balance_twd )
+    today = Date.today
+    if trial_date.year == today.year and trial_date.month == today.month and rs = TrialList.find_by_trial_date(trial_date) and goal = rs.end_balance_twd and end_balance_twd > goal
+      return image_tag('ok.png',width:20)
+    else
+      return ''
+    end
+  end
+
 end

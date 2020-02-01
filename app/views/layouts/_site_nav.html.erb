@@ -2,7 +2,7 @@
   <nav id="<%= id %>">
     <small>
       <%= link_back_to_properties %> |
-      <%= link_to t(:trial_list), trial_list_path %> |
+      <%= link_to t(:trial_list), trial_lists_path %> |
       <% if admin? %>
         <%= link_to t(:huobi_assets), properties_path(tags:'170') %> |
         <%= link_to t(:portfolio_index), portfolios_path %> |
