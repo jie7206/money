@@ -113,8 +113,7 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>买入几分钟内的最低价</td>
-      <% buy_price_period = get_invest_params(17) %>
-      <td><%= invest_params_setup_link(17,0,480,5) %></td>
+      <td><%= show_invest_param_value(17) %> <%= invest_params_setup_link(17,0,480,5) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
