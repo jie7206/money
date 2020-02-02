@@ -2,11 +2,10 @@
 <%= form_tag set_auto_invest_params_path, method: :post, id: 'set_auto_invest_form' do %>
   <% n = 0 %>
   <table width="<%=$default_table_width%>">
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td width="163">每隔几秒自动买入一次</td>
-      <% every_sec_to_buy = get_invest_params(0) %>
-      <td><span class="invest_param_select"><%= every_sec_to_buy %></span> <%= invest_params_setup_link(0,300,5700,300,0,every_sec_to_buy) %></td>
+      <td><%= show_invest_param_value(0) %> <%= invest_params_setup_link(0,0,10800,300) %></td>
       <% n += 1 %>
     </tr>
     <%
@@ -14,145 +13,143 @@
     end_price = @price_now*1.2
     price_step = 50
     %>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">多少价位以下执行买入</td>
-      <% below_price = get_invest_params(1) %>
-      <td><span class="invest_param_select"><%= below_price %></span> <%= invest_params_setup_link(1,start_price,end_price,price_step,0,below_price) %></td>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>多少价位以下执行买入</td>
+      <td><%= show_invest_param_value(1) %> <%= invest_params_setup_link(1,start_price,end_price,price_step) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">跌破多少价位停止买入</td>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>跌破多少价位停止买入</td>
       <td><%= invest_params_setup_link(2,start_price,end_price,price_step) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">原有参与投资的泰达币</td>
-      <% ori_usdt = get_invest_params(3) %>
-      <td><span class="invest_param_select"><%= ori_usdt %></span> <%= invest_params_setup_link(3,100,5000,100) %></td>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>原有参与投资的泰达币</td>
+      <td><%= show_invest_param_value(3) %> <%= invest_params_setup_link(3,100,5000,100) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">单笔买入价格调整参数</td>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>单笔买入价格调整参数</td>
       <td><%= invest_params_setup_link(4,0.1,10.0,0.1,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">自动买入的最大仓位值</td>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>自动买入的最大仓位值</td>
       <td><%= invest_params_setup_link(5,0,100,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>买入比特币的最大总值</td>
       <td><%= invest_params_setup_link(6,0.1,2.7,0.1,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">单笔买入泰达币最小值</td>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>单笔买入泰达币最小值</td>
       <td><%= invest_params_setup_link(7,1.1,10.0,0.1,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>单笔买入泰达币最大率</td>
       <td><%= invest_params_setup_link(8,1,20) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>更新交易列表记录日期</td>
       <td>无需设定</td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>更新交易列表记录时间</td>
       <td>无需设定</td>
       <% n += 1 %>
     </tr>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">用于测试的比特币价格</td>
-      <% test_price = get_invest_params(11) %>
-      <td><span class="invest_param_select"><%= test_price %></span> <%= invest_params_setup_link(11,(@price_now*0.8).to_i/100*100,@price_now*1.2,50) %></td>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>用于测试的比特币价格</td>
+      <% rate_param = 0.03 %>
+      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),5) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">单次获利人民币目标值</td>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>单次获利人民币目标值</td>
       <td><%= invest_params_setup_link(12,10,1000,10) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>单次获利最多卖出笔数</td>
       <td><%= invest_params_setup_link(13,0,36,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>时间间隔的倍数最小值</td>
       <td><%= invest_params_setup_link(14,0.1,2.7,0.1,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>时间间隔的倍数最大值</td>
       <td><%= invest_params_setup_link(15,1.0,3.6,0.1,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>每几秒钟侦测参数变化</td>
       <td><%= invest_params_setup_link(16,1,30,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">买入几分钟内的最低价</td>
-      <td><%= invest_params_setup_link(17,0,180,1) %></td>
-      <% n += 1 %>
-    </tr>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">卖出几分钟内的最高价</td>
-      <td><%= invest_params_setup_link(18,0,180,1) %></td>
-      <% n += 1 %>
-    </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
-      <td>上两个参数的微调参数</td>
-      <td><%= invest_params_setup_link(19,0,2.6,0.1,1) %></td>
+      <td>买入几分钟内的最低价</td>
+      <% buy_price_period = get_invest_params(17) %>
+      <td><%= invest_params_setup_link(17,0,480,5) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>卖出几分钟内的最高价</td>
+      <td><%= invest_params_setup_link(18,0,480,5) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>仓位越高买入周期越长</td>
+      <td><%= invest_params_setup_link(19,0,1.0,0.02,2) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>是否强制执行停损卖出</td>
       <td>无需设定</td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>触底反弹买进的索引值</td>
       <td><%= invest_params_setup_link(21,0,-27,-1) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
+    <tr valign="top">
       <td><%= n %></td>
       <td>每隔几秒自动卖出一次</td>
-      <% every_sec_for_sell = get_invest_params(22) %>
-      <td><span class="invest_param_select"><%= every_sec_for_sell %></span> <%= invest_params_setup_link(22,300,5700,300,0,every_sec_for_sell) %></td>
+      <td><%= show_invest_param_value(22) %> <%= invest_params_setup_link(22,300,5700,300) %></td>
       <% n += 1 %>
     </tr>
-    <tr>
-      <td valign="top"><%= n %></td>
-      <td valign="top">赎回多少本金停止卖出</td>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>赎回多少本金停止卖出</td>
       <td><%= invest_params_setup_link(23,2000,6000,50) %></td>
       <% n += 1 %>
     </tr>

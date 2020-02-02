@@ -496,15 +496,14 @@ module ApplicationHelper
   end
 
   # 显示定投参数的设定值链接
-  def invest_params_setup_link( index, min, max, step = 1, pos = 0, pass_value = nil )
+  def invest_params_setup_link( index, min, max, step = 1, pos = 0 )
     result = ''
     (min..max).step(step).each do |n|
       value = to_n(n.floor(pos),pos)
-      style = value == get_invest_params(index) ? 'invest_param_select' : ''
-      if value != pass_value
-        result += link_to(value, setup_invest_param_path(i:index,v:value), class: style) + ' '
-      end
+      style = (!@already_show and value == get_invest_params(index)) ? 'invest_param_select' : ''
+      result += link_to(value, setup_invest_param_path(i:index,v:value), class: style) + ' '
     end
+    @already_show = false
     return raw(result)
   end
 
@@ -526,6 +525,13 @@ module ApplicationHelper
     else
       return ''
     end
+  end
+
+  # 显示无定投参数选项的精确值
+  def show_invest_param_value( index )
+    value = get_invest_params(index)
+    @already_show = true
+    raw "<span class=\"invest_param_select\">#{value}</span>"
   end
 
 end

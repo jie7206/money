@@ -18,11 +18,11 @@ def fees_rate():
 
 
 def buy_price_rate():
-    return 1.0003
+    return 1.00015
 
 
 def sell_price_rate():
-    return 0.9998
+    return 0.99995
 
 
 def get_price_now():
@@ -114,7 +114,7 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
     global below_price
     global buy_price_period
     global sell_price_period
-    global price_period_tune
+    global buy_period_move
     if test_price == 0:
         str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
         print(str)
@@ -137,14 +137,14 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
                 trade_btc, btc_cny, usdt_cny+btc_cny)
             print(str)
             ftext += str+'\n'
-            btc_level_now = btc_hold_level(price, u2c)
+            btc_level_now = btc_hold_level(price)
             profit_now = profit_cny_now(price, u2c)
             str = "BTC Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
                 btc_level_now, btc_ave_cost(), profit_now)
             print(str)
             ftext += str+'\n'
-            if buy_price_period > 0 and price_period_tune > 0:
-                new_buy_price_period = int(btc_level_now/price_period_tune)
+            if buy_price_period > 0 and buy_period_move > 0:
+                new_buy_price_period = int(btc_level_now/buy_period_move)
                 if new_buy_price_period < 2:
                     new_buy_price_period = 2
                 update_buy_price_period(new_buy_price_period)
@@ -163,7 +163,25 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
         str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price, amount, deal_type)
         print(str)
         ftext += str+'\n'
+        sim_btc_level, sim_ave_price = cal_sim_btc_level(price, amount)
+        str = "Sim BTC Level: %.2f%%, Ave: %.2f" % (sim_btc_level, sim_ave_price)
+        print(str)
+        ftext += str+'\n'
     return ftext
+
+def cal_sim_btc_level(price, amount, type='buy'):
+    btc_amount = float(get_trade_btc())
+    usdt = float(get_trade_usdt())
+    if type == 'buy':
+        sim_usdt = usdt - price*amount
+        sim_btc_amount = btc_amount + amount*fees_rate()
+    if type == 'sell':
+        sim_usdt = usdt + price*amount*fees_rate()
+        sim_btc_amount = btc_amount - amount
+    sim_btc_usdt = price*sim_btc_amount
+    sim_btc_level = sim_btc_usdt/(sim_btc_usdt+sim_usdt)*100
+    sim_ave_price = sim_btc_usdt/sim_btc_amount
+    return [sim_btc_level, sim_ave_price]
 
 
 def profit_cny_now(price, u2c):
@@ -269,15 +287,15 @@ def reset_test_price():
         return 0
 
 
-def btc_hold_level(price, u2c):
+def btc_hold_level(price):
     amounts = {'usdt': 0, 'btc': 0}
     for item in get_balance(ACCOUNT_ID)['data']['list']:
         for currency in ['usdt', 'btc']:
             if item['currency'] == currency:
                 amounts[currency] += float(item['balance'])
-    btc_cny = price*amounts['btc']*u2c
-    usdt_cny = amounts['usdt']*u2c
-    return btc_cny/(btc_cny+usdt_cny)*100
+    btc_usdt = price*amounts['btc']
+    usdt = amounts['usdt']
+    return btc_usdt/(btc_usdt+usdt)*100
 
 
 def print_next_exe_time(every_sec, ftext):
@@ -524,7 +542,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                     trade_usdt = float(get_trade_usdt())
                     bottom = float(bottom_price)
                     max_usdt = ori_usdt*max_rate
-                    btc_level_now = btc_hold_level(price_now, u2c)
+                    btc_level_now = btc_hold_level(price_now)
                     if test_price > 0 or (max_buy_level > 0 and trade_usdt > min_usdt and price_now - bottom >= 0 and btc_level_now < max_buy_level):
                         # Caculate USDT and Amount
                         price_diff = price_now - bottom
@@ -626,7 +644,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, price_period_tune, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -646,7 +664,7 @@ if __name__ == '__main__':
                 detect_sec = int(detect_sec)
                 buy_price_period = int(buy_price_period)
                 sell_price_period = int(sell_price_period)
-                price_period_tune = float(price_period_tune)
+                buy_period_move = float(buy_period_move)
                 force_to_sell = int(force_to_sell)
                 min_price_index = int(min_price_index)
                 every_sec_for_sell = int(every_sec_for_sell)
