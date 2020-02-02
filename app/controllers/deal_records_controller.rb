@@ -64,9 +64,8 @@ class DealRecordsController < ApplicationController
       content = File.read($auto_invest_log_path)
       line = $log_split_line
       if content.include? line
-        text = content.split(line).reverse[0..($keep_invest_log_num-1)].reverse.join(line)
+        text = line+content.split(line).reverse[0..($keep_invest_log_num-1)].reverse.join(line)
       end
-      text += line
     end
     if File.exist? $auto_invest_log_path
         File.delete $auto_invest_log_path

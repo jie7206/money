@@ -1,0 +1,48 @@
+----------------------------------------------------------------------
+2020-02-02 15:22:08 Invest Between: 8700.00 ~ AUTO
+4 Digital Prices updated
+Test Price: 9360.00 Now: 9360.00 254_Min: 9165.38 0_Max: 9361.82
+Price Now Update to: 9360.00
+BTC Level: 76.61% (FORCE_BUY:False)
+Total  USDT: 155.0633 USDT (1080.31 CNY)
+Invest Cost: 7.6400 USDT (53.23 CNY)
+Buy  Amount: 0.000816 BTC (53.23 CNY)
+Next Time: 2020-02-02 15:51:55 (29.78 M | 0.50 H)
+Zero Time: 2020-02-03 01:26:37 (10.07 H | 0.42 D)
+Sim Order Price: 9361.40, Amount: 0.000816, Type: buy-limit
+Sim BTC Level: 77.77%, Ave: 9404.55
+----------------------------------------------------------------------
+2020-02-02 15:29:16 Invest Between: 8700.00 ~ AUTO
+4 Digital Prices updated
+Price Now: 9367.00 254_Min: 9165.38 0_Max: 9369.34
+Buy conditions not met, Check if can sell...
+Profit: -21.87 < 100.00 or Sell Count = 0 or Sell Time < 1800
+Next Time: 2020-02-02 15:59:16 (30.00 M | 0.50 H)
+----------------------------------------------------------------------
+2020-02-02 15:29:17 Invest Between: 8700.00 ~ AUTO
+4 Digital Prices updated
+Price Now: 9367.00 254_Min: 9165.38 0_Max: 9369.34
+Buy conditions not met, Check if can sell...
+Profit: -21.87 < 100.00 or Sell Count = 0 or Sell Time < 1800
+Next Time: 2020-02-02 15:59:16 (30.00 M | 0.50 H)
+----------------------------------------------------------------------
+2020-02-02 15:29:18 Invest Between: 8700.00 ~ AUTO
+4 Digital Prices updated
+Price Now: 9367.00 254_Min: 9165.38 0_Max: 9369.34
+Buy conditions not met, Check if can sell...
+Profit: -21.87 < 100.00 or Sell Count = 0 or Sell Time < 1800
+Next Time: 2020-02-02 15:59:16 (30.00 M | 0.50 H)
+----------------------------------------------------------------------
+2020-02-02 15:29:19 Invest Between: 8700.00 ~ AUTO
+4 Digital Prices updated
+Price Now: 9367.00 254_Min: 9165.38 0_Max: 9369.34
+Buy conditions not met, Check if can sell...
+Profit: -21.87 < 100.00 or Sell Count = 0 or Sell Time < 1800
+Next Time: 2020-02-02 15:59:16 (30.00 M | 0.50 H)
+----------------------------------------------------------------------
+2020-02-02 15:29:20 Invest Between: 8700.00 ~ AUTO
+4 Digital Prices updated
+Price Now: 9367.00 254_Min: 9165.38 0_Max: 9369.34
+Buy conditions not met, Check if can sell...
+Profit: -21.87 < 100.00 or Sell Count = 0 or Sell Time < 1800
+Next Time: 2020-02-02 15:59:16 (30.00 M | 0.50 H)
