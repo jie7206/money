@@ -170,17 +170,21 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
     return ftext
 
 def cal_sim_btc_level(price, amount, type='buy'):
+    global ori_usdt
     btc_amount = float(get_trade_btc())
     usdt = float(get_trade_usdt())
+    cost_usdt = ori_usdt - usdt
     if type == 'buy':
         sim_usdt = usdt - price*amount
         sim_btc_amount = btc_amount + amount*fees_rate()
+        sim_cost_usdt = cost_usdt + price*amount
     if type == 'sell':
         sim_usdt = usdt + price*amount*fees_rate()
         sim_btc_amount = btc_amount - amount
+        sim_cost_usdt = cost_usdt - price*amount
     sim_btc_usdt = price*sim_btc_amount
     sim_btc_level = sim_btc_usdt/(sim_btc_usdt+sim_usdt)*100
-    sim_ave_price = sim_btc_usdt/sim_btc_amount
+    sim_ave_price = sim_cost_usdt/sim_btc_amount
     return [sim_btc_level, sim_ave_price]
 
 
