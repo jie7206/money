@@ -11,6 +11,7 @@ cn:
   xiang: 项
   compose: 成员
   edit: 编辑
+  keep: 保留
   home_title: 我的首页
   back_to_home: 返回首页
   hello: 您好！欢迎来到我的网站 ^_^
@@ -252,6 +253,7 @@ cn:
   invest_log: 定投日志
   clear_invest_log: 清空日志
   delete_invest_log_ok: 定投日志已清空！
+  clear_invest_log_and_keep: 定投日志已清空至保留
   swap_chart: 切换图表
   see_kline: 看K线图
   see_line: 看折线图

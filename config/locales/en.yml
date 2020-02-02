@@ -5,12 +5,13 @@ en:
   login_err_msg: Your PIN code is not correct!
   logout: Logout
   home: Home
-  bi: ' '
+  bi: 'record(s)'
   look: Look
   edit: Edit
   chart: Chart
   xiang: ' '
   compose: Compose
+  keep: Keep
   home_title: My Homepage
   back_to_home: Home
   hello: Hello! Welcome to my site ^_^
@@ -249,6 +250,7 @@ en:
   invest_log: Invest Log
   clear_invest_log: Clear Invest Log
   delete_invest_log_ok: Invest log was clear successfully!
+  clear_invest_log_and_keep: Invest log was clear to keep
   swap_chart: Swap Chart
   see_kline: See KLine
   see_line: See Line

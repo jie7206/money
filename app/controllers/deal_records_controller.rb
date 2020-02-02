@@ -59,10 +59,26 @@ class DealRecordsController < ApplicationController
   end
 
   def delete_invest_log
+    text = nil
+    if $keep_invest_log_num and $keep_invest_log_num > 0
+      content = File.read($auto_invest_log_path)
+      line = $log_split_line
+      if content.include? line
+        text = content.split(line).reverse[0..($keep_invest_log_num-1)].reverse.join(line)
+      end
+      text += line
+    end
     if File.exist? $auto_invest_log_path
         File.delete $auto_invest_log_path
-        File.new $auto_invest_log_path, 'w+'
-        put_notice t(:delete_invest_log_ok)
+        if text
+          File.open($auto_invest_log_path, 'w+') do |f|
+            f.write(text)
+          end
+          put_notice t(:clear_invest_log_and_keep)+$keep_invest_log_num.to_s+t(:bi)
+        else
+          File.new $auto_invest_log_path, 'w+'
+          put_notice t(:delete_invest_log_ok)
+        end
     end
     go_back
   end

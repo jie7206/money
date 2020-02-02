@@ -314,11 +314,9 @@ class MainController < ApplicationController
   # 183将Python脚本在控制台输出的讯息写到文档然后可以点击网页查看
   def read_auto_invest_log
     @content = File.read($auto_invest_log_path)
-    line = '-'*70
+    line = $log_split_line
     if @content.include? line
-      # newest_log = @content.split(line)[-1].strip
       @content = @content.split(line).reverse.join(line)
-      # @content = newest_log + "\n" + @content
     end
   end
 
