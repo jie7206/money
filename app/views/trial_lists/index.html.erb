@@ -21,6 +21,7 @@
     <tr <%= change_row_color %>>
       <% this_date = Date.today.at_beginning_of_month+n.month %>
       <% month_sell = @month_cost/@usdt2cny/@btc_price %>
+      <% begin_price = @btc_price %>
       <td align="center"><%= (((this_date-birthday).to_i)/365).to_i %></td>
       <td align="center"><%= to_d(this_date,true) %></td>
       <td align="right">$<%= to_n(@btc_price,0) %></td>
@@ -32,7 +33,7 @@
       </td>
       <td align="right"><%= to_n(month_sell,6) if this_date > @month_cost_start %></td>
       <td align="right">¥<%= @btc_capital = @btc_capital - @month_cost %></td>
-      <td align="right"><%= btc_capital_twd %></td>
+      <td align="right"><%= begin_balance_twd = btc_capital_twd %></td>
       <td align="right"><%= to_n($trial_btc_month_grow_rate*100) %>%</td>
       <% @btc_amount -= month_sell if this_date > @month_cost_start %>
       <% @btc_price = @btc_price.to_f * (1+$trial_btc_month_grow_rate) %>
@@ -41,10 +42,10 @@
       <td align="right">$<%= to_n(@btc_price,0) %></td>
       <td align="right">¥<%= cal_btc_capital %></td>
       <td align="right"><%= end_balance_twd = btc_capital_twd %></td>
-      <td align="center"><%= check_trial_reached(this_date,end_balance_twd) %></td>
+      <td align="center"><%= check_trial_reached(this_date,begin_price) %></td>
     </tr>
   <% end %>
 </table>
 <p>
-  <%= link_to t(:save_trials_to_db), save_trials_to_db_path, { id: 'save_trials_to_db' } %>
+  <%= link_to t(:save_trials_to_db), save_trials_to_db_path, { id: 'save_trials_to_db' } if admin? %>
 </p>

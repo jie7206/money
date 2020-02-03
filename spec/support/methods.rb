@@ -112,7 +112,12 @@ def property_total_value_to( target_code, new_target_currency = nil, options = {
     (next if p.negative?) if options[:only_positive]
     (next if p.positive?) if options[:only_negative]
     ex = p.currency.exchange_rate
-    result += p.amount*(to_ex.to_f/ex.to_f)
+    value = p.amount*(to_ex.to_f/ex.to_f)
+    if p.amount < 0 and lixi = p.lixi(target_code).to_i
+      result += value + lixi
+    else
+      result += value
+    end
   end
   return result.to_i
 end

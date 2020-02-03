@@ -29,7 +29,7 @@ module ApplicationHelper
 
   # 网站Logo图示
   def site_logo
-    raw image_tag($site_logo, id: "site_logo", alt: site_name, align: "absmiddle")
+    raw image_tag($site_logo, width: $site_logo_width, height: $site_logo_height, id: "site_logo", alt: site_name, align: "absmiddle")
   end
 
   # 判断是否已登入
@@ -518,10 +518,16 @@ module ApplicationHelper
   end
 
   # 检查最新的比特币报价是否已达成数据库储存的理财目标
-  def check_trial_reached( trial_date, end_balance_twd )
+  def check_trial_reached( trial_date, begin_price )
     today = Date.today
-    if trial_date.year == today.year and trial_date.month == today.month and rs = TrialList.find_by_trial_date(trial_date) and goal = rs.end_balance_twd and end_balance_twd > goal
-      return image_tag('ok.png',width:20)
+    if trial_date.year == today.year and trial_date.month == today.month and rs = TrialList.find_by_trial_date(trial_date)
+      goal_price = rs.end_price
+      title = "目标价：#{goal_price} 目标值：#{rs.end_balance_twd}"
+      if begin_price > goal_price
+        return image_tag('ok.png',width:18,title:title)
+      else
+        return raw "<span title='#{title}' style='font-size:0.7em'>-$#{to_n(goal_price-begin_price,2)}</span>"
+      end
     else
       return ''
     end

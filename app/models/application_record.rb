@@ -72,7 +72,12 @@ class ApplicationRecord < ActiveRecord::Base
   # 将资产金额从自身的币别转换成其他币别(默认为新台币)
   def amount_to( target_code = :twd, self_rate = self.currency.exchange_rate.to_f )
     if trate = target_rate(target_code)
-      return amount*(trate.to_f/self_rate)
+      result = amount*(trate.to_f/self_rate)
+      if amount < 0 and lixi = self.lixi(target_code).to_i
+        return result + lixi
+      else
+        return result
+      end
     else
       return amount
     end

@@ -60,10 +60,9 @@ pre {
 }
 
 #site_logo {
-  width: 50px;
-  height: 45px;
-  border: 0px #000 solid;
-  margin-right:0.5em;
+  // border: 0px #000 solid;
+  box-shadow: 4px 4px 4px rgba(0,0,0,.5);
+  margin-right:0.7em;
 }
 #site_title a:hover {
   color: #900;
@@ -83,7 +82,7 @@ pre {
 #site_nav2 {
   position: absolute;
   right: 1em;
-  margin-top: 0.7em;
+  margin-top: 0.5em;
   small {
     font-size: 0.85em;
   }
@@ -106,7 +105,10 @@ pre {
     font-size: 1.1em;
   }
 }
-
+#copyright {
+  text-align: center;
+  margin-top: 3em;
+}
 .sub_title {
   font-size: 0.8em;
 }
@@ -116,7 +118,7 @@ pre {
   font-weight: bold;
   padding: 0.2em;
   margin: 0.8em 0em;
-  margin-top: 2.7em;
+  margin-top: 3.0em;
   margin-bottom: -1.5em;
 }
 .alert-warning, #error_explanation {
