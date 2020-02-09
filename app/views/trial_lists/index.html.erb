@@ -42,7 +42,7 @@
       <td align="right">$<%= to_n(@btc_price,0) %></td>
       <td align="right">¥<%= cal_btc_capital %></td>
       <td align="right"><%= end_balance_twd = btc_capital_twd %></td>
-      <td align="center"><%= check_trial_reached(this_date,begin_price) %></td>
+      <td align="center"><%= check_trial_reached(this_date) %></td>
     </tr>
   <% end %>
 </table>

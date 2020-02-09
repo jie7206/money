@@ -1,5 +1,5 @@
 <% if login? %>
-  <nav id="<%= id %>">
+  <div id="<%= id %>">
     <small>
       <%= link_back_to_properties %> |
       <%= link_to t(:trial_list), trial_lists_path %> |
@@ -22,5 +22,5 @@
       <% end %>
       <%= link_to t(:logout), logout_path, { id: 'logout' } %>
     </small>
-  </nav>
+  </div>
 <% end %>

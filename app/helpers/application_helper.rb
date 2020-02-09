@@ -518,15 +518,16 @@ module ApplicationHelper
   end
 
   # 检查最新的比特币报价是否已达成数据库储存的理财目标
-  def check_trial_reached( trial_date, begin_price )
+  def check_trial_reached( trial_date )
     today = Date.today
-    if trial_date.year == today.year and trial_date.month == today.month and rs = TrialList.find_by_trial_date(trial_date)
+    end_date = today + $check_trial_reached_month.month
+    if trial_date <= end_date and rs = TrialList.find_by_trial_date(trial_date)
       goal_price = rs.end_price
       title = "目标价：#{goal_price} 目标值：#{rs.end_balance_twd}"
-      if begin_price > goal_price
+      if @begin_price_for_trial > goal_price
         return image_tag('ok.png',width:18,title:title)
       else
-        return raw "<span title='#{title}' style='font-size:0.7em'>-$#{to_n(goal_price-begin_price,2)}</span>"
+        return raw "<span title='#{title}' style='font-size:0.7em'>-$#{to_n(goal_price-@begin_price_for_trial,2)}</span>"
       end
     else
       return ''

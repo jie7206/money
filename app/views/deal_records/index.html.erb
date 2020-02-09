@@ -74,7 +74,7 @@ btc_hold = DealRecord.btc_amount
 <% end %>
   <tr class="thead">
     <td colspan="2">
-      <%= kline_chart_link(to_n(price_now)) %> (<%= to_n(DealRecord.btc_level,1) %>/<%= get_invest_params(5) %>%)
+      <%= kline_chart_link(to_n(price_now)) %> (<%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>%)
     </td>
     <td align="right"><%= to_n(DealRecord.ave_cost) if total_amount > 0 %></td>
     <% profit_cny = to_n(DealRecord.profit_cny) %>
