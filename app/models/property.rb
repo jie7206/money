@@ -74,6 +74,17 @@ class Property < ApplicationRecord
     find(property_id).update_attribute(:amount,0)
   end
 
+  def self.trezor_ave_cost
+    ps = Property.tagged_with('冷钱包')
+    if ps.size > 0
+      total_cost_usdt = value(:twd, only_negative: true).abs * new.twd_to_usdt
+      trezor_btc_amount = ps.sum {|p| p.amount}
+      return total_cost_usdt/trezor_btc_amount
+    else
+      return 0
+    end
+  end
+
   # 要写入记录列表的值
   def record_value
     amount_to(:twd).to_i

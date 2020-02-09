@@ -11,6 +11,7 @@ FORCE_BUY = False
 FORCE_SELL = False
 LOG_FILE = 'auto_invest_log.txt'
 LINE_MARKS = "-"*70
+WAIT_SEND_SEC = 18
 
 
 def fees_rate():
@@ -115,11 +116,12 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
     global buy_price_period
     global sell_price_period
     global buy_period_move
+    global WAIT_SEND_SEC
     if test_price == 0:
         str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
         print(str)
         ftext += str+'\n'
-        time.sleep(3)
+        time.sleep(WAIT_SEND_SEC)
         if deal_type.find('buy-limit') > -1:
             str = "%i Deal Records added" % update_huobi_deal_records(time_line)
             print(str)

@@ -54,9 +54,7 @@ class CurrenciesController < ApplicationController
   # 更新所有数字货币的汇率值
   def update_all_digital_exchange_rates
     begin
-      if update_digital_exchange_rates > 0
-        update_portfolios_and_records
-      else
+      if !(update_digital_exchange_rates > 0)
         put_notice t(:get_price_error)
       end
     rescue Net::OpenTimeout
@@ -67,7 +65,7 @@ class CurrenciesController < ApplicationController
 
   # 更新所有法币的汇率值
   def update_all_legal_exchange_rates
-    update_portfolios_and_records if update_legal_exchange_rates > 0
+    update_legal_exchange_rates
     go_back
   end
 

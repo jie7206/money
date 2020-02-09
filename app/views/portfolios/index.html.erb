@@ -7,11 +7,11 @@
     <td><%= t(:exchange_to_twd) %></td>
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:property_proportion) %></td>
+    <td><%= t(:chart) %></td>
     <td><%= t(:portfolio_include_tags) %></td>
     <td><%= t(:portfolio_exclude_tags) %></td>
     <td><%= t(:updated_time) %></td>
     <td><%= t(:edit) %></td>
-    <td><%= t(:chart) %></td>
   </tr>
 <% n = 1 %>
 <% @portfolios.each do |portfolio| %>
@@ -21,11 +21,11 @@
     <td align="right"><%= to_n(portfolio.twd_amount,0) %></td>
     <td align="right"><%= to_n(portfolio.cny_amount,0) %></td>
     <td align="right"><%= to_n(portfolio.proportion) %></td>
+    <td align="center"><%= chart_link(portfolio) %></td>
     <td><%= portfolio.include_tags %></td>
     <td><%= portfolio.exclude_tags %></td>
     <td><%= to_t(portfolio.updated_at) %></td>
     <td align="center"><%= link_edit_to_image(portfolio) %></td>
-    <td align="center"><%= chart_link(portfolio) %></td>
   </tr>
   <% n += 1 %>
 <% end %>
