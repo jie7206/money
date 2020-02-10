@@ -695,7 +695,7 @@ if __name__ == '__main__':
                             reset_force_trade()
                             with open(PARAMS, 'r') as f:
                                 line_str = f.read().strip()
-                                if line_str[0:4] != params_str[0:4]:
+                                if line_str[0:5] != params_str[0:5]:
                                     break
                             if below_price > 0:
                                 price_now = get_price_now()
