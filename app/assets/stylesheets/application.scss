@@ -129,6 +129,14 @@ pre {
     line-height: 1.7em;
   }
 }
+.trial_goal_reach {
+  background-color: red;
+  color: white;
+}
+.trial_goal_unreach {
+  background-color: green;
+  color: white;
+}
 .thead {
   background-color: #F7DCB4;
   text-align: center;

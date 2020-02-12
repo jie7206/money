@@ -5,7 +5,7 @@
     <tr valign="top">
       <td><%= n %></td>
       <td width="163">每隔几秒自动买入一次</td>
-      <td><%= show_invest_param_value(0) %> <%= invest_params_setup_link(0,0,10800,300) %></td>
+      <td><%= show_invest_param_value(0) %> <%= invest_params_setup_link(0,0,3600*4,300) %></td>
       <% n += 1 %>
     </tr>
     <%
@@ -150,6 +150,12 @@
       <td><%= n %></td>
       <td>赎回多少本金停止卖出</td>
       <td><%= invest_params_setup_link(23,2000,6000,50) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>几分MACD金叉时买进</td>
+      <td>待开发</td>
       <% n += 1 %>
     </tr>
   </table>

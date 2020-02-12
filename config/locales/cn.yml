@@ -64,8 +64,8 @@ cn:
   update_currency: 更新货币
   updated_time: 更新时间
   exchange_to_twd: 等值台币
-  exchange_to_cny: 等值人民币
-  now_to_cny: 现值人民币
+  exchange_to_cny: 值人民币
+  now_to_cny: 现值
   earn_or_loss: 盈亏
   total_properties_amount: 资产总净值
   twd: 新台币
