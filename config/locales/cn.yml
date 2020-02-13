@@ -266,7 +266,7 @@ cn:
   show_sell_deal_records: 卖出记录
   zip_sell_deal_records: 压缩记录
   zip_sell_records_ok: 压缩卖出记录成功！
-  send_sell_deal_records: 收割获利目标
+  send_sell_deal_records: 收割获利
   send_sell_deal_records_ok: 执行收割成功！
   send_sell_deal_records_error: 执行失败！尚未达到可收割的获利值
   send_stop_loss: 强制卖出
@@ -297,6 +297,7 @@ cn:
   save_trials_to_db: 将试算结果存入数据库
   save_trials_to_db_ok: 已将试算结果存入数据库！
   have_reached: 达成状态
+  sell_all: 全部卖出
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

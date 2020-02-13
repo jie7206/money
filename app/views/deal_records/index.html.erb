@@ -107,8 +107,9 @@ btc_hold = DealRecord.btc_amount
     | <%= clear_deal_records_link %>
     <% if max_sell_count = get_invest_params(13).to_i and max_sell_count > 0 and DealRecord.unsell_count > 0 %>
       | <%= link_to t(:send_sell_deal_records)+"(#{@get_max_sell_count}/#{get_unsell_deal_records_count})", send_sell_deal_records_path %> |
-      <%= link_to t(:send_stop_loss)+"(#{@get_max_sell_count}/#{@top_deal_record_profit}/#{(@top_deal_record_profit.to_f+total_real_profit.to_f).to_i})", send_stop_loss_path %>
+      <%= link_to t(:send_stop_loss)+"(#{@get_max_sell_count}/#{@top_deal_record_profit})", send_stop_loss_path %>
     <% end %>
+    | <%= link_to t(:sell_all), place_order_form_path(sell_all:1) %>
     | <%= sell_to_back_link %>
   </div>
 <% end %>

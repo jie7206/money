@@ -435,8 +435,8 @@ module ApplicationHelper
   end
 
   # 火币下单链接
-  def order_link( amount = nil )
-    link_to t(:huobi_order), controller: :main, action: :place_order_form, amount: amount
+  def order_link( amount = nil, text = t(:huobi_order) )
+    link_to text, controller: :main, action: :place_order_form, amount: amount
   end
 
   # 建立查看火币下单链接

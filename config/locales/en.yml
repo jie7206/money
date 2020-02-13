@@ -294,6 +294,7 @@ en:
   save_trials_to_db: Save Trials To DB
   save_trials_to_db_ok: Save Trials To DB successfully!
   have_reached: Reached
+  sell_all: Sell All
   copyright: Copyright
   contact_email: Contact Email
   activerecord:
