@@ -74,16 +74,34 @@ class Property < ApplicationRecord
     find(property_id).update_attribute(:amount,0)
   end
 
+  def self.trezor_total_cost_twd
+    value(:twd, only_negative: true).abs
+  end
+
+  def self.trezor_total_cost_usdt
+     trezor_total_cost_twd*(new.twd_to_usdt)
+  end
+
   def self.trezor_ave_cost
     ps = Property.tagged_with('冷钱包')
     if ps.size > 0
-      total_cost_usdt = value(:twd, only_negative: true).abs * new.twd_to_usdt
-      trezor_btc_amount = ps.sum {|p| p.amount}
-      return total_cost_usdt/trezor_btc_amount
+      return trezor_total_cost_usdt/(ps.sum {|p| p.amount})
     else
       return 0
     end
   end
+
+  def self.ave_month_growth_rate
+    ps = Property.tagged_with('冷钱包')
+    if ps.size > 0
+      cost = trezor_total_cost_twd
+      months = pass_days.to_i/30
+      return ((1+((ps.sum {|p| p.amount_to(:twd)})-cost)/cost)**(1.0/months)-1)*100
+    else
+      return 0
+    end
+  end
+
 
   # 要写入记录列表的值
   def record_value

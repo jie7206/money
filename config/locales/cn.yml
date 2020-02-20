@@ -298,6 +298,7 @@ cn:
   save_trials_to_db_ok: 已将试算结果存入数据库！
   have_reached: 达成状态
   sell_all: 全部卖出
+  month_growth_rate: 月增长率
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:

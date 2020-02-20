@@ -88,6 +88,11 @@ class ApplicationRecord < ActiveRecord::Base
     target_rate(:cny).to_f/target_rate(:usdt)
   end
 
+  # USDT换成新台币
+  def usdt_to_twd
+    target_rate(:twd).to_f/target_rate(:usdt)
+  end
+
   # 新台币换成人民币
   def twd_to_cny
     target_rate(:cny).to_f/target_rate(:twd)
