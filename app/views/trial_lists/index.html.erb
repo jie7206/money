@@ -1,5 +1,5 @@
 <h2><%= t(:trial_list) %></h2>
-<h3><%= raw Property.cal_year_profit("&nbsp;"*2) %></h3>
+<h3><%= raw Property.cal_year_profit("&nbsp;"*2) if admin? %></h3>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td><%= t(:myage)%></td>
@@ -14,7 +14,7 @@
     <td><%= t(:end_price)%></td>
     <td><%= t(:end_balance)%></td>
     <td><%= t(:exchange_to_twd)%></td>
-    <td><%= t(:have_reached)%></td>
+    <td><%= t(:have_reached) if admin? %></td>
   </tr>
   <% cal_btc_capital %>
   <% birthday = "1974-12-02".to_date %>
@@ -44,7 +44,7 @@
       <td align="right"><%= cal_btc_capital %></td>
       <td align="right"><%= end_balance_twd = btc_capital_twd %></td>
       <% diff = check_trial_reached(this_date).to_i %>
-      <td align="right" class="<%= diff > 0 ? 'trial_goal_reach' : '' %>"><%= diff if diff != 0 %></td>
+      <td align="right" class="<%= admin? and diff > 0 ? 'trial_goal_reach' : '' %>"><%= diff if admin? and diff != 0 %></td>
     </tr>
   <% end %>
 </table>
