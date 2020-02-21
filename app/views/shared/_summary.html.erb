@@ -1,5 +1,3 @@
 <%= t(:positive_property) %>：<%= @properties_value_twd.to_i %>&nbsp;
 <%= t(:negative_property) %>(<%= t(:lixi) %>)：<%= @properties_loan_twd.abs.to_i %>|<%= @properties_loan_cny.abs.to_i %>&nbsp;
 <%= t(:total_properties_amount) %>：<%= show_net_value_link %>&nbsp;
-<%= t(:btc_ave_price) %>：<%= to_n(Property.trezor_ave_cost) %>&nbsp;
-<%= t(:month_growth_rate) %>：<%= to_n(Property.ave_month_growth_rate) %>%&nbsp;
