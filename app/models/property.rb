@@ -70,18 +70,22 @@ class Property < ApplicationRecord
     all.select {|p| !p.hidden? }
   end
 
+  # 清空某个资产的金额
   def self.clear_amount( property_id )
     find(property_id).update_attribute(:amount,0)
   end
 
+  # 冷钱包的总成本(大约等于总贷款金额)
   def self.trezor_total_cost_twd
     value(:twd, only_negative: true).abs
   end
 
+  # 冷钱包的成本从台币换算成泰达币
   def self.trezor_total_cost_usdt
      trezor_total_cost_twd*(new.twd_to_usdt)
   end
 
+  # 计算冷钱包的成本均价
   def self.trezor_ave_cost
     ps = Property.tagged_with('冷钱包')
     if ps.size > 0
@@ -91,6 +95,7 @@ class Property < ApplicationRecord
     end
   end
 
+  # 计算冷钱包过去每月的获利率
   def self.ave_month_growth_rate
     ps = Property.tagged_with('冷钱包')
     if ps.size > 0
@@ -102,6 +107,24 @@ class Property < ApplicationRecord
     end
   end
 
+  # 冷钱包目前的值
+  def self.trezor_value_twd
+    ps = Property.tagged_with('冷钱包')
+    if ps.size > 0
+      return ps.sum {|p| p.amount_to(:twd)}
+    else
+      return 0
+    end
+  end
+
+  # 计算冷钱包下一年收益
+  def self.cal_year_profit( br = "\n" )
+    year_profit_p = (1+ave_month_growth_rate.to_f/100)**12
+    profit_p_value = year_profit_p-1
+    year_goal = (trezor_value_twd*year_profit_p).to_i
+    year_profit = (trezor_value_twd*profit_p_value).to_i
+    return "预估年化利率：#{format("%.2f", profit_p_value*100)}%" + br + "冷钱包年目标：#{year_goal}" + br + "冷钱包年获利：#{year_profit}" + br + "平均每月获利：#{year_profit/12}"
+  end
 
   # 要写入记录列表的值
   def record_value

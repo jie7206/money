@@ -10,7 +10,7 @@
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
     <td><%= t(:updated_time) %></td>
-    <td><%= t(:deal_record_real_profit) %></td>
+    <td><%= t(:deal_record_real_profit) %>(<%= admin? ? DealRecord.uncombined_real_profit : (DealRecord.uncombined_real_profit*$net_profit_discount).to_i %>)</td>
   </tr>
 <% n = 1 %>
 <% price_now = DealRecord.first.price_now if DealRecord.first %>
