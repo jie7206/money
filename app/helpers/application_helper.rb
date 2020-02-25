@@ -351,7 +351,7 @@ module ApplicationHelper
   # 显示资产净值链接
   def show_net_value_link
     month_growth_rate =
-    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank)}</span>|<span id=\"properties_net_value_cny\" title=\"#{t(:cny)}\">#{@properties_net_value_cny.to_i}</span>&nbsp;<span id=\"net_growth_ave_month\">#{to_n(@properties_net_growth_ave_month/10000.0,1)}|#{to_n(@properties_net_growth_ave_month_cny/10000.0,1)}</span>/#{@properties_growth_pass_days.to_i/30} <span title=\"#{t(:btc_ave_price)}\">#{Property.trezor_ave_cost.to_i}</span>|<span title=\"#{Property.cal_year_profit}\">#{to_n(Property.ave_month_growth_rate)}%</span>"
+    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank)}</span>|<span id=\"properties_net_value_cny\" title=\"#{t(:cny)}\">#{@properties_net_value_cny.to_i}</span>&nbsp;<span id=\"net_growth_ave_month\">#{to_n(@properties_net_growth_ave_month/10000.0,1)}|#{to_n(@properties_net_growth_ave_month_cny/10000.0,1)}</span> <span title=\"#{t(:btc_ave_price)}\">#{Property.trezor_ave_cost.to_i}</span>|<span title=\"#{Property.cal_year_profit}\">#{link_to(to_n(Property.ave_month_growth_rate,1)+'%',trial_lists_path)}</span>"
   end
 
   # Fusioncharts属性大全: http://wenku.baidu.com/link?url=JUwX7IJwCbYMnaagerDtahulirJSr5ASDToWeehAqjQPfmRqFmm8wb5qeaS6BsS7w2_hb6rCPmeig2DBl8wzwb2cD1O0TCMfCpwalnoEDWa
@@ -524,9 +524,9 @@ module ApplicationHelper
     end_date = today + $check_trial_reached_month.month
     if trial_date <= end_date and rs = TrialList.find_by_trial_date(trial_date)
       goal_price = rs.end_price
-      return @begin_price_for_trial-goal_price
+      return goal_price, @begin_price_for_trial-goal_price
     else
-      return 0
+      return 0, 0
     end
   end
 

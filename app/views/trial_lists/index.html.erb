@@ -43,8 +43,8 @@
       <td align="right"><%= to_n(@btc_price,0) %></td>
       <td align="right"><%= cal_btc_capital %></td>
       <td align="right"><%= end_balance_twd = btc_capital_twd %></td>
-      <% diff = check_trial_reached(this_date).to_i %>
-      <td align="right" class="<%= admin? and diff > 0 ? 'trial_goal_reach' : '' %>"><%= diff if admin? and diff != 0 %></td>
+      <% goal, diff = check_trial_reached(this_date) %>
+      <td align="right" class="<%= admin? and diff > 0 ? 'trial_goal_reach' : '' %>"><span title="<%= "目标价：#{goal}" if admin? and diff != 0 %>"><%= diff.to_i if admin? and diff != 0 %></span></td>
     </tr>
   <% end %>
 </table>
