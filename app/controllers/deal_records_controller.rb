@@ -4,6 +4,7 @@ class DealRecordsController < ApplicationController
   before_action :set_deal_record, only: [:edit, :update, :destroy, :delete]
 
   def index
+    update_exchange_rates
     if params[:show_all]
       @deal_records = DealRecord.order('created_at desc')
     elsif params[:show_sell]
