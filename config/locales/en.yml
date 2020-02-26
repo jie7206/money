@@ -296,6 +296,7 @@ en:
   have_reached: Reached
   sell_all: Sell All
   month_growth_rate: Month Growth Rate
+  operate_money: Operate Money
   copyright: Copyright
   contact_email: Contact Email
   activerecord:

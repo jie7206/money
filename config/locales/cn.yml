@@ -299,6 +299,7 @@ cn:
   have_reached: 达成状态
   sell_all: 全部卖出
   month_growth_rate: 月增长率
+  operate_money: 短线资金
   copyright: 版权所有
   contact_email: 联系邮箱
   activerecord:
