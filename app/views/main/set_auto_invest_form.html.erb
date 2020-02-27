@@ -58,7 +58,7 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>单笔买入泰达币最大率</td>
-      <td><%= invest_params_setup_link(8,1,20) %></td>
+      <td><%= invest_params_setup_link(8,1,50) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -76,8 +76,8 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>用于测试的比特币价格</td>
-      <% rate_param = 0.03 %>
-      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),5) %></td>
+      <% rate_param = 0.1 %>
+      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),20) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -113,13 +113,13 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>买入几分钟内的最低价</td>
-      <td><%= show_invest_param_value(17) %> <%= invest_params_setup_link(17,0,1440,10) %></td>
+      <td><%= show_invest_param_value(17) %> <%= invest_params_setup_link(17,0,2000,20) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
       <td><%= n %></td>
       <td>卖出几分钟内的最高价</td>
-      <td><%= show_invest_param_value(18) %> <%= invest_params_setup_link(18,0,1440,10) %></td>
+      <td><%= show_invest_param_value(18) %> <%= invest_params_setup_link(18,0,2000,20) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -149,7 +149,7 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>赎回多少本金停止卖出</td>
-      <td><%= invest_params_setup_link(23,2000,6000,50) %></td>
+      <td><%= invest_params_setup_link(23,500,6000,100) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
