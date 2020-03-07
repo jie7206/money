@@ -4,14 +4,13 @@ class DealRecordsController < ApplicationController
   before_action :set_deal_record, only: [:edit, :update, :destroy, :delete]
 
   def index
-    update_exchange_rates
     if params[:show_all]
       @deal_records = DealRecord.order('created_at desc')
     elsif params[:show_sell]
       @deal_records = DealRecord.where('auto_sell = 1').order('created_at desc')
     else
       update_btc_price if $auto_update_btc_price
-      @auto_refresh_sec = $auto_refresh_sec_for_deal_records if $auto_refresh_sec_for_deal_records > 0
+      setup_auto_refresh_sec
       @deal_records = DealRecord.where('auto_sell = 0').order('created_at desc')
     end
     summary

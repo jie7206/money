@@ -5,7 +5,6 @@ class CurrenciesController < ApplicationController
   # 货币列表
   def index
     @currencies = Currency.all
-    update_exchange_rates
   end
 
   # 新建货币表单

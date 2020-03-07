@@ -237,6 +237,7 @@ class MainController < ApplicationController
   # 显示K线图
   def kline_chart
     if prepare_chart_data
+      setup_auto_refresh_sec
       render layout: nil
     else
       render plain: 'Connect Error!'

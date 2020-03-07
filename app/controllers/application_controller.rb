@@ -515,6 +515,11 @@ class ApplicationController < ActionController::Base
     return sec[-1] == '0' ? sec[0..-2]+'1' : sec[0..-2]+'0'
   end
 
+  # 设定是否自动刷新页面
+  def setup_auto_refresh_sec
+    @auto_refresh_sec = $auto_refresh_sec_for_deal_records if $auto_refresh_sec_for_deal_records > 0
+  end
+
   # 建立回到目录页的方法
   $models.each do |n|
     define_method "go_#{n.pluralize}" do
