@@ -77,7 +77,7 @@ class Property < ApplicationRecord
 
   # 冷钱包的总成本(大约等于总贷款金额)
   def self.trezor_total_cost_twd
-    value(:twd, only_negative: true).abs
+    value(:twd, only_negative: true).abs - (Property.tagged_with('短线').sum {|p| p.amount_to(:twd)})
   end
 
   # 冷钱包的成本从台币换算成泰达币

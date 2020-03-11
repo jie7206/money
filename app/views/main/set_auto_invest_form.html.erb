@@ -9,9 +9,9 @@
       <% n += 1 %>
     </tr>
     <%
-    start_price = (@price_now*0.8).to_i/100*100
-    end_price = @price_now*1.2
-    price_step = 50
+    start_price = (@price_now*0.9).to_i/100*100
+    end_price = @price_now*1.1
+    price_step = 10
     %>
     <tr valign="top">
       <td><%= n %></td>
@@ -113,13 +113,13 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>买入几分钟内的最低价</td>
-      <td><%= show_invest_param_value(17) %> <%= invest_params_setup_link(17,0,2000,20) %></td>
+      <td><%= show_invest_param_value(17) %> <%= invest_params_setup_link(17,0,2000,10) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
       <td><%= n %></td>
       <td>卖出几分钟内的最高价</td>
-      <td><%= show_invest_param_value(18) %> <%= invest_params_setup_link(18,0,2000,20) %></td>
+      <td><%= show_invest_param_value(18) %> <%= invest_params_setup_link(18,0,2000,10) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -149,7 +149,7 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>赎回多少本金停止卖出</td>
-      <td><%= invest_params_setup_link(23,500,6000,100) %></td>
+      <td><%= invest_params_setup_link(23,0,5000,100) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
