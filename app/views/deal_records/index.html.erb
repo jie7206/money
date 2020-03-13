@@ -1,8 +1,9 @@
-<h2><%= link_to t(:deal_record_index), deal_records_path %></h2>
+<% eq_btc, btc_p = Property.invest_to_btc %>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= eq_btc %> BTC <%= btc_p.floor(1) %>%)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
-    <td width="145"><%= t(:deal_record_created) %></td>
+    <td width="150"><%= t(:deal_record_created) %></td>
     <td><%= t(:deal_record_price) %></td>
     <td width="45"><%= t(:earn_or_loss) %></td>
     <td width="45"><%= t(:profit_p) %></td>

@@ -75,6 +75,13 @@ class Property < ApplicationRecord
     find(property_id).update_attribute(:amount,0)
   end
 
+  # 数字货币总资产换算成比特币
+  def self.invest_to_btc
+    ps1 = Property.tagged_with('冷钱包').sum {|p| p.amount_to(:btc)}
+    ps2 = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
+    return (ps1 + ps2).floor(8), ps1/(ps1 + ps2)*100
+  end
+
   # 冷钱包的总成本(大约等于总贷款金额)
   def self.trezor_total_cost_twd
     value(:twd, only_negative: true).abs - (Property.tagged_with('短线').sum {|p| p.amount_to(:twd)})
