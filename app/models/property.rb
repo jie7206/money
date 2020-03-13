@@ -76,10 +76,17 @@ class Property < ApplicationRecord
   end
 
   # 数字货币总资产换算成比特币
-  def self.invest_to_btc
-    ps1 = Property.tagged_with('冷钱包').sum {|p| p.amount_to(:btc)}
-    ps2 = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
-    return (ps1 + ps2).floor(8), ps1/(ps1 + ps2)*100
+  def self.invest_to_btc( is_admin = false )
+    if is_admin
+      ps1 = Property.tagged_with('冷钱包').sum {|p| p.amount_to(:btc)}
+      ps2 = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
+      ps3 = Property.tagged_with('比特币').sum {|p| p.amount_to(:btc)}
+      return (ps1 + ps2).floor(8), ps3/(ps1 + ps2)*100
+    else
+      ps1 = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
+      ps2 = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
+      return ps2.floor(8), ps1/ps2*100
+    end
   end
 
   # 冷钱包的总成本(大约等于总贷款金额)

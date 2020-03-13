@@ -1,4 +1,4 @@
-<% eq_btc, btc_p = Property.invest_to_btc %>
+<% eq_btc, btc_p = Property.invest_to_btc( admin? ) %>
 <h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= eq_btc %> BTC <%= btc_p.floor(1) %>%)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
@@ -73,13 +73,16 @@ btc_hold = DealRecord.btc_amount
 <% end %>
   <tr class="thead">
     <td colspan="2">
-      <%= kline_chart_link(to_n(price_now)) %> (<%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>%)
+      <%= kline_chart_link(to_n(price_now)) %>
+      (<%= to_n(price_now/Property.trezor_ave_cost*100,2)%>%)
     </td>
     <td align="right"><%= to_n(DealRecord.ave_cost) if total_amount > 0 %></td>
     <% profit_cny = to_n(DealRecord.profit_cny) %>
     <td align="right"><%= link_to profit_cny, place_order_form_path(sell_all:1) if !params[:show_sell] %></td>
     <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
-    <td align="right"><%= link_to to_n(DealRecord.btc_amount,6), place_order_form_path(sell_all:1) %></td>
+    <td align="right"><%= link_to to_n(DealRecord.btc_amount,4), place_order_form_path(sell_all:1) %>
+      (<%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>%)
+    </td>
     <td align="right"><%= to_n(total_cny_amount,1) if !params[:show_sell] %></td>
     <td align="right"><%= to_n(total_cny_amount_now,1) if !params[:show_sell] %></td>
     <td align="right"><%= show_net_value_link if admin? %></td>
