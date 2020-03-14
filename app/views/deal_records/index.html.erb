@@ -1,5 +1,5 @@
-<% eq_btc, btc_p = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= eq_btc %> BTC <%= btc_p.floor(1) %>%)</h2>
+<% eq_btc, btc_p, sim_ave_cost = Property.invest_to_btc( admin? ) %>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= eq_btc %> <%= to_n(btc_p) %>% <%= sim_ave_cost.to_i %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>

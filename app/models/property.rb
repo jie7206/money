@@ -77,17 +77,29 @@ class Property < ApplicationRecord
     find(property_id).update_attribute(:amount,0)
   end
 
+  # 贷款(含利息)的总额
+  def self.total_loan_lixi
+    value(:twd, only_negative: true).abs
+  end
+
+  # 贷款(含利息)的总额从台币换算成泰达币
+  def self.total_loan_lixi_usdt
+    total_loan_lixi*(new.twd_to_usdt)
+  end
+
   # 数字货币总资产换算成比特币
   def self.invest_to_btc( is_admin = false )
+    p_trezor = Property.tagged_with('冷钱包').sum {|p| p.amount_to(:btc)}
+    p_short = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
+    p_btc = Property.tagged_with('比特币').sum {|p| p.amount_to(:btc)}
+    eq_btc = (p_trezor + p_short).floor(8)
+    sim_ave_cost = total_loan_lixi_usdt/eq_btc
     if is_admin
-      ps1 = Property.tagged_with('冷钱包').sum {|p| p.amount_to(:btc)}
-      ps2 = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
-      ps3 = Property.tagged_with('比特币').sum {|p| p.amount_to(:btc)}
-      return (ps1 + ps2).floor(8), ps3/(ps1 + ps2)*100
+      return eq_btc, p_btc/(p_trezor + p_short)*100, sim_ave_cost
     else
-      ps1 = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
-      ps2 = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
-      return ps2.floor(8), ps1/ps2*100
+      p_fbtc = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
+      p_finv = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
+      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost
     end
   end
 
@@ -96,7 +108,7 @@ class Property < ApplicationRecord
     # 还没购买比特币的剩余可投资资金
     ps = new.get_properties_from_tags( '短线', '比特币' )
     # 比特币的总成本 = 总贷款 - 还没购买比特币的剩余可投资资金
-    value(:twd, only_negative: true).abs - (ps.sum {|p| p.amount_to(:twd)})
+    total_loan_lixi - (ps.sum {|p| p.amount_to(:twd)})
   end
 
   # 比特币的总成本从台币换算成泰达币
@@ -106,7 +118,7 @@ class Property < ApplicationRecord
 
   # 冷钱包的总成本
   def self.trezor_total_cost_twd
-    value(:twd, only_negative: true).abs - (Property.tagged_with('短线').sum {|p| p.amount_to(:twd)})
+    total_loan_lixi - (Property.tagged_with('短线').sum {|p| p.amount_to(:twd)})
   end
 
   # 冷钱包的总成本从台币换算成泰达币

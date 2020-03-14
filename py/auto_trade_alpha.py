@@ -139,16 +139,16 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
             ftext += str+'\n'
             trade_btc = float(get_trade_btc())
             btc_cny = trade_btc*price*u2c
-            str = "BTC Trade Now: %.8f (%.2f CNY) Total: %.2f CNY" % (
-                trade_btc, btc_cny, usdt_cny+btc_cny)
+            str = "BTC Now: %.8f (%.1f CNY) Total: %.1f CNY Level: %.2f%%" % (
+                trade_btc, btc_cny, usdt_cny+btc_cny, btc_level_now)
             print(str)
             ftext += str+'\n'
             btc_level_now = btc_hold_level(price)
             profit_now = profit_cny_now(price, u2c)
-            str = "BTC Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
-                btc_level_now, btc_ave_cost(), profit_now)
-            print(str)
-            ftext += str+'\n'
+            # str = "BTC Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
+            #     btc_level_now, btc_ave_cost(), profit_now)
+            # print(str)
+            # ftext += str+'\n'
             if buy_price_period > 0 and buy_period_move > 0:
                 new_buy_price_period = int(btc_level_now/buy_period_move)
                 if new_buy_price_period < 2:
