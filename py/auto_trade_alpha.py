@@ -94,6 +94,10 @@ def get_total_btc():
     except:
         return 0
 
+def get_all_btc_amount():
+    rows = select_db("SELECT sum(amount) FROM properties WHERE currency_id = 6")
+    return rows[0][0]
+
 
 def btc_ave_cost():
     rows = select_db("SELECT price, amount, fees FROM deal_records WHERE auto_sell = 0")
@@ -173,9 +177,11 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
 
 def cal_sim_btc_level(price, amount, type='buy'):
     global ori_usdt
-    btc_amount = float(get_trade_btc())
+    btc_amount = float(get_total_btc())  #get_all_btc_amount()
     usdt = float(get_trade_usdt())
-    cost_usdt = ori_usdt - usdt
+    other_btc = 5.3 # 非短线交易的比特币数量
+    other_usdt_cost = other_btc*6450 # 暂时先写死，以后有时间再研究
+    cost_usdt = ori_usdt - usdt + other_usdt_cost
     if type == 'buy':
         sim_usdt = usdt - price*amount
         sim_btc_amount = btc_amount + amount*fees_rate()
@@ -186,7 +192,7 @@ def cal_sim_btc_level(price, amount, type='buy'):
         sim_cost_usdt = cost_usdt - price*amount
     sim_btc_usdt = price*sim_btc_amount
     sim_btc_level = sim_btc_usdt/(sim_btc_usdt+sim_usdt)*100
-    sim_ave_price = sim_cost_usdt/sim_btc_amount
+    sim_ave_price = sim_cost_usdt/(sim_btc_amount+other_btc)
     return [sim_btc_level, sim_ave_price]
 
 

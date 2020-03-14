@@ -353,7 +353,7 @@ module ApplicationHelper
   # 显示资产净值链接
   def show_net_value_link
     month_growth_rate =
-    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank)}</span>|<span id=\"properties_net_value_cny\" title=\"#{t(:cny)}\">#{@properties_net_value_cny.to_i}</span>&nbsp;<span id=\"net_growth_ave_month\">#{to_n(@properties_net_growth_ave_month/10000.0,1)}|#{to_n(@properties_net_growth_ave_month_cny/10000.0,1)}</span> <span title=\"#{t(:btc_ave_price)}\">#{Property.trezor_ave_cost.to_i}</span>|<span title=\"#{Property.cal_year_profit}\">#{link_to(to_n(Property.ave_month_growth_rate,1)+'%',trial_lists_path)}</span>"
+    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank)}</span>|<span id=\"properties_net_value_cny\" title=\"#{t(:cny)}\">#{@properties_net_value_cny.to_i}</span>&nbsp;<span id=\"net_growth_ave_month\">#{to_n(@properties_net_growth_ave_month/10000.0,1)}|#{to_n(@properties_net_growth_ave_month_cny/10000.0,1)}</span> <span title=\"#{t(:btc_ave_price)}\">#{Property.btc_ave_cost.to_i}</span>|<span title=\"#{Property.cal_year_profit}\">#{link_to(to_n(Property.ave_month_growth_rate,1)+'%',trial_lists_path)}</span>"
   end
 
   # Fusioncharts属性大全: http://wenku.baidu.com/link?url=JUwX7IJwCbYMnaagerDtahulirJSr5ASDToWeehAqjQPfmRqFmm8wb5qeaS6BsS7w2_hb6rCPmeig2DBl8wzwb2cD1O0TCMfCpwalnoEDWa
@@ -539,4 +539,26 @@ module ApplicationHelper
     raw "<span class=\"invest_param_select\">#{value}</span>"
   end
 
+  # 从标签设定值取出相应的资产数据集
+  def get_properties_from_tags( include_tags, exclude_tags = nil, mode = 'n' )
+    case mode
+      when 'n' # none
+        options = {}
+      when 'm' # match_all
+        options = {match_all: true}
+      when 'a' # any
+        options = {any: true}
+    end
+    # 依照包含标签选取
+    if include_tags and !include_tags.empty?
+      result = Property.tagged_with(include_tags.strip.split(' '),options)
+      if exclude_tags and !exclude_tags.empty?
+        # 依照排除标签排除
+        result = result.tagged_with(exclude_tags.strip.split(' '),exclude: true)
+      end
+      return result.sort_by{|p| p.amount_to}.reverse
+    end
+    return nil
+  end
+  
 end

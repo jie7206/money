@@ -9,7 +9,7 @@ class DealRecordsController < ApplicationController
     elsif params[:show_sell]
       @deal_records = DealRecord.where('auto_sell = 1').order('created_at desc')
     else
-      update_btc_price if $auto_update_btc_price
+      update_btc_price if $auto_update_btc_price > 0
       setup_auto_refresh_sec
       @deal_records = DealRecord.where('auto_sell = 0').order('created_at desc')
     end

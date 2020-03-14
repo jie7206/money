@@ -1,5 +1,7 @@
 class Property < ApplicationRecord
 
+  include ApplicationHelper
+
   acts_as_taggable
   belongs_to :currency
   has_one :interest
@@ -89,14 +91,42 @@ class Property < ApplicationRecord
     end
   end
 
-  # 冷钱包的总成本(大约等于总贷款金额)
+  # 比特币的总成本
+  def self.btc_total_cost_twd
+    # 还没购买比特币的剩余可投资资金
+    ps = new.get_properties_from_tags( '短线', '比特币' )
+    # 比特币的总成本 = 总贷款 - 还没购买比特币的剩余可投资资金
+    value(:twd, only_negative: true).abs - (ps.sum {|p| p.amount_to(:twd)})
+  end
+
+  # 比特币的总成本从台币换算成泰达币
+  def self.btc_total_cost_usdt
+    btc_total_cost_twd*(new.twd_to_usdt)
+  end
+
+  # 冷钱包的总成本
   def self.trezor_total_cost_twd
     value(:twd, only_negative: true).abs - (Property.tagged_with('短线').sum {|p| p.amount_to(:twd)})
   end
 
-  # 冷钱包的成本从台币换算成泰达币
+  # 冷钱包的总成本从台币换算成泰达币
   def self.trezor_total_cost_usdt
      trezor_total_cost_twd*(new.twd_to_usdt)
+  end
+
+  # 比特币的总数
+  def self.total_btc_amount
+    Property.tagged_with('比特币').sum {|p| p.amount}
+  end
+
+  # 计算比特币的成本均价
+  def self.btc_ave_cost
+    ps = Property.tagged_with('比特币')
+    if ps.size > 0
+      return btc_total_cost_usdt/(ps.sum {|p| p.amount})
+    else
+      return 0
+    end
   end
 
   # 计算冷钱包的成本均价

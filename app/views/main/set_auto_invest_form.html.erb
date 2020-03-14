@@ -9,7 +9,7 @@
       <% n += 1 %>
     </tr>
     <%
-    start_price = (@price_now*0.9).to_i/100*100
+    start_price = (@price_now*0.8).to_i/100*100
     end_price = @price_now*1.1
     price_step = 10
     %>
@@ -52,7 +52,7 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>单笔买入泰达币最小值</td>
-      <td><%= invest_params_setup_link(7,1.1,10.0,0.1,1) %></td>
+      <td><%= invest_params_setup_link(7,5,40) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -76,8 +76,8 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>用于测试的比特币价格</td>
-      <% rate_param = 0.1 %>
-      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),20) %></td>
+      <% rate_param = 0.3 %>
+      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),50) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -149,13 +149,7 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>赎回多少本金停止卖出</td>
-      <td><%= invest_params_setup_link(23,0,5000,100) %></td>
-      <% n += 1 %>
-    </tr>
-    <tr valign="top">
-      <td><%= n %></td>
-      <td>几分MACD金叉时买进</td>
-      <td>待开发</td>
+      <td><%= invest_params_setup_link(23,0,40000,100) %></td>
       <% n += 1 %>
     </tr>
   </table>

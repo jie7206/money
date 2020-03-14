@@ -12,7 +12,7 @@ cn:
   compose: 成员
   edit: 编辑
   keep: 保留
-  btc_ave_price: 冷包均价
+  btc_ave_price: 所有比特币均价
   home_title: 我的首页
   back_to_home: 返回首页
   hello: 您好！欢迎来到我的网站 ^_^
@@ -150,7 +150,7 @@ cn:
   portfolio_updated_ok: 资产组合更新成功！
   portfolio_destroyed_ok: 资产组合删除成功！
   portfolios_updated_ok: 所有资产组合已更新！
-  rate_or_price: 汇率/价格
+  rate_or_price: 汇率
   created_at: 创建
   updated_at: 更新
   record_class_name_blank_err: 数值记录模型名称不能为空白

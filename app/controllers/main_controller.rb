@@ -64,7 +64,7 @@ class MainController < ApplicationController
   # 更新火币资产
   def update_huobi_assets
     exe_update_huobi_assets
-    go_back
+    redirect_to properties_path(tags:'170')
   end
 
   # 更新火币交易记录
@@ -110,7 +110,7 @@ class MainController < ApplicationController
     @btc_level = to_n(DealRecord.btc_level) # 显示目前仓位
     @usdt_amount = to_n(DealRecord.usdt_amount) # 显示剩余资金
     @btc_available, @usdt_available = `python py/usdt_trade.py`.split(',').map {|n| to_n(n,6).to_f}
-    @ave_cost = to_n(DealRecord.ave_cost)
+    @ave_cost = to_n(Property.btc_ave_cost)
     @profit_cny = to_n(DealRecord.profit_cny(@price.to_f))
     usdt_to_cny
   end
@@ -132,13 +132,13 @@ class MainController < ApplicationController
   def order_calculate
     default_order_info
     get_order_params
-    if @deal_type.include? 'buy' and @usdt_available - @price * @amount >= 0 \
-      and @price * @amount > 1
+    @usdt_available ||= 0
+    if @deal_type and @deal_type.include? 'buy' and @price * @amount > 1
       @usdt_available = to_n(@usdt_available - @price * @amount)
       @btc_level = to_n((DealRecord.twd_of_btc + @price * @amount * fee_rate * usd2twd) / DealRecord.twd_of_170 * 100)
       @btc_amount = to_n(DealRecord.btc_amount + @amount * fee_rate, 6)
-      @ave_cost = to_n((DealRecord.total_cost+@price*@amount)/(@btc_amount.to_f))
-    elsif @deal_type.include? 'sell' and @price * @amount > 1
+      @ave_cost = to_n((Property.btc_total_cost_usdt+@price*@amount)/(Property.total_btc_amount+@btc_amount.to_f))
+    elsif @deal_type and @deal_type.include? 'sell' and @price * @amount > 1
       @amount = @btc_available if @btc_available - @amount < 0
       @usdt_amount = to_n(@usdt_amount.to_f + @price * @amount * fee_rate)
       @btc_level = to_n((DealRecord.twd_of_btc - @price * @amount * usd2twd) / DealRecord.twd_of_170 * 100)

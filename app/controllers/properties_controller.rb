@@ -7,7 +7,7 @@ class PropertiesController < ApplicationController
   def index
     tags = params[:tags]
     extags = params[:extags]
-    if admin? and tags
+    if tags
       if mode = params[:mode] and !mode.empty?
         @properties = get_properties_from_tags(tags,extags,mode)
       elsif tags  # 由tag_cloud来的单一标签
