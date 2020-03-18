@@ -1,0 +1,6 @@
+<form action="<%= update_exchange_rate_from_to_usd_currency_path(currency) %>">
+  <%= text_field_tag( "new_exchange_rate_#{currency.id}",  to_n(currency.to_usd, 4),
+        class: 'exchange_rate_input', onclick: select_all ) %>
+  <%= image_submit_tag('empty.gif', id: dom_id(currency)+'_exchange_rate',
+        width: 1, class: 'no_border') %>
+</form>

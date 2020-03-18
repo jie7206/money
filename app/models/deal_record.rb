@@ -31,20 +31,20 @@ class DealRecord < ApplicationRecord
 
   before_validation :set_default
 
-  # 回传火币170账号所有资产总值
-  def self.twd_of_170
-    twd_of_170 = 0.0
-    Property.tagged_with('170').each do |p|
+  # 回传火币账号所有资产总值
+  def self.twd_of_acc_id
+    twd_of_acc_id = 0.0
+    Property.tagged_with(self.get_huobi_acc_id).each do |p|
       if p.name.include? 'BTC' or p.name.include? 'USDT'
-        twd_of_170 += p.amount_to
+        twd_of_acc_id += p.amount_to
       end
     end
-    return twd_of_170
+    return twd_of_acc_id
   end
 
-  # 回传火币170账号的BTC现值
+  # 回传火币账号的BTC现值
   def self.btc_cny
-    Property.tagged_with('170').each do |p|
+    Property.tagged_with(self.get_huobi_acc_id).each do |p|
       if p.name.include? 'BTC'
         return p.amount_to(:cny)
       end
@@ -52,21 +52,21 @@ class DealRecord < ApplicationRecord
     return 0
   end
 
-  # 回传火币170账号所有持有的BTC资产
+  # 回传火币账号所有持有的BTC资产
   def self.twd_of_btc
     twd_of_btc = 0.0
-    Property.tagged_with('170').each {|p| twd_of_btc = p.amount_to if p.name.include? 'BTC'}
+    Property.tagged_with(self.get_huobi_acc_id).each {|p| twd_of_btc = p.amount_to if p.name.include? 'BTC'}
     return twd_of_btc
   end
 
   # 回传目前仓位
   def self.btc_level
-    return (self.twd_of_btc/self.twd_of_170)*100
+    return (self.twd_of_btc/self.twd_of_acc_id)*100
   end
 
   # 回传剩余资金
   def self.usdt_amount
-    Property.tagged_with('170').each do |p|
+    Property.tagged_with(self.get_huobi_acc_id).each do |p|
       return p.amount if p.name.include? 'USDT'
     end
     return 0
@@ -74,7 +74,7 @@ class DealRecord < ApplicationRecord
 
   # 回传剩余比特币
   def self.btc_amount
-    Property.tagged_with('170').each do |p|
+    Property.tagged_with(self.get_huobi_acc_id).each do |p|
       return p.amount if p.name.include? 'BTC'
     end
     return 0
@@ -83,7 +83,7 @@ class DealRecord < ApplicationRecord
   # 回传剩余比特币
   def self.btc_and_usdt_to_cny
     result = 0
-    Property.tagged_with('170').each do |p|
+    Property.tagged_with(self.get_huobi_acc_id).each do |p|
       result += p.amount_to(:cny) if p.name.include? 'BTC' or p.name.include? 'USDT'
     end
     return result
@@ -92,21 +92,21 @@ class DealRecord < ApplicationRecord
   # 回传剩余比特币
   def self.total_amount
     total_amount = 0
-    all.where('auto_sell = 0').each {|dr| total_amount += dr.amount-dr.fees}
+    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each {|dr| total_amount += dr.amount-dr.fees}
     return total_amount
   end
 
   # 回传总成本
   def self.total_cost
     total_cost = 0
-    all.where('auto_sell = 0').each {|dr| total_cost += dr.price*dr.amount}
+    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each {|dr| total_cost += dr.price*dr.amount}
     return total_cost
   end
 
   # 回传均价
   def self.ave_cost
     total_amount = 0
-    all.where('auto_sell = 0').each {|dr| total_amount += dr.amount - dr.fees}
+    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each {|dr| total_amount += dr.amount - dr.fees}
     if total_amount > 0
       return self.total_cost/total_amount
     else
@@ -128,25 +128,25 @@ class DealRecord < ApplicationRecord
   # 所有已实现损益
   def self.total_real_profit
     result = 0
-    all.where('auto_sell = 1').each {|dr| result += dr.real_profit}
+    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").each {|dr| result += dr.real_profit}
     return result
   end
 
   # 获取未卖出的交易笔数
   def self.unsell_count
-    all.where('auto_sell = 0').size
+    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").size
   end
 
   # 获取已卖出的交易笔数
   def self.sell_count
-    all.where('auto_sell = 1').size
+    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").size
   end
 
   # 最初第几笔未卖出交易记录的损益值(¥)
   def self.top_n_profit( n )
     if self.unsell_count > 0
       result = 0
-      where('auto_sell = 0').order('created_at').limit(n).each do |dr|
+      where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").order('created_at').limit(n).each do |dr|
         result += dr.earn_or_loss.to_f
       end
       return result
@@ -163,7 +163,7 @@ class DealRecord < ApplicationRecord
   # 尚未合并的已实现损益总值
   def self.uncombined_real_profit
     result = 0
-    where('auto_sell = 1').order('created_at desc').limit(sell_count-1).each do |dr|
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").order('created_at desc').limit(sell_count-1).each do |dr|
       result += dr.real_profit.to_f
     end
     return result.to_i

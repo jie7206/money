@@ -22,7 +22,7 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>跌破多少价位停止买入</td>
-      <td><%= invest_params_setup_link(2,start_price,end_price,price_step) %></td>
+      <td><%= show_invest_param_value(2) %> <%= invest_params_setup_link(2,start_price,end_price,price_step) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -31,13 +31,13 @@
       <td><%= show_invest_param_value(3) %> <%= invest_params_setup_link(3,100,5000,100) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top">
+    <tr valign="top" class="set_aif_bg">
       <td><%= n %></td>
       <td>单笔买入价格调整参数</td>
-      <td><%= invest_params_setup_link(4,0.1,10.0,0.1,1) %></td>
+      <td><%= invest_params_setup_link(4,0.1,30.0,0.1,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top">
+    <tr valign="top" class="set_aif_bg">
       <td><%= n %></td>
       <td>自动买入的最大仓位值</td>
       <td><%= invest_params_setup_link(5,0,100,1) %></td>
@@ -46,13 +46,13 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>买入比特币的最大总值</td>
-      <td><%= invest_params_setup_link(6,0.1,2.7,0.1,1) %></td>
+      <td><%= invest_params_setup_link(6,0.1,10.0,0.1,1) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
       <td><%= n %></td>
       <td>单笔买入泰达币最小值</td>
-      <td><%= invest_params_setup_link(7,5,40) %></td>
+      <td><%= invest_params_setup_link(7,1,40) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -73,17 +73,17 @@
       <td>无需设定</td>
       <% n += 1 %>
     </tr>
-    <tr valign="top">
+    <tr valign="top" class="set_aif_bg">
       <td><%= n %></td>
       <td>用于测试的比特币价格</td>
       <% rate_param = 0.3 %>
-      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),50) %></td>
+      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),10) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
       <td><%= n %></td>
       <td>单次获利人民币目标值</td>
-      <td><%= invest_params_setup_link(12,10,1000,10) %></td>
+      <td><%= show_invest_param_value(12) %> <%= invest_params_setup_link(12,10,1000,10) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -110,13 +110,13 @@
       <td><%= invest_params_setup_link(16,1,30,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top">
+    <tr valign="top" class="set_aif_bg">
       <td><%= n %></td>
       <td>买入几分钟内的最低价</td>
       <td><%= show_invest_param_value(17) %> <%= invest_params_setup_link(17,0,2000,10) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top">
+    <tr valign="top" class="set_aif_bg">
       <td><%= n %></td>
       <td>卖出几分钟内的最高价</td>
       <td><%= show_invest_param_value(18) %> <%= invest_params_setup_link(18,0,2000,10) %></td>
@@ -149,9 +149,15 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>赎回多少本金停止卖出</td>
-      <td><%= invest_params_setup_link(23,0,40000,100) %></td>
+      <td><%= show_invest_param_value(23) %> <%= invest_params_setup_link(23,0,50000,500) %></td>
       <% n += 1 %>
     </tr>
+    <tr valign="top">
+    <td><%= n %></td>
+    <td>API账号代码</td>
+    <td><%= invest_params_setup_link(24,135,170,5) %></td>
+    <% n += 1 %>
+  </tr>
   </table>
   <p>
   <div id="params_input" style="width:<%=$default_table_width%>px">
@@ -162,3 +168,4 @@
   </div>
 <% end %>
 <p/>
+<%= update_btc_huobi_portfolios_link %>

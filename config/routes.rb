@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   end
   resources :currencies do
     member do
-      get :chart, :delete
+      get :update_exchange_rate_from_to_usd, :chart, :delete
     end
   end
   resources :interests do

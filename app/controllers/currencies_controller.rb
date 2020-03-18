@@ -1,6 +1,6 @@
 class CurrenciesController < ApplicationController
 
-  before_action :set_currency, only: [:edit, :update, :destroy, :delete]
+  before_action :set_currency, only: [:edit, :update, :update_exchange_rate_from_to_usd, :destroy, :delete]
 
   # 货币列表
   def index
@@ -79,6 +79,12 @@ class CurrenciesController < ApplicationController
   # 删除货币
   def delete
     destroy
+  end
+
+  # 通过输入框直接更新比特币价格
+  def update_exchange_rate_from_to_usd
+    params["new_exchange_rate_#{params[:id]}"] = (1/params["new_exchange_rate_#{params[:id]}"].to_f).to_s
+    update_currency_exchange_rate
   end
 
   private

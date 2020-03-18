@@ -19,7 +19,7 @@
     <td><%= currency.code %></td>
     <td><%= line_chart_link(currency) %></td>
     <td align="right"><%= to_n(currency.exchange_rate, 8) %></td>
-    <td align="right"><%= to_n(currency.to_usd, 4) %></td>
+    <td align="right"><%= render 'update_exchange_rate', currency: currency %></td>
     <td align="right"><%= to_t(currency.updated_at) %></td>
     <td align="center"><%= chart_link(currency) %></td>
   </tr>

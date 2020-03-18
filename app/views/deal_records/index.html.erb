@@ -1,5 +1,5 @@
-<% eq_btc, btc_p, sim_ave_cost = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= eq_btc %> <%= to_n(btc_p) %>% <%= sim_ave_cost.to_i %>)</h2>
+<% eq_btc, btc_p, sim_ave_cost, one_btc2cny = Property.invest_to_btc( admin? ) %>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{sim_ave_cost.to_i} #{to_n(Property.btc_legal_ratio,2)}:1" %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
@@ -10,8 +10,7 @@
     <td><%= t(:deal_record_amount) %></td>
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
-    <td><%= t(:updated_time) %></td>
-    <td><%= t(:deal_record_real_profit) %>(<%= admin? ? DealRecord.uncombined_real_profit : (DealRecord.uncombined_real_profit*$net_profit_discount).to_i %>)</td>
+    <td colspan="2"><%= t(:updated_time) %> | <%= t(:deal_record_real_profit) %>(<%= admin? ? DealRecord.uncombined_real_profit : (DealRecord.uncombined_real_profit*$net_profit_discount).to_i %>)</td>
   </tr>
 <% n = 1 %>
 <% price_now = DealRecord.first.price_now if DealRecord.first %>
@@ -78,9 +77,9 @@ btc_hold = DealRecord.btc_amount
     </td>
     <td align="right"><%= to_n(DealRecord.ave_cost) if total_amount > 0 %></td>
     <% profit_cny = to_n(DealRecord.profit_cny) %>
-    <td align="right"><%= link_to profit_cny, place_order_form_path(sell_all:1) if !params[:show_sell] %></td>
+    <td align="right"><%= to_n(total_earn_or_loss) %></td>
     <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
-    <td align="right"><%= link_to to_n(DealRecord.btc_amount,4), place_order_form_path(sell_all:1) %>
+    <td align="right"><%= link_to to_n(total_amount,4), place_order_form_path(amount:to_n(total_amount,6)) %>
       (<%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>%)
     </td>
     <td align="right"><%= to_n(total_cny_amount,1) if !params[:show_sell] %></td>
@@ -102,8 +101,7 @@ btc_hold = DealRecord.btc_amount
   | <%= link_to t(:zip_sell_deal_records), zip_sell_records_path %>
   | <%= clear_deal_records_link %>
   <% if max_sell_count = get_invest_params(13).to_i and max_sell_count > 0 and DealRecord.unsell_count > 0 %>
-    | <%= link_to t(:send_sell_deal_records)+"(#{@get_max_sell_count}/#{get_unsell_deal_records_count})", send_sell_deal_records_path %> |
-    <%= link_to t(:send_stop_loss)+"(#{@get_max_sell_count}/#{@top_deal_record_profit})", send_stop_loss_path %>
+     | <%= link_to t(:send_stop_loss)+"(#{@get_max_sell_count}(#{@top_deal_record_profit})/#{@unsell_count})", send_stop_loss_path %>
   <% end %>
   | <%= sell_to_back_link %>
   <%= update_btc_huobi_portfolios_link %>

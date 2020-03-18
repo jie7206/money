@@ -157,6 +157,13 @@ pre {
   font-family: Verdana;
   font-size: 0.9em;
 }
+.exchange_rate_input {
+  border: 0px;
+  text-align:right;
+  width: 90px;
+  font-family: Verdana;
+  font-size: 0.9em;
+}
 .no_border {
   border: 0px;
 }
@@ -198,4 +205,7 @@ pre {
 }
 a.invest_param_select:visited {
   color: white;
+}
+.set_aif_bg {
+  background-color: rgb(229, 213, 241);
 }

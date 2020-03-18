@@ -89,18 +89,29 @@ class Property < ApplicationRecord
 
   # 数字货币总资产换算成比特币
   def self.invest_to_btc( is_admin = false )
-    p_trezor = Property.tagged_with('冷钱包').sum {|p| p.amount_to(:btc)}
+    p_btc = Property.tagged_with('比特币').sum {|p| p.amount}
+    p_trezor = Property.tagged_with('冷钱包').sum {|p| p.amount}
     p_short = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
-    p_btc = Property.tagged_with('比特币').sum {|p| p.amount_to(:btc)}
     eq_btc = (p_trezor + p_short).floor(8)
     sim_ave_cost = total_loan_lixi_usdt/eq_btc
+    # 比特币每1个百分点对应多少人民币
+    btc_p = p_btc/(p_trezor + p_short)*100
+    one_btc2cny = p_btc*(new.btc_to_cny)/btc_p
     if is_admin
-      return eq_btc, p_btc/(p_trezor + p_short)*100, sim_ave_cost
+      return eq_btc, btc_p, sim_ave_cost, one_btc2cny
     else
       p_fbtc = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
       p_finv = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
-      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost
+      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, one_btc2cny
     end
+  end
+
+  # 比特币价值与法币价值的比例
+  def self.btc_legal_ratio
+    btc_twd = (Property.tagged_with('比特币').sum {|p| p.amount_to(:twd)})
+    legal_twd = (Property.tagged_with('法币').sum {|p| p.amount_to(:twd)})
+    usdt_twd = (Property.tagged_with('泰达币').sum {|p| p.amount_to(:twd)})
+    return btc_twd/(legal_twd+usdt_twd)
   end
 
   # 比特币的总成本

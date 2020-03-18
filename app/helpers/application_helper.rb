@@ -7,7 +7,7 @@ module ApplicationHelper
   # 为哪些类型的通知自动产生方法
   $flashs = %w(notice warning)
   # 建立从列表中快速更新某个值的方法
-  $quick_update_attrs = ["property:amount","item:price,amount"]
+  $quick_update_attrs = ["property:amount","item:price,amount","currency:exchange_rate"]
   # 资产组合的模式属性
   $modes = %w(none matchall any)
   # 记录数值的模型名称
@@ -478,7 +478,7 @@ module ApplicationHelper
   # 显示切换分钟链接
   def period_link_for_chart(action)
     result = ""
-    result += "<span class='sub_text'>#{link_to t(:currency_index), controller: :currencies}</span>"
+    result += "<span class='sub_text'>#{link_to t(:deal_record_index), controller: :deal_records}</span>"
     %w[1min 5min 15min 30min 60min 4hour 1day 1week 1mon].each do |period|
     result += "<span class='sub_text'>#{link_to period_title(period), action: action, symbol: params[:symbol], period: period}</span>"
     end
@@ -496,6 +496,11 @@ module ApplicationHelper
   # 获取定投参数的值
   def get_invest_params( index )
     File.read($auto_invest_params_path).split(' ')[index]
+  end
+
+  # 读取火币APP的账号ID
+  def get_huobi_acc_id
+    get_invest_params(24)
   end
 
   # 显示定投参数的设定值链接

@@ -23,7 +23,7 @@ class PropertiesController < ApplicationController
 
   # 显示火币短线资产
   def huobi_assets
-    redirect_to action: :index, tags: '170'
+    redirect_to action: :index, tags: get_huobi_acc_id
   end
 
   # 新建资产表单

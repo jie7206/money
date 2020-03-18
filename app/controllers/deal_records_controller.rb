@@ -5,17 +5,18 @@ class DealRecordsController < ApplicationController
 
   def index
     if params[:show_all]
-      @deal_records = DealRecord.order('created_at desc')
+      @deal_records = DealRecord.where("account = '#{get_huobi_acc_id}'").order('created_at desc')
     elsif params[:show_sell]
-      @deal_records = DealRecord.where('auto_sell = 1').order('created_at desc')
+      @deal_records = DealRecord.where("auto_sell = 1 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     else
       update_btc_price if $auto_update_btc_price > 0
       setup_auto_refresh_sec
-      @deal_records = DealRecord.where('auto_sell = 0').order('created_at desc')
+      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     end
     summary
     @get_max_sell_count = get_max_sell_count
-    @top_deal_record_profit = to_n(DealRecord.top_n_profit(@get_max_sell_count))
+    @top_deal_record_profit = to_n(DealRecord.top_n_profit(@get_max_sell_count),1)
+    @unsell_count = DealRecord.unsell_count
   end
 
   def new

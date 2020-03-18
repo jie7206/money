@@ -54,6 +54,16 @@ class ApplicationRecord < ActiveRecord::Base
     all.each {|i| self.record(self.name, i.id, i.record_value)}
   end
 
+  # 获取定投参数的值
+  def self.get_invest_params( index )
+    File.read($auto_invest_params_path).split(' ')[index]
+  end
+
+  # 读取火币APP的账号ID
+  def self.get_huobi_acc_id
+    get_invest_params(24)
+  end
+
   # 更新某笔数据的记录资料
   def update_records
     Property.record(self.class.name, id, record_value)
@@ -106,6 +116,11 @@ class ApplicationRecord < ActiveRecord::Base
   # 人民币换成新台币
   def cny_to_twd
     target_rate(:twd).to_f/target_rate(:cny)
+  end
+
+  # 比特币换成人民币
+  def btc_to_cny
+    target_rate(:cny).to_f/target_rate(:btc)
   end
 
 end
