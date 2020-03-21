@@ -123,4 +123,9 @@ class ApplicationRecord < ActiveRecord::Base
     target_rate(:cny).to_f/target_rate(:btc)
   end
 
+  # 人民币换成比特币
+  def cny_to_btc
+    target_rate(:btc).to_f/target_rate(:cny)
+  end
+
 end

@@ -1,7 +1,7 @@
 class DealRecordsController < ApplicationController
 
   # before_action :check_admin
-  before_action :set_deal_record, only: [:edit, :update, :destroy, :delete]
+  before_action :set_deal_record, only: [:edit, :update, :destroy, :delete, :switch_first_sell]
 
   def index
     if params[:show_all]
@@ -17,6 +17,9 @@ class DealRecordsController < ApplicationController
     @get_max_sell_count = get_max_sell_count
     @top_deal_record_profit = to_n(DealRecord.top_n_profit(@get_max_sell_count),1)
     @unsell_count = DealRecord.unsell_count
+    # DealRecord.unsell_records.each do |dr|
+    #   dr.update_attribute(:first_sell,0) if not dr.first_sell
+    # end
   end
 
   def new
@@ -81,20 +84,19 @@ class DealRecordsController < ApplicationController
           put_notice t(:delete_invest_log_ok)
         end
     end
-    go_back
+    redirect_to invest_log_path
   end
 
   # 清空交易记录
   def clear
-    n = DealRecord.where(auto_sell:0).delete_all
-    put_notice t(:clear_deal_records_ok) + "(#{n}#{t(:bi)})"
+    put_notice t(:clear_deal_records_ok) + "(#{DealRecord.clear_unsell_records}#{t(:bi)})"
     go_deal_records
   end
 
   # 压缩卖出记录将所有的卖出记录累计成一笔
   def zip_sell_records
     price = amount = real_profit = 0
-    rs = DealRecord.where(auto_sell:1).order('created_at')
+    rs = DealRecord.sell_records.order('created_at')
     keep_id = rs.last.id
     count = rs.size
     rs.each do |r|
@@ -157,6 +159,16 @@ class DealRecordsController < ApplicationController
     redirect_to invest_log_path
   end
 
+  # 切换标示优先卖出
+  def switch_first_sell
+    if @deal_record.first_sell
+      @deal_record.update_attribute(:first_sell,false)
+    else
+      @deal_record.update_attribute(:first_sell,true)
+    end
+    go_deal_records
+  end
+
   private
 
     def set_deal_record
@@ -164,7 +176,7 @@ class DealRecordsController < ApplicationController
     end
 
     def deal_record_params
-      params.require(:deal_record).permit(:account, :data_id, :symbol, :deal_type, :price, :amount, :fees, :purpose, :loss_limit, :earn_limit, :auto_sell, :order_id, :real_profit)
+      params.require(:deal_record).permit(:account, :data_id, :symbol, :deal_type, :price, :amount, :fees, :purpose, :loss_limit, :earn_limit, :auto_sell, :order_id, :real_profit, :first_sell)
     end
 
 end

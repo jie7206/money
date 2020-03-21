@@ -56,6 +56,10 @@
     <td><%= f.check_box(:auto_sell) %></td>
   </tr>
   <tr>
+    <td><%= t(:deal_record_first_sell) %>：</td>
+    <td><%= f.check_box(:first_sell) %></td>
+  </tr>
+  <tr>
     <td colspan="2" align="right" class="tfoot">
       <%= f.submit( submit,id: submit_id) %>
     </td>

@@ -264,9 +264,8 @@ module ApplicationHelper
 
   # 与资产更新相关的链接
   def update_btc_huobi_portfolios_link
-    raw(' | ' + update_btc_exchange_rates_link + \
-    ' | ' + update_huobi_assets_link + \
-    ' | ' + update_all_portfolios_link)
+    raw( update_huobi_assets_link + \
+    ' | ' + update_all_portfolios_link + ' | ' + update_btc_exchange_rates_link + ' | ')
   end
 
   # 清空未卖出的交易记录
@@ -565,5 +564,5 @@ module ApplicationHelper
     end
     return nil
   end
-  
+
 end

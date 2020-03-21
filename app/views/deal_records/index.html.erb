@@ -1,5 +1,5 @@
-<% eq_btc, btc_p, sim_ave_cost, one_btc2cny = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{sim_ave_cost.to_i} #{to_n(Property.btc_legal_ratio,2)}:1" %>)</h2>
+<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, one_btc2cny = Property.invest_to_btc( admin? ) %>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{to_n(Property.btc_legal_ratio,2)}:1" %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
@@ -10,18 +10,21 @@
     <td><%= t(:deal_record_amount) %></td>
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
-    <td colspan="2"><%= t(:updated_time) %> | <%= t(:deal_record_real_profit) %>(<%= admin? ? DealRecord.uncombined_real_profit : (DealRecord.uncombined_real_profit*$net_profit_discount).to_i %>)</td>
+    <td colspan="2">
+      <% uncombined_real_profit = DealRecord.uncombined_real_profit %>
+      <%= t(:updated_time) %> | <%= t(:deal_record_real_profit) %>(<%= admin? ? uncombined_real_profit : (uncombined_real_profit*$net_profit_discount).to_i %><%= ' '+to_n(uncombined_real_profit*Currency.new.cny_to_btc,8) if uncombined_real_profit > 0 %>)</td>
   </tr>
 <% n = 1 %>
 <% price_now = DealRecord.first.price_now if DealRecord.first %>
 <%
-total_price = total_amount = total_cny_amount = total_cny_amount_now =  total_earn_or_loss = total_earn_limit = total_real_profit = 0
+total_price = total_amount = total_cny_amount = total_cny_amount_now =  total_earn_or_loss = total_earn_limit = total_real_profit = total_real_profit_btc = 0
 btc_hold = DealRecord.btc_amount
+cny_to_btc = Currency.new.cny_to_btc
 %>
 <% @deal_records.each do |dr| %>
   <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] %>
     <tr <%= change_row_color %>>
-      <td align="right"><%= n %></td>
+      <td align="right"><span <%= raw "class='switch_first_sell'" if dr.first_sell %>><%= link_to n, action: :switch_first_sell, id: dr %></span></td>
       <td align="center"><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
       <td align="right"><%= price = to_n(dr.price) %></td>
       <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
@@ -46,7 +49,10 @@ btc_hold = DealRecord.btc_amount
           <%= updated_at_str %>
         <% end %>
       </td>
-      <td align="right"><%= real_profit = to_n(dr.real_profit,4) if dr.real_profit %></td>
+      <td align="right">
+        <%= real_profit = to_n(dr.real_profit,2) if dr.real_profit %>
+        <%= real_profit_btc = to_n(real_profit.to_f*cny_to_btc,8) if dr.real_profit %>
+      </td>
     </tr>
   <%
     else
@@ -57,7 +63,8 @@ btc_hold = DealRecord.btc_amount
       earn_or_loss = dr.earn_or_loss if !dr.real_profit
       profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit
       earn_limit = to_n(dr.earn_limit,3) if !dr.real_profit and dr.earn_limit > 0
-      real_profit = to_n(dr.real_profit,4) if dr.real_profit
+      real_profit = to_n(dr.real_profit,2) if dr.real_profit
+      real_profit_btc = to_n(real_profit.to_f*cny_to_btc,8) if dr.real_profit
      end
   %>
   <% n += 1 %>
@@ -68,6 +75,7 @@ btc_hold = DealRecord.btc_amount
      total_earn_or_loss += earn_or_loss.to_f if !dr.real_profit
      total_earn_limit += earn_limit.to_f if !dr.real_profit
      total_real_profit += real_profit.to_f if dr.real_profit
+     total_real_profit_btc += real_profit_btc.to_f if dr.real_profit
   %>
 <% end %>
   <tr class="thead">
@@ -79,7 +87,8 @@ btc_hold = DealRecord.btc_amount
     <% profit_cny = to_n(DealRecord.profit_cny) %>
     <td align="right"><%= to_n(total_earn_or_loss) %></td>
     <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
-    <td align="right"><%= link_to to_n(total_amount,4), place_order_form_path(amount:to_n(total_amount,6)) %>
+    <% dr_btc_amount = DealRecord.btc_amount %>
+    <td align="right"><%= link_to "#{to_n(total_amount,2)}/#{to_n(dr_btc_amount,2)}", place_order_form_path(amount:to_n(total_amount,6)), title: "#{to_n(total_amount,8)}/#{to_n(dr_btc_amount,8)}" %>
       (<%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>%)
     </td>
     <td align="right"><%= to_n(total_cny_amount,1) if !params[:show_sell] %></td>
@@ -89,12 +98,24 @@ btc_hold = DealRecord.btc_amount
     <% total_net_profit = total_real_profit + profit_cny.to_f %>
     <% date_diff = (Date.today - $trade_start_time.to_date).to_i %>
     <td align="right">
-      <span title="累积净损益"><%= to_n(total_net_profit,0) %></span> <span title="净损益平均绩效：人民币/月"><%= to_n(total_net_profit.to_f/date_diff*30.5,0) %></span>/<span title="经过的月数"><%= date_diff/30 %></span>
+    <%
+    if total_real_profit_btc > 0
+      title = "累积已实现损益"
+      show_profit_cny = total_real_profit.to_i
+      show_profit_btc = to_n(total_real_profit_btc,8)
+    else
+      title = "累积动态净损益(已扣除交易手续费)"
+      show_profit_cny = total_net_profit.to_i
+      show_profit_btc = to_n(total_net_profit*cny_to_btc,8)
+    end
+    %>
+      <span title="<%= title %>"><%= show_profit_cny %> <%= show_profit_btc %></span> <span title="净损益平均绩效：人民币/月"><%= to_n(total_net_profit.to_f/date_diff*30.5,0) %></span>/<span title="经过的月数"><%= date_diff/30 %></span>
     </td>
   </tr>
 </table>
 <br/>
 <div id="func_link" style="width:<%=$default_table_width%>px">
+  <%= update_btc_huobi_portfolios_link %>
   <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
   | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
   | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
@@ -104,6 +125,5 @@ btc_hold = DealRecord.btc_amount
      | <%= link_to t(:send_stop_loss)+"(#{@get_max_sell_count}(#{@top_deal_record_profit})/#{@unsell_count})", send_stop_loss_path %>
   <% end %>
   | <%= sell_to_back_link %>
-  <%= update_btc_huobi_portfolios_link %>
 </div>
 <p/></p>

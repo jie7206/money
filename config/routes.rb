@@ -35,7 +35,7 @@ Rails.application.routes.draw do
   end
   resources :deal_records do
     member do
-      get :delete
+      get :delete, :switch_first_sell
     end
   end
   resources :open_orders do
@@ -82,5 +82,4 @@ Rails.application.routes.draw do
   get 'main/kline_chart'
   get 'main/line_chart'
   get 'save_trials_to_db', to: 'trial_lists#save_trials_to_db'
-
 end

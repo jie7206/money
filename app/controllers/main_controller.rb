@@ -64,8 +64,15 @@ class MainController < ApplicationController
   # 更新火币资产
   def update_huobi_assets
     exe_update_huobi_assets
-    # go_back
-    redirect_to properties_path(tags:get_huobi_acc_id)
+    update_deal_cost_amount
+    go_back
+    # redirect_to properties_path(tags:get_huobi_acc_id)
+  end
+
+  # 更新交易列表上的总成本与比特币总数以供跨网站计算均价使用
+  def update_deal_cost_amount
+    set_invest_params(25,DealRecord.total_cost.floor(4))
+    set_invest_params(26,DealRecord.total_amount.floor(8))
   end
 
   # 更新火币交易记录

@@ -390,7 +390,13 @@ class ApplicationController < ActionController::Base
 
   # 更新火币2个账号的资产余额
   def exe_update_huobi_assets
-    put_notice `python py/update_assets.py`
+    ori_acc_id = get_huobi_acc_id
+    ['135','170'].each do |acc_id|
+      set_invest_params( 24, acc_id )
+      sleep 1
+      put_notice acc_id + "：" + `python py/update_assets.py`
+    end
+    set_invest_params( 24, ori_acc_id )
   end
 
   # 更新所有的资产组合栏位数据和所有模型的数值记录

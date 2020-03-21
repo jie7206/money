@@ -103,6 +103,24 @@ class DealRecord < ApplicationRecord
     return total_cost
   end
 
+  # 回传所有交易的总成本(跨越不同账号)
+  def self.sum_of_total_cost
+    total_cost = 0
+    all.where("auto_sell = 0").each {|dr| total_cost += dr.price*dr.amount}
+    return total_cost
+  end
+
+  # 回传所有交易的均价(跨越不同账号)
+  def self.total_ave_cost
+    total_amount = 0
+    all.where("auto_sell = 0").each {|dr| total_amount += dr.amount}
+    if total_amount > 0
+      return self.sum_of_total_cost/total_amount
+    else
+      return 0
+    end
+  end
+
   # 回传均价
   def self.ave_cost
     total_amount = 0
@@ -142,11 +160,16 @@ class DealRecord < ApplicationRecord
     all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").size
   end
 
+  # 获取已卖出的交易记录
+  def self.sell_records
+    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1 and real_profit != 0")
+  end
+
   # 最初第几笔未卖出交易记录的损益值(¥)
   def self.top_n_profit( n )
     if self.unsell_count > 0
       result = 0
-      where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").order('created_at').limit(n).each do |dr|
+      where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").order('first_sell desc,created_at').limit(n).each do |dr|
         result += dr.earn_or_loss.to_f
       end
       return result
@@ -163,10 +186,23 @@ class DealRecord < ApplicationRecord
   # 尚未合并的已实现损益总值
   def self.uncombined_real_profit
     result = 0
-    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").order('created_at desc').limit(sell_count-1).each do |dr|
+    sql = "account = '#{self.get_huobi_acc_id}' and auto_sell = 1"
+    count = sell_count
+    select_count = (count != 1) ? count-1 : 1
+    where(sql).order('created_at desc').limit(select_count).each do |dr|
       result += dr.real_profit.to_f
     end
     return result.to_i
+  end
+
+  # 回传未卖出交易
+  def self.unsell_records
+    return where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0")
+  end
+
+  # 清空未卖出交易
+  def self.clear_unsell_records
+    return where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").delete_all
   end
 
   # 显示币种

@@ -1,3 +1,5 @@
+require 'net/http'
+
 class Property < ApplicationRecord
 
   include ApplicationHelper
@@ -89,6 +91,11 @@ class Property < ApplicationRecord
 
   # 数字货币总资产换算成比特币
   def self.invest_to_btc( is_admin = false )
+    cost1 = File.read($auto_invest_params_path).split(' ')[25].to_f
+    amount1 = File.read($auto_invest_params_path).split(' ')[26].to_f
+    cost2 = File.read($auto_invest_params_path2).split(' ')[25].to_f
+    amount2 = File.read($auto_invest_params_path2).split(' ')[26].to_f
+    real_ave_cost = (cost1+cost2)/(amount1+amount2)
     p_btc = Property.tagged_with('比特币').sum {|p| p.amount}
     p_trezor = Property.tagged_with('冷钱包').sum {|p| p.amount}
     p_short = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
@@ -98,11 +105,11 @@ class Property < ApplicationRecord
     btc_p = p_btc/(p_trezor + p_short)*100
     one_btc2cny = p_btc*(new.btc_to_cny)/btc_p
     if is_admin
-      return eq_btc, btc_p, sim_ave_cost, one_btc2cny
+      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, one_btc2cny
     else
       p_fbtc = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
       p_finv = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
-      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, one_btc2cny
+      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, one_btc2cny
     end
   end
 
@@ -168,7 +175,12 @@ class Property < ApplicationRecord
     if ps.size > 0
       cost = trezor_total_cost_twd
       months = pass_days.to_i/30
-      return ((1+((ps.sum {|p| p.amount_to(:twd)})-cost)/cost)**(1.0/months)-1)*100
+      if months > 0
+        # 不知为何出现Zero or negative argument for log错误，以后再修
+        return 0 #((1+((ps.sum {|p| p.amount_to(:twd)})-cost)/cost)**(1.0/months)-1)*100
+      else
+        return 0
+      end
     else
       return 0
     end

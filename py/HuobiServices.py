@@ -12,29 +12,6 @@ from Utils import *
 from datetime import datetime
 from datetime import timedelta
 
-# 火币账号ID
-ACCOUNT_ID = 6582761
-# 更新火币资产与更新价格的范围
-SYMBOLS = [['usdt', 'usdthusd'], ['btc', 'btcusdt'], ['atom', 'atomusdt'], ['ht', 'htusdt']]
-# 数据库位置
-DB = db_path()
-DB_Local = db_path(local=True)
-try:
-    CONN = sqlite3.connect(DB)
-    PARAMS = '/home/jie/sites/money/py/auto_invest_params.txt'
-except:
-    CONN = sqlite3.connect(DB_Local)
-    PARAMS = '/Users/lin/sites/money/py/auto_invest_params_local.txt'
-
-
-# 从SQLite文件中读取数据
-def select_db(sql):
-    cursor = CONN.cursor()          # 该例程创建一个 cursor，将在 Python 数据库编程中用到。
-    CONN.row_factory = sqlite3.Row  # 可访问列信息
-    cursor.execute(sql)             # 该例程执行一个 SQL 语句
-    rows = cursor.fetchall()        # 该例程获取查询结果集中所有（剩余）的行，返回一个列表。
-    return rows                     # print(rows[0][2]) # 选择某一列数据
-
 
 '''
 Market data API
@@ -169,7 +146,7 @@ def get_balance(acct_id=None):
     :param acct_id
     :return:
     """
-    global ACCOUNT_ID
+    # global ACCOUNT_ID
 
     if not acct_id:
         accounts = get_accounts()

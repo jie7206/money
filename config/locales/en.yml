@@ -196,6 +196,7 @@ en:
   deal_record_real_profit: Realized Profit
   price_now: Price Now
   deal_record_auto_sell: Auto Sell
+  deal_record_first_sell: First Sell
   edit_deal_record: Edit Deal Record
   update_deal_record: Update Deal Record
   new_deal_record: Add New Deal Record

@@ -5,14 +5,15 @@
     <td width="15%"><%= t(:property_amount) %></td>
     <td width="8%"><%= t(:property_currency) %></td>
     <td width="8%"><%= t(:rate_or_price) %></td>
-    <td width="8%"><%= t(:exchange_to_twd) %></td>
-    <td width="9%"><%= t(:exchange_to_cny) %></td>
-    <td width="7%"><%= t(:property_lixi) %></td>
+    <td width="7%"><%= t(:exchange_to_twd) %></td>
+    <td width="7%"><%= t(:exchange_to_cny) %></td>
+    <td width="7%"><%= t(:exchange_to_btc) %></td>
+    <td width="6%"><%= t(:property_lixi) %></td>
     <td width="6%"><%= t(:property_proportion) %></td>
-    <td width="5%"><%= t(:chart) %></td>
+    <td width="5%"></td>
   </tr>
 <% n = 1 %>
-<% amounts = amount_twds = amount_cnys = lixis = proportions = 0.0 %>
+<% amounts = amount_twds = amount_cnys = amount_btcs = lixis = proportions = 0.0 %>
 <% properties.each do |property| %>
   <tr <%= change_row_color %>>
     <td align="right"><%= n %></td>
@@ -26,6 +27,7 @@
     <td align="right"><%= property.currency.rate_or_price %></td>
     <td align="right"><%= amount_twd=to_n(property.amount_to,0) %></td>
     <td align="right"><%= amount_cny=to_n(property.amount_to(:cny),0) %></td>
+    <td align="right"><%= amount_btc=to_n(property.amount_to(:btc),6) %></td>
     <td align="right"><%= lixi=property.lixi(:twd).to_i %></td>
   <% if @properties_sum and @properties_sum > 0 %>
     <td align="right"><%= proportion=to_n(amount_twd.to_f/@properties_sum*100) %></td>
@@ -38,6 +40,7 @@
   <% amounts += property.amount %>
   <% amount_twds += amount_twd.to_i %>
   <% amount_cnys += amount_cny.to_i %>
+  <% amount_btcs += amount_btc.to_f %>
   <% lixis += lixi %>
   <% proportions += proportion.to_f %>
 <% end %>
@@ -49,6 +52,7 @@
     <td colspan="3" align="right"><%= to_amount(amounts,properties.last.currency.is_digital?) %>&nbsp;</td>
     <td align="right"><%= amount_twds.to_i %></td>
     <td align="right"><%= amount_cnys.to_i %></td>
+    <td align="right"><%= amount_btcs.floor(6) %></td>
     <td align="right"><%= lixis.to_i %></td>
     <td align="right" colspan="2"><%= to_n(proportions) %></td>
   </tr>

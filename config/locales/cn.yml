@@ -65,6 +65,7 @@ cn:
   updated_time: 更新时间
   exchange_to_twd: 等值台币
   exchange_to_cny: 值人民币
+  exchange_to_btc: 值比特币
   now_to_cny: 现值
   earn_or_loss: 盈亏
   total_properties_amount: 资产总净值
@@ -197,8 +198,9 @@ cn:
   deal_record_loss_short: 止损价
   deal_record_order_id: 下单编号
   deal_record_real_profit: 已实现损益
+  deal_record_first_sell: 标示为优先卖出
   price_now: 现价
-  deal_record_auto_sell: 自动卖出
+  deal_record_auto_sell: 标示为已经卖出
   edit_deal_record: 编辑交易记录
   update_deal_record: 更新记录
   new_deal_record: 新建交易记录

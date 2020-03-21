@@ -89,7 +89,7 @@ pre {
 #auto_invest_params_span {
   margin: 1em;
   input {
-    width: 900px;
+    width: 1050px;
     padding: 0.15em;
     font-size: 1.1em;
   }
@@ -208,4 +208,8 @@ a.invest_param_select:visited {
 }
 .set_aif_bg {
   background-color: rgb(229, 213, 241);
+}
+.switch_first_sell a {
+  color: red;
+  font-weight: bold;
 }

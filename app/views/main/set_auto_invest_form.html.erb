@@ -34,7 +34,7 @@
     <tr valign="top" class="set_aif_bg">
       <td><%= n %></td>
       <td>单笔买入价格调整参数</td>
-      <td><%= invest_params_setup_link(4,0.1,30.0,0.1,1) %></td>
+      <td><%= invest_params_setup_link(4,0.1,40.0,0.1,1) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top" class="set_aif_bg">
@@ -153,11 +153,23 @@
       <% n += 1 %>
     </tr>
     <tr valign="top">
-    <td><%= n %></td>
-    <td>API账号代码</td>
-    <td><%= invest_params_setup_link(24,135,170,5) %></td>
-    <% n += 1 %>
-  </tr>
+      <td><%= n %></td>
+      <td>API账号代码</td>
+      <td><%= invest_params_setup_link(24,135,170,5) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>交易列表上的交易总额</td>
+      <td>无需设定</td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>交易列表的比特币总数</td>
+      <td>无需设定</td>
+      <% n += 1 %>
+    </tr>
   </table>
   <p>
   <div id="params_input" style="width:<%=$default_table_width%>px">
