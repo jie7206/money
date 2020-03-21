@@ -11,8 +11,8 @@
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
     <td colspan="2">
-      <% uncombined_real_profit = DealRecord.uncombined_real_profit %>
-      <%= t(:updated_time) %> | <%= t(:deal_record_real_profit) %>(<%= admin? ? uncombined_real_profit : (uncombined_real_profit*$net_profit_discount).to_i %><%= ' '+to_n(uncombined_real_profit*Currency.new.cny_to_btc,8) if uncombined_real_profit > 0 %>)</td>
+      <% total_real_profit = DealRecord.total_real_profit.to_i %>
+      <%= t(:updated_time) %> | <%= t(:deal_record_real_profit) %>(<%= admin? ? total_real_profit : (total_real_profit*$net_profit_discount).to_i %><%= ' '+to_n(total_real_profit*Currency.new.cny_to_btc,8) if total_real_profit > 0 %>)</td>
   </tr>
 <% n = 1 %>
 <% price_now = DealRecord.first.price_now if DealRecord.first %>

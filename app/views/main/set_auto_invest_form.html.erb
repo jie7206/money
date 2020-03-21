@@ -170,6 +170,12 @@
       <td>无需设定</td>
       <% n += 1 %>
     </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>多少价位执行强制卖出</td>
+      <td><%= invest_params_setup_link(27,start_price,end_price,price_step,0,true) %></td>
+      <% n += 1 %>
+    </tr>
   </table>
   <p>
   <div id="params_input" style="width:<%=$default_table_width%>px">

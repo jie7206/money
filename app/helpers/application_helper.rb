@@ -503,12 +503,17 @@ module ApplicationHelper
   end
 
   # 显示定投参数的设定值链接
-  def invest_params_setup_link( index, min, max, step = 1, pos = 0 )
+  def invest_params_setup_link( index, min, max, step = 1, pos = 0, add_zero = false )
     result = ''
     (min..max).step(step).each do |n|
       value = to_n(n.floor(pos),pos)
       style = (!@already_show and value == get_invest_params(index)) ? 'invest_param_select' : ''
       result += link_to(value, setup_invest_param_path(i:index,v:value), class: style) + ' '
+    end
+    if add_zero
+      value = '0'
+      style = (!@already_show and value == get_invest_params(index)) ? 'invest_param_select' : ''
+      result = link_to(value, setup_invest_param_path(i:index,v:value), class: style) + ' ' + raw(result)
     end
     @already_show = false
     return raw(result)
