@@ -442,8 +442,9 @@ module ApplicationHelper
   end
 
   # 建立查看火币下单链接
-  def look_order_link( dr, len = 11 )
-    link_to(dr.order_id[-11+(11-len)..-1], {controller: :main, action: :look_order, account: dr.account, id: dr.order_id},{target: :blank}) if dr.order_id and !dr.order_id.empty?
+  def look_order_link( dr, text )
+    # old: dr.order_id[-11+(11-len)..-1] <-- 传入len参数
+    link_to(text, {controller: :main, action: :look_order, account: dr.account, id: dr.order_id},{target: :blank}) if dr.order_id and !dr.order_id.empty?
   end
 
   def symbol_title(symbol)

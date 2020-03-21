@@ -96,6 +96,8 @@ class Property < ApplicationRecord
     cost2 = File.read($auto_invest_params_path2).split(' ')[25].to_f
     amount2 = File.read($auto_invest_params_path2).split(' ')[26].to_f
     real_ave_cost = (cost1+cost2)/(amount1+amount2)
+    price_now = DealRecord.first.price_now if DealRecord.first
+    price_p = (price_now/real_ave_cost-1)*100 # 现价与均价的比率(利率)
     p_btc = Property.tagged_with('比特币').sum {|p| p.amount}
     p_trezor = Property.tagged_with('冷钱包').sum {|p| p.amount}
     p_short = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
@@ -105,11 +107,11 @@ class Property < ApplicationRecord
     btc_p = p_btc/(p_trezor + p_short)*100
     one_btc2cny = p_btc*(new.btc_to_cny)/btc_p
     if is_admin
-      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, one_btc2cny
+      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny
     else
       p_fbtc = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
       p_finv = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
-      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, one_btc2cny
+      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, price_p, one_btc2cny
     end
   end
 

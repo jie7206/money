@@ -1,5 +1,5 @@
-<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, one_btc2cny = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{to_n(Property.btc_legal_ratio,2)}:1" %>)</h2>
+<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny = Property.invest_to_btc( admin? ) %>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{to_n(price_p)}% #{to_n(Property.btc_legal_ratio,2)}:1" %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
@@ -50,8 +50,11 @@ cny_to_btc = Currency.new.cny_to_btc
         <% end %>
       </td>
       <td align="right">
-        <%= real_profit = to_n(dr.real_profit,2) if dr.real_profit %>
-        <%= real_profit_btc = to_n(real_profit.to_f*cny_to_btc,8) if dr.real_profit %>
+        <% if dr.real_profit %>
+          <% real_profit = to_n(dr.real_profit,2) %>
+          <% real_profit_btc = to_n(real_profit.to_f*cny_to_btc,8) %>
+          <%= look_order_link( dr, real_profit+' '+real_profit_btc ) %>
+        <% end %>
       </td>
     </tr>
   <%
@@ -87,6 +90,7 @@ cny_to_btc = Currency.new.cny_to_btc
     <% profit_cny = to_n(DealRecord.profit_cny) %>
     <td align="right"><%= to_n(total_earn_or_loss) %></td>
     <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
+    <% total_amount = total_amount*(1-$fees_rate) %>
     <% dr_btc_amount = DealRecord.btc_amount %>
     <td align="right"><%= link_to "#{to_n(total_amount,2)}/#{to_n(dr_btc_amount,2)}", place_order_form_path(amount:to_n(total_amount,6)), title: "#{to_n(total_amount,8)}/#{to_n(dr_btc_amount,8)}" %>
       (<%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>%)
