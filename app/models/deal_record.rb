@@ -155,6 +155,11 @@ class DealRecord < ApplicationRecord
     all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").size
   end
 
+  # 获取未卖出且标示为优先卖出的交易笔数
+  def self.first_unsell_count
+    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0 and first_sell = 1").size
+  end
+
   # 获取已卖出的交易笔数
   def self.sell_count
     all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").size
