@@ -1,6 +1,7 @@
 <span id="site_title">
-  <a href="<%= root_path %>">
-    <h1><%= site_logo %><%= site_name %> <%= get_huobi_acc_id %></h1>
-  </a>
+    <h1>
+      <a href="<%= root_path %>"><%= site_logo %><%= site_name %></a>
+      <%= link_to get_huobi_acc_id, $host2 %>
+    </h1>
 </span>
 <%= render 'layouts/site_nav', id: 'site_nav' %>
