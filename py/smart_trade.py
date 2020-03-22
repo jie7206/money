@@ -1323,7 +1323,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                                 profit_now, profit_cny, every_sec_for_sell)
                             print(str)
                             ftext += str+'\n'
-                            ftext = print_next_exe_time(every_sec_for_sell, ftext)
+                            ftext = print_next_exe_time(every_sec, ftext)
                             fobj.write(ftext)
                             return every_sec
             else:
@@ -1346,7 +1346,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -1373,7 +1373,7 @@ if __name__ == '__main__':
                 sell_max_cny = int(sell_max_cny)
                 force_sell_price = float(force_sell_price)
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
-                if force_to_sell > 0:
+                if force_to_sell > 0 and max_sell_count > 0:
                     FORCE_SELL = True
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
                                        factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
@@ -1405,7 +1405,7 @@ if __name__ == '__main__':
                                 if price_now > 0 and price_now < below_price and over_buy_time:
                                     FORCE_BUY = True
                                     break
-                                if force_sell_price > 0 and price_now >= force_sell_price and over_sell_time:
+                                if force_sell_price > 0 and max_sell_count > 0 and price_now >= force_sell_price and over_sell_time:
                                     setup_force_sell()
                                     break
                             if buy_price_period > 0:
@@ -1419,7 +1419,7 @@ if __name__ == '__main__':
                                     if min_price_in_wish and over_buy_time:
                                         FORCE_BUY = True
                                         break
-                                    if force_sell_price > 0 and price_now >= force_sell_price and over_sell_time:
+                                    if force_sell_price > 0 and max_sell_count > 0 and price_now >= force_sell_price and over_sell_time:
                                         setup_force_sell()
                                         break
                             if sell_price_period > 0:

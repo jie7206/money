@@ -5,7 +5,7 @@ class DealRecordsController < ApplicationController
 
   def index
     if params[:show_all]
-      @deal_records = DealRecord.where("account = '#{get_huobi_acc_id}'").order('created_at desc')
+      @deal_records = DealRecord.where("account = '#{get_huobi_acc_id}'").order('amount, created_at')
     elsif params[:show_sell]
       @deal_records = DealRecord.where("auto_sell = 1 and account = '#{get_huobi_acc_id}'").order('updated_at desc')
     elsif params[:show_first]
@@ -139,10 +139,15 @@ class DealRecordsController < ApplicationController
 
   # 交易列表新增执行停损功能
   def send_stop_loss
-    setup_sell_params
-    put_notice t(:send_stop_loss_ok)
-    sleep $wait_send_sec
-    redirect_to invest_log_path
+    if DealRecord.over_sell_time?
+      setup_sell_params
+      put_notice t(:send_stop_loss_ok)
+      sleep $wait_send_sec
+      redirect_to invest_log_path
+    else
+      put_notice t(:send_stop_loss_error)
+      go_back
+    end
   end
 
   # 交易列表新增卖到回本功能
@@ -166,7 +171,7 @@ class DealRecordsController < ApplicationController
     else
       @deal_record.update_attribute(:first_sell,true)
     end
-    go_deal_records
+    redirect_to deal_records_path(show_all:params[:show_all])
   end
 
   private

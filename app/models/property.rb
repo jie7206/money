@@ -89,13 +89,25 @@ class Property < ApplicationRecord
     total_loan_lixi*(new.twd_to_usdt)
   end
 
+  def self.get_invest_param_from( file_path, index, to_number = true )
+    value = File.read(file_path).split(' ')[index]
+    if to_number
+      return value.to_f
+    else
+      return value
+    end
+  end
+
   # 数字货币总资产换算成比特币
   def self.invest_to_btc( is_admin = false )
-    cost1 = File.read($auto_invest_params_path).split(' ')[25].to_f
-    amount1 = File.read($auto_invest_params_path).split(' ')[26].to_f
-    cost2 = File.read($auto_invest_params_path2).split(' ')[25].to_f
-    amount2 = File.read($auto_invest_params_path2).split(' ')[26].to_f
+    cost1 = get_invest_param_from($auto_invest_params_path,25)
+    amount1 = get_invest_param_from($auto_invest_params_path,26)
+    cost2 = get_invest_param_from($auto_invest_params_path2,25)
+    amount2 = get_invest_param_from($auto_invest_params_path2,26)
     real_ave_cost = (cost1+cost2)/(amount1+amount2)
+    real_profit1 = get_invest_param_from($auto_invest_params_path,28).to_i
+    real_profit2 = get_invest_param_from($auto_invest_params_path2,28).to_i
+    total_real_profit = real_profit1 + real_profit2
     price_now = DealRecord.first.price_now if DealRecord.first
     price_p = (price_now/real_ave_cost-1)*100 # 现价与均价的比率(利率)
     p_btc = Property.tagged_with('比特币').sum {|p| p.amount}
@@ -107,11 +119,11 @@ class Property < ApplicationRecord
     btc_p = p_btc/(p_trezor + p_short)*100
     one_btc2cny = p_btc*(new.btc_to_cny)/btc_p
     if is_admin
-      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny
+      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit.to_s
     else
       p_fbtc = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
       p_finv = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
-      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, price_p, one_btc2cny
+      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, ''
     end
   end
 

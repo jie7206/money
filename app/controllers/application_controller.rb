@@ -500,7 +500,7 @@ class ApplicationController < ActionController::Base
   # 定投秒数尾数是0则回传1反之亦然
   def swap_sec
     sec = get_invest_params(0)
-    return sec[-1] == '0' ? sec[0..-2]+'1' : sec[0..-2]+'0'
+    return sec[-1] == '0' ? sec[0..-2]+'9' : sec[0..-2]+'0'
   end
 
   # 读取火币APP的账号ID

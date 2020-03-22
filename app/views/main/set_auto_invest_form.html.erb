@@ -64,13 +64,13 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>更新交易列表记录日期</td>
-      <td>无需设定</td>
+      <td><%= show_invest_param_value(9) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
       <td><%= n %></td>
       <td>更新交易列表记录时间</td>
-      <td>无需设定</td>
+      <td><%= show_invest_param_value(10) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top" class="set_aif_bg">
@@ -131,13 +131,13 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>是否强制执行停损卖出</td>
-      <td>无需设定</td>
+      <td><%= show_invest_param_value(20) %> <%= invest_params_setup_link(20,0,1) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
       <td><%= n %></td>
       <td>触底反弹买进的索引值</td>
-      <td><%= invest_params_setup_link(21,0,-27,-1) %></td>
+      <td><%= show_invest_param_value(21) %> <%= invest_params_setup_link(21,0,-27,-1) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -161,19 +161,25 @@
     <tr valign="top">
       <td><%= n %></td>
       <td>交易列表上的交易总额</td>
-      <td>无需设定</td>
+      <td><%= show_invest_param_value(25) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
       <td><%= n %></td>
       <td>交易列表的比特币总数</td>
-      <td>无需设定</td>
+      <td><%= show_invest_param_value(26) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
       <td><%= n %></td>
       <td>多少价位执行强制卖出</td>
-      <td><%= invest_params_setup_link(27,start_price,end_price,price_step,0,true) %></td>
+      <td><%= show_invest_param_value(27) %> <%= invest_params_setup_link(27,start_price,end_price,price_step,0,true) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>交易列表的已实现损益</td>
+      <td><%= show_invest_param_value(28) %></td>
       <% n += 1 %>
     </tr>
   </table>

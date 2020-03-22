@@ -210,6 +210,18 @@ class DealRecord < ApplicationRecord
     return where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").delete_all
   end
 
+  # 是否已经达到可以再次卖出的时间
+  def self.over_sell_time?
+    sell_sec = get_invest_params(22).to_i
+    last_sell_time = where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").order("updated_at desc").first.updated_at
+    pass_sec = (Time.now - last_sell_time).to_i
+    if pass_sec > sell_sec
+      return true
+    else
+      return false
+    end
+  end
+
   # 显示币种
   def bi
     symbol.sub('usdt','').upcase

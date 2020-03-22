@@ -1,5 +1,5 @@
-<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{to_n(price_p)}% #{to_n(Property.btc_legal_ratio,2)}:1" %>)</h2>
+<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit = Property.invest_to_btc( admin? ) %>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{to_n(price_p)}% #{to_n(Property.btc_legal_ratio,2)}:1 #{total_real_profit}" %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
@@ -24,7 +24,7 @@ cny_to_btc = Currency.new.cny_to_btc
 <% @deal_records.each do |dr| %>
   <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] %>
     <tr <%= change_row_color %>>
-      <td align="right"><span <%= raw "class='switch_first_sell'" if dr.first_sell %>><%= link_to n, action: :switch_first_sell, id: dr %></span></td>
+      <td align="right"><span <%= raw "class='switch_first_sell'" if dr.first_sell %>><%= link_to n, action: :switch_first_sell, id: dr, show_all: params[:show_all] %></span></td>
       <td align="center"><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
       <td align="right"><%= price = to_n(dr.price) %></td>
       <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
@@ -126,8 +126,16 @@ cny_to_btc = Currency.new.cny_to_btc
   | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
   | <%= link_to t(:zip_sell_deal_records), zip_sell_records_path %>
   | <%= clear_deal_records_link %>
-  <% if max_sell_count = get_invest_params(13).to_i and max_sell_count > 0 and DealRecord.unsell_count > 0 %>
-     | <%= link_to t(:send_stop_loss)+"(#{@get_max_sell_count}(#{@top_deal_record_profit})/#{@first_unsell_count}/#{@unsell_count})", send_stop_loss_path %>
+  <%
+    if max_sell_count = get_invest_params(13).to_i and max_sell_count > 0 and DealRecord.unsell_count > 0
+      sell_price = get_invest_params(27)
+      if DealRecord.over_sell_time?
+        show_sell = link_to raw(t(:send_stop_loss)+"(#{@get_max_sell_count}(#{@top_deal_record_profit})/#{@first_unsell_count}/#{@unsell_count})@<u>#{sell_price}</u>"), send_stop_loss_path
+      else
+        show_sell = raw(t(:send_stop_loss)+"(#{@get_max_sell_count}(#{@top_deal_record_profit})/#{@first_unsell_count}/#{@unsell_count})@#{sell_price}")
+      end
+  %>
+     | <%= show_sell %>
   <% end %>
   | <%= sell_to_back_link %>
 </div>
