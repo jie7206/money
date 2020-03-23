@@ -35,7 +35,7 @@ Rails.application.routes.draw do
   end
   resources :deal_records do
     member do
-      get :delete, :switch_first_sell
+      get :delete, :switch_first_sell, :switch_to_trezor
     end
   end
   resources :open_orders do

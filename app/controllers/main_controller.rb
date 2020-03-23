@@ -78,7 +78,7 @@ class MainController < ApplicationController
 
   # 记录交易列表上的已实现损益以供跨网站计算总的已实现损益使用
   def update_total_real_profit
-    set_invest_params(28,DealRecord.total_real_profit.to_i)
+    set_invest_params(28,DealRecord.total_real_profit.to_i.to_s+':'+DealRecord.total_unsell_profit.to_i.to_s)
   end
 
   # 更新火币交易记录

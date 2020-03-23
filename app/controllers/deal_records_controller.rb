@@ -1,15 +1,19 @@
 class DealRecordsController < ApplicationController
 
   # before_action :check_admin
-  before_action :set_deal_record, only: [:edit, :update, :destroy, :delete, :switch_first_sell]
+  before_action :set_deal_record, only: [:edit, :update, :destroy, :delete, :switch_first_sell, :switch_to_trezor]
 
   def index
     if params[:show_all]
       @deal_records = DealRecord.where("account = '#{get_huobi_acc_id}'").order('amount, created_at')
     elsif params[:show_sell]
-      @deal_records = DealRecord.where("auto_sell = 1 and account = '#{get_huobi_acc_id}'").order('updated_at desc')
+      @deal_records = DealRecord.where("auto_sell = 1 and real_profit != 0 and account = '#{get_huobi_acc_id}'").order('updated_at desc')
+    elsif params[:show_unsell]
+      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('price,amount desc')
     elsif params[:show_first]
       @deal_records = DealRecord.where("first_sell = 1 and auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
+    elsif params[:show_trezor]
+      @deal_records = DealRecord.where("auto_sell = 1 and real_profit = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     else
       update_btc_price if $auto_update_btc_price > 0
       setup_auto_refresh_sec
@@ -171,7 +175,17 @@ class DealRecordsController < ApplicationController
     else
       @deal_record.update_attribute(:first_sell,true)
     end
-    redirect_to deal_records_path(show_all:params[:show_all])
+    redirect_to deal_records_path(show_all:params[:show_all],show_unsell:params[:show_unsell])
+  end
+
+  # 设置为转出至冷钱包
+  def switch_to_trezor
+    if @deal_record.auto_sell and @deal_record.real_profit == 0
+      @deal_record.update_attributes(auto_sell: false, real_profit: nil)
+    else
+      @deal_record.update_attributes(auto_sell: true, real_profit: 0)
+    end
+    redirect_to deal_records_path(show_all:params[:show_all],show_unsell:params[:show_unsell])
   end
 
   private

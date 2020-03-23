@@ -150,6 +150,16 @@ class DealRecord < ApplicationRecord
     return result
   end
 
+  # 所有未卖出损益
+  def self.total_unsell_profit
+    result = 0
+    price_now = DealRecord.first.price_now if DealRecord.first
+    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each do |dr|
+      result += (price_now-dr.price)*(dr.amount*(1-$fees_rate))
+    end
+    return result*(DealRecord.new.usdt_to_cny)
+  end
+
   # 获取未卖出的交易笔数
   def self.unsell_count
     all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").size
@@ -213,7 +223,7 @@ class DealRecord < ApplicationRecord
   # 是否已经达到可以再次卖出的时间
   def self.over_sell_time?
     sell_sec = get_invest_params(22).to_i
-    last_sell_time = where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").order("updated_at desc").first.updated_at
+    last_sell_time = where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").where.not(order_id: [nil, ""]).order("updated_at desc").first.updated_at
     pass_sec = (Time.now - last_sell_time).to_i
     if pass_sec > sell_sec
       return true

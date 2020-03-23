@@ -1,5 +1,5 @@
-<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> (<%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{to_n(price_p)}% #{to_n(Property.btc_legal_ratio,2)}:1 #{total_real_profit}" %>)</h2>
+<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit = Property.invest_to_btc( admin? ) %>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{to_n(price_p)}% #{to_n(Property.btc_legal_ratio,2)}:1 #{total_real_profit} #{total_unsell_profit}" %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
@@ -17,14 +17,14 @@
 <% n = 1 %>
 <% price_now = DealRecord.first.price_now if DealRecord.first %>
 <%
-total_price = total_amount = total_cny_amount = total_cny_amount_now =  total_earn_or_loss = total_earn_limit = total_real_profit = total_real_profit_btc = 0
+total_price = total_amount = total_amount_fee = total_cny_amount = total_cny_amount_now =  total_earn_or_loss = total_earn_limit = total_real_profit = total_real_profit_btc = 0
 btc_hold = DealRecord.btc_amount
 cny_to_btc = Currency.new.cny_to_btc
 %>
 <% @deal_records.each do |dr| %>
-  <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] %>
+  <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] or params[:show_unsell] %>
     <tr <%= change_row_color %>>
-      <td align="right"><span <%= raw "class='switch_first_sell'" if dr.first_sell %>><%= link_to n, action: :switch_first_sell, id: dr, show_all: params[:show_all] %></span></td>
+      <td align="right"><span <%= raw "class='switch_first_sell'" if dr.first_sell %>><%= link_to n, action: :switch_first_sell, id: dr, show_all: params[:show_all], show_unsell: params[:show_unsell] %></span></td>
       <td align="center"><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
       <td align="right"><%= price = to_n(dr.price) %></td>
       <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
@@ -50,11 +50,18 @@ cny_to_btc = Currency.new.cny_to_btc
         <% end %>
       </td>
       <td align="right">
-        <% if dr.real_profit %>
-          <% real_profit = to_n(dr.real_profit,2) %>
-          <% real_profit_btc = to_n(real_profit.to_f*cny_to_btc,8) %>
-          <%= look_order_link( dr, real_profit+' '+real_profit_btc ) %>
-        <% end %>
+       <%
+          if dr.auto_sell and dr.real_profit
+            if dr.real_profit == 0 # 为转出记录 %>
+              <%= link_to t(:set_from_trezor), action: :switch_to_trezor, id: dr, show_all: params[:show_all] %>
+       <%   else
+              real_profit = to_n(dr.real_profit,2)
+              real_profit_btc = to_n(real_profit.to_f*cny_to_btc,8) %>
+              <%= look_order_link( dr, real_profit+' '+real_profit_btc ) %>
+       <%   end
+          else %>
+            <%= link_to t(:set_to_trezor), action: :switch_to_trezor, id: dr, show_all: params[:show_all] %>
+       <% end %>
       </td>
     </tr>
   <%
@@ -73,6 +80,7 @@ cny_to_btc = Currency.new.cny_to_btc
   <% n += 1 %>
   <% total_price += price.to_f * amount.to_f
      total_amount += amount.to_f
+     total_amount_fee += amount.to_f * (1-$fees_rate)
      total_cny_amount += cny_amount.to_f if !dr.real_profit
      total_cny_amount_now += cny_amount_now.to_f if !dr.real_profit
      total_earn_or_loss += earn_or_loss.to_f if !dr.real_profit
@@ -86,13 +94,16 @@ cny_to_btc = Currency.new.cny_to_btc
       <%= kline_chart_link(to_n(price_now)) %>
       (<%= to_n(price_now/Property.btc_ave_cost*100,2)%>%)
     </td>
-    <td align="right"><%= to_n(DealRecord.ave_cost) if total_amount > 0 %></td>
+    <td align="right">
+      <% # to_n(DealRecord.ave_cost) if total_amount > 0 %>
+      <%= to_n(total_price/total_amount) %>
+    </td>
     <% profit_cny = to_n(DealRecord.profit_cny) %>
     <td align="right"><%= to_n(total_earn_or_loss) %></td>
     <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
-    <% total_amount = total_amount*(1-$fees_rate) %>
     <% dr_btc_amount = DealRecord.btc_amount %>
-    <td align="right"><%= link_to "#{to_n(total_amount,2)}/#{to_n(dr_btc_amount,2)}", place_order_form_path(amount:to_n(total_amount,6)), title: "#{to_n(total_amount,8)}/#{to_n(dr_btc_amount,8)}" %>
+    <% amount_diff = dr_btc_amount - total_amount_fee %>
+    <td align="right"><%= link_to "#{to_n(total_amount_fee,2)}/#{to_n(dr_btc_amount,2)}", place_order_form_path(amount:to_n(dr_btc_amount,6)), title: "#{to_n(total_amount_fee,8)}/#{to_n(dr_btc_amount,8)} 差值: #{to_n(amount_diff,8)}" %>
       (<%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>%)
     </td>
     <td align="right"><%= to_n(total_cny_amount,1) if !params[:show_sell] %></td>
@@ -123,6 +134,8 @@ cny_to_btc = Currency.new.cny_to_btc
   <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
   | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
   | <%= link_to t(:show_first_sell_deal_records), deal_records_path(show_first:1) %>
+  | <%= link_to t(:trezor_records), deal_records_path(show_trezor:1) %>
+  | <%= link_to t(:show_unsell_deal_records), deal_records_path(show_unsell:1) %>
   | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
   | <%= link_to t(:zip_sell_deal_records), zip_sell_records_path %>
   | <%= clear_deal_records_link %>
@@ -130,13 +143,12 @@ cny_to_btc = Currency.new.cny_to_btc
     if max_sell_count = get_invest_params(13).to_i and max_sell_count > 0 and DealRecord.unsell_count > 0
       sell_price = get_invest_params(27)
       if DealRecord.over_sell_time?
-        show_sell = link_to raw(t(:send_stop_loss)+"(#{@get_max_sell_count}(#{@top_deal_record_profit})/#{@first_unsell_count}/#{@unsell_count})@<u>#{sell_price}</u>"), send_stop_loss_path
+        show_sell = link_to raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@<u>#{sell_price}</u>"), send_stop_loss_path
       else
-        show_sell = raw(t(:send_stop_loss)+"(#{@get_max_sell_count}(#{@top_deal_record_profit})/#{@first_unsell_count}/#{@unsell_count})@#{sell_price}")
+        show_sell = raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@#{sell_price}")
       end
   %>
      | <%= show_sell %>
   <% end %>
-  | <%= sell_to_back_link %>
 </div>
 <p/></p>

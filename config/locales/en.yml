@@ -12,6 +12,8 @@ en:
   xiang: ' '
   compose: Compose
   keep: Keep
+  set_to_trezor: To Trezor
+  set_from_trezor: From Trezor
   btc_ave_price: BTC Ave
   home_title: My Homepage
   back_to_home: Home
@@ -262,6 +264,7 @@ en:
   set_auto_invest_params_error: Auto Invest Params updated Error!
   show_all_deal_records: Show All Deal Records
   show_sell_deal_records: Show Sell Deal Records
+  show_unsell_deal_records: Show Unsell Deal Records
   show_first_sell_deal_records: Show First Sell Records
   zip_sell_deal_records: Zip Sell Deal Records
   zip_sell_records_ok: Zip Sell Deal Records successfully!

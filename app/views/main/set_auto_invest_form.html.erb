@@ -34,7 +34,7 @@
     <tr valign="top" class="set_aif_bg">
       <td><%= n %></td>
       <td>单笔买入价格调整参数</td>
-      <td><%= invest_params_setup_link(4,0.1,40.0,0.1,1) %></td>
+      <td><%= show_invest_param_value(4) %> <%= invest_params_setup_link(4,0.1,40.0,0.1,1) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top" class="set_aif_bg">
@@ -192,4 +192,3 @@
   </div>
 <% end %>
 <p/>
-<%= update_btc_huobi_portfolios_link %>
