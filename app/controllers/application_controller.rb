@@ -267,6 +267,7 @@ class ApplicationController < ActionController::Base
     @min_value = @data_arr.min
     @max_value = @data_arr.max
     @newest_value = @data_arr.last
+    @before_newest_value = @data_arr[-2]
     pos = @min_value < 1 ? 4 : 2 # 如果数值小于1，则显示小数点到4位，否则2位
     if @min_value == @max_value
       @top_value = to_n(@min_value*(1+(factor-1)),pos)
@@ -308,7 +309,14 @@ class ApplicationController < ActionController::Base
     end
     set_fusion_chart_max_and_min_value
     t2c = Property.new.twd_to_cny
-    @caption = "#{@name} #{$fusionchart_data_num}天走势图 最新 #{@newest_value} | #{(@newest_value*t2c).to_i} ( #{@min_value} | #{(@min_value*t2c).to_i} ➠ #{@max_value} | #{(@max_value*t2c).to_i} )"
+    @newest_value_diff = (@newest_value - @before_newest_value).to_i
+    @newest_value_rate = @newest_value_diff/@before_newest_value*100
+    if @newest_value_diff > 0
+      show_newest_value_diff = "+#{@newest_value_diff} | +#{to_n(@newest_value_rate)}%"
+    else
+      show_newest_value_diff = "#{@newest_value_diff} | #{to_n(@newest_value_rate)}%"
+    end
+    @caption = "#{@name} #{$fusionchart_data_num}天走势图 最新 #{@before_newest_value} ( #{show_newest_value_diff} ) ➠  #{@newest_value} | #{(@newest_value*t2c).to_i} ( #{@min_value} | #{(@min_value*t2c).to_i} ➠ #{@max_value} | #{(@max_value*t2c).to_i} )"
   end
 
   # 显示走势图
