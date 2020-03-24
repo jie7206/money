@@ -405,17 +405,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # 更新火币2个账号的资产余额
-  def exe_update_huobi_assets
-    ori_acc_id = get_huobi_acc_id
-    ['135','170'].each do |acc_id|
-      set_invest_params( 24, acc_id )
-      sleep 1
-      put_notice acc_id + "：" + `python py/update_assets.py`
-    end
-    set_invest_params( 24, ori_acc_id )
-  end
-
   # 更新所有的资产组合栏位数据和所有模型的数值记录
   def update_portfolios_and_records
     update_all_portfolio_attributes # 更新所有的资产组合栏位数据
@@ -528,6 +517,36 @@ class ApplicationController < ActionController::Base
   # 设定是否自动刷新页面
   def setup_auto_refresh_sec
     @auto_refresh_sec = $auto_refresh_sec_for_deal_records if $auto_refresh_sec_for_deal_records > 0
+  end
+
+  # 更新火币2个账号的资产余额
+  def exe_update_huobi_assets
+    ori_acc_id = get_huobi_acc_id
+    ['135','170'].each do |acc_id|
+      set_invest_params( 24, acc_id )
+      sleep 1
+      # put_notice acc_id + "：" + `python py/update_assets.py`
+      `python py/update_assets.py`
+    end
+    set_invest_params( 24, ori_acc_id )
+  end
+
+  # 更新交易列表上的总成本与比特币总数以供跨网站计算均价使用
+  def update_deal_cost_amount
+    set_invest_params(25,DealRecord.total_cost.floor(4))
+    set_invest_params(26,DealRecord.total_amount.floor(8))
+  end
+
+  # 记录交易列表上的已实现损益以供跨网站计算总的已实现损益使用
+  def update_total_real_profit
+    set_invest_params(28,DealRecord.total_real_profit.to_i.to_s+':'+DealRecord.total_unsell_profit.to_i.to_s)
+  end
+
+  # 更新火币资产
+  def update_huobi_assets_core
+    exe_update_huobi_assets
+    update_deal_cost_amount
+    update_total_real_profit
   end
 
   # 建立回到目录页的方法

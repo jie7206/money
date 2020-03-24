@@ -16,6 +16,7 @@ class DealRecordsController < ApplicationController
       @deal_records = DealRecord.where("auto_sell = 1 and real_profit = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     else
       update_btc_price if $auto_update_btc_price > 0
+      update_huobi_assets_core if $auto_update_huobi_assets > 0
       setup_auto_refresh_sec
       @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     end

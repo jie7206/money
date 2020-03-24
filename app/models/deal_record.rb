@@ -225,6 +225,18 @@ class DealRecord < ApplicationRecord
   end
 
   # 是否已经达到可以再次卖出的时间
+  def self.over_sell_time?
+    sell_sec = get_invest_params(22).to_i
+    last_sell_time = where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").where.not(order_id: [nil, ""]).order("updated_at desc").first.updated_at
+    pass_sec = (Time.now - last_sell_time).to_i
+    if pass_sec > sell_sec
+      return true
+    else
+      return false
+    end
+  end
+
+  # 是否已经达到可以再次卖出的时间
   def self.over_sell_time_sec
     sell_sec = get_invest_params(22).to_i
     last_sell_time = real_sell_records.order("updated_at desc").first.updated_at
@@ -235,6 +247,13 @@ class DealRecord < ApplicationRecord
   # 交易列表上方显示24H已实现损益以便将获利每日转入冷钱包
   def self.real_profit_of_24h
     return real_sell_records.where("updated_at > '#{(Time.now - 24.hour).to_s(:db)}'").sum {|r| r.real_profit}
+  end
+
+  # 平均每秒的已实现损益值
+  def self.real_profit_ave_sec( total_real_profit = self.total_real_profit )
+    first_sell_time = real_sell_records.order("updated_at").first.updated_at
+    pass_sec = (Time.now - first_sell_time).to_i
+    return total_real_profit.to_f/pass_sec
   end
 
   # 显示币种

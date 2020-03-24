@@ -82,7 +82,7 @@ cny_to_btc = Currency.new.cny_to_btc
   <% n += 1 %>
   <% total_price += price.to_f * amount.to_f
      total_amount += amount.to_f
-     total_amount_fee += amount.to_f * (1-$fees_rate)
+     total_amount_fee += amount.to_f * (1.0-$fees_rate)
      total_cny_amount += cny_amount.to_f if !dr.real_profit
      total_cny_amount_now += cny_amount_now.to_f if !dr.real_profit
      total_earn_or_loss += earn_or_loss.to_f if !dr.real_profit
@@ -98,7 +98,7 @@ cny_to_btc = Currency.new.cny_to_btc
     </td>
     <td align="right">
       <% # to_n(DealRecord.ave_cost) if total_amount > 0 %>
-      <%= to_n(total_price/total_amount) %>
+      <%= to_n(total_price/total_amount) if total_amount > 0 %>
     </td>
     <% profit_cny = to_n(DealRecord.profit_cny) %>
     <td align="right"><%= to_n(total_earn_or_loss) %></td>
@@ -111,22 +111,9 @@ cny_to_btc = Currency.new.cny_to_btc
     <td align="right"><%= to_n(total_cny_amount,1) if !params[:show_sell] %></td>
     <td align="right"><%= to_n(total_cny_amount_now,1) if !params[:show_sell] %></td>
     <td align="right"><%= show_net_value_link %></td>
-    <% total_real_profit = DealRecord.total_real_profit %>
-    <% total_net_profit = total_real_profit + profit_cny.to_f %>
-    <% date_diff = (Date.today - $trade_start_time.to_date).to_i %>
     <td align="right">
-    <%
-    if total_real_profit_btc > 0
-      title = "累积已实现损益"
-      show_profit_cny = total_real_profit.to_i
-      show_profit_btc = to_n(total_real_profit_btc,8)
-    else
-      title = "累积动态净损益(已扣除交易手续费)"
-      show_profit_cny = total_net_profit.to_i
-      show_profit_btc = to_n(total_net_profit*cny_to_btc,8)
-    end
-    %>
-      <span title="<%= title %>"><%= show_profit_cny %> <%= show_profit_btc %></span> <span title="净损益平均绩效：人民币/月"><%= to_n(total_net_profit.to_f/date_diff*30.5,0) %></span>/<span title="经过的月数"><%= date_diff/30 %></span>
+      <% real_p_sec = DealRecord.real_profit_ave_sec %>
+      <%= (real_p_sec*3600).to_i %>/时 <%= (real_p_sec*3600*24).to_i %>/日 <%= (real_p_sec*3600*24*30).to_i %>/月
     </td>
   </tr>
 </table>
@@ -139,8 +126,8 @@ cny_to_btc = Currency.new.cny_to_btc
   | <%= link_to t(:trezor_records), deal_records_path(show_trezor:1) %>
   | <%= link_to t(:show_unsell_deal_records), deal_records_path(show_unsell:1) %>
   | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
-  | <%= link_to t(:zip_sell_deal_records), zip_sell_records_path %>
-  | <%= clear_deal_records_link %>
+  <% # link_to t(:zip_sell_deal_records), zip_sell_records_path %>
+  <% # clear_deal_records_link %>
   <%
     if max_sell_count = get_invest_params(13).to_i and max_sell_count > 0 and DealRecord.unsell_count > 0
       sell_minute = get_invest_params(18).to_i
@@ -150,12 +137,12 @@ cny_to_btc = Currency.new.cny_to_btc
       if sell_price > 0
         show_sell_price = sell_price
       else
-        show_sell_price = "#{sell_minute}分"
+        show_sell_price = "#{sell_minute}分最高"
       end
       if over_sell_time_sec > 0
-        show_sell = link_to raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@<u>#{show_sell_price}</u>每#{sell_sec}秒"), send_stop_loss_path
+        show_sell = link_to raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@<u>#{show_sell_price}</u> 每#{sell_sec/60}分"), send_stop_loss_path
       else
-        show_sell = raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@#{show_sell_price}每#{sell_sec}秒 剩#{over_sell_time_sec.abs/60}分")
+        show_sell = raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@#{show_sell_price} 每#{sell_sec/60}分 剩#{over_sell_time_sec.abs/60}分")
       end
   %>
      | <%= show_sell %>
