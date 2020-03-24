@@ -191,8 +191,12 @@ class Property < ApplicationRecord
       cost = trezor_total_cost_twd
       months = pass_days.to_i/30
       if months > 0
-        # 不知为何出现Zero or negative argument for log错误，以后再修
-        return 0 #((1+((ps.sum {|p| p.amount_to(:twd)})-cost)/cost)**(1.0/months)-1)*100
+        result = ((1+((ps.sum {|p| p.amount_to(:twd)})-cost)/cost)**(1.0/months)-1)*100
+        if result < 0
+          return 0
+        else
+          return result
+        end
       else
         return 0
       end
@@ -213,7 +217,7 @@ class Property < ApplicationRecord
 
   # 计算冷钱包下一年收益
   def self.cal_year_profit( br = "\n" )
-    year_profit_p = (1+ave_month_growth_rate.to_f/100)**12
+    year_profit_p = ave_month_growth_rate > 0 ? (1+ave_month_growth_rate.to_f/100)**12 : 1
     profit_p_value = year_profit_p-1
     year_goal = (trezor_value_twd*year_profit_p).to_i
     year_profit = (trezor_value_twd*profit_p_value).to_i

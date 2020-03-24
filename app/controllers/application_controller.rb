@@ -309,8 +309,17 @@ class ApplicationController < ActionController::Base
     end
     set_fusion_chart_max_and_min_value
     t2c = Property.new.twd_to_cny
-    @newest_value_diff = (@newest_value - @before_newest_value).to_i
-    @newest_value_rate = @newest_value_diff/@before_newest_value*100
+    if @newest_value < 100
+      @newest_value_diff = @newest_value - @before_newest_value
+      @newest_value_rate = @newest_value_diff/@before_newest_value*100
+    else
+      @newest_value_diff = (@newest_value - @before_newest_value).to_i
+      @newest_value_rate = @newest_value_diff/@before_newest_value*100
+      @before_newest_value = @before_newest_value.to_i
+      @newest_value = @newest_value.to_i
+      @min_value = @min_value.to_i
+      @max_value = @max_value.to_i
+    end
     if @newest_value_diff > 0
       show_newest_value_diff = "+#{@newest_value_diff} | +#{to_n(@newest_value_rate)}%"
     else

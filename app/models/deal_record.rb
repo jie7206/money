@@ -92,28 +92,28 @@ class DealRecord < ApplicationRecord
   # 回传剩余比特币
   def self.total_amount
     total_amount = 0
-    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each {|dr| total_amount += dr.amount-dr.fees}
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each {|dr| total_amount += dr.amount-dr.fees}
     return total_amount
   end
 
   # 回传总成本
   def self.total_cost
     total_cost = 0
-    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each {|dr| total_cost += dr.price*dr.amount}
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each {|dr| total_cost += dr.price*dr.amount}
     return total_cost
   end
 
   # 回传所有交易的总成本(跨越不同账号)
   def self.sum_of_total_cost
     total_cost = 0
-    all.where("auto_sell = 0").each {|dr| total_cost += dr.price*dr.amount}
+    where("auto_sell = 0").each {|dr| total_cost += dr.price*dr.amount}
     return total_cost
   end
 
   # 回传所有交易的均价(跨越不同账号)
   def self.total_ave_cost
     total_amount = 0
-    all.where("auto_sell = 0").each {|dr| total_amount += dr.amount}
+    where("auto_sell = 0").each {|dr| total_amount += dr.amount}
     if total_amount > 0
       return self.sum_of_total_cost/total_amount
     else
@@ -124,7 +124,7 @@ class DealRecord < ApplicationRecord
   # 回传均价
   def self.ave_cost
     total_amount = 0
-    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each {|dr| total_amount += dr.amount - dr.fees}
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each {|dr| total_amount += dr.amount - dr.fees}
     if total_amount > 0
       return self.total_cost/total_amount
     else
@@ -146,7 +146,7 @@ class DealRecord < ApplicationRecord
   # 所有已实现损益
   def self.total_real_profit
     result = 0
-    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").each {|dr| result += dr.real_profit}
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").each {|dr| result += dr.real_profit}
     return result
   end
 
@@ -154,7 +154,7 @@ class DealRecord < ApplicationRecord
   def self.total_unsell_profit
     result = 0
     price_now = DealRecord.first.price_now if DealRecord.first
-    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each do |dr|
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each do |dr|
       result += (price_now-dr.price)*(dr.amount*(1-$fees_rate))
     end
     return result*(DealRecord.new.usdt_to_cny)
@@ -162,22 +162,22 @@ class DealRecord < ApplicationRecord
 
   # 获取未卖出的交易笔数
   def self.unsell_count
-    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").size
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").size
   end
 
   # 获取未卖出且标示为优先卖出的交易笔数
   def self.first_unsell_count
-    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0 and first_sell = 1").size
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0 and first_sell = 1").size
   end
 
   # 获取已卖出的交易笔数
   def self.sell_count
-    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").size
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").size
   end
 
   # 获取已卖出的交易记录
   def self.sell_records
-    all.where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1 and real_profit != 0")
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1 and real_profit != 0")
   end
 
   # 最初第几笔未卖出交易记录的损益值(¥)
@@ -217,19 +217,24 @@ class DealRecord < ApplicationRecord
 
   # 清空未卖出交易
   def self.clear_unsell_records
-    return where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").delete_all
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").delete_all
+  end
+
+  def self.real_sell_records
+    sell_records.where.not(order_id: [nil, ""])
   end
 
   # 是否已经达到可以再次卖出的时间
-  def self.over_sell_time?
+  def self.over_sell_time_sec
     sell_sec = get_invest_params(22).to_i
-    last_sell_time = where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").where.not(order_id: [nil, ""]).order("updated_at desc").first.updated_at
+    last_sell_time = real_sell_records.order("updated_at desc").first.updated_at
     pass_sec = (Time.now - last_sell_time).to_i
-    if pass_sec > sell_sec
-      return true
-    else
-      return false
-    end
+    return pass_sec - sell_sec # 如果到达可卖时间，则回传超过几秒
+  end
+
+  # 交易列表上方显示24H已实现损益以便将获利每日转入冷钱包
+  def self.real_profit_of_24h
+    return real_sell_records.where("updated_at > '#{(Time.now - 24.hour).to_s(:db)}'").sum {|r| r.real_profit}
   end
 
   # 显示币种
