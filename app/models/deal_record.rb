@@ -260,8 +260,14 @@ class DealRecord < ApplicationRecord
   def self.make_count_records( count_goal )
     result = []
     sum = 0
+    min_amount = 0.0008
     if count_goal > 0
-      where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('amount').each do |dr|
+      where("auto_sell = 0 and account = '#{get_huobi_acc_id}' and amount < #{min_amount} ").order('amount').each do |dr|
+        result << dr
+        sum += dr.amount
+        return result if sum > count_goal
+      end
+      where("auto_sell = 0 and account = '#{get_huobi_acc_id}' and amount > #{min_amount}").order('price desc').each do |dr|
         result << dr
         sum += dr.amount
         return result if sum > count_goal

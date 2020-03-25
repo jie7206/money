@@ -303,15 +303,6 @@ class MainController < ApplicationController
     return add_plus(format("%.#{dot}f", ((price-ma)/ma)*100))
   end
 
-  # 如果没有负号，在前面显示+号
-  def add_plus(str)
-    if !str.index("-")
-      return "+"+str
-    else
-      return str
-    end
-  end
-
   # 183将Python脚本在控制台输出的讯息写到文档然后可以点击网页查看
   def read_auto_invest_log
     @content = File.read($auto_invest_log_path)

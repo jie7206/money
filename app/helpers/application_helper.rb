@@ -504,14 +504,14 @@ module ApplicationHelper
   end
 
   # 显示定投参数的设定值链接
-  def invest_params_setup_link( index, min, max, step = 1, pos = 0, add_zero = false )
+  def invest_params_setup_link( index, min, max, step = 1, pos = 0, add_zero_value = false )
     result = ''
     (min..max).step(step).each do |n|
       value = to_n(n.floor(pos),pos)
       style = (!@already_show and value == get_invest_params(index)) ? 'invest_param_select' : ''
       result += link_to(value, setup_invest_param_path(i:index,v:value), class: style) + ' '
     end
-    if add_zero
+    if add_zero_value
       value = '0'
       style = (!@already_show and value == get_invest_params(index)) ? 'invest_param_select' : ''
       result = link_to(value, setup_invest_param_path(i:index,v:value), class: style) + ' ' + raw(result)
@@ -569,6 +569,46 @@ module ApplicationHelper
       return result.sort_by{|p| p.amount_to}.reverse
     end
     return nil
+  end
+
+  # 如果没有负号，在前面显示+号
+  def add_plus(str)
+    if !str.index("-")
+      return "+"+str
+    else
+      return str
+    end
+  end
+
+  # 在数字前面补0显示
+  def add_zero( num, pos = 3 )
+    if num.to_i > 0
+      result = num.to_s
+      case pos
+        when 4
+          if num.to_i < 1000 and num.to_i >=100
+            result = "0"+result
+          elsif num.to_i < 100 and num.to_i >=10
+            result = "00"+result
+          elsif num.to_i < 10
+            result = "000"+result
+          end
+        when 3
+          if num.to_i < 100 and num.to_i >=10
+            result = "0"+result
+          elsif num.to_i < 10
+            result = "00"+result
+          end
+        when 2
+          if num.to_i < 100 and num.to_i >=10
+          elsif num.to_i < 10
+            result = "0"+result
+          end
+      end
+      return result
+    else
+      return "0"*pos
+    end
   end
 
 end

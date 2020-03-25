@@ -7,11 +7,11 @@ class DealRecordsController < ApplicationController
     if params[:show_all]
       @deal_records = DealRecord.where("account = '#{get_huobi_acc_id}'").order('amount, created_at')
     elsif params[:show_sell]
-      @deal_records = DealRecord.where("auto_sell = 1 and real_profit != 0 and account = '#{get_huobi_acc_id}'").order('updated_at desc')
+      @deal_records = DealRecord.where("auto_sell = 1 and real_profit != 0 and account = '#{get_huobi_acc_id}'").order('updated_at desc').limit($sell_records_limit)
     elsif params[:show_unsell]
-      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('amount')
+      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('updated_at')
     elsif params[:make_trezor_count]
-      @deal_records = DealRecord.make_count_records($send_to_trezor_amount)
+      @deal_records = get_make_count_records
     elsif params[:show_first]
       @deal_records = DealRecord.where("first_sell = 1 and auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     elsif params[:show_trezor]
@@ -194,7 +194,7 @@ class DealRecordsController < ApplicationController
   def auto_send_trezor_count
     count = 0
     if $send_to_trezor_amount > 0
-      DealRecord.make_count_records($send_to_trezor_amount).each do |dr|
+      get_make_count_records.each do |dr|
         dr.update_attributes(real_profit: 0, auto_sell: 1)
         count += 1
       end
@@ -211,6 +211,10 @@ class DealRecordsController < ApplicationController
 
     def deal_record_params
       params.require(:deal_record).permit(:account, :data_id, :symbol, :deal_type, :price, :amount, :fees, :purpose, :loss_limit, :earn_limit, :auto_sell, :order_id, :real_profit, :first_sell)
+    end
+
+    def get_make_count_records
+      DealRecord.make_count_records($send_to_trezor_amount)
     end
 
 end

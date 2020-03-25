@@ -1,5 +1,5 @@
 <% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit, ave_hour_profit = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{to_n(price_p)}% #{to_n(Property.btc_legal_ratio,2)}:1 #{total_real_profit} #{total_unsell_profit} #{ave_hour_profit} #{ave_hour_profit.to_i*24} #{ave_hour_profit.to_i*24*30} " %>)</h2>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{add_plus(to_n(price_p))}% #{to_n(Property.btc_legal_ratio,2)}:1 #{total_real_profit} #{add_zero(total_unsell_profit.to_i,4)} #{ave_hour_profit} #{ave_hour_profit.to_i*24} #{ave_hour_profit.to_i*24*30} " %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
@@ -144,10 +144,11 @@ cny_to_btc = Currency.new.cny_to_btc
       else
         show_sell_price = "#{sell_minute}分最高"
       end
+      remain_sell_hours = to_n(@unsell_count*sell_sec/3600,1)
       if over_sell_time_sec > 0
-        show_sell = link_to raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@<u>#{show_sell_price}</u> 每#{sell_sec/60}分"), send_stop_loss_path
+        show_sell = link_to raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@<u>#{show_sell_price}</u> 每#{sell_sec/60}分 余#{remain_sell_hours}时"), send_stop_loss_path
       else
-        show_sell = raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@#{show_sell_price} 每#{sell_sec/60}分 剩#{over_sell_time_sec.abs/60}分")
+        show_sell = raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@#{show_sell_price} 每#{sell_sec/60}分 剩#{over_sell_time_sec.abs/60}分 余#{remain_sell_hours}时")
       end
   %>
      | <%= show_sell %>
