@@ -13,7 +13,10 @@ en:
   compose: Compose
   keep: Keep
   set_to_trezor: To Trezor
+  all_to_trezor: All To Trezor
   set_from_trezor: From Trezor
+  trezor_records: Trezor Records
+  make_trezor_count: Make Trezor Count
   btc_ave_price: BTC Ave
   home_title: My Homepage
   back_to_home: Home

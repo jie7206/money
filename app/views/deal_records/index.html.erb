@@ -1,5 +1,5 @@
-<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{to_n(price_p)}% #{to_n(Property.btc_legal_ratio,2)}:1 #{total_real_profit} #{total_unsell_profit}" %>)</h2>
+<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit, ave_hour_profit = Property.invest_to_btc( admin? ) %>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{to_n(price_p)}% #{to_n(Property.btc_legal_ratio,2)}:1 #{total_real_profit} #{total_unsell_profit} #{ave_hour_profit} #{ave_hour_profit.to_i*24} #{ave_hour_profit.to_i*24*30} " %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
@@ -24,7 +24,7 @@ btc_hold = DealRecord.btc_amount
 cny_to_btc = Currency.new.cny_to_btc
 %>
 <% @deal_records.each do |dr| %>
-  <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] or params[:show_unsell] %>
+  <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] or params[:show_unsell] or params[:show_first] or params[:show_trezor] or params[:make_trezor_count] %>
     <tr <%= change_row_color %>>
       <td align="right"><span <%= raw "class='switch_first_sell'" if dr.first_sell %>><%= link_to n, action: :switch_first_sell, id: dr, show_all: params[:show_all], show_unsell: params[:show_unsell] %></span></td>
       <td align="center"><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
@@ -63,7 +63,10 @@ cny_to_btc = Currency.new.cny_to_btc
        <%   end
           else %>
             <%= link_to t(:set_to_trezor), action: :switch_to_trezor, id: dr, show_all: params[:show_all] %>
-       <% end %>
+       <%   if params[:make_trezor_count] %>
+            | <%= link_to t(:all_to_trezor), action: :auto_send_trezor_count %>
+       <%   end
+          end %>
       </td>
     </tr>
   <%
@@ -104,9 +107,10 @@ cny_to_btc = Currency.new.cny_to_btc
     <td align="right"><%= to_n(total_earn_or_loss) %></td>
     <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
     <% dr_btc_amount = DealRecord.btc_amount %>
-    <% amount_diff = dr_btc_amount - total_amount_fee %>
-    <td align="right"><%= link_to "#{to_n(total_amount_fee,2)}/#{to_n(dr_btc_amount,2)}", place_order_form_path(amount:to_n(dr_btc_amount,6)), title: "#{to_n(total_amount_fee,8)}/#{to_n(dr_btc_amount,8)} 差值: #{to_n(amount_diff,8)}" %>
-      (<%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>%)
+    <% next_sell_amount = DealRecord.top_n_profit(@get_max_sell_count,:amount) %>
+    <% amount_diff = dr_btc_amount - next_sell_amount %>
+    <td align="right"><%= link_to "#{to_n(total_amount_fee,3)}/#{to_n(dr_btc_amount,3)}", place_order_form_path(amount:to_n(dr_btc_amount,6)), title: "#{to_n(total_amount_fee,8)}/#{to_n(next_sell_amount,8)}/#{to_n(dr_btc_amount,8)} 差值: #{to_n(amount_diff,8)}" %>
+      | <%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>
     </td>
     <td align="right"><%= to_n(total_cny_amount,1) if !params[:show_sell] %></td>
     <td align="right"><%= to_n(total_cny_amount_now,1) if !params[:show_sell] %></td>
@@ -123,6 +127,7 @@ cny_to_btc = Currency.new.cny_to_btc
   <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
   | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
   | <%= link_to t(:show_first_sell_deal_records), deal_records_path(show_first:1) %>
+  | <%= link_to t(:make_trezor_count), deal_records_path(make_trezor_count:1) %>
   | <%= link_to t(:trezor_records), deal_records_path(show_trezor:1) %>
   | <%= link_to t(:show_unsell_deal_records), deal_records_path(show_unsell:1) %>
   | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>

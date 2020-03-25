@@ -181,11 +181,11 @@ class DealRecord < ApplicationRecord
   end
 
   # 最初第几笔未卖出交易记录的损益值(¥)
-  def self.top_n_profit( n )
+  def self.top_n_profit( n, attr = :earn_or_loss )
     if self.unsell_count > 0
       result = 0
       where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").order('first_sell desc,created_at').limit(n).each do |dr|
-        result += dr.earn_or_loss.to_f
+        result += dr.send(attr).to_f
       end
       return result
     else
@@ -254,6 +254,21 @@ class DealRecord < ApplicationRecord
     first_sell_time = real_sell_records.order("updated_at").first.updated_at
     pass_sec = (Time.now - first_sell_time).to_i
     return total_real_profit.to_f/pass_sec
+  end
+
+  # 新增钱包凑数链接以方便凑齐当日存入到冷钱包的比特币数量
+  def self.make_count_records( count_goal )
+    result = []
+    sum = 0
+    if count_goal > 0
+      where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('amount').each do |dr|
+        result << dr
+        sum += dr.amount
+        return result if sum > count_goal
+      end
+    else
+      return []
+    end
   end
 
   # 显示币种

@@ -13,8 +13,10 @@ cn:
   edit: 编辑
   keep: 保留
   set_to_trezor: 转出到钱包
+  all_to_trezor: 本表全转出
   set_from_trezor: 转出到列表
   trezor_records: 钱包记录
+  make_trezor_count: 钱包凑数
   btc_ave_price: 所有比特币均价
   home_title: 我的首页
   back_to_home: 返回首页
@@ -276,7 +278,7 @@ cn:
   send_sell_deal_records: 收割获利
   send_sell_deal_records_ok: 执行收割成功！
   send_sell_deal_records_error: 执行失败！尚未达到可收割的获利值
-  send_stop_loss: 卖出
+  send_stop_loss: 自动卖出
   send_stop_loss_ok: 强制卖出已执行！
   send_stop_loss_error: 强制卖出失败！(尚未到达可卖出时间或其他原因)
   update_system_params: 系统参数

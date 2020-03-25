@@ -56,6 +56,7 @@ Rails.application.routes.draw do
   get 'update_all_portfolios', to: 'portfolios#update_all_portfolios'
   get 'update_house_price', to: 'items#update_house_price'
   get 'clear_deal_records', to: 'deal_records#clear'
+  get 'auto_send_trezor_count', to: 'deal_records#auto_send_trezor_count'
   get 'delete_invest_log', to: 'deal_records#delete_invest_log'
   get 'update_deal_records', to: 'deal_records#update_deal_records'
   get 'zip_sell_records', to: 'deal_records#zip_sell_records'

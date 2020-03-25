@@ -9,7 +9,9 @@ class DealRecordsController < ApplicationController
     elsif params[:show_sell]
       @deal_records = DealRecord.where("auto_sell = 1 and real_profit != 0 and account = '#{get_huobi_acc_id}'").order('updated_at desc')
     elsif params[:show_unsell]
-      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('price,amount desc')
+      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('amount')
+    elsif params[:make_trezor_count]
+      @deal_records = DealRecord.make_count_records($send_to_trezor_amount)
     elsif params[:show_first]
       @deal_records = DealRecord.where("first_sell = 1 and auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     elsif params[:show_trezor]
@@ -187,6 +189,18 @@ class DealRecordsController < ApplicationController
       @deal_record.update_attributes(auto_sell: true, real_profit: 0)
     end
     redirect_to deal_records_path(show_all:params[:show_all],show_unsell:params[:show_unsell])
+  end
+
+  def auto_send_trezor_count
+    count = 0
+    if $send_to_trezor_amount > 0
+      DealRecord.make_count_records($send_to_trezor_amount).each do |dr|
+        dr.update_attributes(real_profit: 0, auto_sell: 1)
+        count += 1
+      end
+    end
+    put_notice "已将#{count}笔资料转入冷钱包"
+    go_deal_records
   end
 
   private
