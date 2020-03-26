@@ -245,8 +245,8 @@ class DealRecord < ApplicationRecord
   end
 
   # 交易列表上方显示24H已实现损益以便将获利每日转入冷钱包
-  def self.real_profit_of_24h
-    return real_sell_records.where("updated_at > '#{(Time.now - 24.hour).to_s(:db)}'").sum {|r| r.real_profit}
+  def self.real_profit_of_24h( from_time = (Time.now - 24.hour).to_s(:db) )
+    return real_sell_records.where("updated_at > '#{from_time}'").sum {|r| r.real_profit}
   end
 
   # 平均每秒的已实现损益值

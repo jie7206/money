@@ -11,7 +11,7 @@
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
     <td colspan="2">
-      <% real_profit_of_24h = DealRecord.real_profit_of_24h.to_i %>
+      <% real_profit_of_24h = DealRecord.real_profit_of_24h($send_to_trezor_time).to_i %>
       <% total_real_profit = DealRecord.total_real_profit.to_i %>
       <% cny_to_btc = Currency.new.cny_to_btc %>
       <%= t(:updated_time) %> | <%= t(:deal_record_real_profit) %> ( 24H: <%= real_profit_of_24h %><%= ' '+to_n(real_profit_of_24h*cny_to_btc,6) if real_profit_of_24h > 0 %> | 累计: <%= total_real_profit %><%= ' '+to_n(total_real_profit*cny_to_btc,6) if total_real_profit > 0 %> )</td>
@@ -138,17 +138,16 @@ cny_to_btc = Currency.new.cny_to_btc
       sell_minute = get_invest_params(18).to_i
       sell_price = get_invest_params(27).to_i
       sell_sec = get_invest_params(22).to_i
+      stop_sell_level = get_invest_params(29).to_i
       over_sell_time_sec = DealRecord.over_sell_time_sec
-      if sell_price > 0
-        show_sell_price = sell_price
-      else
-        show_sell_price = "#{sell_minute}分最高"
-      end
-      remain_sell_hours = to_n(@unsell_count*sell_sec/3600,1)
+      max_sell_count = get_invest_params(13).to_i
+      remain_sell_hours = to_n(@unsell_count/max_sell_count*sell_sec/3600.0,1)
+      show_sell_price = sell_price > 0 ? sell_price : "#{sell_minute}分最高"
+      title = "①下次卖出的盈亏 ②每次卖几笔 ③几笔标示为优先卖出\n④全部未卖的笔数⑤停止自动卖出的仓位值"
       if over_sell_time_sec > 0
-        show_sell = link_to raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@<u>#{show_sell_price}</u> 每#{sell_sec/60}分 余#{remain_sell_hours}时"), send_stop_loss_path
+        show_sell = link_to raw(t(:send_stop_loss)+"(<span title='#{title}'>#{@top_deal_record_profit}/#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>)@<u>#{show_sell_price}</u> 每#{sell_sec/60}分 余#{remain_sell_hours}时"), send_stop_loss_path
       else
-        show_sell = raw(t(:send_stop_loss)+"(#{@get_max_sell_count}:#{@top_deal_record_profit}/#{@first_unsell_count}/#{@unsell_count})@#{show_sell_price} 每#{sell_sec/60}分 剩#{over_sell_time_sec.abs/60}分 余#{remain_sell_hours}时")
+        show_sell = raw(t(:send_stop_loss)+"(<span title='#{title}'>#{@top_deal_record_profit}/#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>)@#{show_sell_price} 每#{sell_sec/60}分 剩#{over_sell_time_sec.abs/60}分 余#{remain_sell_hours}时")
       end
   %>
      | <%= show_sell %>

@@ -1203,6 +1203,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
     global buy_price_period
     global every_sec_for_sell
     global acc_id
+    global stop_sell_level
     with open(LOG_FILE, 'a') as fobj:
         sline = LINE_MARKS
         ftext = sline+'\n'
@@ -1295,15 +1296,13 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                             max_buy_level, bottom, every_sec)
                         print(str)
                         ftext += str+'\n'
-                        ftext = print_next_exe_time(every_sec, ftext)
                         fobj.write(ftext)
                         reset_force_sell()
                         return every_sec
                 else:
-                    if FORCE_SELL == True and last_sell_interval() > every_sec_for_sell:
+                    if FORCE_SELL == True and btc_hold_level(price_now) > stop_sell_level and last_sell_interval() > every_sec_for_sell:
                         ftext = batch_sell_process(0, price_now, below_price,
                                                    ftext, time_line, u2c, -100000, max_sell_count)
-                        ftext = print_next_exe_time(every_sec, ftext)
                         fobj.write(ftext)
                         reset_force_sell()
                         return every_sec
@@ -1312,18 +1311,16 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         print(str)
                         ftext += str+'\n'
                         profit_now = profit_cny_now(price_now, u2c)
-                        if max_sell_count > 0 and profit_now > profit_cny and last_sell_interval() > every_sec_for_sell:
+                        if max_sell_count > 0 and btc_hold_level(price_now) > stop_sell_level and profit_now > profit_cny and last_sell_interval() > every_sec_for_sell:
                             ftext = batch_sell_process(test_price, price_now, below_price,
                                                        ftext, time_line, u2c, profit_cny, max_sell_count)
-                            ftext = print_next_exe_time(every_sec, ftext)
                             fobj.write(ftext)
                             return every_sec
                         else:
-                            str = "Profit: %.2f < %.2f or Sell Count = 0 or Sell Time < %i" % (
-                                profit_now, profit_cny, every_sec_for_sell)
+                            str = "Profit: %.2f < %.2f or Sell Count = 0 or Sell Time < %i or BTC Level < %i" % (
+                                profit_now, profit_cny, every_sec_for_sell, stop_sell_level)
                             print(str)
                             ftext += str+'\n'
-                            ftext = print_next_exe_time(every_sec, ftext)
                             fobj.write(ftext)
                             return every_sec
             else:
@@ -1346,7 +1343,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -1372,6 +1369,7 @@ if __name__ == '__main__':
                 every_sec_for_sell = int(every_sec_for_sell)
                 sell_max_cny = int(sell_max_cny)
                 force_sell_price = float(force_sell_price)
+                stop_sell_level = float(stop_sell_level)
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 if force_to_sell > 0 and max_sell_count > 0:
                     FORCE_SELL = True
