@@ -1,20 +1,20 @@
-<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit, ave_hour_profit = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{add_plus(to_n(price_p))}% #{to_n(Property.btc_legal_ratio,2)}:1 #{total_real_profit} #{add_zero(total_unsell_profit.to_i,4)} #{ave_hour_profit} #{ave_hour_profit.to_i*24} #{ave_hour_profit.to_i*24*30} " %>)</h2>
+<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit, ave_hour_profit, total_real_p_24h = Property.invest_to_btc( admin? ) %>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{add_plus(to_n(price_p))}% #{to_n(Property.btc_legal_ratio,2)}:1 #{total_real_profit} #{add_zero(total_real_p_24h.to_i,4)}:#{add_zero(total_unsell_profit.to_i,4)} #{ave_hour_profit} #{ave_hour_profit.to_i*24} #{ave_hour_profit.to_i*24*30} " %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
-    <td width="160"><%= t(:deal_record_created) %></td>
-    <td><%= t(:deal_record_price) %></td>
+    <td width="160"><%= link_to t(:deal_record_created), show_unsell: 1, order_field: 'created_at' %></td>
+    <td><%= link_to t(:deal_record_price), show_unsell: 1, order_field: 'price' %></td>
     <td width="45"><%= t(:earn_or_loss) %></td>
     <td width="45"><%= t(:profit_p) %></td>
-    <td><%= t(:deal_record_amount) %></td>
+    <td><%= link_to t(:deal_record_amount), show_unsell: 1, order_field: 'amount' %></td>
     <td><%= t(:exchange_to_cny) %></td>
     <td><%= t(:now_to_cny) %></td>
     <td colspan="2">
       <% real_profit_of_24h = DealRecord.real_profit_of_24h($send_to_trezor_time).to_i %>
       <% total_real_profit = DealRecord.total_real_profit.to_i %>
       <% cny_to_btc = Currency.new.cny_to_btc %>
-      <%= t(:updated_time) %> | <%= t(:deal_record_real_profit) %> ( 24H: <%= real_profit_of_24h %><%= ' '+to_n(real_profit_of_24h*cny_to_btc,6) if real_profit_of_24h > 0 %> | 累计: <%= total_real_profit %><%= ' '+to_n(total_real_profit*cny_to_btc,6) if total_real_profit > 0 %> )</td>
+      <%= link_to t(:updated_time), show_unsell: 1, order_field: 'updated_at' %> | <%= t(:deal_record_real_profit) %> ( 24H: <%= real_profit_of_24h %><%= ' '+to_n(real_profit_of_24h*cny_to_btc,6) if real_profit_of_24h > 0 %> | 累计: <%= total_real_profit %><%= ' '+to_n(total_real_profit*cny_to_btc,6) if total_real_profit > 0 %> )</td>
   </tr>
 <% n = 1 %>
 <% price_now = DealRecord.first.price_now if DealRecord.first %>

@@ -105,11 +105,12 @@ class Property < ApplicationRecord
     cost2 = get_invest_param_from($auto_invest_params_path2,25)
     amount2 = get_invest_param_from($auto_invest_params_path2,26)
     real_ave_cost = (cost1+cost2)/(amount1+amount2)
-    sell_profit1, unsell_profit1, ave_sec_profit1 = get_invest_param_from($auto_invest_params_path,28,false).split(':')
-    sell_profit2, unsell_profit2, ave_sec_profit2 = get_invest_param_from($auto_invest_params_path2,28,false).split(':')
+    sell_profit1, unsell_profit1, ave_sec_profit1, real_p_24h1 = get_invest_param_from($auto_invest_params_path,28,false).split(':')
+    sell_profit2, unsell_profit2, ave_sec_profit2, real_p_24h2 = get_invest_param_from($auto_invest_params_path2,28,false).split(':')
     total_real_profit = sell_profit1.to_f + sell_profit2.to_f
     total_unsell_profit = unsell_profit1.to_f + unsell_profit2.to_f
     ave_hour_profit = (ave_sec_profit1.to_f + ave_sec_profit2.to_f)*60*60
+    total_real_p_24h = real_p_24h1.to_i + real_p_24h2.to_i
     price_now = DealRecord.first.price_now if DealRecord.first
     price_p = (price_now/real_ave_cost-1)*100 # 现价与均价的比率(利率)
     p_btc = Property.tagged_with('比特币').sum {|p| p.amount}
@@ -121,11 +122,11 @@ class Property < ApplicationRecord
     btc_p = p_btc/(p_trezor + p_short)*100
     one_btc2cny = p_btc*(new.btc_to_cny)/btc_p
     if is_admin
-      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit.to_i.to_s + ' ', total_unsell_profit.to_i.to_s + ' ', ave_hour_profit.to_i.to_s + ' '
+      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit.to_i.to_s + ' ', total_unsell_profit.to_i.to_s + ' ', ave_hour_profit.to_i.to_s + ' ', total_real_p_24h.to_s + ' '
     else
       p_fbtc = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
       p_finv = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
-      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, '', '', ''
+      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, '', '', '', ''
     end
   end
 

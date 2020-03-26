@@ -184,7 +184,7 @@ class DealRecord < ApplicationRecord
   def self.top_n_profit( n, attr = :earn_or_loss )
     if self.unsell_count > 0
       result = 0
-      where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").order('first_sell desc,created_at').limit(n).each do |dr|
+      where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").order('first_sell desc,price').limit(n).each do |dr|
         result += dr.send(attr).to_f
       end
       return result

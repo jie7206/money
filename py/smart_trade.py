@@ -1022,7 +1022,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
     sell_max_usd = sell_max_cny/u2c
     if max_sell_count > 0 and usdt_now < sell_max_usd:
         rows = select_db(
-            "SELECT id, amount-fees as amount, created_at, price FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY first_sell DESC, created_at ASC LIMIT %i" % (acc_id, max_sell_count))
+            "SELECT id, amount-fees as amount, created_at, price FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY first_sell DESC, price ASC LIMIT %i" % (acc_id, max_sell_count))
         if len(rows) > 0:
             ids = []
             sell_amount = 0
