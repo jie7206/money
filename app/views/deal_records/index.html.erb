@@ -1,5 +1,5 @@
 <% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit, ave_hour_profit, total_real_p_24h = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{add_plus(to_n(price_p))}% #{to_n(Property.btc_legal_ratio,2)}:1 #{total_real_profit} #{add_zero(total_real_p_24h.to_i,4)}:#{add_zero(total_unsell_profit.to_i,4)} #{ave_hour_profit} #{ave_hour_profit.to_i*24} #{ave_hour_profit.to_i*24*30} " %>)</h2>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{total_real_profit} #{add_zero(total_real_p_24h.to_i,4)}:#{add_zero(total_unsell_profit.to_i,4)} #{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{add_plus(to_n(price_p))}% #{to_n(Property.btc_legal_ratio,2)}:1 #{ave_hour_profit} #{ave_hour_profit.to_i*24} #{ave_hour_profit.to_i*24*30} " %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
@@ -108,8 +108,14 @@ cny_to_btc = Currency.new.cny_to_btc
     <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
     <% dr_btc_amount = DealRecord.btc_amount %>
     <% next_sell_amount = DealRecord.top_n_profit(@get_max_sell_count,:amount) %>
-    <% amount_diff = dr_btc_amount - next_sell_amount %>
-    <td align="right"><%= link_to "#{to_n(total_amount_fee,3)}/#{to_n(dr_btc_amount,3)}", place_order_form_path(amount:to_n(dr_btc_amount,6)), title: "#{to_n(total_amount_fee,8)}/#{to_n(next_sell_amount,8)}/#{to_n(dr_btc_amount,8)} 差值: #{to_n(amount_diff,8)}" %>
+    <% amount_diff1 = dr_btc_amount - next_sell_amount %>
+    <% amount_diff2 = dr_btc_amount - total_amount_fee %>
+    <td align="right">
+      <% if params[:make_trezor_count] or params[:show_trezor] %>
+        <%= to_n(total_amount_fee,8) %>
+      <% else %>
+        <%= link_to "#{to_n(total_amount_fee,3)}/#{to_n(dr_btc_amount,3)}", place_order_form_path(amount:to_n(dr_btc_amount,6)), title: "#{to_n(total_amount_fee,8)}/#{to_n(next_sell_amount,8)}/#{to_n(dr_btc_amount,8)} 差值: #{to_n(amount_diff1,8)}(卖)|#{to_n(amount_diff2,8)}(总)" %>
+      <% end %>
       | <%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>
     </td>
     <td align="right"><%= to_n(total_cny_amount,1) if !params[:show_sell] %></td>
@@ -123,16 +129,6 @@ cny_to_btc = Currency.new.cny_to_btc
 </table>
 <br/>
 <div id="func_link" style="width:<%=$default_table_width%>px;margin-bottom:2em">
-  <%= update_btc_huobi_portfolios_link %>
-  <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
-  | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
-  | <%= link_to t(:show_first_sell_deal_records), deal_records_path(show_first:1) %>
-  | <%= link_to t(:make_trezor_count), deal_records_path(make_trezor_count:1) %>
-  | <%= link_to t(:trezor_records), deal_records_path(show_trezor:1) %>
-  | <%= link_to t(:show_unsell_deal_records), deal_records_path(show_unsell:1) %>
-  | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
-  <% # link_to t(:zip_sell_deal_records), zip_sell_records_path %>
-  <% # clear_deal_records_link %>
   <%
     if max_sell_count = get_invest_params(13).to_i and max_sell_count > 0 and DealRecord.unsell_count > 0
       sell_minute = get_invest_params(18).to_i
@@ -150,7 +146,17 @@ cny_to_btc = Currency.new.cny_to_btc
         show_sell = raw(t(:send_stop_loss)+"(<span title='#{title}'>#{@top_deal_record_profit}/#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>)@#{show_sell_price} 每#{sell_sec/60}分 剩#{over_sell_time_sec.abs/60}分 余#{remain_sell_hours}时")
       end
   %>
-     | <%= show_sell %>
+    <%= show_sell %> |
   <% end %>
+  <%= update_btc_huobi_portfolios_link %>
+  <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
+  | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
+  | <%= link_to t(:show_first_sell_deal_records), deal_records_path(show_first:1) %>
+  | <%= link_to t(:make_trezor_count), deal_records_path(make_trezor_count:1) %>
+  | <%= link_to t(:trezor_records), deal_records_path(show_trezor:1) %>
+  | <%= link_to t(:show_unsell_deal_records), deal_records_path(show_unsell:1) %>
+  | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
+  <% # link_to t(:zip_sell_deal_records), zip_sell_records_path %>
+  <% # clear_deal_records_link %>
 </div>
 <p/></p>
