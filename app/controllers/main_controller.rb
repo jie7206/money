@@ -345,6 +345,17 @@ class MainController < ApplicationController
       elsif index.to_i == 17 and get_invest_params(17).to_i > 0
         set_invest_params(1,0)
       end
+      # 三种卖出的策略无法并存
+      if index.to_i == 12 and get_invest_params(12).to_i > 0
+        set_invest_params(18,0)
+        set_invest_params(27,0)
+      elsif index.to_i == 18 and get_invest_params(18).to_i > 0
+        set_invest_params(12,0)
+        set_invest_params(27,0)
+      elsif index.to_i == 27 and get_invest_params(27).to_i > 0
+        set_invest_params(12,0)
+        set_invest_params(18,0)
+      end
       put_notice show_set_auto_invest_params_ok + "#{index} ➠ #{value}"
     else
       put_notice t(:set_auto_invest_params_error)

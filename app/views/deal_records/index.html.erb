@@ -1,5 +1,5 @@
-<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit, ave_hour_profit, total_real_p_24h = Property.invest_to_btc( admin? ) %>
-<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{total_real_profit} #{add_zero(total_real_p_24h.to_i,4)}:#{add_zero(total_unsell_profit.to_i,4)} #{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i} #{add_plus(to_n(price_p))}% #{to_n(Property.btc_legal_ratio,2)}:1 #{ave_hour_profit} #{ave_hour_profit.to_i*24} #{ave_hour_profit.to_i*24*30} " %>)</h2>
+<% eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit, ave_hour_profit, total_real_p_24h = Property.invest_to_btc( admin? ) %>
+<h2><%= link_to t(:deal_record_index), deal_records_path %> ( <%= raw "#{total_real_profit} #{add_zero(total_real_p_24h.to_i,4)}:#{add_zero(total_unsell_profit.to_i,4)} #{eq_btc} <span title=\"每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> #{real_ave_cost.to_i}:#{trezor_ave_cost.to_i} #{add_plus(to_n(price_p))}% #{to_n(Property.btc_legal_ratio,2)}:1 #{ave_hour_profit} #{ave_hour_profit.to_i*24} #{ave_hour_profit.to_i*24*30} " %>)</h2>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
@@ -137,13 +137,14 @@ cny_to_btc = Currency.new.cny_to_btc
       stop_sell_level = get_invest_params(29).to_i
       over_sell_time_sec = DealRecord.over_sell_time_sec
       max_sell_count = get_invest_params(13).to_i
+      profit_goal = get_invest_params(12).to_i
       remain_sell_hours = to_n(@unsell_count/max_sell_count*sell_sec/3600.0,1)
       show_sell_price = sell_price > 0 ? sell_price : "#{sell_minute}分最高"
-      title = "①下次卖出的盈亏 ②每次卖几笔 ③几笔标示为优先卖出\n④全部未卖的笔数⑤停止自动卖出的仓位值"
+      title = "①下次卖出的盈亏 ②自动卖出的盈亏 ③每次卖几笔\n④几笔标示为优先卖出 ⑤全部未卖的笔数⑥停止自动卖出的仓位值"
       if over_sell_time_sec > 0
-        show_sell = link_to raw(t(:send_stop_loss)+"(<span title='#{title}'>#{@top_deal_record_profit}/#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>)@<u>#{show_sell_price}</u> 每#{sell_sec/60}分 余#{remain_sell_hours}时"), send_stop_loss_path
+        show_sell = link_to raw(t(:send_stop_loss)+"(<span title='#{title}'>#{@top_deal_record_profit}/#{profit_goal}|#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>)@<u>#{show_sell_price}</u> 每#{sell_sec/60}分 余#{remain_sell_hours}时"), send_stop_loss_path
       else
-        show_sell = raw(t(:send_stop_loss)+"(<span title='#{title}'>#{@top_deal_record_profit}/#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>)@#{show_sell_price} 每#{sell_sec/60}分 剩#{over_sell_time_sec.abs/60}分 余#{remain_sell_hours}时")
+        show_sell = raw(t(:send_stop_loss)+"(<span title='#{title}'>#{@top_deal_record_profit}/#{profit_goal}|#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>)@#{show_sell_price} 每#{sell_sec/60}分 剩#{over_sell_time_sec.abs/60}分 余#{remain_sell_hours}时")
       end
   %>
     <%= show_sell %> |
@@ -154,8 +155,8 @@ cny_to_btc = Currency.new.cny_to_btc
   | <%= link_to t(:show_first_sell_deal_records), deal_records_path(show_first:1) %>
   | <%= link_to t(:make_trezor_count), deal_records_path(make_trezor_count:1) %>
   | <%= link_to t(:trezor_records), deal_records_path(show_trezor:1) %>
-  | <%= link_to t(:show_unsell_deal_records), deal_records_path(show_unsell:1) %>
   | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
+  | <%= link_to t(:show_unsell_deal_records), deal_records_path(show_unsell:1) %>
   <% # link_to t(:zip_sell_deal_records), zip_sell_records_path %>
   <% # clear_deal_records_link %>
 </div>

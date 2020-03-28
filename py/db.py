@@ -4,6 +4,12 @@ def db_path(local=False):
     else:
         return "/home/jie/sites/money/db/development.sqlite3"
 
+def test_db_path(local=False):
+    if local == True:
+        return "/Users/lin/sites/money/db/development_test.sqlite3"
+    else:
+        return "/home/jie/sites/money/db/development_test.sqlite3"
+
 def get_params_path(local=False):
     if local == True:
         return "/Users/lin/sites/money/py/auto_invest_params_local.txt"

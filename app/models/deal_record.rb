@@ -180,6 +180,11 @@ class DealRecord < ApplicationRecord
     where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1 and real_profit != 0")
   end
 
+  # 获取已卖出的交易记录
+  def self.trezor_records
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1 and real_profit == 0")
+  end
+
   # 最初第几笔未卖出交易记录的损益值(¥)
   def self.top_n_profit( n, attr = :earn_or_loss )
     if self.unsell_count > 0
@@ -275,6 +280,14 @@ class DealRecord < ApplicationRecord
     else
       return []
     end
+  end
+
+  def self.trezor_total_cost
+    trezor_records.sum {|r| r.price*r.amount}
+  end
+
+  def self.trezor_total_amount
+    trezor_records.sum {|r| r.amount}
   end
 
   # 显示币种

@@ -63,7 +63,7 @@ module ApplicationHelper
   # 默认的金额显示格式
   def to_amount( number, is_digital = false )
     if is_digital
-      return to_n( number, 8 )
+      return format("%.8f",number)
     else
       return to_n( number, 2 )
     end
@@ -265,7 +265,7 @@ module ApplicationHelper
   # 与资产更新相关的链接
   def update_btc_huobi_portfolios_link
     raw( update_huobi_assets_link + \
-    ' | ' + update_all_portfolios_link + ' | ' + update_btc_exchange_rates_link + ' | ')
+    ' | ' + update_btc_exchange_rates_link + ' | ' + update_all_portfolios_link + ' | ')
   end
 
   # 清空未卖出的交易记录

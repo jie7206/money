@@ -220,7 +220,7 @@ cn:
   clear_deal_records_ok: 未卖出的交易记录已全部清空！
   update_huobi_records: 更新记录与实现损益
   huobi_assets: 火币资产
-  update_huobi_assets: 更新火币资产
+  update_huobi_assets: 更新火币
   property_clear_amount_ok: 金额已归零！
   place_order_to_huobi: 火币下单
   info_confirm: 确认页
