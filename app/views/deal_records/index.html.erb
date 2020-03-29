@@ -24,7 +24,7 @@ btc_hold = DealRecord.btc_amount
 cny_to_btc = Currency.new.cny_to_btc
 %>
 <% @deal_records.each do |dr| %>
-  <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] or params[:show_unsell] or params[:show_first] or params[:show_trezor] or params[:make_trezor_count] %>
+  <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] or params[:show_unsell] or params[:show_first] or params[:show_trezor] or params[:make_balance_count] or params[:make_trezor_count] %>
     <tr <%= change_row_color %>>
       <td align="right"><span <%= raw "class='switch_first_sell'" if dr.first_sell %>><%= link_to n, action: :switch_first_sell, id: dr, show_all: params[:show_all], show_unsell: params[:show_unsell] %></span></td>
       <td align="center"><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
@@ -65,8 +65,11 @@ cny_to_btc = Currency.new.cny_to_btc
             <%= link_to t(:set_to_trezor), action: :switch_to_trezor, id: dr, show_all: params[:show_all] %>
        <%   if params[:make_trezor_count] %>
             | <%= link_to t(:all_to_trezor), action: :auto_send_trezor_count %>
-       <%   end
-          end %>
+       <%   end %>
+       <%   if params[:make_balance_count] %>
+            | <%= link_to t(:all_to_balance), action: :auto_send_balance_count %>
+       <%   end %>
+       <% end %>
       </td>
     </tr>
   <%
@@ -111,7 +114,7 @@ cny_to_btc = Currency.new.cny_to_btc
     <% amount_diff1 = dr_btc_amount - next_sell_amount %>
     <% amount_diff2 = dr_btc_amount - total_amount_fee %>
     <td align="right">
-      <% if params[:make_trezor_count] or params[:show_trezor] %>
+      <% if params[:make_trezor_count] or params[:show_trezor] or params[:make_balance_count] %>
         <%= to_n(total_amount_fee,8) %>
       <% else %>
         <%= link_to "#{to_n(total_amount_fee,3)}/#{to_n(dr_btc_amount,3)}", place_order_form_path(amount:to_n(dr_btc_amount,6)), title: "#{to_n(total_amount_fee,8)}/#{to_n(next_sell_amount,8)}/#{to_n(dr_btc_amount,8)} 差值: #{to_n(amount_diff1,8)}(卖)|#{to_n(amount_diff2,8)}(总)" %>
@@ -153,6 +156,7 @@ cny_to_btc = Currency.new.cny_to_btc
   <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
   | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
   | <%= link_to t(:show_first_sell_deal_records), deal_records_path(show_first:1) %>
+  | <%= link_to t(:make_balance_count), deal_records_path(make_balance_count:1) %>
   | <%= link_to t(:make_trezor_count), deal_records_path(make_trezor_count:1) %>
   | <%= link_to t(:trezor_records), deal_records_path(show_trezor:1) %>
   | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>

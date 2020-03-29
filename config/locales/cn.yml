@@ -14,9 +14,11 @@ cn:
   keep: 保留
   set_to_trezor: 转出到钱包
   all_to_trezor: 本表全转出
+  all_to_balance: 本表全消帐
   set_from_trezor: 转出到列表
   trezor_records: 钱包记录
   make_trezor_count: 钱包凑数
+  make_balance_count: 消帐凑数
   btc_ave_price: 所有比特币均价
   home_title: 我的首页
   back_to_home: 返回首页
@@ -149,9 +151,9 @@ cn:
   delete_portfolio_confirm: 您确定要删除这笔组合吗？
   edit_portfolio: 编辑资产组合
   update_portfolio: 更新资产组合
-  update_all_portfolios: 更新资产组合
+  update_all_portfolios: 更新组合
   portfolio_index: 资产组合
-  new_portfolio: 新建资产组合
+  new_portfolio: 新建组合
   portfolio_created_ok: 资产组合新建成功！
   portfolio_updated_ok: 资产组合更新成功！
   portfolio_destroyed_ok: 资产组合删除成功！
@@ -229,7 +231,7 @@ cn:
   order_done: 已成交
   order_undone: 未成交
   update_btc_price_ok: 比特币价格已更新！
-  update_btc_exchange_rates: 更新比特币
+  update_btc_exchange_rates: 更新报价
   update_btc: 更新比特币
   profit_p: 利率
   cancel_order: 取消这笔下单

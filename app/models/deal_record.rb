@@ -80,6 +80,11 @@ class DealRecord < ApplicationRecord
     return 0
   end
 
+  # 回传未交易的比特币总数
+  def self.unsell_amount
+    unsell_records.sum {|r| r.amount*(1-$fees_rate)}
+  end
+
   # 回传剩余比特币
   def self.btc_and_usdt_to_cny
     result = 0

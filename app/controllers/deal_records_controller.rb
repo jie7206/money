@@ -11,8 +11,10 @@ class DealRecordsController < ApplicationController
     elsif params[:show_unsell]
       order_field = params[:order_field] ? params[:order_field] : 'price'
       @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order(order_field)
+    elsif params[:make_balance_count]
+      @deal_records = make_balance_count_records
     elsif params[:make_trezor_count]
-      @deal_records = get_make_count_records
+      @deal_records = make_trezor_count_records
     elsif params[:show_first]
       @deal_records = DealRecord.where("first_sell = 1 and auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     elsif params[:show_trezor]
@@ -195,12 +197,22 @@ class DealRecordsController < ApplicationController
   def auto_send_trezor_count
     count = 0
     if $send_to_trezor_amount > 0
-      get_make_count_records.each do |dr|
+      make_trezor_count_records.each do |dr|
         dr.update_attributes(real_profit: 0, auto_sell: 1)
         count += 1
       end
     end
     put_notice "已将#{count}笔资料转入冷钱包"
+    go_deal_records
+  end
+
+  def auto_send_balance_count
+    count = 0
+    make_balance_count_records.each do |dr|
+      dr.update_attributes(real_profit: 0.01, auto_sell: 1)
+      count += 1
+    end
+    put_notice "已将#{count}笔资料转入消帐记录"
     go_deal_records
   end
 
@@ -214,8 +226,12 @@ class DealRecordsController < ApplicationController
       params.require(:deal_record).permit(:account, :data_id, :symbol, :deal_type, :price, :amount, :fees, :purpose, :loss_limit, :earn_limit, :auto_sell, :order_id, :real_profit, :first_sell)
     end
 
-    def get_make_count_records
+    def make_trezor_count_records
       DealRecord.make_count_records($send_to_trezor_amount)
+    end
+
+    def make_balance_count_records
+      DealRecord.make_count_records(DealRecord.unsell_amount - DealRecord.btc_amount)
     end
 
     def get_switch_params
