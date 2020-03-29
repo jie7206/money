@@ -30,6 +30,7 @@ class DealRecordsController < ApplicationController
     @top_deal_record_profit = to_n(DealRecord.top_n_profit(@get_max_sell_count),1)
     @unsell_count = DealRecord.unsell_count
     @first_unsell_count = DealRecord.first_unsell_count
+    @buy_sell_rate = cal_buy_sell_rate[2]
   end
 
   def new

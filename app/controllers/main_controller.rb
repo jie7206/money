@@ -201,21 +201,6 @@ class MainController < ApplicationController
     end
   end
 
-  # 返回K线数据（蜡烛图）
-  def get_kline
-    symbol = params[:symbol] ? params[:symbol] : "btcusdt"
-    period = params[:period] ? params[:period] : $default_chart_period
-    size = params[:size] ? params[:size] : $chart_data_size
-    @symbol_title = symbol_title(symbol)
-    @period_title = period_title(period)
-    begin
-      root = JSON.parse(`python py/huobi_price.py symbol=#{symbol} period=#{period}  size=#{size}`)
-      return root["data"].reverse! if root["data"] and root["data"][0]
-    rescue
-      return []
-    end
-  end
-
   # 为图表预备需要的资料
   def prepare_chart_data
     if @raw_data = get_kline and @raw_data.size > 0
@@ -226,7 +211,7 @@ class MainController < ApplicationController
       [5,10,20,30,60].each do |n|
         ma_str += " MA#{n}: #{ma(n)}(#{pom(n)}%)"
       end
-      buy_amount, sell_amount, buy_sell_rate = cal_buy_sell
+      buy_amount, sell_amount, buy_sell_rate = cal_buy_sell_rate(@raw_data)
       @subcaption = "收: #{@raw_data[-1]["close"]} 高: #{@raw_data[-1]["high"]} 低: #{@raw_data[-1]["low"]} 中: #{mid(@raw_data[-1]["high"],@raw_data[-1]["low"])}#{ma_str} 买: #{buy_amount} 卖: #{sell_amount} 比: #{buy_sell_rate}"
       return true
     else
@@ -267,16 +252,6 @@ class MainController < ApplicationController
   # 计算中间价
   def mid(high, low)
     return format("%.2f",(high.to_f+low.to_f)/2).to_f
-  end
-
-  # 计算买卖量
-  def cal_buy_sell(data=@raw_data)
-    buy_amount = sell_amount = 0
-    data.each do |item|
-      buy_amount += item["amount"].to_f if item["close"].to_f >= item["open"].to_f
-      sell_amount += item["amount"].to_f if item["close"].to_f < item["open"].to_f
-    end
-    return buy_amount.to_i, sell_amount.to_i, format("%.2f",buy_amount/sell_amount)
   end
 
   # 计算MA值

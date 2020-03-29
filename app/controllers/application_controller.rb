@@ -454,6 +454,35 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # 返回K线数据（蜡烛图）
+  def get_kline
+    symbol = params[:symbol] ? params[:symbol] : "btcusdt"
+    period = params[:period] ? params[:period] : $default_chart_period
+    size = params[:size] ? params[:size] : $chart_data_size
+    @symbol_title = symbol_title(symbol)
+    @period_title = period_title(period)
+    begin
+      root = JSON.parse(`python py/huobi_price.py symbol=#{symbol} period=#{period}  size=#{size}`)
+      return root["data"].reverse! if root["data"] and root["data"][0]
+    rescue
+      return []
+    end
+  end
+
+  # 计算买卖双方成交量比值
+  def cal_buy_sell_rate( data = get_kline )
+    if data.size > 0
+      buy_amount = sell_amount = 0
+      data.each do |item|
+        buy_amount += item["amount"].to_f if item["close"].to_f >= item["open"].to_f
+        sell_amount += item["amount"].to_f if item["close"].to_f < item["open"].to_f
+      end
+      return buy_amount.to_i, sell_amount.to_i, format("%.2f",buy_amount/sell_amount)
+    else
+      return 0
+    end
+  end
+
   # 美元换台币
   def usd2twd
     return $twd_exchange_rate

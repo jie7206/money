@@ -1,3 +1,9 @@
+<%
+rate = 0.1
+start_price = (@price_now*(1-rate)).to_i/100*100
+end_price = @price_now*(1+rate)
+price_step = 10
+%>
 <h2><%= t(:set_auto_invest_params) %></h2>
 <%= form_tag set_auto_invest_params_path, method: :post, id: 'set_auto_invest_form' do %>
   <% n = 0 %>
@@ -8,11 +14,6 @@
       <td><%= show_invest_param_value(0) %> <%= invest_params_setup_link(0,0,3600*2,300) %></td>
       <% n += 1 %>
     </tr>
-    <%
-    start_price = (@price_now*0.92).to_i/100*100
-    end_price = @price_now*1.04
-    price_step = 10
-    %>
     <tr valign="top">
       <td><%= n %></td>
       <td>多少价位以下执行买入</td>
