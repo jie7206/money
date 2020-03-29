@@ -716,12 +716,12 @@ def usdt2usd():
 def place_new_order(price, amount, deal_type):
     global ORDER_ID
     try:
-        # root = send_order(amount, "api", 'btcusdt', deal_type, price)
-        if True: # root["status"] == "ok":
-            ORDER_ID = 'TEST5711438' #root["data"]
-            return "Send Order(%s) successfully" % ORDER_ID # root["data"]
+        root = send_order(amount, "api", 'btcusdt', deal_type, price)
+        if root["status"] == "ok":
+            ORDER_ID = root["data"]
+            return "Send Order(%s) successfully" % root["data"]
         else:
-            return '' # root
+            return root
     except:
         return 'Some unknow error happened when Place New Order!'
 
