@@ -539,7 +539,7 @@ class ApplicationController < ActionController::Base
 
   # 记录交易列表上的已实现损益以供跨网站计算总的已实现损益使用
   def update_total_real_profit
-    set_invest_params(28,DealRecord.total_real_profit.to_i.to_s+':'+DealRecord.total_unsell_profit.to_i.to_s+':'+DealRecord.real_profit_ave_sec.floor(4).to_s+':'+DealRecord.real_profit_of_24h($send_to_trezor_time).to_i.to_s)
+    set_invest_params(28,DealRecord.total_real_profit.to_i.to_s+':'+DealRecord.total_unsell_profit.to_i.to_s+':'+DealRecord.real_profit_ave_sec.floor(4).to_s+':'+DealRecord.real_profit_of_24h($send_to_trezor_time).to_i.to_s+':'+DealRecord.trezor_total_cost.floor(4).to_s+':'+DealRecord.trezor_total_amount.floor(4).to_s)
   end
 
   # 更新火币资产

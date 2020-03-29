@@ -282,10 +282,12 @@ class DealRecord < ApplicationRecord
     end
   end
 
+  # 交易列表能显示两个交易所放入到冷钱包的购买成本均价
   def self.trezor_total_cost
     trezor_records.sum {|r| r.price*r.amount}
   end
 
+  # 交易列表能显示两个交易所放入到冷钱包的购买成本均价
   def self.trezor_total_amount
     trezor_records.sum {|r| r.amount}
   end
