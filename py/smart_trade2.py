@@ -1422,8 +1422,16 @@ if __name__ == '__main__':
                             over_buy_time = last_buy_interval() > every_sec
                             over_sell_time = last_sell_interval() > every_sec_for_sell
                             over_sell_level = btc_hold_level(price_now) > stop_sell_level
+                            if profit_goal > 0:
+                                if top_n_profit(price_now) >= profit_goal:
+                                    over_sell_profit = True
+                                else:
+                                    over_sell_profit = False
+                            else:
+                                over_sell_profit = True
+
                             #################################################################
-                            if max_sell_count > 0 and over_sell_time and over_sell_level and ((force_sell_price > 0 and price_now >= force_sell_price) or (profit_goal > 0 and top_n_profit(price_now) >= profit_goal) or (sell_price_period > 0 and over_max_price)):
+                            if max_sell_count > 0 and over_sell_time and over_sell_profit and over_sell_level and ((force_sell_price > 0 and price_now >= force_sell_price) or (sell_price_period > 0 and over_max_price)):
                                 setup_force_sell()
                                 break
                             #################################################################

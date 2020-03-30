@@ -5,7 +5,7 @@ class DealRecordsController < ApplicationController
 
   def index
     if params[:show_all]
-      @deal_records = DealRecord.where("account = '#{get_huobi_acc_id}'").order('amount, created_at')
+      @deal_records = DealRecord.where("account = '#{get_huobi_acc_id}'").order('created_at  desc')
     elsif params[:show_sell]
       @deal_records = DealRecord.where("auto_sell = 1 and real_profit != 0 and account = '#{get_huobi_acc_id}'").order('updated_at desc').limit($sell_records_limit)
     elsif params[:show_unsell]
