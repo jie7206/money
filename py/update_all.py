@@ -7,8 +7,12 @@ from deal_records import *
 from open_orders import *
 
 
+SYMBOLS = [['btc', 'btcusdt'], ['ht', 'htusdt']]
+
+
 # 更新数字货币最新报价
 def update_prices():
+    global SYMBOLS
     count = 0
     for symbol in [s[1] for s in SYMBOLS]:
         try:

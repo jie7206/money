@@ -112,12 +112,17 @@ class MainController < ApplicationController
     @btc_available, @usdt_available = `python py/usdt_trade.py`.split(',').map {|n| to_n(n,6).to_f}
     @ave_cost = to_n(Property.btc_ave_cost)
     @profit_cny = to_n(DealRecord.profit_cny(@price.to_f))
-    usdt_to_cny
+    remain_usdt2cny
   end
 
   # USDT转CNY
-  def usdt_to_cny
-    @cny_amount = (@usdt_amount.to_f*usd2cny).to_i # 显示剩余资金(¥)
+  def remain_usdt2cny
+    # 显示剩余资金(¥)
+    if $usdt_to_cny
+      @cny_amount = (@usdt_amount.to_f*$usdt_to_cny).to_i
+    else
+      @cny_amount = (@usdt_amount.to_f*usd2cny).to_i
+    end
   end
 
   # 取得下单参数
@@ -149,7 +154,7 @@ class MainController < ApplicationController
       @amount = ''
       default_order_info
     end
-    usdt_to_cny
+    remain_usdt2cny
     @btc_level = 0 if @btc_level.to_f < 0
     render :place_order_form
   end

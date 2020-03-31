@@ -19,8 +19,6 @@ from open_orders import *
 from huobi_price import *
 
 
-# 更新火币资产与更新价格的范围
-SYMBOLS = [['usdt', 'usdthusd'], ['btc', 'btcusdt'], ['atom', 'atomusdt'], ['ht', 'htusdt']]
 # 数据库位置
 DB = db_path()
 DB_Local = db_path(local=True)

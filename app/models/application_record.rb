@@ -95,7 +95,11 @@ class ApplicationRecord < ActiveRecord::Base
 
   # USDT换成人民币
   def usdt_to_cny
-    target_rate(:cny).to_f/target_rate(:usdt)
+    if $usdt_to_cny
+      return $usdt_to_cny
+    else
+      return target_rate(:cny).to_f/target_rate(:usdt)
+    end
   end
 
   # USDT换成新台币

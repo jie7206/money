@@ -80,11 +80,13 @@ class ApplicationController < ActionController::Base
 
   # 更新所有数字货币的汇率值
   def update_digital_exchange_rates
-    count = 0
     # 必须先更新USDT的汇率，其他的报价换算成美元才能准确
     usdt = Currency.usdt
+    cny_exchange_rate = get_exchange_rate(:usd,'CNY')
+    usdt_price = $usdt_to_cny/cny_exchange_rate
+    update_exchange_rate(usdt.code,(1/usdt_price).floor(8))
+    count = 1
     if usdt_price = get_huobi_price(usdt.symbol) and usdt_price > 0
-      # update_exchange_rate(usdt.code,(1/usdt_price).floor(8)) # 手动输入更为准确
       count += 1
       Currency.digitals.each do |c|
         next if c.code == 'USDT'
