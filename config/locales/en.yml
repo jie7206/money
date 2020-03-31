@@ -19,6 +19,9 @@ en:
   trezor_records: Trezor Records
   make_trezor_count: Make Trezor Count
   make_balance_count: Make Balance Count
+  make_balance_records: Make Balance Records
+  switch_from_balance: From Balance
+  switch_to_balance: To Balance
   btc_ave_price: BTC Ave
   home_title: My Homepage
   back_to_home: Home

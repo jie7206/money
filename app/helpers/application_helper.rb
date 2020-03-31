@@ -571,6 +571,14 @@ module ApplicationHelper
     return nil
   end
 
+  # 显示当前的买进
+  def show_buy_strategy
+    buy_under_price = get_invest_params(1).to_i
+    buy_when_minutes = get_invest_params(17).to_i
+    return "@#{buy_under_price}" if buy_under_price > 0
+    return "@#{buy_when_minutes}分最低价" if buy_when_minutes > 0
+  end
+
   # 如果没有负号，在前面显示+号
   def add_plus(str)
     if !str.index("-")

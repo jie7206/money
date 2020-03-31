@@ -19,6 +19,9 @@ cn:
   trezor_records: 钱包记录
   make_trezor_count: 钱包凑数
   make_balance_count: 消帐凑数
+  make_balance_records: 消帐记录
+  switch_from_balance: 转到未卖记录
+  switch_to_balance: 转到消帐记录
   btc_ave_price: 所有比特币均价
   home_title: 我的首页
   back_to_home: 返回首页

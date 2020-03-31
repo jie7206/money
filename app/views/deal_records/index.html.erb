@@ -24,7 +24,7 @@ btc_hold = DealRecord.btc_amount
 cny_to_btc = Currency.new.cny_to_btc
 %>
 <% @deal_records.each do |dr| %>
-  <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] or params[:show_unsell] or params[:show_first] or params[:show_trezor] or params[:make_balance_count] or params[:make_trezor_count] %>
+  <% if n <= $deal_records_limit or params[:show_all] or params[:show_sell] or params[:show_unsell] or params[:show_first] or params[:show_trezor] or params[:make_balance_count] or params[:make_trezor_count] or params[:show_balance] %>
     <tr <%= change_row_color %>>
       <td align="right"><span <%= raw "class='switch_first_sell'" if dr.first_sell %>><%= link_to n, action: :switch_first_sell, id: dr, show_all: params[:show_all], show_unsell: params[:show_unsell] %></span></td>
       <td align="center"><%= link_edit_to(dr,to_t(dr.created_at,true)) %></td>
@@ -32,7 +32,8 @@ cny_to_btc = Currency.new.cny_to_btc
       <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
       <% cny_amount = to_n(dr.cny_amount,1) %>
       <td align="right"><%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %></td>
-      <td align="right"><%= amount = to_n(dr.amount,6) %></td>
+      <% amount = to_n(dr.amount,6) %>
+      <td align="right"><%= amount_fee = to_n(dr.amount-dr.fees,8) %></td>
       <td align="right"><%= cny_amount %></td>
       <%
         if !dr.real_profit
@@ -56,13 +57,16 @@ cny_to_btc = Currency.new.cny_to_btc
           if dr.auto_sell and dr.real_profit
             if dr.real_profit == 0 # 为转出记录 %>
               <%= link_to t(:set_from_trezor), action: :switch_to_trezor, id: dr, show_all: params[:show_all] %>
+       <%   elsif dr.real_profit == 0.01 # 为消账记录 %>
+              <%= link_to t(:switch_from_balance), action: :switch_to_balance, id: dr, show_all: params[:show_all] %>
        <%   else
               real_profit = to_n(dr.real_profit,2)
               real_profit_btc = to_n(real_profit.to_f*cny_to_btc,8) %>
               <%= look_order_link( dr, real_profit+' '+real_profit_btc ) %>
        <%   end
           else %>
-            <%= link_to t(:set_to_trezor), action: :switch_to_trezor, id: dr, show_all: params[:show_all] %>
+            <%= link_to t(:set_to_trezor), action: :switch_to_trezor, id: dr, show_all: params[:show_all] %> |
+            <%= link_to t(:switch_to_balance), action: :switch_to_balance, id: dr, show_all: params[:show_all] %>
        <%   if params[:make_trezor_count] %>
             | <%= link_to t(:all_to_trezor), action: :auto_send_trezor_count %>
        <%   end %>
@@ -76,6 +80,7 @@ cny_to_btc = Currency.new.cny_to_btc
     else
       price = to_n(dr.price)
       amount = to_n(dr.amount,6)
+      amount_fee = to_n(dr.amount-dr.fees,8)
       cny_amount = to_n(dr.cny_amount,2) if !dr.real_profit
       cny_amount_now = dr.cny_amount_now if !dr.real_profit
       earn_or_loss = dr.earn_or_loss if !dr.real_profit
@@ -88,7 +93,7 @@ cny_to_btc = Currency.new.cny_to_btc
   <% n += 1 %>
   <% total_price += price.to_f * amount.to_f
      total_amount += amount.to_f
-     total_amount_fee += amount.to_f * (1.0-$fees_rate)
+     total_amount_fee += amount_fee.to_f
      total_cny_amount += cny_amount.to_f if !dr.real_profit
      total_cny_amount_now += cny_amount_now.to_f if !dr.real_profit
      total_earn_or_loss += earn_or_loss.to_f if !dr.real_profit
@@ -101,14 +106,14 @@ cny_to_btc = Currency.new.cny_to_btc
   <tr class="thead">
     <td colspan="2">
       <%= kline_chart_link(to_n(price_now)) %>
-      (<%= to_n(price_now/total_ave_cost_price*100,2)%>%)
+      <%= show_buy_strategy %>
     </td>
     <td align="right">
       <%= to_n(total_ave_cost_price) if total_amount > 0 %>
     </td>
     <% profit_cny = to_n(DealRecord.profit_cny) %>
-    <td align="right"><%= to_n(total_earn_or_loss) %></td>
-    <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if !params[:show_sell] %></td>
+    <td align="right"><%= to_n(total_earn_or_loss) if total_amount > 0 %></td>
+    <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if total_amount > 0 and !params[:show_sell] %></td>
     <% dr_btc_amount = DealRecord.btc_amount %>
     <% next_sell_amount = DealRecord.top_n_profit(@get_max_sell_count,:amount) %>
     <% amount_diff1 = dr_btc_amount - next_sell_amount %>
@@ -142,7 +147,7 @@ cny_to_btc = Currency.new.cny_to_btc
       max_sell_count = get_invest_params(13).to_i
       profit_goal = get_invest_params(12).to_i
       remain_sell_hours = to_n(@unsell_count/max_sell_count*sell_sec/3600.0,1)
-      show_sell_price = sell_price > 0 ? "#{sell_price}(#{add_plus(to_n(sell_price/total_ave_cost_price))}%)" : "#{sell_minute}分最高"
+      show_sell_price = sell_price > 0 ? "#{sell_price}(#{add_plus(to_n(sell_price/total_ave_cost_price))}%)" : "#{sell_minute}分最高价"
       title = "①下次卖出的盈亏 ②自动卖出的盈亏\n③每次卖几笔 ④几笔标示为优先卖出\n⑤全部未卖的笔数⑥停止自动卖出的仓位值"
       if over_sell_time_sec > 0
         show_sell = link_to raw(t(:send_stop_loss)+"[<span title='#{title}'>#{@top_deal_record_profit}/#{profit_goal}|#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>]@<u>#{show_sell_price}</u> 每#{sell_sec/60}分 余#{remain_sell_hours}时"), send_stop_loss_path
@@ -157,6 +162,7 @@ cny_to_btc = Currency.new.cny_to_btc
   | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
   | <%= link_to t(:show_first_sell_deal_records), deal_records_path(show_first:1) %>
   | <%= link_to t(:make_balance_count), deal_records_path(make_balance_count:1) %>
+  | <%= link_to t(:make_balance_records), deal_records_path(show_balance:1) %>
   | <%= link_to t(:make_trezor_count), deal_records_path(make_trezor_count:1) %>
   | <%= link_to t(:trezor_records), deal_records_path(show_trezor:1) %>
   | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>

@@ -1,7 +1,7 @@
 class DealRecordsController < ApplicationController
 
   # before_action :check_admin
-  before_action :set_deal_record, only: [:edit, :update, :destroy, :delete, :switch_first_sell, :switch_to_trezor]
+  before_action :set_deal_record, only: [:edit, :update, :destroy, :delete, :switch_first_sell, :switch_to_trezor, :switch_to_balance]
 
   def index
     if params[:show_all]
@@ -17,6 +17,8 @@ class DealRecordsController < ApplicationController
       @deal_records = make_trezor_count_records
     elsif params[:show_first]
       @deal_records = DealRecord.where("first_sell = 1 and auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
+    elsif params[:show_balance]
+      @deal_records = DealRecord.where("auto_sell = 1 and real_profit = 0.01 and account = '#{get_huobi_acc_id}'").order('amount')
     elsif params[:show_trezor]
       @deal_records = DealRecord.where("auto_sell = 1 and real_profit = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     else
@@ -187,11 +189,13 @@ class DealRecordsController < ApplicationController
 
   # 设置为转出至冷钱包
   def switch_to_trezor
-    if @deal_record.auto_sell and @deal_record.real_profit == 0
-      @deal_record.update_attributes(auto_sell: false, real_profit: nil)
-    else
-      @deal_record.update_attributes(auto_sell: true, real_profit: 0)
-    end
+    switch_real_profit_from 0
+    redirect_to deal_records_path(get_switch_params)
+  end
+
+  # 交易列表能按照数量显示消账记录并能转回到未卖记录
+  def switch_to_balance
+    switch_real_profit_from 0.01
     redirect_to deal_records_path(get_switch_params)
   end
 
@@ -235,10 +239,19 @@ class DealRecordsController < ApplicationController
       DealRecord.make_count_records(DealRecord.unsell_amount - DealRecord.btc_amount)
     end
 
+    def switch_real_profit_from( value )
+      if @deal_record.auto_sell and @deal_record.real_profit == value
+        @deal_record.update_attributes(auto_sell: false, real_profit: nil)
+      else
+        @deal_record.update_attributes(auto_sell: true, real_profit: value)
+      end
+    end
+
     def get_switch_params
       {
         show_all: params[:show_all],
         show_unsell: params[:show_unsell],
+        show_balance: params[:show_balance],
         order_field: params[:order_field]
       }
     end
