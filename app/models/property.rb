@@ -104,7 +104,11 @@ class Property < ApplicationRecord
     amount1 = get_invest_param_from($auto_invest_params_path,26)
     cost2 = get_invest_param_from($auto_invest_params_path2,25)
     amount2 = get_invest_param_from($auto_invest_params_path2,26)
-    real_ave_cost = (cost1+cost2)/(amount1+amount2)
+    if amount1 + amount2 > 0
+      real_ave_cost = (cost1+cost2)/(amount1+amount2)
+    else
+      real_ave_cost = 0
+    end
     sell_profit1, unsell_profit1, ave_sec_profit1, real_p_24h1, trezor_cost1, trezor_amount1 = get_invest_param_from($auto_invest_params_path,28,false).split(':')
     sell_profit2, unsell_profit2, ave_sec_profit2, real_p_24h2, trezor_cost2, trezor_amount2 = get_invest_param_from($auto_invest_params_path2,28,false).split(':')
     total_real_profit = sell_profit1.to_f + sell_profit2.to_f
@@ -113,7 +117,11 @@ class Property < ApplicationRecord
     total_real_p_24h = real_p_24h1.to_i + real_p_24h2.to_i
     trezor_ave_cost = (trezor_cost1.to_f+trezor_cost2.to_f)/(trezor_amount1.to_f+trezor_amount2.to_f)
     price_now = DealRecord.first.price_now if DealRecord.first
-    price_p = (price_now/real_ave_cost-1)*100 # 现价与均价的比率(利率)
+    if real_ave_cost > 0
+      price_p = (price_now/real_ave_cost-1)*100 # 现价与均价的比率(利率)
+    else
+      price_p = 0
+    end
     p_btc = Property.tagged_with('比特币').sum {|p| p.amount}
     p_trezor = Property.tagged_with('冷钱包').sum {|p| p.amount}
     p_short = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}

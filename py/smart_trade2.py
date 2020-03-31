@@ -1023,14 +1023,18 @@ def check_sell_amount(sell_price, sell_amount, usdt_now, sell_max_usd):
 def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, profit_goal, max_sell_count):
     global ORDER_ID
     global FORCE_SELL
-    global sell_max_cny
+    # global sell_max_cny
     global acc_id
     usdt_now = get_trade_usdt()
-    sell_max_usd = sell_max_cny/u2c
-    if max_sell_count > 0 and usdt_now < sell_max_usd:
+    # sell_max_usd = sell_max_cny/u2c
+    if max_sell_count > 0: #and usdt_now < sell_max_usd:
         rows = select_db(
             "SELECT id, amount-fees as amount, created_at, price FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY first_sell DESC, price ASC LIMIT %i" % (acc_id, max_sell_count))
-        if len(rows) > 0:
+        len_rows = len(rows)
+        if len_rows > 0:
+            str = "Get Deal Record(s) to sell..."
+            print(str)
+            ftext += str+'\n'
             ids = []
             sell_amount = 0
             sell_count = 0
@@ -1051,20 +1055,24 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                 sell_amount += amount
                 sum_for_ave += cost_price*amount
                 cost_price_ave = round(sum_for_ave/sell_amount, 2)
-                if FORCE_SELL == True and sell_count != max_sell_count:
+                if FORCE_SELL == True and len_rows >= max_sell_count and sell_count != max_sell_count:
                     continue
                 else:
+                    str = "Check sell_profit_total > profit_goal..."
+                    print(str)
+                    ftext += str+'\n'
                     if sell_profit_total > profit_goal or sell_count == max_sell_count:
                         # 检查是否超出设定的卖出额度，若超出则少卖一些
-                        sell_amount, over_sell = check_sell_amount(sell_price, sell_amount, usdt_now, sell_max_usd)
+                        # sell_amount, over_sell = check_sell_amount(sell_price, sell_amount, usdt_now, sell_max_usd)
                         # 提交订单
                         ftext = place_order_process(test_price, sell_price,
                                                     sell_amount, 'sell-limit', ftext, time_line, u2c)
                         # 如果提交成功，将这些交易记录标示为已自动卖出并更新下单编号及已实现损益
                         if test_price == 0 and len(ORDER_ID) > 0:
+                            time_now = get_now()
                             real_profit = round(sell_profit_total, 4)
                             sql = "UPDATE deal_records SET auto_sell = 1, order_id = '%s', price = %.2f, amount = %.6f, real_profit = %.2f, updated_at = '%s' WHERE id = %i" % (
-                                ORDER_ID, cost_price_ave, sell_amount, real_profit, get_now(), ids[-1])
+                                ORDER_ID, cost_price_ave, sell_amount, real_profit, time_now, ids[-1])
                             CONN.execute(sql)
                             CONN.commit()
                             for id in ids[0:-1]:
@@ -1077,19 +1085,10 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                             print(str)
                             ftext += str+'\n'
                             # 更新记录time_line文档
-                            if over_sell:
-                                rs = select_db(
-                                    "SELECT created_at FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY created_at DESC LIMIT 1" % acc_id)
-                                update_time_line(rs[0][0])
-                                clear_deal_records()
-                                str = "Time Line Updated to: %s And Clear Records!" % created_at
-                                print(str)
-                                ftext += str+'\n'
-                            else:
-                                update_time_line(created_at)
-                                str = "Time Line Updated to: %s" % created_at
-                                print(str)
-                                ftext += str+'\n'
+                            update_time_line(time_now)
+                            str = "Time Line Updated to: %s And Clear Records!" % time_now
+                            print(str)
+                            ftext += str+'\n'
                         else:
                             str = "Sim Update %i Deal Records with Profit: %.2f CNY" % (
                                 len(ids), sell_profit_total)
@@ -1097,7 +1096,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                             ftext += str+'\n'
                         break
     else:
-        str = "Stop Sell Because Max Sell Count = 0 or USDT > Max Sell"
+        str = "Stop Sell Because Max Sell Count = 0 or BTC Level < Stop Sell Level"
         print(str)
         ftext += str+'\n'
     return ftext
