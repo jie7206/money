@@ -25,11 +25,11 @@
   </tr>
   <tr>
     <td><%= t(:deal_record_amount) %>：</td>
-    <td><%= f.text_field(:amount,disabled: 'disabled') %></td>
+    <td><%= f.text_field(:amount) %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_fees) %>：</td>
-    <td><%= f.text_field(:fees,disabled: 'disabled') %></td>
+    <td><%= f.text_field(:fees) %></td>
   </tr>
   <tr>
     <td><%= t(:deal_record_purpose) %>：</td>
@@ -44,7 +44,13 @@
     <td><%= f.text_field(:loss_limit,onclick:select_all) %></td>
   </tr>
   <tr>
-    <td><%= t(:deal_record_order_id) %>：</td>
+    <td>
+      <% if @deal_record.order_id %>
+        <%= look_order_link( @deal_record, t(:deal_record_order_id) ) %>：
+      <% else %>
+        <%= t(:deal_record_order_id) %>：
+      <% end %>
+    </td>
     <td><%= f.text_field(:order_id,onclick:select_all) %></td>
   </tr>
   <tr>

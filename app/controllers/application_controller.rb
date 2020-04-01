@@ -42,13 +42,10 @@ class ApplicationController < ActionController::Base
     go_back
   end
 
-  # 新台币更新时间不是今日则自动执行更新法币及数字货币汇率(意即一天更新一次即可)
+  # 更新法币及数字货币汇率
   def update_exchange_rates
-    if Currency.find_by_code('TWD').updated_at.to_date != Date.today
-      update_legal_exchange_rates
-      update_digital_exchange_rates
-      update_portfolios_and_records
-    end
+    update_legal_exchange_rates
+    update_digital_exchange_rates
   end
 
 

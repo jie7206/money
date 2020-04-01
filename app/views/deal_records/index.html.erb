@@ -32,8 +32,8 @@ cny_to_btc = Currency.new.cny_to_btc
       <td align="right"><%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %></td>
       <% cny_amount = to_n(dr.cny_amount,1) %>
       <td align="right"><%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %></td>
-      <% amount = to_n(dr.amount,6) %>
-      <td align="right"><%= amount_fee = to_n(dr.amount-dr.fees,8) %></td>
+      <% amount_fee = to_n(dr.amount-dr.fees,8) %>
+      <td align="right"><%= amount = to_n(dr.amount,6) %></td>
       <td align="right"><%= cny_amount %></td>
       <%
         if !dr.real_profit
@@ -122,7 +122,8 @@ cny_to_btc = Currency.new.cny_to_btc
       <% if params[:make_trezor_count] or params[:show_trezor] or params[:make_balance_count] %>
         <%= to_n(total_amount_fee,8) %>
       <% else %>
-        <%= link_to "#{to_n(total_amount_fee,3)}/#{to_n(dr_btc_amount,3)}", place_order_form_path(amount:to_n(dr_btc_amount,6)), title: "#{to_n(total_amount_fee,8)}/#{to_n(next_sell_amount,8)}/#{to_n(dr_btc_amount,8)} 差值: #{to_n(amount_diff1,8)}(卖)|#{to_n(amount_diff2,8)}(总)" %>
+        <% amount_pos = 4 # 显示到小数点第几位 %>
+        <%= link_to "#{to_n(total_amount_fee,amount_pos)}/#{to_n(dr_btc_amount,amount_pos)}", place_order_form_path(amount:to_n(dr_btc_amount,6)), title: "#{to_n(total_amount_fee,8)}/#{to_n(next_sell_amount,8)}/#{to_n(dr_btc_amount,8)} 差值: #{to_n(amount_diff1,8)}(卖)|#{to_n(amount_diff2,8)}(总)" %>
       <% end %>
       | <%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>
     </td>
@@ -149,10 +150,17 @@ cny_to_btc = Currency.new.cny_to_btc
       remain_sell_hours = to_n(@unsell_count/max_sell_count*sell_sec/3600.0,1)
       show_sell_price = sell_price > 0 ? "#{sell_price}(#{add_plus(to_n(sell_price/total_ave_cost_price))}%)" : "#{sell_minute}分最高价"
       title = "①下次卖出的盈亏 ②自动卖出的盈亏\n③每次卖几笔 ④几笔标示为优先卖出\n⑤全部未卖的笔数⑥停止自动卖出的仓位值"
-      if over_sell_time_sec > 0
-        show_sell = link_to raw(t(:send_stop_loss)+"[<span title='#{title}'>#{@top_deal_record_profit}/#{profit_goal}|#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>]@<u>#{show_sell_price}</u> 每#{sell_sec/60}分 余#{remain_sell_hours}时"), send_stop_loss_path
+      if profit_goal > 0 and @top_deal_record_profit.to_f > profit_goal
+        profit_goal_ok = true
+      elsif profit_goal == 0
+        profit_goal_ok = true
       else
-        show_sell = raw(t(:send_stop_loss)+"[<span title='#{title}'>#{@top_deal_record_profit}/#{profit_goal}|#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>]@#{show_sell_price} 每#{sell_sec/60}分 剩#{over_sell_time_sec.abs/60}分 余#{remain_sell_hours}时")
+        profit_goal_ok = false
+      end
+      if over_sell_time_sec > 0 and profit_goal_ok
+        show_sell = link_to raw(t(:send_stop_loss)+"[<span title='#{title}'>#{@top_deal_record_profit}/#{profit_goal}|#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>]@<u>#{show_sell_price}</u>/#{sell_sec/60}分/#{remain_sell_hours}时"), send_stop_loss_path
+      else
+        show_sell = raw(t(:send_stop_loss)+"[<span title='#{title}'>#{@top_deal_record_profit}/#{profit_goal}|#{@get_max_sell_count}/#{@first_unsell_count}|#{@unsell_count}/#{stop_sell_level}</span>]@#{show_sell_price}/#{sell_sec/60}分/#{remain_sell_hours}时")
       end
   %>
     <%= show_sell %> |

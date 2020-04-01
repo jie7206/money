@@ -711,6 +711,11 @@ def usdt2usd():
     data = select_db("SELECT exchange_rate FROM currencies WHERE code = 'USDT'")
     return round(1/data[0][0], 4)
 
+
+def usdt2cny():
+    return usd2cny()*usdt2usd()
+
+
 def place_new_order(price, amount, deal_type):
     global ORDER_ID
     try:
@@ -1020,6 +1025,17 @@ def check_sell_amount(sell_price, sell_amount, usdt_now, sell_max_usd):
     return sell_amount, over_sell
 
 
+# 由下单回传值计算正确的获利值
+def sell_profit_cny_from_order(order_id, cost_usdt_total):
+    data = order_info(order_id)['data']
+    field_cash_amount = float(data['field-cash-amount'])
+    field_fees = float(data['field-fees'])
+    field_amount = float(data['field-amount'])
+    profit_usdt = field_cash_amount - field_fees - cost_usdt_total
+    profit_cny = profit_usdt*usdt2cny()
+    return profit_cny, field_amount, field_fees
+
+
 def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, profit_goal, max_sell_count):
     global ORDER_ID
     global FORCE_SELL
@@ -1029,7 +1045,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
     # sell_max_usd = sell_max_cny/u2c
     if max_sell_count > 0: #and usdt_now < sell_max_usd:
         rows = select_db(
-            "SELECT id, amount-fees as amount, created_at, price FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY first_sell DESC, price ASC LIMIT %i" % (acc_id, max_sell_count))
+            "SELECT id, amount - fees as amount, created_at, price FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY first_sell DESC, price ASC LIMIT %i" % (acc_id, max_sell_count))
         len_rows = len(rows)
         if len_rows > 0:
             str = "Get Deal Record(s) to sell..."
@@ -1039,7 +1055,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
             sell_amount = 0
             sell_count = 0
             sell_profit_total = 0
-            sum_for_ave = 0
+            cost_usdt_total = 0
             cost_price_ave = 0
             created_at = ''
             sell_price = round(price*sell_price_rate(), 2)
@@ -1053,15 +1069,12 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                 sell_count += 1
                 sell_profit_total += (sell_price-cost_price)*amount*fees_rate()*u2c
                 sell_amount += amount
-                sum_for_ave += cost_price*amount
-                cost_price_ave = round(sum_for_ave/sell_amount, 2)
+                cost_usdt_total += cost_price*amount
+                cost_price_ave = round(cost_usdt_total/sell_amount, 2)
                 if FORCE_SELL == True and len_rows >= max_sell_count and sell_count != max_sell_count:
                     continue
                 else:
-                    str = "Check sell_profit_total > profit_goal..."
-                    print(str)
-                    ftext += str+'\n'
-                    if sell_profit_total > profit_goal or sell_count == max_sell_count:
+                    if sell_count == max_sell_count:
                         # 检查是否超出设定的卖出额度，若超出则少卖一些
                         # sell_amount, over_sell = check_sell_amount(sell_price, sell_amount, usdt_now, sell_max_usd)
                         # 提交订单
@@ -1070,9 +1083,9 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                         # 如果提交成功，将这些交易记录标示为已自动卖出并更新下单编号及已实现损益
                         if test_price == 0 and len(ORDER_ID) > 0:
                             time_now = get_now()
-                            real_profit = round(sell_profit_total, 4)
-                            sql = "UPDATE deal_records SET auto_sell = 1, order_id = '%s', price = %.2f, amount = %.6f, real_profit = %.2f, updated_at = '%s' WHERE id = %i" % (
-                                ORDER_ID, cost_price_ave, sell_amount, real_profit, time_now, ids[-1])
+                            real_profit, real_sell_amount, real_sell_fees = sell_profit_cny_from_order(ORDER_ID,cost_usdt_total)
+                            sql = "UPDATE deal_records SET auto_sell = 1, order_id = '%s', price = %.2f, amount = %.6f, fees = %.9f, real_profit = %.6f, updated_at = '%s' WHERE id = %i" % (
+                                ORDER_ID, cost_price_ave, real_sell_amount, real_sell_fees, real_profit, time_now, ids[-1])
                             CONN.execute(sql)
                             CONN.commit()
                             for id in ids[0:-1]:
@@ -1080,8 +1093,8 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                                 CONN.execute(sql)
                                 CONN.commit()
                             ORDER_ID = ''
-                            str = "%i Deal Records Auto Sold and Combined, Sold Profit: %.2f CNY" % (
-                                len(ids), sell_profit_total)
+                            str = "%i Deal Records Auto Sold and Combined, Sold Profit: %.4f CNY" % (
+                                len(ids), real_profit)
                             print(str)
                             ftext += str+'\n'
                             # 更新记录time_line文档
@@ -1218,11 +1231,12 @@ def top_n_profit(sell_price):
     rows = select_db("SELECT amount - fees as amount, price FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY first_sell DESC, price ASC LIMIT %i" % (acc_id, max_sell_count))
     if len(rows) > 0:
         sell_profit_total = 0
-        u2c = usd2cny()
+        fr = fees_rate()
+        u2c = usdt2cny()
         for row in rows:
             amount = row[0]
             cost_price = row[1]
-            sell_profit_total += (sell_price-cost_price)*amount*fees_rate()*u2c
+            sell_profit_total += (sell_price-cost_price)*amount*fr*u2c
         return sell_profit_total
     else:
         return 0
@@ -1274,7 +1288,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                     str = "Price Now: %.2f %i_Min: %.2f %i_Max: %.2f(%.2f%%)" % (price_now, buy_price_period, min_price, sell_price_period, max_price, amplitude )
                 print(str)
                 ftext += str+'\n'
-                u2c = usd2cny()
+                u2c = usdt2cny()
                 if test_price > 0 or FORCE_BUY == True:
                     ori_usdt = float(ori_usdt)
                     trade_usdt = float(get_trade_usdt())
@@ -1314,7 +1328,10 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         str = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
                         print(str)
                         ftext += str+'\n'
-                        str = "Buy  Amount: %.6f BTC (%.2f CNY)" % (amount, amount*price_now*u2c)
+                        str = "Buy Amount: %.6f BTC (%.2f CNY)" % (amount, amount*price_now*u2c)
+                        print(str)
+                        ftext += str+'\n'
+                        str = "Get Amount: %.8f BTC (%.2f CNY)" % (amount*fees_rate(), amount*price_now*u2c)
                         print(str)
                         ftext += str+'\n'
                         ftext = print_next_exe_time(every_sec, ftext)
@@ -1452,7 +1469,7 @@ if __name__ == '__main__':
                             ################################################################
                             if sell_price_period > 0 and price_now > 0 and max_price > 0:
                                 sys.stdout.write("\r")
-                                sys.stdout.write("%s | now: %.2f %im_max: %i  sell_price: %i buy_time: %s sell_time: %s                " % (acc_id, price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time))
+                                sys.stdout.write("%s | now: %.2f %im_max: %i  sell_price: %i buy_time: %s sell_time: %s              " % (acc_id, price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time))
                                 sys.stdout.write("\n")
                             ################################################################
                     sys.stdout.write("\r                                                      \n")

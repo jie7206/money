@@ -315,7 +315,7 @@ class DealRecord < ApplicationRecord
       btc_to_usdt = 1.0/Currency.find_by_code(bi.upcase).exchange_rate
     end
     deal_type.index('buy') ? \
-      to_n((btc_to_usdt*amount)*usdt_to_cny,2) : ''
+      to_n((btc_to_usdt*amount*(1-$fees_rate))*usdt_to_cny,2) : ''
   end
 
   # 盈亏
