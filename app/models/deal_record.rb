@@ -72,7 +72,7 @@ class DealRecord < ApplicationRecord
     return 0
   end
 
-  # 回传剩余比特币
+  # 回传交易所内剩余的比特币
   def self.btc_amount
     Property.tagged_with(self.get_huobi_acc_id).each do |p|
       return p.amount if p.name.include? 'BTC'
@@ -246,12 +246,30 @@ class DealRecord < ApplicationRecord
     end
   end
 
-  # 是否已经达到可以再次卖出的时间
+  # 超出可买入时间的秒数
+  def self.over_buy_time_sec
+    buy_sec = get_invest_params(0).to_i
+    last_buy_time = unsell_records.order("created_at desc").first.created_at
+    pass_sec = (Time.now - last_buy_time).to_i
+    return pass_sec - buy_sec # 如果到达可买时间，则回传超过几秒
+  end
+
+  # 是否已经达到可以再次买入的时间
+  def self.enable_to_buy?
+    over_buy_time_sec > 0 ? true : false
+  end
+
+  # 超出可卖出时间的秒数
   def self.over_sell_time_sec
     sell_sec = get_invest_params(22).to_i
     last_sell_time = real_sell_records.order("updated_at desc").first.updated_at
     pass_sec = (Time.now - last_sell_time).to_i
     return pass_sec - sell_sec # 如果到达可卖时间，则回传超过几秒
+  end
+
+  # 是否已经达到可以再次卖出的时间
+  def self.enable_to_sell?
+    over_sell_time_sec > 0 ? true : false
   end
 
   # 交易列表上方显示24H已实现损益以便将获利每日转入冷钱包

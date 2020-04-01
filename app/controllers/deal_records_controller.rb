@@ -29,9 +29,6 @@ class DealRecordsController < ApplicationController
     end
     summary
     @get_max_sell_count = get_max_sell_count
-    @top_deal_record_profit = to_n(DealRecord.top_n_profit(@get_max_sell_count),1)
-    @unsell_count = DealRecord.unsell_count
-    @first_unsell_count = DealRecord.first_unsell_count
     @buy_sell_rate = cal_buy_sell_rate[2]
   end
 
@@ -180,7 +177,7 @@ class DealRecordsController < ApplicationController
   # 切换标示优先卖出
   def switch_first_sell
     if @deal_record.first_sell
-      @deal_record.update_attribute(:first_sell,false)
+      @deal_record.update_attribute(:first_sell,nil)
     else
       @deal_record.update_attribute(:first_sell,true)
     end

@@ -1,0 +1,258 @@
+<%
+  # 比特币现价
+  price_now = DealRecord.first.price_now if DealRecord.first
+  # 交易所内剩余的比特币
+  btc_amount_ex = DealRecord.btc_amount
+  # 人民币兑换比特币
+  cny_to_btc = Currency.new.cny_to_btc
+  # 下一笔要卖出的比特币数量
+  next_sell_amount = DealRecord.top_n_profit(@get_max_sell_count,:amount_fees)
+  # 最近几小时内的累计获利
+  real_profit_of_24h = DealRecord.real_profit_of_24h($send_to_trezor_time).to_i
+  # 总累计获利
+  total_real_profit = DealRecord.total_real_profit.to_i
+  # 平均每秒的已实现损益值
+  real_p_sec = DealRecord.real_profit_ave_sec
+
+  # 初始化所有变量
+  n = 1 # 数据集索引初始值
+  amount_pos = 5 # 默认的比特币总和显示位数
+  total_price = total_amount = total_amount_fee = total_cny_amount = \
+  total_cny_amount_now =  total_earn_or_loss = total_real_profit = \
+  total_real_profit_btc = 0
+
+  # 有传入以下参数者显示所有记录
+  def show_all_records_conditions
+    params[:show_all] or params[:show_sell] or params[:show_unsell] or \
+    params[:show_first] or params[:show_trezor] or params[:make_balance_count] or \
+    params[:make_trezor_count] or params[:show_balance]
+  end
+
+  # 有传入以下参数者显示8位的比特币数量
+  def show_long_btc_amount
+    params[:make_trezor_count] or params[:show_trezor] or params[:make_balance_count]
+  end
+%>
+<table width="<%=$default_table_width%>">
+  <tr class="thead">
+    <td width="15"></td>
+    <td width="160">
+      <% # 下单时间 %>
+      <%= link_to t(:deal_record_created), show_unsell: 1, order_field: 'created_at' %>
+    </td>
+    <td>
+      <% # 成交价 %>
+      <%= link_to t(:deal_record_price), show_unsell: 1, order_field: 'price' %>
+    </td>
+    <td>
+      <% # 值人民币 %>
+      <%= t(:exchange_to_cny) %>
+    </td>
+    <td>
+      <% # 现值 %>
+      <%= t(:now_to_cny) %>
+    </td>
+    <td width="45">
+      <% # 盈亏 %>
+      <%= t(:earn_or_loss) %>
+    </td>
+    <td width="45">
+      <% # 利率 %>
+      <%= t(:profit_p) %>
+    </td>
+    <td>
+      <% # 成交量 %>
+      <%= link_to t(:deal_record_amount), show_unsell: 1, order_field: 'amount' %>
+    </td>
+    <td colspan="2">
+      <% # 更新时间 %>
+      <%= link_to t(:updated_time), show_unsell: 1, order_field: 'updated_at' %> |
+      <% # 已实现损益 %>
+      <%= t(:deal_record_real_profit) %>
+      ( <%= show_num_h_profit %>: <%= real_profit_of_24h %><%= ' '+to_n(real_profit_of_24h*cny_to_btc,6) if real_profit_of_24h > 0 %>
+      | 累计: <%= total_real_profit %><%= ' '+to_n(total_real_profit*cny_to_btc,6) if total_real_profit > 0 %>
+      )
+    </td>
+  </tr>
+<% @deal_records.each do |dr| %>
+  <% if n <= $deal_records_limit or show_all_records_conditions %>
+    <tr <%= change_row_color %>>
+      <td align="right">
+        <% # 显示优卖功能链接 %>
+        <span <%= raw "class='switch_first_sell'" if dr.first_sell %>>
+          <%= link_to n, action: :switch_first_sell, id: dr, \
+          show_all: params[:show_all], show_unsell: params[:show_unsell] %>
+        </span>
+      </td>
+      <td align="center">
+        <% # 显示下单时间 %>
+        <%= link_edit_to(dr,to_t(dr.created_at,true)) %>
+      </td>
+      <td align="right">
+        <% # 成交价 %>
+        <%= price = to_n(dr.price) %>
+      </td>
+      <td align="right">
+        <% # 值人民币 %>
+        <%= cny_amount = to_n(dr.cny_amount,1) %>
+      </td>
+      <td align="right">
+        <% # 现值 %>
+        <%= cny_amount_now = !dr.real_profit ? \
+        to_n(dr.cny_amount_now,1) : to_n(cny_amount.to_f + dr.real_profit.to_f,1) %>
+      </td>
+      <td align="right">
+        <% # 盈亏 %>
+        <%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %>
+      </td>
+      <td align="right">
+        <% # 利率 %>
+        <%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %>
+      </td>
+      <td align="right">
+        <% # 成交量 %>
+        <% amount_fee = to_n(dr.amount-dr.fees,8) %>
+        <%= amount = to_n(dr.amount,6) %>
+      </td>
+      <td align="right">
+        <% # 更新时间 %>
+        <%= updated_at_str = to_time(dr.updated_at) %>
+      </td>
+      <td align="right">
+        <%
+          # 此表格栏位为功能链接或者显示获利值
+          # 卖出记录｜消账记录｜钱包记录
+          if dr.auto_sell and dr.real_profit
+            # 若此记录为钱包记录
+            if dr.real_profit == 0
+              # 转到未卖记录  %>
+              <%= link_to t(:set_from_trezor), action: :switch_to_trezor, id: dr, \
+                  show_all: params[:show_all] %>
+        <%  # 若此记录为消账记录
+            elsif dr.real_profit == 0.01
+              # 转到未卖记录  %>
+              <%= link_to t(:switch_from_balance), action: :switch_to_balance, id: dr, \
+                  show_all: params[:show_all] %>
+        <%  # 若此记录为卖出记录
+            else
+              # 已实现损益(人民币)
+              real_profit = to_n(dr.real_profit,2)
+              # 已实现损益(比特币)
+              real_profit_btc = to_n(real_profit.to_f*cny_to_btc,8)
+              # 察看订单成交明细  %>
+              <%= look_order_link( dr, real_profit+' '+real_profit_btc ) %>
+        <%  end
+          # 未卖记录｜凑消帐｜凑钱包
+          else
+               # 转出到钱包  %>
+               <%= link_to t(:set_to_trezor), action: :switch_to_trezor, id: dr, \
+                   show_all: params[:show_all] %> |
+            <% # 转到消帐记录 %>
+            <%= link_to t(:switch_to_balance), action: :switch_to_balance, id: dr, show_all: params[:show_all] %>
+        <%  # 若此记录为凑钱包记录 %>
+        <%  if params[:make_trezor_count] %>
+            <% # 本表全转出 %>
+            | <%= link_to t(:all_to_trezor), action: :auto_send_trezor_count %>
+        <%  end %>
+        <%  # 若此记录为凑消帐记录 %>
+        <%  if params[:make_balance_count] %>
+            <% # 本表全消帐 %>
+            | <%= link_to t(:all_to_balance), action: :auto_send_balance_count %>
+        <%  end
+          end %>
+      </td>
+    </tr>
+  <%
+    # 以下是只计算数值而不显示在页面的数据记录
+    else
+      price = to_n(dr.price)
+      amount = to_n(dr.amount,6)
+      if dr.real_profit
+        real_profit = to_n(dr.real_profit,2)
+        real_profit_btc = to_n(real_profit.to_f*cny_to_btc,8)
+      else
+        cny_amount = to_n(dr.cny_amount,2)
+        cny_amount_now = dr.cny_amount_now
+        earn_or_loss = dr.earn_or_loss
+        profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100)
+      end
+    end
+    # 求和以显示数据加总或求平均
+    n += 1
+    total_price += price.to_f * amount.to_f
+    total_amount += amount.to_f
+    total_amount_fee += dr.amount_fees
+    if dr.real_profit
+      total_real_profit += real_profit.to_f
+      total_real_profit_btc += real_profit_btc.to_f
+    else
+      total_cny_amount += cny_amount.to_f
+      total_cny_amount_now += cny_amount_now.to_f
+      total_earn_or_loss += earn_or_loss.to_f
+    end
+  end # 结束 @deal_records.each
+  # 成交均价
+  total_ave_cost_price = total_amount > 0 ? to_n(total_price/total_amount) : ''
+%>
+  <tr class="thead">
+    <td colspan="2">
+      <% # 显示现价与k线图链接 %>
+      <%= kline_chart_link(to_n(price_now)) %>
+      <% # 显示自动买入(买进)的策略与状态 %>
+      <%= show_buy_strategy %>
+    </td>
+    <td align="right">
+      <% # 显示成交均价 %>
+      <%= total_ave_cost_price %>
+    </td>
+    <td align="right">
+      <% # 显示成本总和 %>
+      <%= to_n(total_cny_amount,1) if !params[:show_sell] %>
+    </td>
+    <td align="right">
+      <% # 显示现值总和 %>
+      <%= to_n(total_cny_amount_now,1) if !params[:show_sell] %>
+    </td>
+    <td align="right">
+      <% # 显示盈亏总和 %>
+      <%= to_n(total_earn_or_loss) if total_amount > 0 %>
+    </td>
+    <td align="right">
+      <% # 显示利率总和 %>
+      <%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) \
+      if total_amount > 0 and !params[:show_sell] %>
+    </td>
+    <td align="right">
+      <%
+        # 计算交易所是否有足够的量以卖出下一笔记录
+        amount_remain_if_sell = btc_amount_ex - next_sell_amount
+        # 计算交易所是否有足够的量以卖出所有记录
+        amount_remain_if_clear = btc_amount_ex - total_amount_fee
+        # 是否显示8位的比特币数量
+        if show_long_btc_amount %>
+          <%= to_n(total_amount_fee,8) %>
+      <%
+        else
+      %>
+          <% # 显示比特币总和 %>
+          <%= link_to "#{to_n(total_amount_fee,amount_pos)}/#{to_n(btc_amount_ex,amount_pos)}",\
+          place_order_form_path(amount:to_n(btc_amount_ex,6)), \
+          title: "#{to_n(total_amount_fee,8)}/#{to_n(next_sell_amount,8)}/#{to_n(btc_amount_ex,8)}\n 差值: #{to_n(amount_remain_if_sell,8)}(卖)|#{to_n(amount_remain_if_clear,8)}(总)" %>
+      <%
+        end
+      %>
+      <% # 显示比特币仓位现况 %>
+      | <%= to_n(DealRecord.btc_level,1).to_i %>/<%= get_invest_params(5) %>
+    </td>
+    <td align="right">
+      <% # 显示资产净值与走势图链接 %>
+      <%= show_net_value_link %>
+    </td>
+    <td align="right">
+      <% # 显示已实现损益的平均绩效 %>
+      <%= (real_p_sec*3600).to_i %>/时
+      <%= (real_p_sec*3600*24).to_i %>/日
+      <%= (real_p_sec*3600*24*30).to_i %>/月
+    </td>
+  </tr>
+</table>

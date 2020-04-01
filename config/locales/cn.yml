@@ -15,7 +15,7 @@ cn:
   set_to_trezor: 转出到钱包
   all_to_trezor: 本表全转出
   all_to_balance: 本表全消帐
-  set_from_trezor: 转出到列表
+  set_from_trezor: 转到未卖记录
   trezor_records: 钱包记录
   make_trezor_count: 凑钱包
   make_balance_count: 凑消帐
