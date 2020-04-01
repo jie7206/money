@@ -115,9 +115,9 @@ cny_to_btc = Currency.new.cny_to_btc
     <td align="right"><%= to_n(total_earn_or_loss) if total_amount > 0 %></td>
     <td align="right"><%= to_n(profit_cny.to_f/total_cny_amount.to_f*100) if total_amount > 0 and !params[:show_sell] %></td>
     <% dr_btc_amount = DealRecord.btc_amount %>
-    <% next_sell_amount = DealRecord.top_n_profit(@get_max_sell_count,:amount) %>
-    <% amount_diff1 = dr_btc_amount - next_sell_amount %>
-    <% amount_diff2 = dr_btc_amount - total_amount_fee %>
+    <% next_sell_amount = DealRecord.top_n_profit(@get_max_sell_count,:amount_fees) %>
+    <% amount_diff1 = dr_btc_amount - next_sell_amount # 卖 %>
+    <% amount_diff2 = dr_btc_amount - total_amount_fee # 总 %>
     <td align="right">
       <% if params[:make_trezor_count] or params[:show_trezor] or params[:make_balance_count] %>
         <%= to_n(total_amount_fee,8) %>

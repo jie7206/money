@@ -338,6 +338,11 @@ class DealRecord < ApplicationRecord
     amount - fees
   end
 
+  # 扣除交易费后的实际可卖出的成交量
+  def amount_fees
+    real_amount
+  end
+
   # 回传止盈价格
   def earn_limit_price
     earn_limit > 0 ? \
