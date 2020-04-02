@@ -187,7 +187,7 @@ class DealRecord < ApplicationRecord
 
   # 获取已卖出的交易记录
   def self.trezor_records
-    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1 and real_profit == 0")
+    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1 and real_profit = 0")
   end
 
   # 最初第几笔未卖出交易记录的损益值(¥)
@@ -249,7 +249,11 @@ class DealRecord < ApplicationRecord
   # 超出可买入时间的秒数
   def self.over_buy_time_sec
     buy_sec = get_invest_params(0).to_i
-    last_buy_time = unsell_records.order("created_at desc").first.created_at
+    begin
+      last_buy_time = unsell_records.order("created_at desc").first.created_at
+    rescue
+      last_buy_time = real_sell_records.order("updated_at desc").first.updated_at
+    end
     pass_sec = (Time.now - last_buy_time).to_i
     return pass_sec - buy_sec # 如果到达可买时间，则回传超过几秒
   end

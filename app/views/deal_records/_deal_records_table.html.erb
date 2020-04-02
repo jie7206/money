@@ -30,7 +30,8 @@
 
   # 有传入以下参数者显示8位的比特币数量
   def show_long_btc_amount
-    params[:make_trezor_count] or params[:show_trezor] or params[:make_balance_count]
+    params[:make_trezor_count] or params[:show_trezor] or \
+    params[:make_balance_count] or params[:show_balance]
   end
 %>
 <table width="<%=$default_table_width%>">
@@ -192,7 +193,7 @@
     end
   end # 结束 @deal_records.each
   # 成交均价
-  total_ave_cost_price = total_amount > 0 ? to_n(total_price/total_amount) : ''
+  @total_ave_cost_price = total_amount > 0 ? to_n(total_price/total_amount) : ''
 %>
   <tr class="thead">
     <td colspan="2">
@@ -203,7 +204,7 @@
     </td>
     <td align="right">
       <% # 显示成交均价 %>
-      <%= total_ave_cost_price %>
+      <%= @total_ave_cost_price %>
     </td>
     <td align="right">
       <% # 显示成本总和 %>
@@ -230,7 +231,7 @@
         amount_remain_if_clear = btc_amount_ex - total_amount_fee
         # 是否显示8位的比特币数量
         if show_long_btc_amount %>
-          <%= to_n(total_amount_fee,8) %>
+          <%= to_n(total_amount,8) %>
       <%
         else
       %>

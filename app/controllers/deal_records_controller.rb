@@ -10,7 +10,7 @@ class DealRecordsController < ApplicationController
       @deal_records = DealRecord.where("auto_sell = 1 and real_profit != 0 and account = '#{get_huobi_acc_id}'").order('updated_at desc').limit($sell_records_limit)
     elsif params[:show_unsell]
       order_field = params[:order_field] ? params[:order_field] : 'price'
-      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order(order_field)
+      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('first_sell desc,price')
     elsif params[:make_balance_count]
       @deal_records = make_balance_count_records
     elsif params[:make_trezor_count]
