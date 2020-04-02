@@ -12,6 +12,7 @@ cn:
   compose: 成员
   edit: 编辑
   keep: 保留
+  trial_list_index: 收支试算
   set_to_trezor: 转出到钱包
   all_to_trezor: 本表全转出
   all_to_balance: 本表全消帐

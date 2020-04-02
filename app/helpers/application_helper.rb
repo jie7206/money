@@ -3,7 +3,7 @@ module ApplicationHelper
   include ActsAsTaggableOn::TagsHelper
 
   # 为哪些模型自动建立返回列表的链接以及执行返回列表的指令 eq. link_back_to_xxx, go_xxx
-  $models = %w(property currency interest item portfolio record deal_record open_order)
+  $models = %w(property currency interest item portfolio record deal_record open_order trial_list)
   # 为哪些类型的通知自动产生方法
   $flashs = %w(notice warning)
   # 建立从列表中快速更新某个值的方法
@@ -232,6 +232,11 @@ module ApplicationHelper
     end
   end
 
+  # 显示交易所资产的链接
+  def huobi_assets_link
+    link_to t(:huobi_assets), properties_path(tags:get_huobi_acc_id)
+  end
+
   # 定投记录链接
   def invest_log_link
     link_to t(:invest_log), invest_log_path
@@ -443,7 +448,11 @@ module ApplicationHelper
 
   # 建立查看火币下单链接
   def look_order_link( dr, text )
-    link_to(text, {controller: :main, action: :look_order, account: dr.account, id: dr.order_id},{target: :blank}) if dr.order_id and !dr.order_id.empty?
+    if dr.order_id and !dr.order_id.empty?
+      link_to(text, {controller: :main, action: :look_order, account: dr.account, id: dr.order_id},{target: :blank})
+    else
+      text
+    end
   end
 
   def symbol_title(symbol)
@@ -517,6 +526,11 @@ module ApplicationHelper
     end
     @already_show = false
     return raw(result)
+  end
+
+  # 登出系统的链接
+  def logout_link
+    link_to t(:logout), logout_path, { id: 'logout' }
   end
 
   # 用于收支试算函数

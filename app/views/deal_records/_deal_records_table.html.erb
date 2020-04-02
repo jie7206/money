@@ -33,6 +33,11 @@
     params[:make_trezor_count] or params[:show_trezor] or \
     params[:make_balance_count] or params[:show_balance]
   end
+
+  # 现价栏位是否按照比特币现价来执行计算
+  def cal_with_price_now?( dr )
+    !dr.real_profit or dr.real_profit == 0
+  end
 %>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
@@ -99,21 +104,21 @@
       </td>
       <td align="right">
         <% # 现值 %>
-        <%= cny_amount_now = !dr.real_profit ? \
+        <%= cny_amount_now = cal_with_price_now?(dr) ? \
         to_n(dr.cny_amount_now,1) : to_n(cny_amount.to_f + dr.real_profit.to_f,1) %>
       </td>
       <td align="right">
         <% # 盈亏 %>
-        <%= earn_or_loss = dr.earn_or_loss if !dr.real_profit %>
+        <%= earn_or_loss = dr.earn_or_loss if cal_with_price_now?(dr) %>
       </td>
       <td align="right">
         <% # 利率 %>
-        <%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if !dr.real_profit %>
+        <%= profit = to_n(earn_or_loss.to_f/cny_amount.to_f*100) if cal_with_price_now?(dr) %>
       </td>
       <td align="right">
         <% # 成交量 %>
         <% amount_fee = to_n(dr.amount-dr.fees,8) %>
-        <%= amount = to_n(dr.amount,6) %>
+        <%= amount = to_n(dr.amount,8) %>
       </td>
       <td align="right">
         <% # 更新时间 %>
@@ -183,13 +188,12 @@
     total_price += price.to_f * amount.to_f
     total_amount += amount.to_f
     total_amount_fee += dr.amount_fees
+    total_cny_amount += cny_amount.to_f
+    total_cny_amount_now += cny_amount_now.to_f
+    total_earn_or_loss += earn_or_loss.to_f
     if dr.real_profit
       total_real_profit += real_profit.to_f
       total_real_profit_btc += real_profit_btc.to_f
-    else
-      total_cny_amount += cny_amount.to_f
-      total_cny_amount_now += cny_amount_now.to_f
-      total_earn_or_loss += earn_or_loss.to_f
     end
   end # 结束 @deal_records.each
   # 成交均价
@@ -208,20 +212,19 @@
     </td>
     <td align="right">
       <% # 显示成本总和 %>
-      <%= to_n(total_cny_amount,1) if !params[:show_sell] %>
+      <%= to_n(total_cny_amount,1) %>
     </td>
     <td align="right">
       <% # 显示现值总和 %>
-      <%= to_n(total_cny_amount_now,1) if !params[:show_sell] %>
+      <%= to_n(total_cny_amount_now,1) %>
     </td>
     <td align="right">
       <% # 显示盈亏总和 %>
-      <%= to_n(total_earn_or_loss) if total_amount > 0 %>
+      <%= to_n(total_earn_or_loss) %>
     </td>
     <td align="right">
       <% # 显示利率总和 %>
-      <%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) \
-      if total_amount > 0 and !params[:show_sell] %>
+      <%= to_n(total_earn_or_loss.to_f/total_cny_amount.to_f*100) if total_cny_amount > 0 %>
     </td>
     <td align="right">
       <%

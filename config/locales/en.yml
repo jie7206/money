@@ -12,6 +12,7 @@ en:
   xiang: ' '
   compose: Compose
   keep: Keep
+  trial_list_index: Trial List Index
   set_to_trezor: To Trezor
   all_to_trezor: All To Trezor
   all_to_balance: All To Balance

@@ -3,21 +3,19 @@
     <small>
       <%= link_back_to_deal_records %> |
       <%= link_back_to_properties %> |
+      <%= link_back_to_portfolios if admin? %><%= ' |' if admin? %>
       <%= system_params_form_link %> |
-      <%= link_to t(:currency_index), currencies_path %> |
-      <%= link_to t(:huobi_assets), properties_path(tags:get_huobi_acc_id) %> |
+      <%= huobi_assets_link %> |
       <%= order_link %> |
       <%= order_list_link %> |
-      <% if admin? %>
-        <%= link_to t(:portfolio_index), portfolios_path %> |
-      <% end %>
-      <%= link_to t(:item_index), items_path %> |
-      <%= link_to t(:interest_index), interests_path %> |
-      <%= link_to t(:trial_list), trial_lists_path %> |
+      <%= link_back_to_currencies %> |
+      <%= link_back_to_items %> |
+      <%= link_back_to_interests %> |
+      <%= link_back_to_trial_lists %> |
       <%= set_auto_invest_form_link %> |
       <%= invest_log_link %> |
       <%= clear_invest_log_link %> |
-      <%= link_to t(:logout), logout_path, { id: 'logout' } %>
+      <%= logout_link %>
     </small>
   </div>
 <% end %>

@@ -297,12 +297,12 @@ class DealRecord < ApplicationRecord
       where("auto_sell = 0 and account = '#{get_huobi_acc_id}' and amount < #{min_amount} ").order('amount').each do |dr|
         result << dr
         sum += dr.amount
-        return result if sum > count_goal
+        return result if sum >= count_goal
       end
-      where("auto_sell = 0 and account = '#{get_huobi_acc_id}' and amount > #{min_amount}").order('price desc').each do |dr|
+      where("auto_sell = 0 and account = '#{get_huobi_acc_id}' and amount > #{min_amount}").order('price asc').each do |dr|
         result << dr
         sum += dr.amount
-        return result if sum > count_goal
+        return result if sum >= count_goal
       end
     else
       return []
