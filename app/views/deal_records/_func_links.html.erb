@@ -24,7 +24,7 @@
   to_n(@total_unsell_count/@max_sell_count*@sell_sec/3600.0,1) : 0
 # 显示卖出策略的卖出价格
 @show_sell_price = @sell_price > 0 ? \
-  "#{@sell_price}(#{add_plus(to_n(@sell_price/@total_ave_cost_price.to_f))}%)" : "#{@sell_minute}分最高价"
+  "#{@sell_price}(#{add_plus(to_n(@sell_price/@total_ave_cost_price.to_f,1))}%)" : "#{@sell_minute}分最高价"
 # 显示卖出策略的辅助说明文字
 @title = "①下次卖出的盈亏 ②自动卖出的盈亏\n③每次卖几笔 ④几笔标示为优先卖出\n⑤全部未卖的笔数⑥停止自动卖出的仓位值"
 # 如果设定了单次卖出的最低获利值则需要列入考虑才能决定是否达到了可卖出下一笔的条件
@@ -58,10 +58,14 @@ end
   <% end %>
   <% # 与资产更新相关的链接 %>
   <%= update_btc_huobi_portfolios_link %>
+  <% # 更新汇率的链接 %>
+  <%= update_all_exchange_rates_link %>
   <% # 更新交易记录 %>
-  <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
+  | <%= link_to t(:update_deal_record), update_deal_records_path, { id: 'update_deal_records' } %>
   <% # 卖出记录 %>
   | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
+  <% # 全部未卖 %>
+  | <%= link_to t(:show_unsell_deal_records), deal_records_path(show_unsell:1) %>
   <% # 优卖记录 %>
   | <%= link_to t(:show_first_sell_deal_records), deal_records_path(show_first:1) %>
   <% # 凑消帐 %>
@@ -74,6 +78,4 @@ end
   | <%= link_to t(:trezor_records), deal_records_path(show_trezor:1) %>
   <% # 全部记录 %>
   | <%= link_to t(:show_all_deal_records), deal_records_path(show_all:1) %>
-  <% # 全部未卖 %>
-  | <%= link_to t(:show_unsell_deal_records), deal_records_path(show_unsell:1) %>
 </div>

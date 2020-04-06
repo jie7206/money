@@ -590,7 +590,7 @@ module ApplicationHelper
     buy_under_price = get_invest_params(1).to_i
     buy_when_minutes = get_invest_params(17).to_i
     result = "#{buy_under_price}每#{every_minute}分" if buy_under_price > 0
-    result = "#{buy_when_minutes}分最低价" if buy_when_minutes > 0
+    result = "#{buy_when_minutes}分低/#{every_minute}分" if buy_when_minutes > 0
     result = "<u>#{result}</u>" if DealRecord.enable_to_buy?
     return raw('@'+result)
   end

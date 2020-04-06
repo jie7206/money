@@ -190,7 +190,7 @@ class DealRecord < ApplicationRecord
     where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1 and real_profit = 0")
   end
 
-  # 最初第几笔未卖出交易记录的损益值(¥)
+  # 计算最初几笔未卖出交易记录的损益值(¥)
   def self.top_n_profit( n, attr = :earn_or_loss )
     if self.unsell_count > 0
       result = 0

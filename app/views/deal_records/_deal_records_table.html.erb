@@ -202,7 +202,7 @@
   <tr class="thead">
     <td colspan="2">
       <% # 显示现价与k线图链接 %>
-      <%= kline_chart_link(to_n(price_now)) %>
+      <%= kline_chart_link(to_n(price_now,1)) %>
       <% # 显示自动买入(买进)的策略与状态 %>
       <%= show_buy_strategy %>
     </td>

@@ -100,42 +100,50 @@ class Property < ApplicationRecord
 
   # 数字货币总资产换算成比特币
   def self.invest_to_btc( is_admin = false )
+    # 读取交易列表上的交易总额与比特币总数以求平均成本
     cost1 = get_invest_param_from($auto_invest_params_path,25)
     amount1 = get_invest_param_from($auto_invest_params_path,26)
     cost2 = get_invest_param_from($auto_invest_params_path2,25)
     amount2 = get_invest_param_from($auto_invest_params_path2,26)
-    if amount1 + amount2 > 0
-      real_ave_cost = (cost1+cost2)/(amount1+amount2)
-    else
-      real_ave_cost = 0
-    end
+    record_cost = cost1 + cost2
+    record_amount = amount1 + amount2
+    real_ave_cost = record_amount > 0 ? record_cost/record_amount : 0
+    # 处理交易列表的已实现损益
     sell_profit1, unsell_profit1, ave_sec_profit1, real_p_24h1, trezor_cost1, trezor_amount1 = get_invest_param_from($auto_invest_params_path,28,false).split(':')
     sell_profit2, unsell_profit2, ave_sec_profit2, real_p_24h2, trezor_cost2, trezor_amount2 = get_invest_param_from($auto_invest_params_path2,28,false).split(':')
     total_real_profit = sell_profit1.to_f + sell_profit2.to_f
     total_unsell_profit = unsell_profit1.to_f + unsell_profit2.to_f
     ave_hour_profit = (ave_sec_profit1.to_f + ave_sec_profit2.to_f)*60*60
     total_real_p_24h = real_p_24h1.to_i + real_p_24h2.to_i
-    trezor_ave_cost = (trezor_cost1.to_f+trezor_cost2.to_f)/(trezor_amount1.to_f+trezor_amount2.to_f)
+    # 冷钱包的成本与均价
+    trezor_cost = trezor_cost1.to_f+trezor_cost2.to_f
+    trezor_amount = trezor_amount1.to_f+trezor_amount2.to_f
+    trezor_ave_cost = trezor_cost/trezor_amount
+    # 所有比特币均价
+    total_ave_cost = (record_cost+trezor_cost)/(record_amount+trezor_amount)
+    # 现价与均价的比率(利率)
     price_now = DealRecord.first.price_now if DealRecord.first
-    if real_ave_cost > 0
-      price_p = (price_now/real_ave_cost-1)*100 # 现价与均价的比率(利率)
-    else
-      price_p = 0
-    end
+    price_p = real_ave_cost > 0 ? (price_now/real_ave_cost-1)*100 : 0
+    # 以比特币计算的总资产值
     p_btc = Property.tagged_with('比特币').sum {|p| p.amount}
     p_trezor = Property.tagged_with('冷钱包').sum {|p| p.amount}
     p_short = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
     eq_btc = (p_trezor + p_short).floor(8)
+    # 模拟均价
     sim_ave_cost = total_loan_lixi_usdt/eq_btc
     # 比特币每1个百分点对应多少人民币
     btc_p = p_btc/(p_trezor + p_short)*100
     one_btc2cny = p_btc*(new.btc_to_cny)/btc_p
+    # 计算 ①冷钱包购房(85%) ②交易所赚钱(5%) ③余额宝补仓(10%) 的实际比例
+    trezor_p = p_trezor/eq_btc*100
+    huobi_p = (Property.tagged_with('交易所').sum {|p| p.amount_to(:btc)})/eq_btc*100
+    yuebao_p = (Property.tagged_with('支付宝').sum {|p| p.amount_to(:btc)})/eq_btc*100
     if is_admin
-      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, price_p, one_btc2cny, total_real_profit.to_i.to_s + ' ', total_unsell_profit.to_i.to_s + ' ', ave_hour_profit.to_i.to_s + ' ', total_real_p_24h.to_s + ' '
+      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, total_real_profit.to_i.to_s + ' ', total_unsell_profit.to_i.to_s + ' ', ave_hour_profit.to_i.to_s + ' ', total_real_p_24h.to_s + ' ', trezor_p, huobi_p, yuebao_p
     else
       p_fbtc = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
       p_finv = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
-      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, trezor_ave_cost, price_p, one_btc2cny, '', '', '', ''
+      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, '', '', '', '', trezor_p, huobi_p, yuebao_p
     end
   end
 
