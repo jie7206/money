@@ -18,8 +18,8 @@
   n = 1 # 数据集索引初始值
   amount_pos = 5 # 默认的比特币总和显示位数
   total_price = total_amount = total_amount_fee = total_cny_amount = \
-  total_cny_amount_now =  total_earn_or_loss = total_real_profit = \
-  total_real_profit_btc = 0
+  total_cny_amount_now = total_earn_or_loss = total_real_profit = \
+  total_real_profit_btc = max_buy_price = 0
 
   # 有传入以下参数者显示所有记录
   def show_all_records_conditions
@@ -195,6 +195,8 @@
       total_real_profit += real_profit.to_f
       total_real_profit_btc += real_profit_btc.to_f
     end
+    # 找出成交价的最大值
+    max_buy_price = dr.price if dr.price >= max_buy_price
   end # 结束 @deal_records.each
   # 成交均价
   @total_ave_cost_price = total_amount > 0 ? to_n(total_price/total_amount) : ''
@@ -208,7 +210,7 @@
     </td>
     <td align="right">
       <% # 显示成交均价 %>
-      <%= @total_ave_cost_price %>
+      <%= @total_ave_cost_price.to_i %>/<%= max_buy_price.to_i %>
     </td>
     <td align="right">
       <% # 显示成本总和 %>
