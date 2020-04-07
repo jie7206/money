@@ -37,7 +37,10 @@ ORDER_ID = ''
 FORCE_BUY = False
 FORCE_SELL = False
 WAIT_SEND_SEC = 30
-MIN_SELL_USDT = 5.2
+MIN_TRADE_USDT = 5.2
+BTC_PRICE_NOW = 0 # 计算仓位值使用(=BTC的现价)
+BTC_USDT_NOW = 0 # 计算仓位值使用(=交易所BTC资产以USDT计算的值)
+EX_USDT_VALUE = 0 # 计算仓位值使用(=交易所总资产以USDT计算的值)
 ALREADY_SEND_BUY = False
 LINE_MARKS = "-"*70
 
@@ -784,10 +787,10 @@ def btc_ave_cost():
 
 
 # 若下单的金额小于所设定的最小金额(比如5USDT)则将下单的数量加以调整，否则下单会失败
-def check_sell_min_amount(price, amount):
-    global MIN_SELL_USDT
-    if float(price)*float(amount) <= MIN_SELL_USDT:
-        return MIN_SELL_USDT/float(price)
+def check_min_trade_amount(price, amount):
+    global MIN_TRADE_USDT
+    if float(price)*float(amount) <= MIN_TRADE_USDT:
+        return MIN_TRADE_USDT/float(price)
     else:
         return amount
 
@@ -801,7 +804,7 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
     global WAIT_SEND_SEC
     global ALREADY_SEND_BUY
     # 验证下单数量是否高于或等于最小下单数
-    amount = check_sell_min_amount(price, amount)
+    amount = check_min_trade_amount(price, amount)
     # 如果不是测试单而是实际送单
     if test_price == 0:
         # 如果是卖单或是未重复的买单
@@ -1047,6 +1050,9 @@ def reset_test_price():
 
 # 计算比特币目前的持有仓位
 def btc_hold_level(price):
+    global BTC_PRICE_NOW
+    global BTC_USDT_NOW
+    global EX_USDT_VALUE
     amounts = {'usdt': 0, 'btc': 0}
     for item in get_balance(ACCOUNT_ID)['data']['list']:
         for currency in ['usdt', 'btc']:
@@ -1054,7 +1060,31 @@ def btc_hold_level(price):
                 amounts[currency] += float(item['balance'])
     btc_usdt = price*amounts['btc']
     usdt = amounts['usdt']
-    return btc_usdt/(btc_usdt+usdt)*100
+    BTC_PRICE_NOW = price
+    BTC_USDT_NOW = btc_usdt
+    EX_USDT_VALUE = btc_usdt+usdt
+    return BTC_USDT_NOW/EX_USDT_VALUE*100
+
+
+# 若单次买入后会超过最大仓位值则不要买那么多
+def fix_buy_usdt_to_max_level(buy_usdt, max_buy_level):
+    global BTC_PRICE_NOW
+    global BTC_USDT_NOW
+    global EX_USDT_VALUE
+    # 如果没有交易所资产总值则执行btc_hold_level函数获取相关的值
+    if not EX_USDT_VALUE > 0:
+        if not BTC_PRICE_NOW > 0:
+            BTC_PRICE_NOW = get_price_now()
+        btc_level_now = btc_hold_level(BTC_PRICE_NOW)
+    else:
+        btc_level_now = BTC_USDT_NOW/EX_USDT_VALUE*100
+    # 计算购买后新的仓位值
+    new_btc_level = (BTC_USDT_NOW+buy_usdt)/EX_USDT_VALUE*100
+    if new_btc_level > max_buy_level:
+        new_buy_usdt = EX_USDT_VALUE*(max_buy_level-btc_level_now)/100
+    else:
+        new_buy_usdt = buy_usdt
+    return new_buy_usdt
 
 
 # 显示下一次执行的时间
@@ -1135,7 +1165,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                     continue
                 else:
                     if sell_count == max_sell_count:
-                        # 提交卖出订单
+                        # 执行卖单的委托并显示回传的讯息
                         ftext = place_order_process(test_price, sell_price, sell_amount, \
                         'sell-limit', ftext, time_line, u2c)
                         # 如果提交成功，将这些交易记录标示为已自动卖出并更新下单编号及已实现损益
@@ -1380,45 +1410,56 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         usdt = int(trade_usdt)
                     else:
                         usdt = round(usdt, 2)
-                    # 由预算计算出要购买的数量
-                    amount = usdt/price_now
-                    # 计算还能持续买多久
-                    min_sec = every_sec*min_sec_rate
-                    new_sec = min_sec + every_sec*(max_sec_rate-min_sec_rate) * \
-                        ((price_now-bottom_price)/(below_price-bottom_price))
-                    every_sec = int(new_sec)
-                    remain_hours = float(trade_usdt/usdt*every_sec/3600)
-                    delta_hours = timedelta(hours=remain_hours)
-                    empty_usdt_time = to_t(now + delta_hours)
-                    usdt_cny = trade_usdt*u2c
-                    # 显示所有相关购买讯息
-                    str = "BTC Level: %.2f%% (FORCE_BUY:%s) for AccId: %s(%s)" % (
-                        btc_level_now, FORCE_BUY, acc_id, ACCOUNT_ID)
-                    print(str)
-                    ftext += str+'\n'
-                    str = "Total  USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, usdt_cny)
-                    print(str)
-                    ftext += str+'\n'
-                    str = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
-                    print(str)
-                    ftext += str+'\n'
-                    str = "Buy Amount: %.6f BTC (%.2f CNY)" % (amount, amount*price_now*u2c)
-                    print(str)
-                    ftext += str+'\n'
-                    str = "Get Amount: %.8f BTC (%.2f CNY)" % (amount*fees_rate(), amount*price_now*u2c)
-                    print(str)
-                    ftext += str+'\n'
-                    # 显示下一次执行时间
-                    ftext = print_next_exe_time(every_sec, ftext)
-                    str = "Zero Time: %s (%.2f H | %.2f D)" % (
-                        empty_usdt_time, remain_hours, remain_hours/24)
-                    print(str)
-                    ftext += str+'\n'
-                    # 执行买单的委托并显示回传的讯息
-                    ftext = place_order_process(
-                        test_price, round(price_now*buy_price_rate(), 2), amount, 'buy-limit', ftext, time_line, u2c)
-                    fobj.write(ftext)
-                    return every_sec
+                    # 若单次买入后会超过最大仓位值则不要买那么多
+                    usdt = fix_buy_usdt_to_max_level(usdt, max_buy_level)
+                    # 如果购买的值大于交易所最小购买值才下单
+                    if usdt > MIN_TRADE_USDT:
+                        # 由预算计算出要购买的数量
+                        amount = usdt/price_now
+                        # 计算还能持续买多久
+                        min_sec = every_sec*min_sec_rate
+                        new_sec = min_sec + every_sec*(max_sec_rate-min_sec_rate) * \
+                            ((price_now-bottom_price)/(below_price-bottom_price))
+                        every_sec = int(new_sec)
+                        remain_hours = float(trade_usdt/usdt*every_sec/3600)
+                        delta_hours = timedelta(hours=remain_hours)
+                        empty_usdt_time = to_t(now + delta_hours)
+                        usdt_cny = trade_usdt*u2c
+                        # 显示所有相关购买讯息
+                        str = "BTC Level: %.2f%% (FORCE_BUY:%s) for AccId: %s(%s)" % (
+                            btc_level_now, FORCE_BUY, acc_id, ACCOUNT_ID)
+                        print(str)
+                        ftext += str+'\n'
+                        str = "Total  USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, usdt_cny)
+                        print(str)
+                        ftext += str+'\n'
+                        str = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
+                        print(str)
+                        ftext += str+'\n'
+                        str = "Buy Amount: %.6f BTC (%.2f CNY)" % (amount, amount*price_now*u2c)
+                        print(str)
+                        ftext += str+'\n'
+                        str = "Get Amount: %.8f BTC (%.2f CNY)" % (amount*fees_rate(), amount*price_now*u2c)
+                        print(str)
+                        ftext += str+'\n'
+                        # 显示下一次执行时间
+                        ftext = print_next_exe_time(every_sec, ftext)
+                        str = "Zero Time: %s (%.2f H | %.2f D)" % (
+                            empty_usdt_time, remain_hours, remain_hours/24)
+                        print(str)
+                        ftext += str+'\n'
+                        # 执行买单的委托并显示回传的讯息
+                        ftext = place_order_process(
+                            test_price, round(price_now*buy_price_rate(), 2), amount, 'buy-limit', ftext, time_line, u2c)
+                        fobj.write(ftext)
+                        return every_sec
+                    # 所剩的USDT太少，无法完成一次下单
+                    else:
+                        str = "Buy Order Failure! Too small buy usdt( %.2f < %.2f )." % (usdt, MIN_TRADE_USDT)
+                        print(str)
+                        ftext += str+'\n'
+                        fobj.write(ftext)
+                        return every_sec
                 # 不是测试单也不符合买单条件
                 else:
                     return every_sec
