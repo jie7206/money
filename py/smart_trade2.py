@@ -1457,7 +1457,7 @@ if __name__ == '__main__':
             with open(PARAMS, 'r') as fread:
                 # 将设定文档参数读入内存
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy = params_str.split(' ')
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max = params_str.split(' ')
                 # 将设定文档参数根据适当的型别初始化
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -1485,6 +1485,7 @@ if __name__ == '__main__':
                 force_sell_price = float(force_sell_price)
                 stop_sell_level = float(stop_sell_level)
                 force_to_buy = int(force_to_buy)
+                buy_period_max = float(buy_period_max)
                 # 获得在几分钟内比特币价格的最大值与最小值
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 # 是否执行强制买入
@@ -1565,9 +1566,18 @@ if __name__ == '__main__':
                                 # 现价、最低价、是否达到分钟内的最低价
                                 price_now, min_price, reach_low_price = min_price_in(min_price_index, buy_price_period)
                                 if price_now > 0 and min_price > 0:
-                                    stdout_write("%s | now: %.2f %im_min: %i  sell_price: %i buy_time: %s sell_time: %s                " % (acc_id, price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time))
+                                    # 买入几分钟内的最低价时是否不超过所设定的最高价
+                                    if buy_period_max > 0:
+                                        if price_now >= buy_period_max:
+                                            over_max_buy_price = True
+                                        else:
+                                            over_max_buy_price = False
+                                    else:
+                                        over_max_buy_price = False
+                                    stdout_write("%s | now: %.2f %im_min: %i  sell_price: %i buy_time: %s sell_time: %s over_max_buy_price: %s       " % (acc_id, price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time, over_max_buy_price))
                                     # 买入条件：仓位、时间、达到分钟内的最低价
-                                    if below_buy_level and over_buy_time and reach_low_price:
+                                    if below_buy_level and over_buy_time and reach_low_price \
+                                        and not over_max_buy_price:
                                         setup_force_buy()
                                         break
                             ################################################################

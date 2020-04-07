@@ -40,6 +40,13 @@
   def cal_with_price_now?( dr )
     !dr.real_profit or dr.real_profit == 0
   end
+
+  # 若有设定几分钟内最低价买入则显示买入的最高价为多少
+  def show_buy_period_max_price
+    if get_invest_params(17).to_i > 0
+      return "买入最低价时的最高价为：#{get_invest_params(31)}"
+    end
+  end
 %>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
@@ -204,7 +211,7 @@
   @total_ave_cost_price = total_amount > 0 ? to_n(total_price/total_amount) : ''
 %>
   <tr class="thead">
-    <td colspan="2">
+    <td colspan="2" title="<%= show_buy_period_max_price %>">
       <% # 显示现价与k线图链接 %>
       <%= kline_chart_link(to_n(price_now,1)) %>
       <% # 如果达到买入条件则显示下单链接

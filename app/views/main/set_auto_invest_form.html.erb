@@ -195,6 +195,12 @@ price_step = 10
       <td><%= show_invest_param_value(30) %> <%= invest_params_setup_link(30,0,1) %></td>
       <% n += 1 %>
     </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>买入最低价时的最高价</td>
+      <td><%= show_invest_param_value(31) %> <%= invest_params_setup_link(31,start_price,end_price,price_step,0,true) %></td>
+      <% n += 1 %>
+    </tr>
   </table>
   <p>
   <div id="params_input" style="width:<%=$default_table_width%>px">
