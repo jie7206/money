@@ -13,6 +13,8 @@
   total_real_profit = DealRecord.total_real_profit.to_i
   # 平均每秒的已实现损益值
   real_p_sec = DealRecord.real_profit_ave_sec
+  # 是否已经达到可以再次买入的时间
+  enable_to_buy = DealRecord.enable_to_buy?
 
   # 初始化所有变量
   n = 1 # 数据集索引初始值
@@ -205,8 +207,13 @@
     <td colspan="2">
       <% # 显示现价与k线图链接 %>
       <%= kline_chart_link(to_n(price_now,1)) %>
-      <% # 显示自动买入(买进)的策略与状态 %>
-      <%= show_buy_strategy %>
+      <% # 如果达到买入条件则显示下单链接
+          if enable_to_buy %>
+            <%= link_to(show_buy_strategy,send_force_buy_path) %>
+       <% else %>
+            <% # 显示买入策略文字 %>
+            <%= show_buy_strategy %>
+       <% end %>
     </td>
     <td align="right">
       <% # 显示成交均价 %>

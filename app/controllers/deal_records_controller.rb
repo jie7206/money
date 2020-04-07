@@ -141,12 +141,6 @@ class DealRecordsController < ApplicationController
     end
   end
 
-  # 为卖出下单准备参数
-  def setup_sell_params
-    set_invest_params(20,'1')
-    set_invest_params(0,swap_sec)
-  end
-
   # 交易列表新增执行停损功能
   def send_stop_loss
     if DealRecord.over_sell_time?
@@ -156,6 +150,19 @@ class DealRecordsController < ApplicationController
       redirect_to invest_log_path
     else
       put_notice t(:send_stop_loss_error)
+      go_back
+    end
+  end
+
+  # 交易列表新增执行买入功能
+  def send_force_buy
+    if DealRecord.over_buy_time?
+      setup_buy_params
+      put_notice t(:send_force_buy_ok)
+      sleep $wait_send_sec
+      redirect_to invest_log_path
+    else
+      put_notice t(:send_force_buy_error)
       go_back
     end
   end
@@ -251,6 +258,18 @@ class DealRecordsController < ApplicationController
         show_balance: params[:show_balance],
         order_field: params[:order_field]
       }
+    end
+
+    # 为卖出下单准备参数
+    def setup_sell_params
+      set_invest_params(20,'1')
+      set_invest_params(0,swap_sec)
+    end
+
+    # 为买入下单准备参数
+    def setup_buy_params
+      set_invest_params(30,'1')
+      set_invest_params(0,swap_sec)
     end
 
 end

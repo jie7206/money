@@ -246,6 +246,11 @@ class DealRecord < ApplicationRecord
     end
   end
 
+  # 是否已经达到可以再次买入的时间
+  def self.over_buy_time?
+    enable_to_buy?
+  end
+
   # 超出可买入时间的秒数
   def self.over_buy_time_sec
     buy_sec = get_invest_params(0).to_i

@@ -283,6 +283,8 @@ en:
   send_stop_loss: Send Stop Loss
   send_stop_loss_ok: Send Stop Loss successfully!
   send_stop_loss_error: Send Stop Loss Error!
+  send_force_buy_ok: Send Force Buy successfully!
+  send_force_buy_error: Send Force Buy Error!
   update_system_params: Update System Params
   save_system_params: Save System Params
   update_system_params_ok: System Params updated successfully!

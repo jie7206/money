@@ -989,12 +989,40 @@ def setup_force_sell():
         return 0
 
 
+# 更新设定文档中的'是否强制执行买入操作'
+def setup_force_buy():
+    try:
+        with open(PARAMS, 'r') as f:
+            arr = f.read().strip().split(' ')
+            arr[30] = '1'
+            new_str = ' '.join(arr)
+        with open(PARAMS, 'w+') as f:
+            f.write(new_str)
+        return 1
+    except:
+        return 0
+
+
 # 重置设定文档中的'是否强制执行停损卖出'
 def reset_force_sell():
     try:
         with open(PARAMS, 'r') as f:
             arr = f.read().strip().split(' ')
             arr[20] = '0'
+            new_str = ' '.join(arr)
+        with open(PARAMS, 'w+') as f:
+            f.write(new_str)
+        return 1
+    except:
+        return 0
+
+
+# 重置设定文档中的'是否强制执行买入操作'
+def reset_force_buy():
+    try:
+        with open(PARAMS, 'r') as f:
+            arr = f.read().strip().split(' ')
+            arr[30] = '0'
             new_str = ' '.join(arr)
         with open(PARAMS, 'w+') as f:
             f.write(new_str)
@@ -1429,8 +1457,7 @@ if __name__ == '__main__':
             with open(PARAMS, 'r') as fread:
                 # 将设定文档参数读入内存
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level = \
-                params_str.split(' ')
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy = params_str.split(' ')
                 # 将设定文档参数根据适当的型别初始化
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -1457,8 +1484,12 @@ if __name__ == '__main__':
                 sell_max_cny = int(sell_max_cny)
                 force_sell_price = float(force_sell_price)
                 stop_sell_level = float(stop_sell_level)
+                force_to_buy = int(force_to_buy)
                 # 获得在几分钟内比特币价格的最大值与最小值
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
+                # 是否执行强制买入
+                if force_to_buy > 0:
+                    FORCE_BUY = True
                 # 是否执行强制卖出
                 if force_to_sell > 0:
                     FORCE_SELL = True
@@ -1468,6 +1499,7 @@ if __name__ == '__main__':
                 # 清零与重载：测试单、强制卖出、强制买卖、火币账号
                 reset_test_price()
                 reset_force_sell()
+                reset_force_buy()
                 reset_force_trade()
                 load_api_key()
                 # 如果返回0则结束程序
@@ -1525,7 +1557,7 @@ if __name__ == '__main__':
                                 stdout_write("%s | now: %.2f below_price: %i sell_price: %i buy_time: %s sell_time: %s                " % (acc_id, price_now, below_price, force_sell_price, over_buy_time, over_sell_time))
                                 # 买入条件：仓位、时间、在可买入的价格之下
                                 if below_buy_level and over_buy_time and is_below_price:
-                                    FORCE_BUY = True
+                                    setup_force_buy()
                                     break
                             #################################################################
                             # 达到买入的条件则执行买入
@@ -1536,7 +1568,7 @@ if __name__ == '__main__':
                                     stdout_write("%s | now: %.2f %im_min: %i  sell_price: %i buy_time: %s sell_time: %s                " % (acc_id, price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time))
                                     # 买入条件：仓位、时间、达到分钟内的最低价
                                     if below_buy_level and over_buy_time and reach_low_price:
-                                        FORCE_BUY = True
+                                        setup_force_buy()
                                         break
                             ################################################################
                             if price_now > 0 and max_price > 0 and sell_price_period > 0:

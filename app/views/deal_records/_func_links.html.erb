@@ -53,7 +53,7 @@ end
       show_sell = (@enable_to_sell and @profit_goal_ok) ? \
         link_to(build_show_sell_text(true),send_stop_loss_path) : build_show_sell_text
   %>
-    <% # 显示卖出策略文字余链接 %>
+    <% # 显示卖出策略文字与链接 %>
     <%= show_sell %> |
   <% end %>
   <% # 与资产更新相关的链接 %>
