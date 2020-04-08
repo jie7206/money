@@ -150,9 +150,7 @@ class DealRecord < ApplicationRecord
 
   # 所有已实现损益
   def self.total_real_profit
-    result = 0
-    where("account = '#{self.get_huobi_acc_id}' and auto_sell = 1").each {|dr| result += dr.real_profit}
-    return result
+    return real_sell_records.sum {|dr| dr.real_profit}
   end
 
   # 所有未卖出损益

@@ -886,34 +886,23 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
         str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price, amount, deal_type)
         print(str)
         ftext += str+'\n'
-        sim_btc_level, sim_ave_price = cal_sim_btc_level(price, amount)
-        str = "Sim BTC Level: %.2f%%(+%.2f%%), Ave: %.2f" % (sim_btc_level, sim_btc_level-btc_hold_level(price), sim_ave_price)
+        btc_level_now = btc_hold_level(price)
+        sim_btc_level = cal_sim_btc_level(price, amount)
+        str = "Sim BTC Level: %.2f%%(+%.2f%%)" % (sim_btc_level, sim_btc_level-btc_level_now)
         print(str)
         ftext += str+'\n'
     # 返回欲显示的输出文字
     return ftext
 
 
-# 计算测试单的仓位水平
-def cal_sim_btc_level(price, amount, type='buy'):
-    global ori_usdt
-    btc_amount = float(get_total_btc())  #get_all_btc_amount()
-    usdt = float(get_trade_usdt())
-    other_btc = 5.3 # 非短线交易的比特币数量
-    other_usdt_cost = other_btc*6450 # 暂时先写死，以后有时间再研究
-    cost_usdt = ori_usdt - usdt + other_usdt_cost
-    if type == 'buy':
-        sim_usdt = usdt - price*amount
-        sim_btc_amount = btc_amount + amount*fees_rate()
-        sim_cost_usdt = cost_usdt + price*amount
-    if type == 'sell':
-        sim_usdt = usdt + price*amount*fees_rate()
-        sim_btc_amount = btc_amount - amount
-        sim_cost_usdt = cost_usdt - price*amount
-    sim_btc_usdt = price*sim_btc_amount
-    sim_btc_level = sim_btc_usdt/(sim_btc_usdt+sim_usdt)*100
-    sim_ave_price = sim_cost_usdt/(sim_btc_amount+other_btc)
-    return [sim_btc_level, sim_ave_price]
+# 计算测试单(模拟买入)的仓位水平
+def cal_sim_btc_level(price, amount):
+    global BTC_USDT_NOW
+    global EX_USDT_VALUE
+    # 如果没有交易所资产总值则执行btc_hold_level函数获取相关的值
+    if not EX_USDT_VALUE > 0:
+        btc_level_now = btc_hold_level(price_now)
+    return (BTC_USDT_NOW+price*amount)/EX_USDT_VALUE*100
 
 
 # 清空所有未卖出的交易记录

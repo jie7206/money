@@ -1,4 +1,11 @@
 <%
+  # 初始化所有变量
+  n = 1 # 数据集索引初始值
+  amount_pos = 5 # 默认的比特币总和显示位数
+  total_price = total_amount = total_amount_fee = total_cny_amount = \
+  total_cny_amount_now = total_earn_or_loss = total_real_profit = \
+  total_real_profit_btc = max_buy_price = 0
+
   # 比特币现价
   price_now = DealRecord.first.price_now if DealRecord.first
   # 交易所内剩余的比特币
@@ -15,13 +22,6 @@
   real_p_sec = DealRecord.real_profit_ave_sec
   # 是否已经达到可以再次买入的时间
   enable_to_buy = DealRecord.enable_to_buy?
-
-  # 初始化所有变量
-  n = 1 # 数据集索引初始值
-  amount_pos = 5 # 默认的比特币总和显示位数
-  total_price = total_amount = total_amount_fee = total_cny_amount = \
-  total_cny_amount_now = total_earn_or_loss = total_real_profit = \
-  total_real_profit_btc = max_buy_price = 0
 
   # 有传入以下参数者显示所有记录
   def show_all_records_conditions
