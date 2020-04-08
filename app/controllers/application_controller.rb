@@ -334,8 +334,9 @@ class ApplicationController < ActionController::Base
   end
 
   # 更新比特币报价
-  def update_btc_price
-    if btc_price = get_huobi_price('btcusdt') and btc_price > 0
+  def update_btc_price( btc_price = 0 )
+    btc_price = get_huobi_price('btcusdt') if btc_price == 0
+    if btc_price > 0
       Currency.find_by_code('BTC').update_price(btc_price)
       return true
     else
@@ -476,9 +477,10 @@ class ApplicationController < ActionController::Base
         buy_amount += item["amount"].to_f if item["close"].to_f >= item["open"].to_f
         sell_amount += item["amount"].to_f if item["close"].to_f < item["open"].to_f
       end
-      return buy_amount.to_i, sell_amount.to_i, format("%.2f",buy_amount/sell_amount)
+      price_now = data[-1]["close"].to_f
+      return price_now, buy_amount.to_i, sell_amount.to_i, format("%.2f",buy_amount/sell_amount)
     else
-      return 0
+      return 0, 0, 0, 0
     end
   end
 

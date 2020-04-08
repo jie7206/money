@@ -22,14 +22,14 @@ class DealRecordsController < ApplicationController
     elsif params[:show_trezor]
       @deal_records = DealRecord.where("auto_sell = 1 and real_profit = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     else
-      update_btc_price if $auto_update_btc_price > 0
-      update_huobi_assets_core if $auto_update_huobi_assets > 0
-      setup_auto_refresh_sec
       @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
     end
     summary
     @get_max_sell_count = get_max_sell_count
-    @buy_sell_rate = cal_buy_sell_rate[2]
+    @price_now, @buy_amount, @sell_amount, @buy_sell_rate = cal_buy_sell_rate
+    update_btc_price(@price_now) if @price_now > 0 or $auto_update_btc_price > 0
+    update_huobi_assets_core if $auto_update_huobi_assets > 0
+    setup_auto_refresh_sec
   end
 
   def new

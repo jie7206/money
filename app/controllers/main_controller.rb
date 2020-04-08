@@ -216,7 +216,7 @@ class MainController < ApplicationController
       [5,10,20,30,60].each do |n|
         ma_str += " MA#{n}: #{ma(n)}(#{pom(n)}%)"
       end
-      buy_amount, sell_amount, buy_sell_rate = cal_buy_sell_rate(@raw_data)
+      price_now, buy_amount, sell_amount, buy_sell_rate = cal_buy_sell_rate(@raw_data)
       @subcaption = "收: #{@raw_data[-1]["close"]} 高: #{@raw_data[-1]["high"]} 低: #{@raw_data[-1]["low"]} 中: #{mid(@raw_data[-1]["high"],@raw_data[-1]["low"])}#{ma_str} 买: #{buy_amount} 卖: #{sell_amount} 比: #{buy_sell_rate}"
       return true
     else
