@@ -77,8 +77,8 @@ price_step = 10
     <tr valign="top" class="set_aif_bg">
       <td><%= n %></td>
       <td>用于测试的比特币价格</td>
-      <% rate_param = 0.3 %>
-      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),50) %></td>
+      <% rate_param = 0.03 %>
+      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),5) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">

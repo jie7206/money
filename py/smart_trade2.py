@@ -38,7 +38,6 @@ FORCE_BUY = False
 FORCE_SELL = False
 WAIT_SEND_SEC = 30
 MIN_TRADE_USDT = 5.2
-BTC_PRICE_NOW = 0 # 计算仓位值使用(=BTC的现价)
 BTC_USDT_NOW = 0 # 计算仓位值使用(=交易所BTC资产以USDT计算的值)
 EX_USDT_VALUE = 0 # 计算仓位值使用(=交易所总资产以USDT计算的值)
 ALREADY_SEND_BUY = False
@@ -1050,7 +1049,6 @@ def reset_test_price():
 
 # 计算比特币目前的持有仓位
 def btc_hold_level(price):
-    global BTC_PRICE_NOW
     global BTC_USDT_NOW
     global EX_USDT_VALUE
     amounts = {'usdt': 0, 'btc': 0}
@@ -1060,22 +1058,18 @@ def btc_hold_level(price):
                 amounts[currency] += float(item['balance'])
     btc_usdt = price*amounts['btc']
     usdt = amounts['usdt']
-    BTC_PRICE_NOW = price
     BTC_USDT_NOW = btc_usdt
     EX_USDT_VALUE = btc_usdt+usdt
     return BTC_USDT_NOW/EX_USDT_VALUE*100
 
 
 # 若单次买入后会超过最大仓位值则不要买那么多
-def fix_buy_usdt_to_max_level(buy_usdt, max_buy_level):
-    global BTC_PRICE_NOW
+def fix_buy_usdt_to_max_level(price_now, buy_usdt, max_buy_level):
     global BTC_USDT_NOW
     global EX_USDT_VALUE
     # 如果没有交易所资产总值则执行btc_hold_level函数获取相关的值
     if not EX_USDT_VALUE > 0:
-        if not BTC_PRICE_NOW > 0:
-            BTC_PRICE_NOW = get_price_now()
-        btc_level_now = btc_hold_level(BTC_PRICE_NOW)
+        btc_level_now = btc_hold_level(price_now)
     else:
         btc_level_now = BTC_USDT_NOW/EX_USDT_VALUE*100
     # 计算购买后新的仓位值
@@ -1122,11 +1116,12 @@ def sell_profit_cny_from_order(order_id, cost_usdt_total):
 
 # 执行卖出下单的主要流程
 def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, profit_goal, max_sell_count):
-    global ORDER_ID     # 下单回传编号
-    global FORCE_SELL   # 是否执行强制卖出
-    global acc_id       # 交易所识别账号
-    # 单次获利最多卖出笔数>0才能执行卖出
-    if max_sell_count > 0:
+    global ORDER_ID         # 下单回传编号
+    global FORCE_SELL       # 是否执行强制卖出
+    global acc_id           # 交易所识别账号
+    global stop_sell_level  # 停止自动卖出的仓位值
+    # 单次获利最多卖出笔数>0才能执行卖出 + 卖出后仓位必须大于保留的仓位值
+    if max_sell_count > 0 and safe_after_sell(price, stop_sell_level):
         # 读取未卖交易记录
         rows = select_db(
             "SELECT id, amount - fees as amount, created_at, price FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY first_sell DESC, price ASC LIMIT %i" % (acc_id, max_sell_count))
@@ -1337,6 +1332,41 @@ def top_n_profit(sell_price):
         return 0
 
 
+# 计算下一次预计要卖出的BTC总量
+def top_n_amount():
+    global acc_id
+    global max_sell_count
+    rows = select_db("SELECT amount - fees FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY first_sell DESC, price ASC LIMIT %i" % (acc_id, max_sell_count))
+    if len(rows) > 0:
+        total_amount = 0
+        for row in rows:
+            total_amount += row[0]
+        return total_amount
+    else:
+        return 0
+
+
+# 试算卖出后是否还维持在停止自动卖出的仓位值之上
+def safe_after_sell(price_now, stop_sell_level):
+    global BTC_USDT_NOW
+    global EX_USDT_VALUE
+    # 下一次预计要卖出的BTC总量
+    sell_amount = top_n_amount()
+    if sell_amount > 0:
+        # 如果没有交易所资产总值则执行btc_hold_level函数获取相关的值
+        if not EX_USDT_VALUE > 0:
+            btc_level_now = btc_hold_level(price_now)
+        else:
+            btc_level_now = BTC_USDT_NOW/EX_USDT_VALUE*100
+        # 计算卖出后新的仓位值
+        new_btc_level = (BTC_USDT_NOW-price_now*sell_amount)/EX_USDT_VALUE*100
+        if new_btc_level < stop_sell_level:
+            return False
+        else:
+            return True
+    else:
+        return True
+
 # 执行自动下单的主程序
 def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate):
     # 引用全域变数
@@ -1411,7 +1441,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                     else:
                         usdt = round(usdt, 2)
                     # 若单次买入后会超过最大仓位值则不要买那么多
-                    usdt = fix_buy_usdt_to_max_level(usdt, max_buy_level)
+                    usdt = fix_buy_usdt_to_max_level(price_now, usdt, max_buy_level)
                     # 如果购买的值大于交易所最小购买值才下单
                     if usdt > MIN_TRADE_USDT:
                         # 由预算计算出要购买的数量
@@ -1577,8 +1607,8 @@ if __name__ == '__main__':
                             reach_high_price = sell_price_period > 0 and over_max_price
                             # 是否在可买入的仓位之下
                             below_buy_level = max_buy_level > 0 and btc_level_now < max_buy_level
-                            # 是否在可卖出的仓位之上
-                            over_sell_level = max_sell_count > 0 and btc_level_now > stop_sell_level
+                            # 是否在可卖出的仓位之上 + 卖出后仓位必须大于保留的仓位值
+                            over_sell_level = max_sell_count > 0 and btc_level_now > stop_sell_level and safe_after_sell(price_now, stop_sell_level)
                             # 是否达到了设定的最小获利值，如未达到则不卖出
                             if profit_goal > 0:
                                 if top_n_profit(price_now) >= profit_goal:
