@@ -1678,7 +1678,8 @@ if __name__ == '__main__':
                                             is_buy_price = False
                                         str = "%s:%.2f %imin:%.2f sp:%i buy:%s sell:%s over_max: %s reach_p(%.2f:%.2f): %s        " % (get_now(), price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time, over_max_buy_price, TRACE_MIN_PRICE, TRACE_MIN_PRICE*TRACE_MIN_RATE, is_buy_price)
                                         stdout_write(str)
-                                        if below_buy_level and over_buy_time:
+                                        if below_buy_level and over_buy_time \
+                                            and TRACE_MIN_PRICE > 0:
                                             fa.write(str+'\n')
                                         # 买入条件：仓位、时间、达到分钟内的最低价、反弹至指定高度
                                         if below_buy_level and over_buy_time and is_buy_price \
