@@ -1647,7 +1647,7 @@ if __name__ == '__main__':
                                 # 达到卖出的条件则执行卖出(仓位、时间、获利、[可卖价格之上|分钟内的最高价])
                                 if over_sell_level and over_sell_time and over_sell_profit and \
                                     (is_above_price or reach_high_price):
-                                    setup_force_sell()
+                                    FORCE_SELL = True
                                     break
                                 #################################################################
                                 # 达到买入的条件则执行买入：在可买入的价格之下
@@ -1655,7 +1655,7 @@ if __name__ == '__main__':
                                     stdout_write("%s | now: %.2f below_price: %i sell_price: %i buy_time: %s sell_time: %s                " % (acc_id, price_now, below_price, force_sell_price, over_buy_time, over_sell_time))
                                     # 买入条件：仓位、时间、在可买入的价格之下
                                     if below_buy_level and over_buy_time and is_below_price:
-                                        setup_force_buy()
+                                        FORCE_BUY = True
                                         break
                                 #################################################################
                                 # 达到买入的条件则执行买入：达到分钟内的最低价
@@ -1683,7 +1683,7 @@ if __name__ == '__main__':
                                         # 买入条件：仓位、时间、达到分钟内的最低价、反弹至指定高度
                                         if below_buy_level and over_buy_time and is_buy_price \
                                             and not over_max_buy_price:
-                                            setup_force_buy()
+                                            FORCE_BUY = True
                                             break
                                 ################################################################
                                 if price_now > 0 and max_price > 0 and sell_price_period > 0:
