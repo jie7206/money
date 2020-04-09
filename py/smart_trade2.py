@@ -20,10 +20,17 @@ from deal_records import *
 from open_orders import *
 from huobi_price import *
 
+# 切换测试环境或正式环境
+TEST_ENV = False
 
-# 建立数据库实例、设定文档路径、Log文档路径
-CONN = sqlite3.connect(db_path())
+# 建立数据库实例
+if TEST_ENV:
+    CONN = sqlite3.connect(test_db_path())
+else:
+    CONN = sqlite3.connect(db_path())
+# 设定文档路径
 PARAMS = get_params_path()
+# Log文档路径
 LOG_FILE = 'auto_invest_log.txt'
 
 # 初始化火币账号ID及API密钥
@@ -39,7 +46,7 @@ FORCE_SELL = False # 强制卖出旗标
 LINE_MARKS = "-"*70 # Log记录的分隔符号
 ALREADY_SEND_BUY = False # 是否已送单旗标
 TRACE_MIN_PRICE = 0 # 追踪买入的最低价数值
-TRACE_MIN_RATE = 1.0005 # 追踪最低价的反弹率
+TRACE_MIN_RATE = 1.0007 # 追踪最低价的反弹率
 WAIT_SEND_SEC = 10 # 下单后等待几秒读取成交结果
 MIN_TRADE_USDT = 5.2 # 下单到交易所的最低买卖金额
 BTC_USDT_NOW = 0 # 计算仓位值使用(=交易所BTC资产以USDT计算的值)
@@ -710,12 +717,16 @@ def usdt2cny():
 def place_new_order(price, amount, deal_type):
     global ORDER_ID
     try:
-        root = send_order(amount, "api", 'btcusdt', deal_type, price)
-        if root["status"] == "ok":
-            ORDER_ID = root["data"]
-            return "Send Order(%s) successfully" % root["data"]
+        if TEST_ENV:
+            ORDER_ID = 'T' + get_now()
+            return "Test Send Order(%s) successfully" % ORDER_ID
         else:
-            return root
+            root = send_order(amount, "api", 'btcusdt', deal_type, price)
+            if root["status"] == "ok":
+                ORDER_ID = root["data"]
+                return "Send Order(%s) successfully" % root["data"]
+            else:
+                return root
     except:
         return 'Some unknow error happened when Place New Order!'
 
@@ -821,8 +832,8 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
             if deal_type.find('buy-limit') > -1:
                 # 获得交易所回传的成交结果并新增n笔交易记录
                 n_dl_added = update_huobi_deal_records(time_line)
-                # n=0表示买单未成交
-                if n_dl_added == 0:
+                # 买单未成交(n=0)且为正式环境
+                if n_dl_added == 0 and not TEST_ENV:
                     # 避免未成交时再重复送单造成资金的浪费
                     ALREADY_SEND_BUY = True
                 # 显示新增n笔交易记录
@@ -1508,15 +1519,15 @@ def stdout_write( message ):
 
 
 # 破底之后持续追踪直到反弹超过指定的值才返回True允许买入
-def reach_buy_price(price_now):
+def reach_buy_price(price_now, min_price):
     global TRACE_MIN_PRICE
     # 初始化追踪买入的最低价然后返回False
     if TRACE_MIN_PRICE == 0:
-        TRACE_MIN_PRICE = price_now
+        TRACE_MIN_PRICE = min_price
         return False
     # 如果现价比记录的值还低则更新记录的值后返回False
-    elif price_now < TRACE_MIN_PRICE:
-        TRACE_MIN_PRICE = price_now
+    elif min_price < TRACE_MIN_PRICE:
+        TRACE_MIN_PRICE = min_price
         return False
     # 如果现价比记录的值还要高出TRACE_MIN_RATE的倍率则返回True
     elif price_now > TRACE_MIN_PRICE*TRACE_MIN_RATE:
@@ -1603,76 +1614,80 @@ if __name__ == '__main__':
                                 line_str = f.read().strip()
                                 if line_str[0:5] != params_str[0:5]:
                                     break
-                            ###############################################################
-                            # 现价、最高价、是否已达到卖价
-                            price_now, max_price, over_max_price = max_price_in(sell_price_period)
-                            # BTC目前的仓位值
-                            btc_level_now = btc_hold_level(price_now)
-                            # 是否达到可买入的时间
-                            over_buy_time = last_buy_interval() > every_sec
-                            # 是否达到可卖出的时间
-                            over_sell_time = last_sell_interval() > every_sec_for_sell
-                            # 是否在可买入的价格之下
-                            is_below_price = price_now > 0 and price_now < below_price
-                            # 是否在可卖出的价格之上
-                            is_above_price = price_now > 0 and force_sell_price > 0 and price_now >= force_sell_price
-                            # 是否达到分钟内的最高价
-                            reach_high_price = sell_price_period > 0 and over_max_price
-                            # 是否在可买入的仓位之下
-                            below_buy_level = max_buy_level > 0 and btc_level_now < max_buy_level
-                            # 是否在可卖出的仓位之上 + 卖出后仓位必须大于保留的仓位值
-                            over_sell_level = max_sell_count > 0 and btc_level_now > stop_sell_level and safe_after_sell(price_now, stop_sell_level)
-                            # 是否达到了设定的最小获利值，如未达到则不卖出
-                            if profit_goal > 0:
-                                if top_n_profit(price_now) >= profit_goal:
-                                    over_sell_profit = True
+                            # 将需要打印观察的值写入LOG
+                            with open(LOG_FILE, 'a') as fa:
+                                ###############################################################
+                                # 现价、最高价、是否已达到卖价
+                                price_now, max_price, over_max_price = max_price_in(sell_price_period)
+                                # BTC目前的仓位值
+                                btc_level_now = btc_hold_level(price_now)
+                                # 是否达到可买入的时间
+                                over_buy_time = last_buy_interval() > every_sec
+                                # 是否达到可卖出的时间
+                                over_sell_time = last_sell_interval() > every_sec_for_sell
+                                # 是否在可买入的价格之下
+                                is_below_price = price_now > 0 and price_now < below_price
+                                # 是否在可卖出的价格之上
+                                is_above_price = price_now > 0 and force_sell_price > 0 and price_now >= force_sell_price
+                                # 是否达到分钟内的最高价
+                                reach_high_price = sell_price_period > 0 and over_max_price
+                                # 是否在可买入的仓位之下
+                                below_buy_level = max_buy_level > 0 and btc_level_now < max_buy_level
+                                # 是否在可卖出的仓位之上 + 卖出后仓位必须大于保留的仓位值
+                                over_sell_level = max_sell_count > 0 and btc_level_now > stop_sell_level and safe_after_sell(price_now, stop_sell_level)
+                                # 是否达到了设定的最小获利值，如未达到则不卖出
+                                if profit_goal > 0:
+                                    if top_n_profit(price_now) >= profit_goal:
+                                        over_sell_profit = True
+                                    else:
+                                        over_sell_profit = False
                                 else:
-                                    over_sell_profit = False
-                            else:
-                                over_sell_profit = True
-                            #################################################################
-                            # 达到卖出的条件则执行卖出(仓位、时间、获利、[可卖价格之上|分钟内的最高价])
-                            if over_sell_level and over_sell_time and over_sell_profit and \
-                                (is_above_price or reach_high_price):
-                                setup_force_sell()
-                                break
-                            #################################################################
-                            # 达到买入的条件则执行买入：在可买入的价格之下
-                            if price_now > 0 and below_price > 0:
-                                stdout_write("%s | now: %.2f below_price: %i sell_price: %i buy_time: %s sell_time: %s                " % (acc_id, price_now, below_price, force_sell_price, over_buy_time, over_sell_time))
-                                # 买入条件：仓位、时间、在可买入的价格之下
-                                if below_buy_level and over_buy_time and is_below_price:
-                                    setup_force_buy()
+                                    over_sell_profit = True
+                                #################################################################
+                                # 达到卖出的条件则执行卖出(仓位、时间、获利、[可卖价格之上|分钟内的最高价])
+                                if over_sell_level and over_sell_time and over_sell_profit and \
+                                    (is_above_price or reach_high_price):
+                                    setup_force_sell()
                                     break
-                            #################################################################
-                            # 达到买入的条件则执行买入：达到分钟内的最低价
-                            if buy_price_period > 0:
-                                # 现价、最低价、是否达到分钟内的最低价
-                                price_now, min_price, reach_low_price = min_price_in(min_price_index, buy_price_period)
-                                if price_now > 0 and min_price > 0:
-                                    # 买入几分钟内的最低价时是否不超过所设定的最高价
-                                    if buy_period_max > 0:
-                                        if price_now >= buy_period_max:
-                                            over_max_buy_price = True
-                                        else:
-                                            over_max_buy_price = False
-                                    else:
-                                        over_max_buy_price = False
-                                    # 如果破底后，检查是否反弹到想买入的价位
-                                    if reach_low_price:
-                                        is_buy_price = reach_buy_price(price_now)
-                                    else:
-                                        is_buy_price = False
-                                    stdout_write("%s | now: %.2f %im_min: %i  sell_p: %i buy: %s sell: %s over_max_price: %s reach_price: %s        " % (acc_id, price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time, over_max_buy_price, is_buy_price))
-                                    # 买入条件：仓位、时间、达到分钟内的最低价、反弹至指定高度
-                                    if below_buy_level and over_buy_time and reach_low_price \
-                                        and not over_max_buy_price and is_buy_price:
+                                #################################################################
+                                # 达到买入的条件则执行买入：在可买入的价格之下
+                                if price_now > 0 and below_price > 0:
+                                    stdout_write("%s | now: %.2f below_price: %i sell_price: %i buy_time: %s sell_time: %s                " % (acc_id, price_now, below_price, force_sell_price, over_buy_time, over_sell_time))
+                                    # 买入条件：仓位、时间、在可买入的价格之下
+                                    if below_buy_level and over_buy_time and is_below_price:
                                         setup_force_buy()
                                         break
-                            ################################################################
-                            if price_now > 0 and max_price > 0 and sell_price_period > 0:
-                                stdout_write("%s | now: %.2f %im_max: %i  sell_price: %i buy_time: %s sell_time: %s              " % (acc_id, price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time))
-                            ################################################################
+                                #################################################################
+                                # 达到买入的条件则执行买入：达到分钟内的最低价
+                                if buy_price_period > 0:
+                                    # 现价、最低价、是否达到分钟内的最低价
+                                    price_now, min_price, reach_low_price = min_price_in(min_price_index, buy_price_period)
+                                    if price_now > 0 and min_price > 0:
+                                        # 买入几分钟内的最低价时是否不超过所设定的最高价
+                                        if buy_period_max > 0:
+                                            if price_now >= buy_period_max:
+                                                over_max_buy_price = True
+                                            else:
+                                                over_max_buy_price = False
+                                        else:
+                                            over_max_buy_price = False
+                                        # 如果破底后，检查是否反弹到想买入的价位
+                                        if reach_low_price or TRACE_MIN_PRICE > 0:
+                                            is_buy_price = reach_buy_price(price_now, min_price)
+                                        else:
+                                            is_buy_price = False
+                                        str = "%s:%.2f %imin:%.2f  sp:%i buy:%s sell:%s over_max: %s reach_p(%.2f:%.2f): %s        " % (get_now(), price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time, over_max_buy_price, TRACE_MIN_PRICE, TRACE_MIN_PRICE*TRACE_MIN_RATE, is_buy_price)
+                                        stdout_write(str)
+                                        fa.write(str+'\n')
+                                        # 买入条件：仓位、时间、达到分钟内的最低价、反弹至指定高度
+                                        if below_buy_level and over_buy_time and is_buy_price \
+                                            and not over_max_buy_price:
+                                            setup_force_buy()
+                                            break
+                                ################################################################
+                                if price_now > 0 and max_price > 0 and sell_price_period > 0:
+                                    stdout_write("%s | now: %.2f %im_max: %i  sell_price: %i buy_time: %s sell_time: %s              " % (acc_id, price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time))
+                                ################################################################
                     stdout_write(" "*30)
         except:
             print("Some Unexpected Error, Please Break Program to check!!")
