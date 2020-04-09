@@ -36,7 +36,7 @@ PHONE = ""
 ORDER_ID = ''
 FORCE_BUY = False
 FORCE_SELL = False
-WAIT_SEND_SEC = 30
+WAIT_SEND_SEC = 10 # 下单后等待几秒读取成交结果
 MIN_TRADE_USDT = 5.2
 BTC_USDT_NOW = 0 # 计算仓位值使用(=交易所BTC资产以USDT计算的值)
 EX_USDT_VALUE = 0 # 计算仓位值使用(=交易所总资产以USDT计算的值)
