@@ -33,15 +33,18 @@ SECRET_KEY = ""
 PHONE = ""
 
 # 初始化自动下单参数
-ORDER_ID = ''
-FORCE_BUY = False
-FORCE_SELL = False
+ORDER_ID = '' # 下单回传单号
+FORCE_BUY = False # 强制买入旗标
+FORCE_SELL = False # 强制卖出旗标
+LINE_MARKS = "-"*70 # Log记录的分隔符号
+ALREADY_SEND_BUY = False # 是否已送单旗标
+TRACE_MIN_PRICE = 0 # 追踪买入的最低价数值
+TRACE_MIN_RATE = 1.0005 # 追踪最低价的反弹率
 WAIT_SEND_SEC = 10 # 下单后等待几秒读取成交结果
-MIN_TRADE_USDT = 5.2
+MIN_TRADE_USDT = 5.2 # 下单到交易所的最低买卖金额
 BTC_USDT_NOW = 0 # 计算仓位值使用(=交易所BTC资产以USDT计算的值)
 EX_USDT_VALUE = 0 # 计算仓位值使用(=交易所总资产以USDT计算的值)
-ALREADY_SEND_BUY = False
-LINE_MARKS = "-"*70
+
 
 # 火币API请求地址
 MARKET_URL = "https://api.huobi.pro"
@@ -1270,9 +1273,11 @@ def reset_force_trade():
     global ORDER_ID
     global FORCE_BUY
     global FORCE_SELL
+    global TRACE_MIN_PRICE
     ORDER_ID = ''
     FORCE_BUY = False
     FORCE_SELL = False
+    TRACE_MIN_PRICE = 0
 
 
 # 回传最近一笔买单的间隔秒数，若无则回传最近一笔卖单的间隔秒数
@@ -1502,6 +1507,25 @@ def stdout_write( message ):
     sys.stdout.write("\n")
 
 
+# 破底之后持续追踪直到反弹超过指定的值才返回True允许买入
+def reach_buy_price(price_now):
+    global TRACE_MIN_PRICE
+    # 初始化追踪买入的最低价然后返回False
+    if TRACE_MIN_PRICE == 0:
+        TRACE_MIN_PRICE = price_now
+        return False
+    # 如果现价比记录的值还低则更新记录的值后返回False
+    elif price_now < TRACE_MIN_PRICE:
+        TRACE_MIN_PRICE = price_now
+        return False
+    # 如果现价比记录的值还要高出TRACE_MIN_RATE的倍率则返回True
+    elif price_now > TRACE_MIN_PRICE*TRACE_MIN_RATE:
+        return True
+    # 其他的状况一律返回False
+    else:
+        return False
+
+
 ########## 自定义函数结束 ##################################################################
 
 
@@ -1613,7 +1637,7 @@ if __name__ == '__main__':
                                 setup_force_sell()
                                 break
                             #################################################################
-                            # 达到买入的条件则执行买入
+                            # 达到买入的条件则执行买入：在可买入的价格之下
                             if price_now > 0 and below_price > 0:
                                 stdout_write("%s | now: %.2f below_price: %i sell_price: %i buy_time: %s sell_time: %s                " % (acc_id, price_now, below_price, force_sell_price, over_buy_time, over_sell_time))
                                 # 买入条件：仓位、时间、在可买入的价格之下
@@ -1621,7 +1645,7 @@ if __name__ == '__main__':
                                     setup_force_buy()
                                     break
                             #################################################################
-                            # 达到买入的条件则执行买入
+                            # 达到买入的条件则执行买入：达到分钟内的最低价
                             if buy_price_period > 0:
                                 # 现价、最低价、是否达到分钟内的最低价
                                 price_now, min_price, reach_low_price = min_price_in(min_price_index, buy_price_period)
@@ -1634,10 +1658,15 @@ if __name__ == '__main__':
                                             over_max_buy_price = False
                                     else:
                                         over_max_buy_price = False
-                                    stdout_write("%s | now: %.2f %im_min: %i  sell_price: %i buy_time: %s sell_time: %s over_max_buy_price: %s       " % (acc_id, price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time, over_max_buy_price))
-                                    # 买入条件：仓位、时间、达到分钟内的最低价
+                                    # 如果破底后，检查是否反弹到想买入的价位
+                                    if reach_low_price:
+                                        is_buy_price = reach_buy_price(price_now)
+                                    else:
+                                        is_buy_price = False
+                                    stdout_write("%s | now: %.2f %im_min: %i  sell_p: %i buy: %s sell: %s over_max_price: %s reach_price: %s        " % (acc_id, price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time, over_max_buy_price, is_buy_price))
+                                    # 买入条件：仓位、时间、达到分钟内的最低价、反弹至指定高度
                                     if below_buy_level and over_buy_time and reach_low_price \
-                                        and not over_max_buy_price:
+                                        and not over_max_buy_price and is_buy_price:
                                         setup_force_buy()
                                         break
                             ################################################################
