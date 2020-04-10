@@ -14,11 +14,9 @@ class DealRecordsController < ApplicationController
       params[:order_field] ||= 'first_sell desc,price'
       @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order(params[:order_field])
     elsif params[:make_balance_count]
-      params[:order_field] ||= 'price'
-      @deal_records = make_balance_count_records.order(params[:order_field])
+      @deal_records = make_balance_count_records
     elsif params[:make_trezor_count]
-      params[:order_field] ||= 'price'
-      @deal_records = make_trezor_count_records.order(params[:order_field])
+      @deal_records = make_trezor_count_records
     elsif params[:show_first]
       params[:order_field] ||= 'created_at desc'
       @deal_records = DealRecord.where("first_sell = 1 and auto_sell = 0 and account = '#{get_huobi_acc_id}'").order(params[:order_field])
