@@ -47,17 +47,28 @@
       return "买入最低价时的最高价为：#{get_invest_params(31)}"
     end
   end
+
+  # 多种列表能选择按照下单时间成交价成交量排序
+  def order_list_params( field_name )
+    {
+      order_field: field_name, \
+      show_all: params[:show_all], show_sell: params[:show_sell], \
+      show_unsell: params[:show_unsell], make_balance_count: params[:make_balance_count], \
+      make_trezor_count: params[:make_trezor_count], show_first: params[:show_first], \
+      show_balance: params[:show_balance], show_trezor: params[:show_trezor]
+    }
+  end
 %>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td width="15"></td>
     <td width="160">
       <% # 下单时间 %>
-      <%= link_to t(:deal_record_created), show_unsell: 1, order_field: 'created_at' %>
+      <%= link_to t(:deal_record_created), order_list_params('created_at') %>
     </td>
     <td>
       <% # 成交价 %>
-      <%= link_to t(:deal_record_price), show_unsell: 1, order_field: 'price' %>
+      <%= link_to t(:deal_record_price), order_list_params('price') %>
     </td>
     <td>
       <% # 值人民币 %>
@@ -77,11 +88,11 @@
     </td>
     <td>
       <% # 成交量 %>
-      <%= link_to t(:deal_record_amount), show_unsell: 1, order_field: 'amount' %>
+      <%= link_to t(:deal_record_amount), order_list_params('amount') %>
     </td>
     <td colspan="2">
       <% # 更新时间 %>
-      <%= link_to t(:updated_time), show_unsell: 1, order_field: 'updated_at' %> |
+      <%= link_to t(:updated_time), order_list_params('updated_at') %> |
       <% # 已实现损益 %>
       <%= t(:deal_record_real_profit) %>
       ( <%= show_num_h_profit %>: <%= real_profit_of_24h %><%= ' '+to_n(real_profit_of_24h*cny_to_btc,6) if real_profit_of_24h > 0 %>

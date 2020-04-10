@@ -5,24 +5,32 @@ class DealRecordsController < ApplicationController
 
   def index
     if params[:show_all]
-      @deal_records = DealRecord.where("account = '#{get_huobi_acc_id}'").order('created_at  desc')
+      params[:order_field] ||= 'created_at desc'
+      @deal_records = DealRecord.where("account = '#{get_huobi_acc_id}'").order(params[:order_field])
     elsif params[:show_sell]
-      @deal_records = DealRecord.where("auto_sell = 1 and real_profit != 0 and account = '#{get_huobi_acc_id}'").order('updated_at desc').limit($sell_records_limit)
+      params[:order_field] ||= 'updated_at desc'
+      @deal_records = DealRecord.where("auto_sell = 1 and real_profit != 0 and account = '#{get_huobi_acc_id}'").order(params[:order_field]).limit($sell_records_limit)
     elsif params[:show_unsell]
-      order_field = params[:order_field] ? params[:order_field] : 'price'
-      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('first_sell desc,price')
+      params[:order_field] ||= 'first_sell desc,price'
+      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order(params[:order_field])
     elsif params[:make_balance_count]
-      @deal_records = make_balance_count_records
+      params[:order_field] ||= 'price'
+      @deal_records = make_balance_count_records.order(params[:order_field])
     elsif params[:make_trezor_count]
-      @deal_records = make_trezor_count_records
+      params[:order_field] ||= 'price'
+      @deal_records = make_trezor_count_records.order(params[:order_field])
     elsif params[:show_first]
-      @deal_records = DealRecord.where("first_sell = 1 and auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
+      params[:order_field] ||= 'created_at desc'
+      @deal_records = DealRecord.where("first_sell = 1 and auto_sell = 0 and account = '#{get_huobi_acc_id}'").order(params[:order_field])
     elsif params[:show_balance]
-      @deal_records = DealRecord.where("auto_sell = 1 and real_profit = 0.01 and account = '#{get_huobi_acc_id}'").order('amount')
+      params[:order_field] ||= 'amount'
+      @deal_records = DealRecord.where("auto_sell = 1 and real_profit = 0.01 and account = '#{get_huobi_acc_id}'").order(params[:order_field])
     elsif params[:show_trezor]
-      @deal_records = DealRecord.where("auto_sell = 1 and real_profit = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
+      params[:order_field] ||= 'created_at desc'
+      @deal_records = DealRecord.where("auto_sell = 1 and real_profit = 0 and account = '#{get_huobi_acc_id}'").order(params[:order_field])
     else
-      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order('created_at desc')
+      params[:order_field] ||= 'created_at desc'
+      @deal_records = DealRecord.where("auto_sell = 0 and account = '#{get_huobi_acc_id}'").order(params[:order_field])
     end
     summary
     @get_max_sell_count = get_max_sell_count
