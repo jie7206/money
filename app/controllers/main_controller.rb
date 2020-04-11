@@ -347,7 +347,7 @@ class MainController < ApplicationController
 
   # 更新系统参数
   def update_system_params
-    if text = params[:system_params_content] and text.size > 10
+    if text = params[:system_params_content] and pass_system_params_check(text)
       File.open($system_params_path, 'w+') do |f|
         f.write(text)
       end
@@ -357,5 +357,16 @@ class MainController < ApplicationController
     end
     redirect_to action: :system_params_form
   end
+
+  private
+
+    # 系统参数的更新必须确保每一行以钱号开头以免系统无法运作
+    def pass_system_params_check(text)
+      regx = /^(\$)(\w)+(\s)+(=){1}(\s)+(.)+/
+      text.split("\n").each do |line|
+        return false if (line =~ regx) != 0
+      end
+      return true
+    end
 
 end
