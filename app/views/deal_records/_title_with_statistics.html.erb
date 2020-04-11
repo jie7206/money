@@ -2,7 +2,7 @@
   # 获得所有宏观统计数据
   eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, \
   one_btc2cny, total_real_profit, total_unsell_profit, ave_hour_profit, total_real_p_24h, \
-  trezor_p, huobi_p, yuebao_p= \
+  trezor_p, huobi_p, yuebao_p, capital_p = \
   Property.invest_to_btc( admin? )
 %>
 <h2>
@@ -16,11 +16,11 @@
         to_n(btc_p,1)}%</span> \
       <span title=\"交易记录均价:冷钱包均价:全部均价\">#{real_ave_cost.to_i}:#{trezor_ave_cost.to_i}:#{total_ave_cost.to_i}</span> \
       <span title=\"交易记录的总体利率\">#{add_plus(to_n(price_p,2))}%</span> \
-      <span title=\"比特币现值/法币现值\">#{to_n(Property.btc_legal_ratio,2)}</span> \
       <span title=\"每月获利预估值\">#{ave_hour_profit.to_i*24*30}</span> \
       <span title=\"冷钱包占总资产比例(#{to_n(trezor_p,3)}%)\">#{to_n(trezor_p,1)}%</span> \
       <span title=\"余额宝占总资产比例(#{to_n(yuebao_p,3)}%)\">#{to_n(yuebao_p,1)}%</span> \
       <span title=\"交易所占总资产比例(#{to_n(huobi_p,3)}%)\">#{to_n(huobi_p,1)}%</span> \
+      <span title=\"可投资金占总资产比例(#{to_n(capital_p,3)}%)\">#{to_n(capital_p,1)}%</span> \
       ") %>
   )
 </h2>

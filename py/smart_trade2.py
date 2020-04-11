@@ -1108,12 +1108,21 @@ def check_sell_amount(sell_price, sell_amount, usdt_now, sell_max_usd):
 
 # 由下单回传值计算正确的获利值
 def sell_profit_cny_from_order(order_id, cost_usdt_total):
-    data = order_info(order_id)['data']
-    field_cash_amount = float(data['field-cash-amount'])
-    field_fees = float(data['field-fees'])
-    field_amount = float(data['field-amount'])
-    profit_usdt = field_cash_amount - field_fees - cost_usdt_total
-    profit_cny = profit_usdt*usdt2cny()
+    profit_cny = 0      # 人民币损益值
+    field_amount = 0    # 成交量
+    field_fees = 0      # 成交手续费
+    # 一直循环直到成交为止
+    while True:
+        time.sleep(3)
+        data = order_info(order_id)['data']
+        field_cash_amount = float(data['field-cash-amount'])
+        field_fees = float(data['field-fees'])
+        field_amount = float(data['field-amount'])
+        # 如果成交量大于0表示已经成交
+        if field_amount > 0:
+            profit_usdt = field_cash_amount - field_fees - cost_usdt_total
+            profit_cny = profit_usdt*usdt2cny()
+            break
     return profit_cny, field_amount, field_fees
 
 
