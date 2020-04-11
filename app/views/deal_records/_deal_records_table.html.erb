@@ -48,15 +48,24 @@
     end
   end
 
-  # 多种列表能选择按照下单时间成交价成交量排序
-  def order_list_params( field_name )
+  # 列表种类参数
+  def list_page_params
     {
-      order_field: field_name, \
       show_all: params[:show_all], show_sell: params[:show_sell], \
       show_unsell: params[:show_unsell], make_balance_count: params[:make_balance_count], \
       make_trezor_count: params[:make_trezor_count], show_first: params[:show_first], \
       show_balance: params[:show_balance], show_trezor: params[:show_trezor]
     }
+  end
+
+  # 多种列表能选择按照下单时间成交价成交量排序
+  def order_list_params( field_name )
+    { order_field: field_name }.merge list_page_params
+  end
+
+  # 点击转出后开启新视窗
+  def build_switch_params( action, id )
+      { action: action, id: id }.merge list_page_params
   end
 %>
 <table width="<%=$default_table_width%>">
@@ -106,8 +115,7 @@
       <td align="right">
         <% # 显示优卖功能链接 %>
         <span <%= raw "class='switch_first_sell'" if dr.first_sell %>>
-          <%= link_to n, action: :switch_first_sell, id: dr, \
-          show_all: params[:show_all], show_unsell: params[:show_unsell] %>
+          <%= link_to n, build_switch_params(:switch_first_sell, dr) %>
         </span>
       </td>
       <td align="center">
@@ -152,13 +160,13 @@
             # 若此记录为钱包记录
             if dr.real_profit == 0
               # 转到未卖记录  %>
-              <%= link_to t(:set_from_trezor), action: :switch_to_trezor, id: dr, \
-                  show_all: params[:show_all] %>
+              <%= link_to t(:set_from_trezor), build_switch_params(:switch_to_trezor,dr) %>
+              <% # 本表全转出 %>
+              | <%= link_to t(:all_to_trezor), action: :auto_send_trezor_count %>
         <%  # 若此记录为消账记录
             elsif dr.real_profit == 0.01
               # 转到未卖记录  %>
-              <%= link_to t(:switch_from_balance), action: :switch_to_balance, id: dr, \
-                  show_all: params[:show_all] %>
+              <%= link_to t(:switch_from_balance), build_switch_params(:switch_to_balance,dr) %>
         <%  # 若此记录为卖出记录
             else
               # 已实现损益(人民币)
@@ -171,10 +179,9 @@
           # 未卖记录｜凑消帐｜凑钱包
           else
                # 转出到钱包  %>
-               <%= link_to t(:set_to_trezor), action: :switch_to_trezor, id: dr, \
-                   show_all: params[:show_all] %> |
+               <%= link_to t(:set_to_trezor), build_switch_params(:switch_to_trezor,dr) %> |
             <% # 转到消帐记录 %>
-            <%= link_to t(:switch_to_balance), action: :switch_to_balance, id: dr, show_all: params[:show_all] %>
+            <%= link_to t(:switch_to_balance), build_switch_params(:switch_to_balance,dr) %>
         <%  # 若此记录为凑钱包记录 %>
         <%  if params[:make_trezor_count] %>
             <% # 本表全转出 %>

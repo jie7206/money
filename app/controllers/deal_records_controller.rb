@@ -211,13 +211,22 @@ class DealRecordsController < ApplicationController
 
   def auto_send_trezor_count
     count = 0
+    # 由未卖转到钱包
     if $send_to_trezor_amount > 0
       make_trezor_count_records.each do |dr|
         dr.update_attributes(real_profit: 0, auto_sell: 1)
         count += 1
       end
+      put_notice "已将#{count}笔资料转入冷钱包"
     end
-    put_notice "已将#{count}笔资料转入冷钱包"
+    # 由钱包转到未卖
+    if $send_to_trezor_amount < 0
+      make_trezor_count_records.each do |dr|
+        dr.update_attributes(real_profit: nil, auto_sell: 0)
+        count += 1
+      end
+      put_notice "已将#{count}笔资料转入未卖记录"
+    end
     go_deal_records
   end
 

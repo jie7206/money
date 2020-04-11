@@ -296,6 +296,7 @@ class DealRecord < ApplicationRecord
     result = []
     sum = 0
     min_amount = 0.0008
+    # 由未卖转到钱包
     if count_goal > 0
       where("auto_sell = 0 and account = '#{get_huobi_acc_id}' and amount < #{min_amount} ").order('amount').each do |dr|
         result << dr
@@ -306,6 +307,13 @@ class DealRecord < ApplicationRecord
         result << dr
         sum += dr.amount
         return result if sum >= count_goal
+      end
+    # 由钱包转到未卖
+    elsif count_goal < 0
+      where("auto_sell = 1 and real_profit = 0 and account = '#{get_huobi_acc_id}' and amount > #{min_amount}").order('price desc').each do |dr|
+        result << dr
+        sum += dr.amount
+        return result if sum >= count_goal.abs
       end
     else
       return []
