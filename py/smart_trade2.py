@@ -1457,7 +1457,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                     # 若单次买入后会超过最大仓位值则不要买那么多
                     usdt = fix_buy_usdt_to_max_level(price_now, usdt, max_buy_level)
                     # 如果购买的值大于交易所最小购买值才下单
-                    if usdt > MIN_TRADE_USDT:
+                    if usdt >= MIN_TRADE_USDT:
                         # 由预算计算出要购买的数量
                         amount = usdt/price_now
                         # 计算还能持续买多久
@@ -1546,6 +1546,14 @@ def reach_buy_price(price_now, min_price):
         return False
 
 
+# 判断现价是否比成本均价还低
+def check_lower_ave( price_now ):
+    if price_now < btc_ave_cost():
+        return True
+    else:
+        return False
+
+
 ########## 自定义函数结束 ##################################################################
 
 
@@ -1561,7 +1569,7 @@ if __name__ == '__main__':
             with open(PARAMS, 'r') as fread:
                 # 将设定文档参数读入内存
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max = params_str.split(' ')
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave = params_str.split(' ')
                 # 将设定文档参数根据适当的型别初始化
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -1590,6 +1598,7 @@ if __name__ == '__main__':
                 stop_sell_level = float(stop_sell_level)
                 force_to_buy = int(force_to_buy)
                 buy_period_max = float(buy_period_max)
+                is_lower_ave = int(is_lower_ave)
                 # 获得在几分钟内比特币价格的最大值与最小值
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 # 是否执行强制买入
@@ -1642,6 +1651,14 @@ if __name__ == '__main__':
                                 reach_high_price = sell_price_period > 0 and over_max_price
                                 # 是否在可买入的仓位之下
                                 below_buy_level = max_buy_level > 0 and btc_level_now < max_buy_level
+                                # 成本均价是否越买越低
+                                if is_lower_ave > 0:
+                                    if check_lower_ave(price_now) == True:
+                                        pass_lower_check = True
+                                    else:
+                                        pass_lower_check = False
+                                else:
+                                    pass_lower_check = True
                                 # 是否在可卖出的仓位之上 + 卖出后仓位必须大于保留的仓位值
                                 over_sell_level = max_sell_count > 0 and btc_level_now > stop_sell_level and safe_after_sell(price_now, stop_sell_level)
                                 # 是否达到了设定的最小获利值，如未达到则不卖出
@@ -1662,8 +1679,9 @@ if __name__ == '__main__':
                                 # 达到买入的条件则执行买入：在可买入的价格之下
                                 if price_now > 0 and below_price > 0:
                                     stdout_write("%s | now: %.2f below_price: %i sell_price: %i buy_time: %s sell_time: %s                " % (acc_id, price_now, below_price, force_sell_price, over_buy_time, over_sell_time))
-                                    # 买入条件：仓位、时间、在可买入的价格之下
-                                    if below_buy_level and over_buy_time and is_below_price:
+                                    # 买入条件：仓位、时间、在可买入的价格之下、成本均价是否越买越低
+                                    if below_buy_level and over_buy_time and is_below_price \
+                                        and pass_lower_check:
                                         FORCE_BUY = True
                                         break
                                 #################################################################
@@ -1685,14 +1703,14 @@ if __name__ == '__main__':
                                             is_buy_price = reach_buy_price(price_now, min_price)
                                         else:
                                             is_buy_price = False
-                                        str = "%s:%.2f %imin:%.2f sp:%i buy:%s sell:%s over_max: %s reach_p(%.2f:%.2f): %s        " % (get_now(), price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time, over_max_buy_price, TRACE_MIN_PRICE, TRACE_MIN_PRICE*TRACE_MIN_RATE, is_buy_price)
+                                        str = "%s:%.2f %imin:%.2f sp:%i buy:%s sell:%s over_max: %s reach_p(%.2f:%.2f): %s lower: %s    " % (get_now(), price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time, over_max_buy_price, TRACE_MIN_PRICE, TRACE_MIN_PRICE*TRACE_MIN_RATE, is_buy_price, pass_lower_check)
                                         stdout_write(str)
                                         if below_buy_level and over_buy_time \
                                             and TRACE_MIN_PRICE > 0 and not over_max_buy_price:
                                             fa.write(str+'\n')
-                                        # 买入条件：仓位、时间、达到分钟内的最低价、反弹至指定高度
+                                        # 买入条件：仓位、时间、达到分钟内的最低价、反弹至指定高度、成本均价是否越买越低
                                         if below_buy_level and over_buy_time and is_buy_price \
-                                            and not over_max_buy_price:
+                                            and pass_lower_check and not over_max_buy_price:
                                             FORCE_BUY = True
                                             break
                                 ################################################################

@@ -596,9 +596,13 @@ module ApplicationHelper
   end
 
   # 显示最近几个小时的获利标题
-  def show_num_h_profit
+  def show_num_h_profit( scale = :hour )
     diff_sec = (Time.now - $send_to_trezor_time).to_i
-    raw("<span title='#{diff_sec/(60*60*24)}天'>#{diff_sec/(60*60)}H</span>")
+    if scale == :hour
+      return raw("<span title='#{diff_sec/(60*60*24)}天'>#{diff_sec/(60*60)}H</span>")
+    else
+      return raw("<span title='#{diff_sec/(60*60)}小时'>#{diff_sec/(60*60*24)}D</span>")
+    end
   end
 
   # 如果没有负号，在前面显示+号

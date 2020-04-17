@@ -104,7 +104,7 @@
       <%= link_to t(:updated_time), order_list_params('updated_at') %> |
       <% # 已实现损益 %>
       <%= t(:deal_record_real_profit) %>
-      ( <%= show_num_h_profit %>: <%= real_profit_of_24h %><%= ' '+to_n(real_profit_of_24h*cny_to_btc,6) if real_profit_of_24h > 0 %>
+      ( <%= show_num_h_profit(:day) %>: <%= real_profit_of_24h %><%= ' '+to_n(real_profit_of_24h*cny_to_btc,6) if real_profit_of_24h > 0 %>
       | 累计: <%= total_real_profit %><%= ' '+to_n(total_real_profit*cny_to_btc,6) if total_real_profit > 0 %>
       )
     </td>
@@ -226,7 +226,7 @@
     max_buy_price = dr.price if dr.price >= max_buy_price
   end # 结束 @deal_records.each
   # 成交均价
-  @total_ave_cost_price = total_amount > 0 ? to_n(total_price/total_amount) : ''
+  @total_ave_cost_price = total_amount > 0 ? to_n(total_price/total_amount_fee) : ''
 %>
   <tr class="thead">
     <td colspan="2" title="<%= show_buy_period_max_price %>">
@@ -246,15 +246,15 @@
     </td>
     <td align="right">
       <% # 显示成本总和 %>
-      <%= to_n(total_cny_amount,1) %>
+      <%= to_n(total_cny_amount,0) %>
     </td>
     <td align="right">
       <% # 显示现值总和 %>
-      <%= to_n(total_cny_amount_now,1) %>
+      <%= to_n(total_cny_amount_now,0) %>
     </td>
     <td align="right">
       <% # 显示盈亏总和 %>
-      <%= to_n(total_earn_or_loss) %>
+      <%= to_n(total_earn_or_loss,1) %>
     </td>
     <td align="right">
       <% # 显示利率总和 %>

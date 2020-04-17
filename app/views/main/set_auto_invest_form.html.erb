@@ -53,7 +53,7 @@ price_step = 10
     <tr valign="top">
       <td><%= n %></td>
       <td>单笔买入泰达币最小值</td>
-      <td><%= invest_params_setup_link(7,1,40) %></td>
+      <td><%= invest_params_setup_link(7,5.2,11.0,0.2,1) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -84,7 +84,7 @@ price_step = 10
     <tr valign="top">
       <td><%= n %></td>
       <td>单次卖出的最低获利值</td>
-      <td><%= show_invest_param_value(12) %> <%= invest_params_setup_link(12,10,500,10,0,true) %></td>
+      <td><%= show_invest_param_value(12) %> <%= invest_params_setup_link(12,1,500,10,0,true) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top" class="set_aif_bg">
@@ -199,6 +199,12 @@ price_step = 10
       <td><%= n %></td>
       <td>买入最低价时的最高价</td>
       <td><%= show_invest_param_value(31) %> <%= invest_params_setup_link(31,start_price,end_price,price_step,0,true) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>成本均价是否越买越低</td>
+      <td><%= show_invest_param_value(32) %> <%= invest_params_setup_link(32,0,1) %></td>
       <% n += 1 %>
     </tr>
   </table>
