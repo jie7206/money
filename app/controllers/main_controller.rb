@@ -297,12 +297,7 @@ class MainController < ApplicationController
   # 设置定投参数表单
   def set_auto_invest_form
     @invest_params_value = File.read($auto_invest_params_path)
-    @price_now = DealRecord.first.price_now
-  end
-
-
-  def show_set_auto_invest_params_ok
-    t(:set_auto_invest_params_ok).sub('几',get_invest_params(16))
+    @price_now = get_price_now
   end
 
   # 设置定投参数
@@ -333,11 +328,16 @@ class MainController < ApplicationController
       elsif index.to_i == 27 and get_invest_params(27).to_i > 0
         set_invest_params(18,0)
       end
-      put_notice show_set_auto_invest_params_ok + "#{index} ➠ #{value}"
+      put_notice show_set_auto_invest_params_ok index, value
     else
       put_notice t(:set_auto_invest_params_error)
     end
     redirect_to set_auto_invest_form_path
+  end
+
+  # 定投参数设置成功讯息
+  def show_set_auto_invest_params_ok( index, value )
+    t(:set_auto_invest_params_ok) + "(#{index} = #{value}) 现价每笔投资¥#{single_invest_cost.to_i} 最低价每笔投资¥#{max_invest_cost.to_i}"
   end
 
   # 设置系统参数表单
@@ -367,6 +367,28 @@ class MainController < ApplicationController
         return false if (line =~ regx) != 0
       end
       return true
+    end
+
+    # 取得BTC现价
+    def get_price_now
+      DealRecord.first.price_now
+    end
+
+    # 计算以现价购买的每笔投资金额
+    def single_invest_cost
+      price_now = get_price_now             # 取得BTC现价
+      bottom = get_invest_params(2).to_f    # 跌破多少价位停止买入
+      ori_usdt = get_invest_params(3).to_f  # 原有参与投资的泰达币
+      factor = get_invest_params(4).to_f    # 单笔买入价格调整参数
+      price_diff = price_now - bottom < 1 ? 1 : price_now - bottom
+      return ((ori_usdt/(price_diff/100)**2)*factor)*$usdt_to_cny
+    end
+
+    # 计算以现价购买的单笔最大投资金额
+    def max_invest_cost
+      ori_usdt = get_invest_params(3).to_f  # 原有参与投资的泰达币
+      max_rate = get_invest_params(8).to_f  # 单笔买入泰达币最大率
+      return ori_usdt*max_rate/100*$usdt_to_cny
     end
 
 end

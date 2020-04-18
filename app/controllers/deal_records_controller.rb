@@ -32,8 +32,12 @@ class DealRecordsController < ApplicationController
     end
     summary
     @get_max_sell_count = get_max_sell_count
-    @price_now, @buy_amount, @sell_amount, @buy_sell_rate = cal_buy_sell_rate
-    update_btc_price(@price_now) if @price_now > 0 and $auto_update_btc_price > 0
+    if $auto_update_btc_price > 0
+      @price_now, @buy_amount, @sell_amount, @buy_sell_rate = cal_buy_sell_rate
+      update_btc_price(@price_now) if @price_now > 0
+    else
+      @price_now, @buy_amount, @sell_amount, @buy_sell_rate = 0,0,0,0
+    end
     update_huobi_assets_core if $auto_update_huobi_assets > 0
     setup_auto_refresh_sec
   end

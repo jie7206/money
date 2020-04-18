@@ -1678,7 +1678,7 @@ if __name__ == '__main__':
                                 #################################################################
                                 # 达到买入的条件则执行买入：在可买入的价格之下
                                 if price_now > 0 and below_price > 0:
-                                    stdout_write("%s | now: %.2f below_price: %i sell_price: %i buy_time: %s sell_time: %s                " % (acc_id, price_now, below_price, force_sell_price, over_buy_time, over_sell_time))
+                                    stdout_write("%s:%.2f below_price: %i sell_price: %i buy_time: %s sell_time: %s lower: %s         " % (get_now(), price_now, below_price, force_sell_price, over_buy_time, over_sell_time, pass_lower_check))
                                     # 买入条件：仓位、时间、在可买入的价格之下、成本均价是否越买越低
                                     if below_buy_level and over_buy_time and is_below_price \
                                         and pass_lower_check:
@@ -1714,7 +1714,7 @@ if __name__ == '__main__':
                                             break
                                 ################################################################
                                 if price_now > 0 and max_price > 0 and sell_price_period > 0:
-                                    stdout_write("%s | now: %.2f %im_max: %i  sell_price: %i buy_time: %s sell_time: %s              " % (acc_id, price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time))
+                                    stdout_write("%s:%.2f %im_max: %i  sell_price: %i buy_time: %s sell_time: %s              " % (get_now(), price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time))
                                 ################################################################
                     stdout_write(" "*30)
         except:
