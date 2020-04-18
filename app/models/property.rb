@@ -108,7 +108,7 @@ class Property < ApplicationRecord
     record_cost = cost1 + cost2
     record_amount = amount1 + amount2
     real_ave_cost = record_amount > 0 ? record_cost/record_amount : 0
-    # 处理交易列表的已实现损益
+    # 处理交易列表的已实现损益和未实现损益
     sell_profit1, unsell_profit1, ave_sec_profit1, real_p_24h1, trezor_cost1, trezor_amount1 = get_invest_param_from($auto_invest_params_path,28,false).split(':')
     sell_profit2, unsell_profit2, ave_sec_profit2, real_p_24h2, trezor_cost2, trezor_amount2 = get_invest_param_from($auto_invest_params_path2,28,false).split(':')
     total_real_profit = sell_profit1.to_f + sell_profit2.to_f
