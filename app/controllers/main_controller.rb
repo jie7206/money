@@ -336,8 +336,10 @@ class MainController < ApplicationController
   end
 
   # 定投参数设置成功讯息
-  def show_set_auto_invest_params_ok( index, value )
-    t(:set_auto_invest_params_ok) + "(#{index} = #{value}) 现价每笔投资¥#{single_invest_cost.to_i} 最低价每笔投资¥#{max_invest_cost.to_i}"
+  def show_set_auto_invest_params_ok( index = nil, value = nil )
+    info = (index and value) ? "(#{index} = #{value}) 现价每笔投资¥#{single_invest_cost.to_i} \
+      最低价每笔投资¥#{max_invest_cost.to_i}" : ""
+    t(:set_auto_invest_params_ok) + info
   end
 
   # 设置系统参数表单
@@ -380,8 +382,14 @@ class MainController < ApplicationController
       bottom = get_invest_params(2).to_f    # 跌破多少价位停止买入
       ori_usdt = get_invest_params(3).to_f  # 原有参与投资的泰达币
       factor = get_invest_params(4).to_f    # 单笔买入价格调整参数
-      price_diff = price_now - bottom < 1 ? 1 : price_now - bottom
-      return ((ori_usdt/(price_diff/100)**2)*factor)*$usdt_to_cny
+      price_diff = price_now - bottom
+      # 现价 > 破底价 --> 价格越低，投资越多
+      if price_now - bottom > 1
+          return ((ori_usdt/(price_diff/100)**2)*factor)*$usdt_to_cny
+      # 现价 < 破底价 --> 直接以最大投资额购买
+      else
+          return max_invest_cost
+      end
     end
 
     # 计算以现价购买的单笔最大投资金额

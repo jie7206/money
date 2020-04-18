@@ -1437,13 +1437,15 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 # 计算BTC目前持仓水平
                 btc_level_now = btc_hold_level(price_now)
                 # 如果是测试单 或者 实际能交易的USDT>单笔买入的最小值 以及 现价必须>最低购买价
-                if test_price > 0 or \
-                    (trade_usdt > min_usdt and price_now - bottom >= 0):
+                if test_price > 0 or trade_usdt > min_usdt:
                     # 计算购买成本与购买数量
                     price_diff = price_now - bottom
-                    if price_now - bottom < 1:
-                        price_diff = 1
-                    usdt = (ori_usdt/((price_diff)/100)**2)*factor
+                    # 现价 > 破底价 --> 价格越低，投资越多
+                    if price_now - bottom > 1:
+                        usdt = (ori_usdt/((price_diff)/100)**2)*factor
+                    # 现价 < 破底价 --> 直接以最大投资额购买
+                    else:
+                        usdt = max_usdt
                     # 设定好边界条件的值
                     if usdt < min_usdt:
                         usdt = min_usdt
