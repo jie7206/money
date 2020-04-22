@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_09_110233) do
+ActiveRecord::Schema.define(version: 2020_03_21_041225) do
 
   create_table "currencies", force: :cascade do |t|
     t.string "name"
@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 2019_12_09_110233) do
     t.integer "data_id"
     t.string "order_id"
     t.decimal "real_profit"
+    t.boolean "first_sell"
   end
 
   create_table "interests", force: :cascade do |t|
@@ -88,6 +89,7 @@ ActiveRecord::Schema.define(version: 2019_12_09_110233) do
     t.datetime "updated_at", null: false
     t.integer "currency_id"
     t.boolean "is_hidden"
+    t.boolean "is_locked"
     t.index ["currency_id"], name: "index_properties_on_currency_id"
   end
 
@@ -122,6 +124,20 @@ ActiveRecord::Schema.define(version: 2019_12_09_110233) do
     t.string "name"
     t.integer "taggings_count", default: 0
     t.index ["name"], name: "index_tags_on_name", unique: true
+  end
+
+  create_table "trial_lists", force: :cascade do |t|
+    t.date "trial_date"
+    t.decimal "begin_price"
+    t.decimal "begin_amount"
+    t.integer "month_cost"
+    t.decimal "month_sell"
+    t.integer "begin_balance"
+    t.integer "begin_balance_twd"
+    t.decimal "month_grow_rate"
+    t.decimal "end_price"
+    t.integer "end_balance"
+    t.integer "end_balance_twd"
   end
 
 end

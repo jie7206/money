@@ -12,7 +12,7 @@ cn:
   compose: 成员
   edit: 编辑
   keep: 保留
-  trial_list_index: 收支试算
+  trial_list_index: 理财目标
   set_to_trezor: 转出到钱包
   all_to_trezor: 本表全转出
   all_to_balance: 本表全消帐
@@ -297,7 +297,7 @@ cn:
   test_huobi: 测试火币
   ave_cost: 均价
   profit_now: 损益
-  trial_list: 收支试算
+  trial_list: 理财目标一览表
   myage: 岁
   date_diff: 天数
   date: 日期
@@ -314,7 +314,7 @@ cn:
   sell_to_back_ok: 卖到回本下单已执行！
   save_trials_to_db: 将试算结果存入数据库
   save_trials_to_db_ok: 已将试算结果存入数据库！
-  have_reached: 达成状态
+  have_reached: 距离目标
   sell_all: 全部卖出
   month_growth_rate: 月增长率
   operate_money: 短线资金

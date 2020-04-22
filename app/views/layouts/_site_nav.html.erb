@@ -1,6 +1,7 @@
 <% if login? %>
   <div id="<%= id %>">
     <small>
+      <%= link_back_to_trial_lists %> |
       <%= link_back_to_deal_records %> |
       <%= link_back_to_properties %> |
       <%= link_back_to_portfolios if admin? %><%= ' |' if admin? %>
@@ -11,7 +12,6 @@
       <%= link_back_to_currencies %> |
       <%= link_back_to_items %> |
       <%= link_back_to_interests %> |
-      <%= link_back_to_trial_lists %> |
       <%= set_auto_invest_form_link %> |
       <%= invest_log_link %> |
       <%= clear_invest_log_link %> |

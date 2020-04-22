@@ -261,6 +261,21 @@ class Property < ApplicationRecord
     end
   end
 
+  # 比特币目前的值
+  def self.btc_value_twd
+    ps = btc_records
+    if ps.size > 0
+      return ps.sum {|p| p.amount_to(:twd)}
+    else
+      return 0
+    end
+  end
+
+  # 流动性资产总值
+  def self.flow_assets_twd
+    (investable_fund_records.sum {|p| p.amount_to(:twd)}) + btc_value_twd
+  end
+
   # 计算冷钱包下一年收益
   def self.cal_year_profit( br = "\n" )
     year_profit_p = ave_month_growth_rate > 0 ? (1+ave_month_growth_rate.to_f/100)**12 : 1

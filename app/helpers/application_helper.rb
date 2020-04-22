@@ -549,9 +549,10 @@ module ApplicationHelper
     end_date = today + $check_trial_reached_month.month
     if trial_date <= end_date and rs = TrialList.find_by_trial_date(trial_date)
       goal_price = rs.end_price
-      return goal_price, @begin_price_for_trial-goal_price
+      goal_balance = rs.end_balance_twd
+      return goal_price, @begin_price_for_trial-goal_price, @flow_assets_twd-goal_balance
     else
-      return 0, 0
+      return 0, 0, 0
     end
   end
 

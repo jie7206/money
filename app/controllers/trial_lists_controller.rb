@@ -76,6 +76,7 @@ class TrialListsController < ApplicationController
       def prepare_vars
         @btc_price = DealRecord.first.price_now if DealRecord.first
         @begin_price_for_trial = @btc_price
+        @flow_assets_twd = Property.flow_assets_twd
         if admin?
           @btc_amount = $trial_btc_amount_admin > 0 ? $trial_btc_amount_admin : Property.find($btc_amount_property_id_admin).amount
           @month_cost = $trial_life_month_cost_cny_admin
