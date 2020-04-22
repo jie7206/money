@@ -1,5 +1,4 @@
-<h2><%= t(:trial_list) %></h2>
-<h3><%# = raw Property.cal_year_profit("&nbsp;"*2) if admin? %></h3>
+<%= render 'shared/title_with_statistics', title_html: link_to(t(:trial_list), trial_lists_path) %>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td><%= t(:myage)%></td>
@@ -24,7 +23,7 @@
       <% month_sell = @month_cost/@usdt2cny/@btc_price %>
       <% begin_price = @btc_price %>
       <td align="center"><%= (((this_date-birthday).to_i)/365).to_i %></td>
-      <td align="center"><%= to_d(this_date,true) %></td>
+      <td align="center"><%= to_d(this_date) %></td>
       <td align="right"><%= to_n(@btc_price,0) %></td>
       <td align="right"><%= to_n(@btc_amount,8) %></td>
       <td align="right">
@@ -33,7 +32,13 @@
         <% end %>
       </td>
       <td align="right"><%= to_n(month_sell,6) if this_date > @month_cost_start %></td>
-      <td align="right"><%= @btc_capital = @btc_capital - @month_cost %></td>
+      <td align="right">
+        <% if this_date > @month_cost_start %>
+          <%= @btc_capital = @btc_capital - @month_cost  %>
+        <% else %>
+          <%= @btc_capital %>
+        <% end %>
+      </td>
       <td align="right"><%= begin_balance_twd = btc_capital_twd %></td>
       <td align="right"><%= to_n($trial_btc_month_grow_rate*100) %>%</td>
       <% @btc_amount -= month_sell if this_date > @month_cost_start %>
@@ -43,11 +48,34 @@
       <td align="right"><%= to_n(@btc_price,0) %></td>
       <td align="right"><%= cal_btc_capital %></td>
       <td align="right"><%= end_balance_twd = btc_capital_twd %></td>
-      <% goal, diff_price, diff_balance  = check_trial_reached(this_date) %>
-      <td align="right" class="<%= admin? and diff_balance > 0 ? 'trial_goal_reach' : '' %>"><span title="<%= "目前流动性资产总值与月末目标的差距(新台币)\nBTC目标价：#{goal} 差距：#{to_n(diff_price)}" if admin? and diff_balance != 0 %>"><%= diff_balance.to_i if admin? and diff_balance != 0 %></span></td>
+      <% goal_price, diff_price, goal_balance, diff_balance  = check_trial_reached(this_date) %>
+      <td align="right" class="<%= admin? and diff_balance > 0 ? 'trial_goal_reach' : '' %>">
+        <% if admin? and diff_balance != 0 %>
+          <span title="<%= "资产总值目标：#{goal_balance} 差距：#{diff_balance.to_i} 新台币\n比特币目标价：#{goal_price} 差距：#{to_n(diff_price)} 泰达币"%>">
+            <%= diff_balance.to_i %>
+          </span>
+        <% end %>
+      </td>
     </tr>
   <% end %>
+  <tr class="thead">
+    <td colspan="3" align="right">
+      <% # 显示现价与k线图链接 %>
+      <%= kline_chart_link %>
+    </td>
+    <td colspan="8" align="right">
+      <% # 显示资产净值与走势图链接 %>
+      <%= show_net_value_link %>
+    </td>
+    <td colspan="2" align="right">
+      <% # 将试算结果存入数据库 %>
+      <%= link_to t(:save_trials_to_db), save_trials_to_db_path, { id: 'save_trials_to_db' } if admin? %>
+    </td>
+  </tr>
 </table>
 <p>
-  <%= link_to t(:save_trials_to_db), save_trials_to_db_path, { id: 'save_trials_to_db' } if admin? %>
+  <% # 与资产更新相关的链接 %>
+  <%= update_btc_huobi_portfolios_link %>
+  <% # 更新汇率的链接 %>
+  <%= update_all_exchange_rates_link %>
 </p>

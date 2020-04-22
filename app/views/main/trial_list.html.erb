@@ -1,6 +1,6 @@
 <%
 def cal_btc_capital
-  @btc_capital = (@btc_price*@btc_amount*@usdt2cny).to_i
+  @btc_capital = (@btc_price*@btc_amount*$usdt_to_cny).to_i
 end
 
 def btc_capital_twd

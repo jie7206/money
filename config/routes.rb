@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
   resources :trial_lists
-  root 'deal_records#index'
+  root 'trial_lists#index'
 
   resources :properties do
     member do

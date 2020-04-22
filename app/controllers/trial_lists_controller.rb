@@ -4,6 +4,7 @@ class TrialListsController < ApplicationController
 
     # 输入比特币每月增长利率以及每月生活费计算能维持多少年
     def index
+      update_huobi_assets_core if $auto_update_huobi_assets > 0
       prepare_vars
     end
 
@@ -86,7 +87,7 @@ class TrialListsController < ApplicationController
           @month_cost = $trial_life_month_cost_cny
           @month_cost_start = $trial_month_cost_start_date
         end
-        @usdt2cny = DealRecord.first.usdt_to_cny
+        @usdt2cny = $usdt_to_cny
         @cny2twd = DealRecord.first.cny_to_twd
       end
 

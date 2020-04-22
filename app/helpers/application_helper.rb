@@ -216,7 +216,7 @@ module ApplicationHelper
   end
 
   # K线图链接
-  def kline_chart_link( text )
+  def kline_chart_link( text = to_n(DealRecord.first.price_now) )
     link_to text, {controller: :main, action: :kline_chart}, {target: :blank}
   end
 
@@ -535,7 +535,7 @@ module ApplicationHelper
 
   # 用于收支试算函数
   def cal_btc_capital
-    @btc_capital = (@btc_price*@btc_amount*@usdt2cny).to_i
+    @btc_capital = (@btc_price*@btc_amount*$usdt_to_cny).to_i
   end
 
   # 用于收支试算函数
@@ -550,9 +550,9 @@ module ApplicationHelper
     if trial_date <= end_date and rs = TrialList.find_by_trial_date(trial_date)
       goal_price = rs.end_price
       goal_balance = rs.end_balance_twd
-      return goal_price, @begin_price_for_trial-goal_price, @flow_assets_twd-goal_balance
+      return goal_price, @begin_price_for_trial-goal_price, goal_balance, @flow_assets_twd-goal_balance
     else
-      return 0, 0, 0
+      return 0, 0, 0, 0
     end
   end
 
