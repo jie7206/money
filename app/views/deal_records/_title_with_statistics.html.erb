@@ -8,8 +8,11 @@
 <h2>
   <%= link_to t(:deal_record_index), deal_records_path %>
   <% # 显示宏观统计数据 %>
-  ( <%= raw("<span title=\"买卖多空比\">#{@buy_sell_rate}</span> \
-      <span title=\"累计已实现损益\">#{total_real_profit}</span> \
+  (
+    <% if @buy_sell_rate.to_f > 0 %>
+      <%= raw("<span title=\"买卖多空比\">#{@buy_sell_rate}</span>") %>
+    <% end %>
+    <%= raw("<span title=\"累计已实现损益\">#{total_real_profit}</span> \
       <span title=\"近期已实现损益:未实现总损益\">#{total_real_p_24h.to_i}:#{total_unsell_profit.to_i}</span> \
       <span title=\"以比特币计算的总资产值\">#{to_n(eq_btc,2)}</span> \
       <span title=\"比特币占总资产比例(#{to_n(btc_p,3)}%), 每百分点等于#{one_btc2cny.to_i}人民币\">#{\

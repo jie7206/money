@@ -357,7 +357,7 @@ module ApplicationHelper
   # 显示资产净值链接
   def show_net_value_link
     month_growth_rate =
-    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank)}</span>|<span id=\"properties_net_value_cny\" title=\"#{t(:cny)}\">#{@properties_net_value_cny.to_i}</span>&nbsp;<span id=\"net_growth_ave_month\">#{to_n(@properties_net_growth_ave_month/10000.0,1)}|#{to_n(@properties_net_growth_ave_month_cny/10000.0,1)}</span> <span title=\"#{t(:btc_ave_price)}\">#{Property.btc_ave_cost.to_i}</span>|<span title=\"#{Property.cal_year_profit}\">#{link_to(to_n(Property.ave_month_growth_rate,1)+'%',trial_lists_path)}</span>"
+    raw "<span id=\"properties_net_value_twd\">#{link_to(@properties_net_value_twd.to_i, chart_path, target: :blank)}</span>|<span id=\"properties_net_value_cny\" title=\"#{t(:cny)}\">#{@properties_net_value_cny.to_i}</span>&nbsp;<span id=\"net_growth_ave_month\" title=\"资产净值增加/月(台币｜人民币)\">#{to_n(@properties_net_growth_ave_month/10000.0,1)}|#{to_n(@properties_net_growth_ave_month_cny/10000.0,1)}</span> <span title=\"#{t(:begin_profit_price)}\">#{Property.begin_profit_price.to_i}</span>|<span title=\"#{Property.cal_year_profit}\">#{link_to(to_n(Property.ave_month_growth_rate,2)+'%',trial_lists_path)}</span>"
   end
 
   # Fusioncharts属性大全: http://wenku.baidu.com/link?url=JUwX7IJwCbYMnaagerDtahulirJSr5ASDToWeehAqjQPfmRqFmm8wb5qeaS6BsS7w2_hb6rCPmeig2DBl8wzwb2cD1O0TCMfCpwalnoEDWa
@@ -590,7 +590,7 @@ module ApplicationHelper
     buy_under_price = get_invest_params(1).to_i
     buy_when_minutes = get_invest_params(17).to_i
     result = "#{buy_under_price}每#{every_minute}分" if buy_under_price > 0
-    result = "#{buy_when_minutes}分低/#{every_minute}分" if buy_when_minutes > 0
+    result = "#{buy_when_minutes}低/#{every_minute}分" if buy_when_minutes > 0
     result = "<u>#{result}</u>" if DealRecord.enable_to_buy?
     return raw('@'+result)
   end

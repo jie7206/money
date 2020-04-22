@@ -125,7 +125,7 @@ class Property < ApplicationRecord
     price_now = DealRecord.first.price_now if DealRecord.first
     price_p = real_ave_cost > 0 ? (price_now/real_ave_cost-1)*100 : 0
     # 以比特币计算的总资产值
-    p_btc = Property.tagged_with('比特币').sum {|p| p.amount}
+    p_btc = btc_records.sum {|p| p.amount}
     p_trezor = Property.tagged_with('冷钱包').sum {|p| p.amount}
     p_short = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
     eq_btc = (p_trezor + p_short).floor(8)
@@ -139,7 +139,7 @@ class Property < ApplicationRecord
     huobi_p = (Property.tagged_with('交易所').sum {|p| p.amount_to(:btc)})/eq_btc*100
     yuebao_p = (Property.tagged_with('支付宝').sum {|p| p.amount_to(:btc)})/eq_btc*100
     # 计算可投资金的实际比例
-    capital_p = (Property.tagged_with('可投资金').sum {|p| p.amount_to(:btc)})/eq_btc*100
+    capital_p = (investable_fund_records.sum {|p| p.amount_to(:btc)})/eq_btc*100
     if is_admin
       return eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, total_real_profit.to_i.to_s + ' ', total_unsell_profit.to_i.to_s + ' ', ave_hour_profit.to_i.to_s + ' ', total_real_p_24h.to_s + ' ', trezor_p, huobi_p, yuebao_p, capital_p
     else
@@ -151,7 +151,7 @@ class Property < ApplicationRecord
 
   # 比特币价值与法币价值的比例
   def self.btc_legal_ratio
-    btc_twd = (Property.tagged_with('比特币').sum {|p| p.amount_to(:twd)})
+    btc_twd = (btc_records.sum {|p| p.amount_to(:twd)})
     legal_twd = (Property.tagged_with('法币').sum {|p| p.amount_to(:twd)})
     usdt_twd = (Property.tagged_with('泰达币').sum {|p| p.amount_to(:twd)})
     return btc_twd/(legal_twd+usdt_twd)
@@ -159,10 +159,13 @@ class Property < ApplicationRecord
 
   # 比特币的总成本
   def self.btc_total_cost_twd
-    # 还没购买比特币的剩余可投资资金
-    ps = new.get_properties_from_tags( '短线', '比特币' )
     # 比特币的总成本 = 总贷款 - 还没购买比特币的剩余可投资资金
-    total_loan_lixi - (ps.sum {|p| p.amount_to(:twd)})
+    result = total_loan_lixi - (investable_fund_records.sum {|p| p.amount_to(:twd)})
+    if result > 0
+      return result
+    else
+      return 0.0001
+    end
   end
 
   # 比特币的总成本从台币换算成泰达币
@@ -182,17 +185,30 @@ class Property < ApplicationRecord
 
   # 比特币的总数
   def self.total_btc_amount
-    Property.tagged_with('比特币').sum {|p| p.amount}
+    btc_records.sum {|p| p.amount}
   end
 
   # 计算比特币的成本均价
   def self.btc_ave_cost
-    ps = Property.tagged_with('比特币')
-    if ps.size > 0
-      return btc_total_cost_usdt/(ps.sum {|p| p.amount})
+    if btc_records.size > 0
+      return btc_total_cost_usdt/total_btc_amount
     else
       return 0
     end
+  end
+
+  # 计算现价要大于多少能开始获利
+  def self.begin_profit_price
+    btc_ave_cost
+  end
+
+  # 比特币资料集
+  def self.btc_records
+    Property.tagged_with('比特币')
+  end
+
+  def self.investable_fund_records
+    Property.tagged_with('可投资金')
   end
 
   # 计算冷钱包的成本均价
@@ -205,18 +221,17 @@ class Property < ApplicationRecord
     end
   end
 
-  # 计算冷钱包过去每月的获利率
+  # 计算比特币过去每月的获利率
   def self.ave_month_growth_rate
-    ps = Property.tagged_with('冷钱包')
+    ps = Property.tagged_with('比特币')
     if ps.size > 0
-      cost = trezor_total_cost_twd
+      cost = btc_total_cost_twd
       months = pass_days.to_i/30
       if months > 0
-        result = ((1+((ps.sum {|p| p.amount_to(:twd)})-cost)/cost)**(1.0/months)-1)*100
-        if result < 0
+        begin
+          return ((1+((ps.sum {|p| p.amount_to(:twd)})-cost)/cost)**(1.0/months)-1)*100
+        rescue
           return 0
-        else
-          return result
         end
       else
         return 0
@@ -236,13 +251,24 @@ class Property < ApplicationRecord
     end
   end
 
+  # 比特币目前的值
+  def self.btc_value_twd
+    ps = btc_records
+    if ps.size > 0
+      return ps.sum {|p| p.amount_to(:twd)}
+    else
+      return 0
+    end
+  end
+
   # 计算冷钱包下一年收益
   def self.cal_year_profit( br = "\n" )
     year_profit_p = ave_month_growth_rate > 0 ? (1+ave_month_growth_rate.to_f/100)**12 : 1
     profit_p_value = year_profit_p-1
-    year_goal = (trezor_value_twd*year_profit_p).to_i
-    year_profit = (trezor_value_twd*profit_p_value).to_i
-    return "预估年化利率：#{format("%.2f", profit_p_value*100)}%" + br + "冷钱包年目标：#{year_goal}" + br + "冷钱包年获利：#{year_profit}" + br + "平均每月获利：#{year_profit/12}"
+    btc_value_of_twd = btc_value_twd
+    year_goal = (btc_value_of_twd*year_profit_p).to_i
+    year_profit = (btc_value_of_twd*profit_p_value).to_i
+    return "预估年化利率：#{format("%.2f", profit_p_value*100)}%" + br + "比特币年目标：#{year_goal}" + br + "比特币年获利：#{year_profit}" + br + "平均每月获利：#{year_profit/12}"
   end
 
   # 要写入记录列表的值

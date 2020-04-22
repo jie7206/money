@@ -1,4 +1,33 @@
 # -*- coding: utf-8 -*-
+# 
+# def cal_invest(price):
+#     global top
+#     global bottom
+#     global reduce_step
+#     global min_buy_cny
+#     global max_buy_cny
+#     b = 1  # 倍数从1开始(1,2,4,8...)
+#     invest_cny = 0
+#     for n in range(top-reduce_step, bottom-1, reduce_step*-1):
+#         if price >= n and price < n+reduce_step:
+#             invest_cny = min_buy_cny*b+(n+reduce_step-price)*(min_buy_cny/reduce_step)*b
+#             if invest_cny >= max_buy_cny:
+#                 return max_buy_cny
+#             else:
+#                 return invest_cny
+#         if price >= top:
+#             invest_cny = min_buy_cny
+#             return invest_cny
+#         elif price <= bottom+reduce_step*0.5:
+#             invest_cny = max_buy_cny
+#             return invest_cny
+#         b *= 2
+#     return invest_cny
+#
+#
+# for p in range(4000, 8000, 20):
+#     print("%i:%i  " % (p, cal_invest(p)))
+#
 from HuobiServices import *
 from update_all import *
 from update_assets import *
