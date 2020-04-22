@@ -304,6 +304,7 @@ cn:
   month_cost: 支出
   month_sell: 卖出
   begin_price: 月初价
+  goal_price: 目标价
   begin_amount: 月初量
   begin_balance: 月初额
   month_grow_rate: 增长

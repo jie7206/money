@@ -4,6 +4,7 @@
     <td><%= t(:myage)%></td>
     <td><%= t(:date)%></td>
     <td><%= t(:begin_price)%></td>
+    <td><%= t(:goal_price)%></td>
     <td><%= t(:begin_amount)%></td>
     <td><%= t(:month_cost)%></td>
     <td><%= t(:month_sell)%></td>
@@ -22,9 +23,11 @@
       <% this_date = Date.today.at_beginning_of_month+n.month %>
       <% month_sell = @month_cost/@usdt2cny/@btc_price %>
       <% begin_price = @btc_price %>
+      <% goal_price, diff_price, goal_balance, diff_balance  = check_trial_reached(this_date) %>
       <td align="center"><%= (((this_date-birthday).to_i)/365).to_i %></td>
       <td align="center"><%= to_d(this_date) %></td>
       <td align="right"><%= to_n(@btc_price,0) %></td>
+      <td align="right"><%= to_n(goal_price,0) %></td>
       <td align="right"><%= to_n(@btc_amount,8) %></td>
       <td align="right">
         <% if this_date > @month_cost_start %>
@@ -48,7 +51,6 @@
       <td align="right"><%= to_n(@btc_price,0) %></td>
       <td align="right"><%= cal_btc_capital %></td>
       <td align="right"><%= end_balance_twd = btc_capital_twd %></td>
-      <% goal_price, diff_price, goal_balance, diff_balance  = check_trial_reached(this_date) %>
       <td align="right" class="<%= admin? and diff_balance > 0 ? 'trial_goal_reach' : '' %>">
         <% if admin? and diff_balance != 0 %>
           <span title="<%= "资产总值目标：#{goal_balance} 差距：#{diff_balance.to_i} 新台币\n比特币目标价：#{goal_price} 差距：#{to_n(diff_price)} 泰达币"%>">
@@ -67,7 +69,7 @@
       <% # 显示资产净值与走势图链接 %>
       <%= show_net_value_link %>
     </td>
-    <td colspan="2" align="right">
+    <td colspan="3" align="right">
       <% # 将试算结果存入数据库 %>
       <%= link_to t(:save_trials_to_db), save_trials_to_db_path, { id: 'save_trials_to_db' } if admin? %>
     </td>
