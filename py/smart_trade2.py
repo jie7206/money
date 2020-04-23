@@ -49,8 +49,10 @@ TRACE_MIN_PRICE = 0 # 追踪买入的最低价数值
 TRACE_MIN_RATE = 1.0007 # 追踪最低价的反弹率
 WAIT_SEND_SEC = 10 # 下单后等待几秒读取成交结果
 MIN_TRADE_USDT = 5.2 # 下单到交易所的最低买卖金额
+MAX_WAIT_SELL_SEC = 300 # 卖单若迟迟未成交则等待几秒后撤消下单
 BTC_USDT_NOW = 0 # 计算仓位值使用(=交易所BTC资产以USDT计算的值)
 EX_USDT_VALUE = 0 # 计算仓位值使用(=交易所总资产以USDT计算的值)
+
 
 
 # 火币API请求地址
@@ -1108,12 +1110,16 @@ def check_sell_amount(sell_price, sell_amount, usdt_now, sell_max_usd):
 
 # 由下单回传值计算正确的获利值
 def sell_profit_cny_from_order(order_id, cost_usdt_total):
-    profit_cny = 0      # 人民币损益值
-    field_amount = 0    # 成交量
-    field_fees = 0      # 成交手续费
+    global WAIT_SEND_SEC        # 下单后等待几秒读取成交结果
+    global MAX_WAIT_SELL_SEC    # 卖单若迟迟未成交则等待几秒后撤消下单
+    profit_cny = 0              # 人民币损益值
+    field_amount = 0            # 成交量
+    field_fees = 0              # 成交手续费
+    count = 0                   # 计算回圈执行次数以便判断是否超过等待时间
     # 一直循环直到成交为止
     while True:
-        time.sleep(3)
+        time.sleep(WAIT_SEND_SEC)
+        count += 1
         data = order_info(order_id)['data']
         field_cash_amount = float(data['field-cash-amount'])
         field_fees = float(data['field-fees'])
@@ -1122,6 +1128,10 @@ def sell_profit_cny_from_order(order_id, cost_usdt_total):
         if field_amount > 0:
             profit_usdt = field_cash_amount - field_fees - cost_usdt_total
             profit_cny = profit_usdt*usdt2cny()
+            break
+        # 卖单若迟迟未成交则等待几秒后撤消下单
+        elif WAIT_SEND_SEC*count > MAX_WAIT_SELL_SEC:
+            cancel_order(order_id)
             break
     return profit_cny, field_amount, field_fees
 
