@@ -316,11 +316,17 @@ class MainController < ApplicationController
     if index = params[:i] and index.to_i < $exe_auto_invest_params_size and value = params[:v]
       set_invest_params(index,value)
       set_invest_params(0,swap_sec)
+      # 如果每隔几点购买额度翻倍 > 0 则必须设定多少价位以下执行买入
+      if index.to_i == 33 and value.to_i > 0
+        set_invest_params(1,((get_price_now/100).to_i+1)*100)
+        set_invest_params(17,0)
+      end
       # 定价的策略和买最低价的策略无法并存
       if index.to_i == 1 and get_invest_params(1).to_i > 0
         set_invest_params(17,0)
       elsif index.to_i == 17 and get_invest_params(17).to_i > 0
         set_invest_params(1,0)
+        set_invest_params(33,0)
       end
       # 定价卖出的策略和卖最高价的策略无法并存
       if index.to_i == 18 and get_invest_params(18).to_i > 0
@@ -338,7 +344,7 @@ class MainController < ApplicationController
   # 定投参数设置成功讯息
   def show_set_auto_invest_params_ok( index = nil, value = nil )
     info = (index and value) ? "(#{index} = #{value}) 现价每笔投资¥#{single_invest_cost.to_i} \
-      最低价每笔投资¥#{max_invest_cost.to_i}" : ""
+      最低价每笔投资¥#{max_invest_cny.to_i}" : ""
     t(:set_auto_invest_params_ok) + info
   end
 
@@ -371,11 +377,6 @@ class MainController < ApplicationController
       return true
     end
 
-    # 取得BTC现价
-    def get_price_now
-      DealRecord.first.price_now
-    end
-
     # 计算以现价购买的每笔投资金额
     def single_invest_cost
       price_now = get_price_now             # 取得BTC现价
@@ -388,15 +389,14 @@ class MainController < ApplicationController
           return ((ori_usdt/(price_diff/100)**2)*factor)*$usdt_to_cny
       # 现价 < 破底价 --> 直接以最大投资额购买
       else
-          return max_invest_cost
+          return max_invest_cny
       end
     end
 
     # 计算以现价购买的单笔最大投资金额
-    def max_invest_cost
-      ori_usdt = get_invest_params(3).to_f  # 原有参与投资的泰达币
-      max_rate = get_invest_params(8).to_f  # 单笔买入泰达币最大率
-      return ori_usdt*max_rate/100*$usdt_to_cny
+    def max_invest_cny
+      max_usdt = get_invest_params(8).to_f  # 单笔买入泰达币最大值
+      return max_usdt*$usdt_to_cny
     end
 
 end

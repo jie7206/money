@@ -1,33 +1,6 @@
 # -*- coding: utf-8 -*-
-# 
-# def cal_invest(price):
-#     global top
-#     global bottom
-#     global reduce_step
-#     global min_buy_cny
-#     global max_buy_cny
-#     b = 1  # 倍数从1开始(1,2,4,8...)
-#     invest_cny = 0
-#     for n in range(top-reduce_step, bottom-1, reduce_step*-1):
-#         if price >= n and price < n+reduce_step:
-#             invest_cny = min_buy_cny*b+(n+reduce_step-price)*(min_buy_cny/reduce_step)*b
-#             if invest_cny >= max_buy_cny:
-#                 return max_buy_cny
-#             else:
-#                 return invest_cny
-#         if price >= top:
-#             invest_cny = min_buy_cny
-#             return invest_cny
-#         elif price <= bottom+reduce_step*0.5:
-#             invest_cny = max_buy_cny
-#             return invest_cny
-#         b *= 2
-#     return invest_cny
-#
-#
-# for p in range(4000, 8000, 20):
-#     print("%i:%i  " % (p, cal_invest(p)))
-#
+import imp
+from Utils import *
 from HuobiServices import *
 from update_all import *
 from update_assets import *
@@ -129,7 +102,8 @@ def get_all_btc_amount():
 
 
 def btc_ave_cost():
-    rows = select_db("SELECT price, amount, fees FROM deal_records WHERE auto_sell = 0")
+    global acc_id
+    rows = select_db("SELECT price, amount, fees FROM deal_records WHERE account = '%s' and auto_sell = 0" % acc_id)
     if len(rows) > 0:
         sum_price = sum_amount = 0
         for row in rows:
@@ -168,12 +142,12 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
             ftext += str+'\n'
             trade_btc = float(get_trade_btc())
             btc_cny = trade_btc*price*u2c
+            btc_level_now = btc_hold_level(price)
+            profit_now = profit_cny_now(price, u2c)
             str = "BTC Now: %.8f (%.1f CNY) Total: %.1f CNY Level: %.2f%%" % (
                 trade_btc, btc_cny, usdt_cny+btc_cny, btc_level_now)
             print(str)
             ftext += str+'\n'
-            btc_level_now = btc_hold_level(price)
-            profit_now = profit_cny_now(price, u2c)
             # str = "BTC Level Now: %.2f%%  Ave: %.2f Profit Now: %.2f CNY" % (
             #     btc_level_now, btc_ave_cost(), profit_now)
             # print(str)
@@ -236,7 +210,8 @@ def profit_cny_now(price, u2c):
 
 
 def clear_deal_records():
-    sql = "DELETE FROM deal_records WHERE auto_sell = 0"
+    global acc_id
+    sql = "DELETE FROM deal_records WHERE account = '%s' and auto_sell = 0" % acc_id
     CONN.execute(sql)
     CONN.commit()
 
@@ -364,11 +339,12 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
     global ORDER_ID
     global FORCE_SELL
     global sell_max_cny
+    global acc_id
     usdt_now = get_trade_usdt()
     sell_max_usd = sell_max_cny/u2c
     if max_sell_count > 0 and usdt_now < sell_max_usd:
         rows = select_db(
-            "SELECT id, amount-fees as amount, created_at, price FROM deal_records WHERE auto_sell = 0 ORDER BY created_at ASC LIMIT %i" % max_sell_count)
+            "SELECT id, amount-fees as amount, created_at, price FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY created_at ASC LIMIT %i" % (acc_id, max_sell_count))
         if len(rows) > 0:
             ids = []
             sell_amount = 0
@@ -418,7 +394,7 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                             # 更新记录time_line文档
                             if over_sell:
                                 rs = select_db(
-                                    "SELECT created_at FROM deal_records WHERE auto_sell = 0 ORDER BY created_at DESC LIMIT 1")
+                                    "SELECT created_at FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY created_at DESC LIMIT 1" % acc_id)
                                 update_time_line(rs[0][0])
                                 clear_deal_records()
                                 str = "Time Line Updated to: %s And Clear Records!" % created_at
@@ -513,9 +489,10 @@ def reset_force_trade():
 
 
 def last_buy_interval():
+    global acc_id
     try:
         rows = select_db(
-            "SELECT created_at FROM deal_records WHERE auto_sell = 0 ORDER BY created_at DESC LIMIT 1")
+            "SELECT created_at FROM deal_records WHERE account = '%s' and auto_sell = 0 ORDER BY created_at DESC LIMIT 1" % acc_id)
         start_time = datetime.strptime(rows[0][0], "%Y-%m-%d %H:%M:%S")
         end_time = datetime.strptime(get_now(), "%Y-%m-%d %H:%M:%S")
         total_seconds = (end_time - start_time).total_seconds()
@@ -525,9 +502,10 @@ def last_buy_interval():
 
 
 def last_sell_interval():
+    global acc_id
     try:
         rows = select_db(
-            "SELECT updated_at FROM deal_records WHERE auto_sell = 1 ORDER BY updated_at DESC LIMIT 1")
+            "SELECT updated_at FROM deal_records WHERE account = '%s' and auto_sell = 1 ORDER BY updated_at DESC LIMIT 1" % acc_id)
         start_time = datetime.strptime(rows[0][0], "%Y-%m-%d %H:%M:%S")
         end_time = datetime.strptime(get_now(), "%Y-%m-%d %H:%M:%S")
         total_seconds = (end_time - start_time).total_seconds()
@@ -546,12 +524,13 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
     global max_price
     global buy_price_period
     global every_sec_for_sell
+    global acc_id
     with open(LOG_FILE, 'a') as fobj:
         sline = LINE_MARKS
         ftext = sline+'\n'
         now = datetime.now()
         if below_price > 0:
-            str = "%s Invest Between: %.2f ~ %.2f" % (get_now(), bottom_price, below_price)
+            str = "%s Invest Between: %.2f ~ %.2f %s %s" % (get_now(), bottom_price, below_price, acc_id, ACCOUNT_ID)
         else:
             str = "%s Invest Between: %.2f ~ AUTO" % (get_now(), bottom_price)
         print(str)
@@ -607,8 +586,8 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         delta_hours = timedelta(hours=remain_hours)
                         empty_usdt_time = to_t(now + delta_hours)
                         usdt_cny = trade_usdt*u2c
-                        str = "BTC Level: %.2f%% (FORCE_BUY:%s)" % (
-                            btc_level_now, FORCE_BUY)
+                        str = "BTC Level: %.2f%% (FORCE_BUY:%s) for AccId: %s(%s)" % (
+                            btc_level_now, FORCE_BUY, acc_id, ACCOUNT_ID)
                         print(str)
                         ftext += str+'\n'
                         str = "Total  USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, usdt_cny)
@@ -685,7 +664,7 @@ if __name__ == '__main__':
         try:
             with open(PARAMS, 'r') as fread:
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny = params_str.split(
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id = params_str.split(
                     ' ')
                 every_sec = int(every_sec)
                 below_price = float(below_price)
@@ -716,6 +695,17 @@ if __name__ == '__main__':
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
                                        factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_cny, max_sell_count, min_sec_rate, max_sec_rate)
                 reset_test_price()
+                global ACCOUNT_ID
+                if acc_id == '170':
+                    ACCOUNT_ID = 6582761    
+                    # ACCESS_KEY = "0b259f2c-h6n2d4f5gh-4c7eb89b-845c8"
+                    # SECRET_KEY = "086b3b20-4fc8db0d-21b8ad20-9bf64"
+                    # PHONE = '17099311026'
+                if acc_id == '135':
+                    ACCOUNT_ID = 6565695    
+                    # ACCESS_KEY = "c9c13a21-58449e8a-af5fdfd2-mn8ikls4qg"
+                    # SECRET_KEY = "7aa1c5a1-0c7d2bdf-5dd73a82-34136"
+                    # PHONE = '13581706025'
                 if code == 0:
                     break
                 else:

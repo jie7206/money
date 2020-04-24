@@ -1392,7 +1392,7 @@ def safe_after_sell(price_now, stop_sell_level):
         return True
 
 # 执行自动下单的主程序
-def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate):
+def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, time_line, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate):
     # 引用全域变数
     global ORDER_ID
     global FORCE_BUY
@@ -1405,6 +1405,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
     global every_sec_for_sell
     global acc_id
     global stop_sell_level
+    global reduce_step
     # 写入Log文档
     with open(LOG_FILE, 'a') as fobj:
         # Log分隔符
@@ -1442,20 +1443,26 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 trade_usdt = float(get_trade_usdt())
                 # 跌破多少价位停止买入
                 bottom = float(bottom_price)
-                # 单笔买入的最大值
-                max_usdt = ori_usdt*max_rate
                 # 计算BTC目前持仓水平
                 btc_level_now = btc_hold_level(price_now)
                 # 如果是测试单 或者 实际能交易的USDT>单笔买入的最小值 以及 现价必须>最低购买价
                 if test_price > 0 or trade_usdt > min_usdt:
                     # 计算购买成本与购买数量
-                    price_diff = price_now - bottom
-                    # 现价 > 破底价 --> 价格越低，投资越多
-                    if price_now - bottom > 1:
-                        usdt = (ori_usdt/((price_diff)/100)**2)*factor
-                    # 现价 < 破底价 --> 直接以最大投资额购买
-                    else:
-                        usdt = max_usdt
+                    if reduce_step == 0:
+                        # 1) 原始的计算方式
+                        price_diff = price_now - bottom
+                        # 现价 > 破底价 --> 价格越低，投资越多
+                        if price_now - bottom > 1:
+                            usdt = (ori_usdt/((price_diff)/100)**2)*factor
+                        # 现价 < 破底价 --> 直接以最大投资额购买
+                        else:
+                            usdt = max_usdt
+                    elif reduce_step > 0:
+                        # 2) 每隔几点购买额度翻倍
+                        usdt = cal_invest_usdt(price_now)
+                        str = "*** Double Invest Calculation Every %i ***" % reduce_step
+                        print(str)
+                        ftext += str+'\n'
                     # 设定好边界条件的值
                     if usdt < min_usdt:
                         usdt = min_usdt
@@ -1566,6 +1573,32 @@ def check_lower_ave( price_now ):
         return False
 
 
+# 價格越低購買數量成倍數級增加
+def cal_invest_usdt( price ):
+    global below_price
+    global bottom_price
+    global reduce_step
+    global min_usdt
+    global max_usdt
+    b = 1  # 倍数从1开始(1,2,4,8...)
+    invest_usdt = 0
+    for n in range(below_price-reduce_step, bottom_price-1, reduce_step*-1):
+        if price >= n and price < n+reduce_step:
+            invest_usdt = min_usdt*b+(n+reduce_step-price)*(min_usdt/reduce_step)*b
+            if invest_usdt >= max_usdt:
+                return max_usdt
+            else:
+                return invest_usdt
+        if price >= below_price:
+            invest_usdt = min_usdt
+            return invest_usdt
+        elif price <= bottom_price+reduce_step*0.5:
+            invest_usdt = max_usdt
+            return invest_usdt
+        b *= 2
+    return invest_usdt
+
+
 ########## 自定义函数结束 ##################################################################
 
 
@@ -1581,17 +1614,17 @@ if __name__ == '__main__':
             with open(PARAMS, 'r') as fread:
                 # 将设定文档参数读入内存
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_rate, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave = params_str.split(' ')
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step = params_str.split(' ')
                 # 将设定文档参数根据适当的型别初始化
                 every_sec = int(every_sec)
-                below_price = float(below_price)
-                bottom_price = float(bottom_price)
+                below_price = int(below_price)
+                bottom_price = int(bottom_price)
                 ori_usdt = float(ori_usdt)
                 factor = float(factor)
                 max_buy_level = float(max_buy_level)
                 target_amount = float(target_amount)
                 min_usdt = float(min_usdt)
-                max_rate = float(max_rate)/100
+                max_usdt = float(max_usdt)
                 time_line = deal_date+' '+deal_time
                 test_price = float(test_price)
                 profit_goal = float(profit_goal)
@@ -1611,6 +1644,7 @@ if __name__ == '__main__':
                 force_to_buy = int(force_to_buy)
                 buy_period_max = float(buy_period_max)
                 is_lower_ave = int(is_lower_ave)
+                reduce_step = int(reduce_step)
                 # 获得在几分钟内比特币价格的最大值与最小值
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 # 是否执行强制买入
@@ -1621,7 +1655,7 @@ if __name__ == '__main__':
                     FORCE_SELL = True
                 # 执行自动下单的主程序
                 code = exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt,
-                                       factor, max_buy_level, target_amount, min_usdt, max_rate, time_line, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate)
+                                       factor, max_buy_level, target_amount, min_usdt, max_usdt, time_line, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate)
                 # 清零与重载：测试单、强制卖出、强制买卖、火币账号
                 reset_test_price()
                 reset_force_sell()

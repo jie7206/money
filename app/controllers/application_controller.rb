@@ -484,6 +484,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # 取得BTC现价
+  def get_price_now
+    DealRecord.first.price_now
+  end
+
   # 美元换台币
   def usd2twd
     return $twd_exchange_rate

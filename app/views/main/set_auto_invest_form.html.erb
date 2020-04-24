@@ -58,8 +58,8 @@ price_step = 10
     </tr>
     <tr valign="top">
       <td><%= n %></td>
-      <td>单笔买入泰达币最大率</td>
-      <td><%= invest_params_setup_link(8,1,20) %></td>
+      <td>单笔买入泰达币最大值</td>
+      <td><%= invest_params_setup_link(8,50,360,10) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -77,8 +77,9 @@ price_step = 10
     <tr valign="top" class="set_aif_bg">
       <td><%= n %></td>
       <td>用于测试的比特币价格</td>
-      <% rate_param = 0.03 %>
-      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),5) %></td>
+      <% rate_param = 0.08 %>
+      <% step_param = 10 %>
+      <td><%= show_invest_param_value(11) %> <%= invest_params_setup_link(11,(@price_now*(1-rate_param)).to_i/100*100,@price_now*(1+rate_param),step_param) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -205,6 +206,12 @@ price_step = 10
       <td><%= n %></td>
       <td>成本均价是否越买越低</td>
       <td><%= show_invest_param_value(32) %> <%= invest_params_setup_link(32,0,1) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>每隔几点购买额度翻倍</td>
+      <td><%= invest_params_setup_link(33,0,1000,50) %></td>
       <% n += 1 %>
     </tr>
   </table>
