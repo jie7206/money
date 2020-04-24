@@ -160,7 +160,7 @@ class Property < ApplicationRecord
   # 比特币的总成本
   def self.btc_total_cost_twd
     # 比特币的总成本 = 总贷款 - 还没购买比特币的剩余可投资资金
-    result = total_loan_lixi - (investable_fund_records.sum {|p| p.amount_to(:twd)})
+    result = total_loan_lixi - investable_fund_records_twd
     if result > 0
       return result
     else
@@ -188,6 +188,11 @@ class Property < ApplicationRecord
     btc_records.sum {|p| p.amount}
   end
 
+  # 比特币数量/比特币总数
+  def self.btc_amount
+    total_btc_amount
+  end
+
   # 计算比特币的成本均价
   def self.btc_ave_cost
     if btc_records.size > 0
@@ -207,8 +212,14 @@ class Property < ApplicationRecord
     Property.tagged_with('比特币')
   end
 
+  # 所有可投资金数据集
   def self.investable_fund_records
     Property.tagged_with('可投资金')
+  end
+
+  # 所有可投资金台币现值
+  def self.investable_fund_records_twd
+    investable_fund_records.sum {|p| p.amount_to(:twd)}
   end
 
   # 计算冷钱包的成本均价
@@ -261,19 +272,9 @@ class Property < ApplicationRecord
     end
   end
 
-  # 比特币目前的值
-  def self.btc_value_twd
-    ps = btc_records
-    if ps.size > 0
-      return ps.sum {|p| p.amount_to(:twd)}
-    else
-      return 0
-    end
-  end
-
   # 流动性资产总值
   def self.flow_assets_twd
-    (investable_fund_records.sum {|p| p.amount_to(:twd)}) + btc_value_twd
+    investable_fund_records_twd + btc_value_twd
   end
 
   # 计算冷钱包下一年收益

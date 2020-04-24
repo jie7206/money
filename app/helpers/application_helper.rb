@@ -550,9 +550,11 @@ module ApplicationHelper
     if trial_date <= end_date and rs = TrialList.find_by_trial_date(trial_date)
       goal_price = rs.end_price
       goal_balance = rs.end_balance_twd
-      return goal_price, @begin_price_for_trial-goal_price, goal_balance, @flow_assets_twd-goal_balance
+      # 計算理財目標的達標價
+      reach_goal_price = (goal_balance - Property.investable_fund_records_twd)/(Property.btc_amount*DealRecord.new.usdt_to_twd)*$reach_goal_price_factor
+      return goal_price, @begin_price_for_trial - goal_price, goal_balance, @flow_assets_twd - goal_balance, reach_goal_price
     else
-      return 0, 0, 0, 0
+      return 0, 0, 0, 0, 0
     end
   end
 
@@ -603,6 +605,15 @@ module ApplicationHelper
       return raw("<span title='#{diff_sec/(60*60*24)}天'>#{diff_sec/(60*60)}H</span>")
     else
       return raw("<span title='#{diff_sec/(60*60)}小时'>#{diff_sec/(60*60*24)}D</span>")
+    end
+  end
+
+  # 由系统参数获取要计算的比特币数量
+  def get_btc_amount_from_system_params
+    if admin?
+      $trial_btc_amount_admin > 0 ? $trial_btc_amount_admin : Property.find($btc_amount_property_id_admin).amount
+    else
+      $trial_btc_amount > 0 ? $trial_btc_amount : Property.find($btc_amount_property_id).amount
     end
   end
 

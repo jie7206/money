@@ -5,6 +5,7 @@
     <td><%= t(:date)%></td>
     <td><%= t(:begin_price)%></td>
     <td><%= t(:goal_price)%></td>
+    <td><%= t(:reach_goal_price)%></td>
     <td><%= t(:begin_amount)%></td>
     <td><%= t(:month_cost)%></td>
     <td><%= t(:month_sell)%></td>
@@ -23,11 +24,12 @@
       <% this_date = Date.today.at_beginning_of_month+n.month %>
       <% month_sell = @month_cost/@usdt2cny/@btc_price %>
       <% begin_price = @btc_price %>
-      <% goal_price, diff_price, goal_balance, diff_balance  = check_trial_reached(this_date) %>
+      <% goal_price, diff_price, goal_balance, diff_balance, reach_goal_price  = check_trial_reached(this_date) %>
       <td align="center"><%= (((this_date-birthday).to_i)/365).to_i %></td>
       <td align="center"><%= to_d(this_date) %></td>
       <td align="right"><%= to_n(@btc_price,0) %></td>
       <td align="right"><%= to_n(goal_price,0) %></td>
+      <td align="right"><%= to_n(reach_goal_price,0) %></td>
       <td align="right"><%= to_n(@btc_amount,8) %></td>
       <td align="right">
         <% if this_date > @month_cost_start %>
@@ -65,7 +67,7 @@
       <% # 显示现价与k线图链接 %>
       <%= kline_chart_link %>
     </td>
-    <td colspan="8" align="right">
+    <td colspan="9" align="right">
       <% # 显示资产净值与走势图链接 %>
       <%= show_net_value_link %>
     </td>
