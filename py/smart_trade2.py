@@ -1406,6 +1406,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
     global acc_id
     global stop_sell_level
     global reduce_step
+    global top_price
     # 写入Log文档
     with open(LOG_FILE, 'a') as fobj:
         # Log分隔符
@@ -1448,8 +1449,14 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                 # 如果是测试单 或者 实际能交易的USDT>单笔买入的最小值 以及 现价必须>最低购买价
                 if test_price > 0 or trade_usdt > min_usdt:
                     # 计算购买成本与购买数量
-                    if reduce_step == 0:
-                        # 1) 原始的计算方式
+                    if reduce_step > 0 and top_price > 0:
+                        # 1) 每隔几点购买额度翻倍
+                        usdt = cal_invest_usdt(price_now)
+                        str = "*** Double Buy Every %i Calculated ***" % reduce_step
+                        print(str)
+                        ftext += str+'\n'
+                    else:
+                        # 2) 原始的计算方式
                         price_diff = price_now - bottom
                         # 现价 > 破底价 --> 价格越低，投资越多
                         if price_now - bottom > 1:
@@ -1457,12 +1464,6 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         # 现价 < 破底价 --> 直接以最大投资额购买
                         else:
                             usdt = max_usdt
-                    elif reduce_step > 0:
-                        # 2) 每隔几点购买额度翻倍
-                        usdt = cal_invest_usdt(price_now)
-                        str = "*** Double Invest Calculation Every %i ***" % reduce_step
-                        print(str)
-                        ftext += str+'\n'
                     # 设定好边界条件的值
                     if usdt < min_usdt:
                         usdt = min_usdt
@@ -1575,21 +1576,21 @@ def check_lower_ave( price_now ):
 
 # 價格越低購買數量成倍數級增加
 def cal_invest_usdt( price ):
-    global below_price
+    global top_price
     global bottom_price
     global reduce_step
     global min_usdt
     global max_usdt
     b = 1  # 倍数从1开始(1,2,4,8...)
     invest_usdt = 0
-    for n in range(below_price-reduce_step, bottom_price-1, reduce_step*-1):
+    for n in range(top_price-reduce_step, bottom_price-1, reduce_step*-1):
         if price >= n and price < n+reduce_step:
             invest_usdt = min_usdt*b+(n+reduce_step-price)*(min_usdt/reduce_step)*b
             if invest_usdt >= max_usdt:
                 return max_usdt
             else:
                 return invest_usdt
-        if price >= below_price:
+        if price >= top_price:
             invest_usdt = min_usdt
             return invest_usdt
         elif price <= bottom_price+reduce_step*0.5:
@@ -1614,7 +1615,7 @@ if __name__ == '__main__':
             with open(PARAMS, 'r') as fread:
                 # 将设定文档参数读入内存
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step = params_str.split(' ')
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step, top_price = params_str.split(' ')
                 # 将设定文档参数根据适当的型别初始化
                 every_sec = int(every_sec)
                 below_price = int(below_price)
@@ -1645,6 +1646,7 @@ if __name__ == '__main__':
                 buy_period_max = float(buy_period_max)
                 is_lower_ave = int(is_lower_ave)
                 reduce_step = int(reduce_step)
+                top_price = int(top_price)
                 # 获得在几分钟内比特币价格的最大值与最小值
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 # 是否执行强制买入

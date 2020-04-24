@@ -32,13 +32,13 @@ price_step = 10
       <td><%= show_invest_param_value(3) %> <%= invest_params_setup_link(3,100,5000,100) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top" class="set_aif_bg">
+    <tr valign="top" class="set_aif_bg_rose">
       <td><%= n %></td>
       <td>单笔买入价格调整参数</td>
       <td><%= show_invest_param_value(4) %> <%= invest_params_setup_link(4,0.1,15.0,0.1,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top" class="set_aif_bg">
+    <tr valign="top" class="set_aif_bg_rose">
       <td><%= n %></td>
       <td>自动买入的最大仓位值</td>
       <td><%= show_invest_param_value(5) %> <%= invest_params_setup_link(5,0,100,1) %></td>
@@ -74,7 +74,7 @@ price_step = 10
       <td><%= show_invest_param_value(10) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top" class="set_aif_bg">
+    <tr valign="top" class="set_aif_bg_gold">
       <td><%= n %></td>
       <td>用于测试的比特币价格</td>
       <% rate_param = 0.08 %>
@@ -88,7 +88,7 @@ price_step = 10
       <td><%= show_invest_param_value(12) %> <%= invest_params_setup_link(12,1,500,10,0,true) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top" class="set_aif_bg">
+    <tr valign="top" class="set_aif_bg_rose">
       <td><%= n %></td>
       <td>单次获利最多卖出笔数</td>
       <td><%= invest_params_setup_link(13,0,40,1) %></td>
@@ -112,13 +112,13 @@ price_step = 10
       <td><%= invest_params_setup_link(16,1,30,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top" class="set_aif_bg">
+    <tr valign="top" class="set_aif_bg_rose">
       <td><%= n %></td>
       <td>买入几分钟内的最低价</td>
       <td><%= show_invest_param_value(17) %> <%= invest_params_setup_link(17,0,480,5) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top" class="set_aif_bg">
+    <tr valign="top" class="set_aif_bg_rose">
       <td><%= n %></td>
       <td>卖出几分钟内的最高价</td>
       <td><%= show_invest_param_value(18) %> <%= invest_params_setup_link(18,0,480,5) %></td>
@@ -142,7 +142,7 @@ price_step = 10
       <td><%= show_invest_param_value(21) %> <%= invest_params_setup_link(21,0,-27,-1) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top" class="set_aif_bg">
+    <tr valign="top" class="set_aif_bg_rose">
       <td><%= n %></td>
       <td>每隔几秒自动卖出一次</td>
       <td><%= show_invest_param_value(22) %> <%= invest_params_setup_link(22,0,3600*2,300) %></td>
@@ -172,7 +172,7 @@ price_step = 10
       <td><%= show_invest_param_value(26) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top" class="set_aif_bg">
+    <tr valign="top" class="set_aif_bg_rose">
       <td><%= n %></td>
       <td>多少价位执行强制卖出</td>
       <td><%= show_invest_param_value(27) %> <%= invest_params_setup_link(27,start_price,end_price,price_step,0,true) %></td>
@@ -184,7 +184,7 @@ price_step = 10
       <td><%= show_invest_param_value(28) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top" class="set_aif_bg">
+    <tr valign="top" class="set_aif_bg_rose">
       <td><%= n %></td>
       <td>停止自动卖出的仓位值</td>
       <td><%= show_invest_param_value(29) %> <%= invest_params_setup_link(29,0,100,1) %></td>
@@ -196,7 +196,7 @@ price_step = 10
       <td><%= show_invest_param_value(30) %> <%= invest_params_setup_link(30,0,1) %></td>
       <% n += 1 %>
     </tr>
-    <tr valign="top">
+    <tr valign="top" class="set_aif_bg_rose">
       <td><%= n %></td>
       <td>买入最低价时的最高价</td>
       <td><%= show_invest_param_value(31) %> <%= invest_params_setup_link(31,start_price,end_price,price_step,0,true) %></td>
@@ -212,6 +212,12 @@ price_step = 10
       <td><%= n %></td>
       <td>每隔几点购买额度翻倍</td>
       <td><%= invest_params_setup_link(33,0,1000,50) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>额度翻倍的最大购买价</td>
+      <td><%= show_invest_param_value(34) %> <%= invest_params_setup_link(34,start_price,end_price,price_step) %></td>
       <% n += 1 %>
     </tr>
   </table>
