@@ -312,6 +312,7 @@ cn:
   end_price: 月末价
   end_amount: 月末量
   end_balance: 月末额
+  goal_balance: 月末目标
   sell_to_back: 卖至回本
   sell_to_back_ok: 卖到回本下单已执行！
   save_trials_to_db: 将试算结果存入数据库

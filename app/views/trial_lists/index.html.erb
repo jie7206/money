@@ -10,11 +10,10 @@
     <td><%= t(:month_cost)%></td>
     <td><%= t(:month_sell)%></td>
     <td><%= t(:begin_balance)%></td>
-    <td><%= t(:exchange_to_twd)%></td>
     <td><%= t(:month_grow_rate)%></td>
     <td><%= t(:end_price)%></td>
     <td><%= t(:end_balance)%></td>
-    <td><%= t(:exchange_to_twd)%></td>
+    <td><%= t(:goal_balance)%></td>
     <td><%= t(:have_reached) if admin? %></td>
   </tr>
   <% cal_btc_capital %>
@@ -25,34 +24,45 @@
       <% month_sell = @month_cost/@usdt2cny/@btc_price %>
       <% begin_price = @btc_price %>
       <% goal_price, diff_price, goal_balance, diff_balance, reach_goal_price  = check_trial_reached(this_date) %>
+      <!-- 岁 //-->
       <td align="center"><%= (((this_date-birthday).to_i)/365).to_i %></td>
+      <!-- 日期 //-->
       <td align="center"><%= to_d(this_date) %></td>
+      <!-- 月初价 //-->
       <td align="right"><%= to_n(@btc_price,0) %></td>
+      <!-- 目标价 //-->
       <td align="right"><%= to_n(goal_price,0) %></td>
+      <!-- 达标价 //-->
       <td align="right"><%= to_n(reach_goal_price,0) %></td>
+      <!-- 月初量 //-->
       <td align="right"><%= to_n(@btc_amount,8) %></td>
+      <!-- 支出 //-->
       <td align="right">
         <% if this_date > @month_cost_start %>
           <span title="<%=to_n(@month_cost*@cny2twd,0)%>"><%='¥'+to_n(@month_cost,0)%></span>
         <% end %>
       </td>
+      <!-- 卖出 //-->
       <td align="right"><%= to_n(month_sell,6) if this_date > @month_cost_start %></td>
+      <!-- 月初额 //-->
       <td align="right">
-        <% if this_date > @month_cost_start %>
-          <%= @btc_capital = @btc_capital - @month_cost  %>
-        <% else %>
-          <%= @btc_capital %>
-        <% end %>
+        <% @btc_capital = @btc_capital - @month_cost if this_date > @month_cost_start %>
+        <%= begin_balance_twd = btc_capital_twd %>
       </td>
-      <td align="right"><%= begin_balance_twd = btc_capital_twd %></td>
+      <!-- 增长 //-->
       <td align="right"><%= to_n($trial_btc_month_grow_rate*100) %>%</td>
       <% @btc_amount -= month_sell if this_date > @month_cost_start %>
       <% @btc_price = @btc_price.to_f * (1+$trial_btc_month_grow_rate) %>
       <% @btc_price = $trial_btc_max_price if @btc_price > $trial_btc_max_price %>
       <% @month_cost = (@month_cost.to_f * (1+$trial_cost_month_grow_rate)).to_i %>
+      <!-- 月末价 //-->
       <td align="right"><%= to_n(@btc_price,0) %></td>
-      <td align="right"><%= cal_btc_capital %></td>
+      <!-- 月末额 //-->
+      <% cal_btc_capital %>
       <td align="right"><%= end_balance_twd = btc_capital_twd %></td>
+      <!-- 月末目标 //-->
+      <td align="right"><%= goal_balance %></td>
+      <!-- 距离目标 //-->
       <td align="right" class="<%= admin? and diff_balance > 0 ? 'trial_goal_reach' : '' %>">
         <% if admin? and diff_balance != 0 %>
           <span title="<%= "资产总值目标：#{goal_balance} 差距：#{diff_balance.to_i} 新台币\n比特币目标价：#{goal_price} 差距：#{to_n(diff_price)} 泰达币"%>">
@@ -67,7 +77,7 @@
       <% # 显示现价与k线图链接 %>
       <%= kline_chart_link %>
     </td>
-    <td colspan="9" align="right">
+    <td colspan="8" align="right">
       <% # 显示资产净值与走势图链接 %>
       <%= show_net_value_link %>
     </td>
