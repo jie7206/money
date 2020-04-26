@@ -1766,5 +1766,5 @@ if __name__ == '__main__':
                                 ################################################################
                     stdout_write(" "*30)
         except:
-            print("Some Unexpected Error, Please Break Program to check!!")
-            time.sleep(3600)
+            print("Some Unexpected Error or Connect Timeout, Please Wait %i Sec or Break Program to Check!!" % WAIT_SEND_SEC)
+            time.sleep(WAIT_SEND_SEC)

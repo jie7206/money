@@ -7,7 +7,6 @@ Bundler.require(*Rails.groups)
 
 module Money
   class Application < Rails::Application
-    config.web_console.whitelisted_ips = '219.143.154.75'
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2
     config.i18n.default_locale = :cn
