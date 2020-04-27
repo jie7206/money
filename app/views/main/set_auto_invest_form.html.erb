@@ -220,6 +220,19 @@ price_step = 10
       <td><%= show_invest_param_value(34) %> <%= invest_params_setup_link(34,start_price,end_price,price_step) %></td>
       <% n += 1 %>
     </tr>
+    <% trace_rate_amp = 0.0035 %>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>买入最低价时的反弹率</td>
+      <td><%= show_invest_param_value(35) %> <%= invest_params_setup_link(35,1,1+trace_rate_amp,0.0001,4) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>卖出最高价时的回调率</td>
+      <td><%= show_invest_param_value(36) %> <%= invest_params_setup_link(36,1,1-trace_rate_amp,-0.0001,4) %></td>
+      <% n += 1 %>
+    </tr>
   </table>
   <p>
   <div id="params_input" style="width:<%=$default_table_width%>px">

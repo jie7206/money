@@ -45,15 +45,18 @@ FORCE_BUY = False # 强制买入旗标
 FORCE_SELL = False # 强制卖出旗标
 LINE_MARKS = "-"*70 # Log记录的分隔符号
 ALREADY_SEND_BUY = False # 是否已送单旗标
+EX_RATE = 0.002  # 交易所手续费率
+BUY_RATE = 1.0002  # 比市价多多少比例买入
+SELL_RATE = 0.99999  # 比市价少多少比例卖出
+TRACE_MIN_RATE = 0 # 追踪最低价的反弹率
+TRACE_MAX_RATE = 0 # 追踪最高价的回调率
 TRACE_MIN_PRICE = 0 # 追踪买入的最低价数值
-TRACE_MIN_RATE = 1.0007 # 追踪最低价的反弹率
+TRACE_MAX_PRICE = 0 # 追踪卖出的最高价数值
 WAIT_SEND_SEC = 10 # 下单后等待几秒读取成交结果
 MIN_TRADE_USDT = 5.2 # 下单到交易所的最低买卖金额
 MAX_WAIT_SELL_SEC = 300 # 卖单若迟迟未成交则等待几秒后撤消下单
 BTC_USDT_NOW = 0 # 计算仓位值使用(=交易所BTC资产以USDT计算的值)
 EX_USDT_VALUE = 0 # 计算仓位值使用(=交易所总资产以USDT计算的值)
-
-
 
 # 火币API请求地址
 MARKET_URL = "https://api.huobi.pro"
@@ -677,17 +680,17 @@ def get_time_line():
 
 # 扣除交易所手续费率
 def fees_rate():
-    return 1-0.002
+    return 1 - EX_RATE
 
 
 # 比市价多多少比例买入
 def buy_price_rate():
-    return 1.0003
+    return BUY_RATE
 
 
 # 比市价少多少比例卖出
 def sell_price_rate():
-    return 0.99998
+    return SELL_RATE
 
 
 # 取得比特币当前报价
@@ -1304,10 +1307,12 @@ def reset_force_trade():
     global FORCE_BUY
     global FORCE_SELL
     global TRACE_MIN_PRICE
+    global TRACE_MAX_PRICE
     ORDER_ID = ''
     FORCE_BUY = False
     FORCE_SELL = False
     TRACE_MIN_PRICE = 0
+    TRACE_MAX_PRICE = 0
 
 
 # 回传最近一笔买单的间隔秒数，若无则回传最近一笔卖单的间隔秒数
@@ -1566,6 +1571,25 @@ def reach_buy_price(price_now, min_price):
         return False
 
 
+# 破顶之后持续追踪直到回调超过指定的值才返回True允许卖出
+def reach_sell_price(price_now, max_price):
+    global TRACE_MAX_PRICE
+    # 初始化追踪卖出的最高价然后返回False
+    if TRACE_MAX_PRICE == 0:
+        TRACE_MAX_PRICE = max_price
+        return False
+    # 如果现价比记录的值还高则更新记录的值后返回False
+    elif max_price > TRACE_MAX_PRICE:
+        TRACE_MAX_PRICE = max_price
+        return False
+    # 如果现价比记录的值还要低于TRACE_MAX_RATE的倍率则返回True
+    elif price_now < TRACE_MAX_PRICE*TRACE_MAX_RATE:
+        return True
+    # 其他的状况一律返回False
+    else:
+        return False
+
+
 # 判断现价是否比成本均价还低
 def check_lower_ave( price_now ):
     if price_now < btc_ave_cost():
@@ -1615,7 +1639,7 @@ if __name__ == '__main__':
             with open(PARAMS, 'r') as fread:
                 # 将设定文档参数读入内存
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step, top_price = params_str.split(' ')
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step, top_price, trace_min_rate, trace_max_rate = params_str.split(' ')
                 # 将设定文档参数根据适当的型别初始化
                 every_sec = int(every_sec)
                 below_price = int(below_price)
@@ -1647,6 +1671,8 @@ if __name__ == '__main__':
                 is_lower_ave = int(is_lower_ave)
                 reduce_step = int(reduce_step)
                 top_price = int(top_price)
+                TRACE_MIN_RATE = float(trace_min_rate)
+                TRACE_MAX_RATE = float(trace_max_rate)
                 # 获得在几分钟内比特币价格的最大值与最小值
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 # 是否执行强制买入
@@ -1718,9 +1744,19 @@ if __name__ == '__main__':
                                 else:
                                     over_sell_profit = True
                                 #################################################################
-                                # 达到卖出的条件则执行卖出(仓位、时间、获利、[可卖价格之上|分钟内的最高价])
-                                if over_sell_level and over_sell_time and over_sell_profit and \
-                                    (is_above_price or reach_high_price):
+                                # 达到卖出的条件则执行卖出
+                                # 如果破顶后，检查是否回调到想卖出的价位
+                                if reach_high_price or TRACE_MAX_PRICE > 0:
+                                    is_sell_price = reach_sell_price(price_now, max_price)
+                                else:
+                                    is_sell_price = False
+                                if price_now > 0 and max_price > 0 and sell_price_period > 0:
+                                    str = "%s:%.2f %imax:%.2f sp:%i buy:%s sell:%s reach_p(%.2f:%.2f): %s rate: %.4f" % (get_now(), price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time, TRACE_MAX_PRICE, TRACE_MAX_PRICE*TRACE_MAX_RATE, is_sell_price, TRACE_MAX_RATE)
+                                    stdout_write(str)
+                                if over_sell_level and over_sell_time and over_sell_profit and TRACE_MAX_PRICE > 0:
+                                    fa.write(str+'\n')
+                                # 卖出条件：仓位、时间、获利、[可卖价格之上|分钟内的最高价+到达卖出价]
+                                if over_sell_level and over_sell_time and over_sell_profit and (is_above_price or is_sell_price):
                                     FORCE_SELL = True
                                     break
                                 #################################################################
@@ -1760,9 +1796,6 @@ if __name__ == '__main__':
                                             and pass_lower_check and not over_max_buy_price:
                                             FORCE_BUY = True
                                             break
-                                ################################################################
-                                if price_now > 0 and max_price > 0 and sell_price_period > 0:
-                                    stdout_write("%s:%.2f %im_max: %i  sell_price: %i buy_time: %s sell_time: %s              " % (get_now(), price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time))
                                 ################################################################
                     stdout_write(" "*30)
         except:
