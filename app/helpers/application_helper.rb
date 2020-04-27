@@ -617,6 +617,11 @@ module ApplicationHelper
     end
   end
 
+  # 理财目标的月末目标能连接到流动性资产总值一览表
+  def link_to_flow_assets_list
+    link_to @flow_assets_twd.to_i, controller: :properties, portfolio_name: '流动性资产总值', tags: '比特币 可投资金', mode: 'a', pid: 13
+  end
+
   # 如果没有负号，在前面显示+号
   def add_plus(str)
     if !str.index("-")

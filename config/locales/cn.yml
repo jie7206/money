@@ -307,11 +307,12 @@ cn:
   goal_price: 目标价
   reach_goal_price: 达标价
   begin_amount: 月初量
-  begin_balance: 月初额
+  begin_balance: 月初值
   month_grow_rate: 增长
   end_price: 月末价
   end_amount: 月末量
-  end_balance: 月末额
+  end_balance: 月末值
+  balance_now: 目前值
   goal_balance: 月末目标
   sell_to_back: 卖至回本
   sell_to_back_ok: 卖到回本下单已执行！

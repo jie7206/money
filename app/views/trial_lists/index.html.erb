@@ -13,6 +13,7 @@
     <td><%= t(:month_grow_rate)%></td>
     <td><%= t(:end_price)%></td>
     <td><%= t(:end_balance)%></td>
+    <td><%= t(:balance_now)%></td>
     <td><%= t(:goal_balance)%></td>
     <td><%= t(:have_reached) if admin? %></td>
   </tr>
@@ -60,6 +61,8 @@
       <!-- 月末额 //-->
       <% cal_btc_capital %>
       <td align="right"><%= end_balance_twd = btc_capital_twd %></td>
+      <!-- 目前值 //-->
+      <td align="right"><%= link_to_flow_assets_list %></td>
       <!-- 月末目标 //-->
       <td align="right"><%= goal_balance %></td>
       <!-- 距离目标 //-->
@@ -77,7 +80,7 @@
       <% # 显示现价与k线图链接 %>
       <%= kline_chart_link %>
     </td>
-    <td colspan="8" align="right">
+    <td colspan="9" align="right">
       <% # 显示资产净值与走势图链接 %>
       <%= show_net_value_link %>
     </td>
