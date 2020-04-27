@@ -82,7 +82,11 @@ class ApplicationRecord < ActiveRecord::Base
   # 将资产金额从自身的币别转换成其他币别(默认为新台币)
   def amount_to( target_code = :twd, self_rate = self.currency.exchange_rate.to_f )
     if trate = target_rate(target_code)
-      result = amount*(trate.to_f/self_rate)
+      if (target_code == :cny or target_code == :twd) and self.currency.code == 'BTC'
+        result = amount*DealRecord.first.price_now*eval("usdt_to_#{target_code.to_s}")
+      else
+        result = amount*(trate.to_f/self_rate)
+      end
       if amount < 0 and lixi = self.lixi(target_code).to_i
         return result + lixi
       else
@@ -100,7 +104,6 @@ class ApplicationRecord < ActiveRecord::Base
 
   # USDT换成新台币
   def usdt_to_twd
-    # target_rate(:twd).to_f/target_rate(:usdt)
     usdt_to_cny * cny_to_twd
   end
 

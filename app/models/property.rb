@@ -225,6 +225,21 @@ class Property < ApplicationRecord
     investable_fund_records.sum {|p| p.amount_to(:twd)}
   end
 
+  # 所有可投资金台币现值
+  def self.investable_fund_records_cny
+    investable_fund_records.sum {|p| p.amount_to(:cny)}
+  end
+
+  # 流动性资产总值数据集
+  def self.flow_assets_records
+    new.get_properties_from_tags('比特币 可投资金',nil,'a')
+  end
+
+  # 流动性资产总值台币现值
+  def self.flow_assets_twd
+    flow_assets_records.sum {|p| p.amount_to(:twd)}
+  end
+
   # 计算冷钱包的成本均价
   def self.trezor_ave_cost
     ps = Property.tagged_with('冷钱包')
@@ -273,11 +288,6 @@ class Property < ApplicationRecord
     else
       return 0
     end
-  end
-
-  # 流动性资产总值
-  def self.flow_assets_twd
-    investable_fund_records_twd + btc_value_twd
   end
 
   # 计算冷钱包下一年收益

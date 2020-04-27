@@ -79,6 +79,10 @@ class TrialListsController < ApplicationController
         @begin_price_for_trial = @btc_price
         @flow_assets_twd = Property.flow_assets_twd
         @btc_amount = get_btc_amount_from_system_params
+        @btc_amount_now = Property.btc_amount
+        @usdt_to_twd = DealRecord.new.usdt_to_twd
+        @investable_fund_records_twd = Property.investable_fund_records_twd
+        @investable_fund_records_cny = Property.investable_fund_records_cny
         if admin?
           @month_cost = $trial_life_month_cost_cny_admin
           @month_cost_start = $trial_month_cost_start_date_admin

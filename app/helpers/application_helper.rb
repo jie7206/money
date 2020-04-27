@@ -551,7 +551,7 @@ module ApplicationHelper
       goal_price = rs.end_price
       goal_balance = rs.end_balance_twd
       # 計算理財目標的達標價
-      reach_goal_price = (goal_balance - Property.investable_fund_records_twd)/(Property.btc_amount*DealRecord.new.usdt_to_twd)*$reach_goal_price_factor
+      reach_goal_price = (rs.end_balance - @investable_fund_records_cny)/(@btc_amount_now*$usdt_to_cny)
       return goal_price, @begin_price_for_trial - goal_price, goal_balance, @flow_assets_twd - goal_balance, reach_goal_price
     else
       return 0, 0, 0, 0, 0
