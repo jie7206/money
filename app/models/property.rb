@@ -196,6 +196,15 @@ class Property < ApplicationRecord
     total_btc_amount
   end
 
+  # 比特币数量/比特币总数
+  def self.btc_amount_of_flow_assets
+    result = 0
+    flow_assets_records.each do |p|
+      result += p.amount if p.currency.code == 'BTC'
+    end
+    return result
+  end
+
   # 计算比特币的成本均价
   def self.btc_ave_cost
     if btc_records.size > 0
@@ -217,7 +226,11 @@ class Property < ApplicationRecord
 
   # 所有可投资金数据集
   def self.investable_fund_records
-    Property.tagged_with('可投资金')
+    result = []
+    flow_assets_records.each do |p|
+      result << p if p.currency.code != 'BTC'
+    end
+    return result
   end
 
   # 所有可投资金台币现值
@@ -232,7 +245,7 @@ class Property < ApplicationRecord
 
   # 流动性资产总值数据集
   def self.flow_assets_records
-    new.get_properties_from_tags('比特币 可投资金',nil,'a')
+    new.get_properties_from_tags($link_to_flow_assets_list_tags,nil,$link_to_flow_assets_list_mode)
   end
 
   # 流动性资产总值台币现值

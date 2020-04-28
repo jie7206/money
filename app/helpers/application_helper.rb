@@ -550,7 +550,7 @@ module ApplicationHelper
     if trial_date <= end_date and rs = TrialList.find_by_trial_date(trial_date)
       goal_price = rs.end_price
       goal_balance = rs.end_balance_twd
-      # 計算理財目標的達標價
+      # 計算理財目標的达标价
       reach_goal_price = (rs.end_balance - @investable_fund_records_cny)/(@btc_amount_now*$usdt_to_cny)
       return goal_price, @begin_price_for_trial - goal_price, goal_balance, @flow_assets_twd - goal_balance, reach_goal_price
     else
@@ -619,7 +619,7 @@ module ApplicationHelper
 
   # 理财目标的月末目标能连接到流动性资产总值一览表
   def link_to_flow_assets_list
-    link_to @flow_assets_twd.to_i, controller: :properties, portfolio_name: '流动性资产总值', tags: '比特币 可投资金', mode: 'a', pid: 13
+    link_to @flow_assets_twd.to_i, controller: :properties, tags: $link_to_flow_assets_list_tags, mode: $link_to_flow_assets_list_mode
   end
 
   # 如果没有负号，在前面显示+号
