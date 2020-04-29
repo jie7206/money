@@ -163,7 +163,7 @@ class Property < ApplicationRecord
   # 比特币的总成本
   def self.btc_total_cost_twd
     # 比特币的总成本 = 总贷款 - 还没购买比特币的剩余可投资资金
-    result = total_loan_lixi - investable_fund_records_twd
+    result = total_loan_lixi - total_investable_fund_records_twd
     if result > 0
       return result
     else
@@ -233,9 +233,14 @@ class Property < ApplicationRecord
     return result
   end
 
-  # 所有可投资金台币现值
+  # 账号范围内可投资金台币现值
   def self.investable_fund_records_twd
     investable_fund_records.sum {|p| p.amount_to(:twd)}
+  end
+
+  # 跨账号所有可投资金台币现值
+  def self.total_investable_fund_records_twd
+    Property.tagged_with('可投资金').sum {|p| p.amount_to(:twd)}
   end
 
   # 所有可投资金台币现值
