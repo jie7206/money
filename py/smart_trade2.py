@@ -44,7 +44,6 @@ ORDER_ID = '' # 下单回传单号
 FORCE_BUY = False # 强制买入旗标
 FORCE_SELL = False # 强制卖出旗标
 LINE_MARKS = "-"*70 # Log记录的分隔符号
-ALREADY_SEND_BUY = False # 是否已送单旗标
 EX_RATE = 0.002  # 交易所手续费率
 BUY_RATE = 1.0002  # 比市价多多少比例买入
 SELL_RATE = 0.99999  # 比市价少多少比例卖出
@@ -54,7 +53,8 @@ TRACE_MIN_PRICE = 0 # 追踪买入的最低价数值
 TRACE_MAX_PRICE = 0 # 追踪卖出的最高价数值
 WAIT_SEND_SEC = 10 # 下单后等待几秒读取成交结果
 MIN_TRADE_USDT = 5.2 # 下单到交易所的最低买卖金额
-MAX_WAIT_SELL_SEC = 300 # 卖单若迟迟未成交则等待几秒后撤消下单
+MAX_WAIT_BUY_SEC = 180 # 买单若迟迟未成交则等待几秒后撤消下单
+MAX_WAIT_SELL_SEC = 180 # 卖单若迟迟未成交则等待几秒后撤消下单
 BTC_USDT_NOW = 0 # 计算仓位值使用(=交易所BTC资产以USDT计算的值)
 EX_USDT_VALUE = 0 # 计算仓位值使用(=交易所总资产以USDT计算的值)
 
@@ -819,14 +819,12 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
     global buy_price_period
     global sell_price_period
     global buy_period_move
-    global WAIT_SEND_SEC
-    global ALREADY_SEND_BUY
     # 验证下单数量是否高于或等于最小下单数
     amount = check_min_trade_amount(price, amount)
     # 如果不是测试单而是实际送单
     if test_price == 0:
-        # 如果是卖单或是未重复的买单
-        if deal_type.find('sell-limit') > -1 or ALREADY_SEND_BUY == False:
+        # 如果是卖单或是买单
+        if deal_type.find('sell-limit') > -1 or deal_type.find('buy-limit') > -1:
             # 执行下单操作并显示下单成功的下单号或下单失败讯息
             str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
             print(str)
@@ -835,16 +833,26 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
             time.sleep(WAIT_SEND_SEC)
             # 如果是买单
             if deal_type.find('buy-limit') > -1:
-                # 获得交易所回传的成交结果并新增n笔交易记录
-                n_dl_added = update_huobi_deal_records(time_line)
-                # 买单未成交(n=0)且为正式环境
-                if n_dl_added == 0 and not TEST_ENV:
-                    # 避免未成交时再重复送单造成资金的浪费
-                    ALREADY_SEND_BUY = True
-                # 显示新增n笔交易记录
-                str = "%i Deal Records added" % n_dl_added
-                print(str)
-                ftext += str+'\n'
+                count = 0  # 计算回圈执行次数以便判断是否超过等待时间
+                # 一直循环直到成交为止或超出等待的秒数
+                while True:
+                    # 如果回传值大于0表示已经成交
+                    n_dl_added = update_huobi_deal_records(time_line)
+                    # 如果已成交则显示新增n笔交易记录并结束回圈
+                    if n_dl_added > 0:
+                        str = "%i Deal Records added" % n_dl_added
+                        print(str)
+                        ftext += str+'\n'
+                        break
+                    time.sleep(WAIT_SEND_SEC)
+                    count += 1
+                    # 若买单迟迟未成交则等待几秒后撤消下单
+                    if WAIT_SEND_SEC*count > MAX_WAIT_BUY_SEC and len(ORDER_ID) > 0:
+                      cancel_order(ORDER_ID)
+                      str = "Send Order(%s) canceled!" % ORDER_ID
+                      print(str)
+                      ftext += str+'\n'
+                      break
             # 获得可交易的USDT
             trade_usdt = float(get_trade_usdt())
             # 如果有剩余的USDT
@@ -887,18 +895,6 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
                     str = "Already reach target amount, Invest PAUSE!"
                     print(str)
                     ftext += str+'\n'
-        # 如果是重复发送的买单
-        else:
-            # 显示已重复发送
-            str = "Already send order before, check if can send next order..."
-            print(str)
-            ftext += str+'\n'
-            # 等待一段时间再向交易所获取最新成交情况
-            time.sleep(WAIT_SEND_SEC*2)
-            n_dl_added = update_huobi_deal_records(time_line)
-            # 如果已成交则重置ALREADY_SEND_BUY
-            if n_dl_added > 0:
-                ALREADY_SEND_BUY = False
     # 如果是测试单
     else:
         # 显示测试单的各项数据
