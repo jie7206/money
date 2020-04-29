@@ -546,8 +546,7 @@ module ApplicationHelper
   # 检查最新的比特币报价是否已达成数据库储存的理财目标
   def check_trial_reached( trial_date )
     today = Date.today
-    end_date = today + $check_trial_reached_month.month
-    if trial_date <= end_date and rs = TrialList.find_by_trial_date(trial_date)
+    if rs = TrialList.find_by_trial_date(trial_date)
       goal_price = rs.end_price
       goal_balance = rs.end_balance_twd
       # 計算理財目標的达标价

@@ -1,4 +1,4 @@
-<%= render 'shared/title_with_statistics', title_html: link_to(t(:trial_list), trial_lists_path) %>
+<%= render 'shared/title_with_statistics', title_html: link_to(t(:trial_list), trial_lists_path(show_all:1)) %>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
     <td><%= t(:myage)%></td>
@@ -19,7 +19,9 @@
   </tr>
   <% cal_btc_capital %>
   <% birthday = "1974-12-02".to_date %>
-  <% (0..12*$trial_total_years).each do |n| %>
+  <% # 确认显示的笔数 %>
+  <% record_num = params[:show_all] == '1' ? 12*$trial_save_years : 12*$trial_total_years %>
+  <% (0..record_num).each do |n| %>
     <tr <%= change_row_color %>>
       <% this_date = Date.today.at_beginning_of_month+n.month %>
       <% month_sell = @month_cost/@usdt2cny/@btc_price %>
