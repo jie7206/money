@@ -35,6 +35,7 @@ elsif @profit_goal == 0
 else
   @profit_goal_ok = false
 end
+
 # 建立卖出策略的文字讯息
 def build_show_sell_text( add_u_tag = false )
   sell_price_str = add_u_tag ? "<u>#{@show_sell_price}</u>" : @show_sell_price
@@ -43,6 +44,11 @@ def build_show_sell_text( add_u_tag = false )
   }|#{@max_sell_count}/#{@first_unsell_count}|#{@total_unsell_count\
   }/#{@stop_sell_level}</span>]\
     @#{sell_price_str}/#{@sell_sec/60}分") # /#{@remain_sell_hours}时
+end
+
+# 显示未成交笔数
+def show_total_unsell_count
+  "(#{@total_unsell_count})"
 end
 %>
 <div id="func_link" style="width:<%=$default_table_width%>px;margin-bottom:2em">
@@ -66,6 +72,7 @@ end
   | <%= link_to t(:show_sell_deal_records), deal_records_path(show_sell:1) %>
   <% # 全部未卖 %>
   | <%= link_to t(:show_unsell_deal_records), deal_records_path(show_unsell:1) %>
+    <%= show_total_unsell_count if not @max_sell_count > 0 %>
   <% # 优卖记录 %>
   | <%= link_to t(:show_first_sell_deal_records), deal_records_path(show_first:1) %>
   <% # 凑消帐 %>

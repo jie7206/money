@@ -591,17 +591,6 @@ module ApplicationHelper
     return nil
   end
 
-  # 显示当前的买进策略
-  def show_buy_strategy
-    every_minute = get_invest_params(0).to_i/60
-    buy_under_price = get_invest_params(1).to_i
-    buy_when_minutes = get_invest_params(17).to_i
-    result = "#{buy_under_price}每#{every_minute}分" if buy_under_price > 0
-    result = "#{buy_when_minutes}低/#{every_minute}分" if buy_when_minutes > 0
-    result = "<u>#{result}</u>" if DealRecord.enable_to_buy?
-    return raw('@'+result)
-  end
-
   # 显示最近几个小时的获利标题
   def show_num_h_profit( scale = :hour )
     diff_sec = (Time.now - $send_to_trezor_time).to_i
