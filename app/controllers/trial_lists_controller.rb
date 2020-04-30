@@ -27,7 +27,7 @@ class TrialListsController < ApplicationController
       prepare_vars
       TrialList.delete_all
       cal_btc_capital
-      (0..12*$trial_total_years).each do |n|
+      (0..trial_records_number(true)).each do |n|
         this_date = Date.today.at_beginning_of_month+n.month
         month_sell = @month_cost/@usdt2cny/@btc_price
         trial_date = this_date

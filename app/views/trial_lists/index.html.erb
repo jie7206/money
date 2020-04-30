@@ -19,9 +19,7 @@
   </tr>
   <% cal_btc_capital %>
   <% birthday = "1974-12-02".to_date %>
-  <% # 确认显示的笔数 %>
-  <% record_num = params[:show_all] == '1' ? 12*$trial_save_years : 12*$trial_total_years %>
-  <% (0..record_num).each do |n| %>
+  <% (0..trial_records_number).each do |n| %>
     <tr <%= change_row_color %>>
       <% this_date = Date.today.at_beginning_of_month+n.month %>
       <% month_sell = @month_cost/@usdt2cny/@btc_price %>
