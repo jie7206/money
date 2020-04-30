@@ -813,6 +813,43 @@ def check_min_trade_amount(price, amount):
         return amount
 
 
+# 储存定投参数的新值
+def update_invest_params(index, new_value):
+    try:
+        with open(PARAMS, 'r') as f:
+            arr = f.read().strip().split(' ')
+            arr[index] = str(new_value)
+            new_str = ' '.join(arr)
+        with open(PARAMS, 'w+') as f:
+            f.write(new_str)
+        return True
+    except:
+        return False
+
+
+# 取得几分钟内的平均报价
+def get_ave_price(size, ptype = 'close'):
+    try:
+        sum = 0
+        for item in get_kline('btcusdt', '1min', size)['data']:
+            sum += float(item[ptype])
+        return float(sum/size)
+    except:
+        return 0
+
+
+# 更新购买额度翻倍的最大购买价
+def update_top_price():
+    if top_price_minutes > 0:
+        # 最大购买价 = 几分钟内的平均报价 + 每隔几点购买额度翻倍/2
+        new_top_price = int(get_ave_price(top_price_minutes,'high') + reduce_step/2)
+        # 储存定投参数的新值
+        if new_top_price > 0 and update_invest_params(34,new_top_price):
+            return new_top_price
+    else:
+        return top_price
+
+
 # 处理下单的主要流程
 def place_order_process(test_price, price, amount, deal_type, ftext, time_line, u2c):
     global below_price
@@ -826,9 +863,9 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
         # 如果是卖单或是买单
         if deal_type.find('sell-limit') > -1 or deal_type.find('buy-limit') > -1:
             # 执行下单操作并显示下单成功的下单号或下单失败讯息
-            str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
-            print(str)
-            ftext += str+'\n'
+            msg_str = place_new_order("%.2f" % price, "%.6f" % amount, deal_type)
+            print(msg_str)
+            ftext += msg_str+'\n'
             # 停留几秒以等待下单成交结果
             time.sleep(WAIT_SEND_SEC)
             # 如果是买单
@@ -840,18 +877,25 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
                     n_dl_added = update_huobi_deal_records(time_line)
                     # 如果已成交则显示新增n笔交易记录并结束回圈
                     if n_dl_added > 0:
-                        str = "%i Deal Records added" % n_dl_added
-                        print(str)
-                        ftext += str+'\n'
+                        msg_str = "%i Deal Records added" % n_dl_added
+                        print(msg_str)
+                        ftext += msg_str+'\n'
+                        # 如果 top_price_minutes > 0 则根据几分钟平均价调整'额度翻倍的最大购买价'
+                        if top_price_minutes > 0:
+                            # 更新购买额度翻倍的最大购买价
+                            new_top_price = update_top_price()
+                            msg_str = "Top Price of Double Buy Change to: %i" % new_top_price
+                            print(msg_str)
+                            ftext += msg_str+'\n'
                         break
                     time.sleep(WAIT_SEND_SEC)
                     count += 1
                     # 若买单迟迟未成交则等待几秒后撤消下单
                     if WAIT_SEND_SEC*count > MAX_WAIT_BUY_SEC and len(ORDER_ID) > 0:
                       cancel_order(ORDER_ID)
-                      str = "Send Order(%s) canceled!" % ORDER_ID
-                      print(str)
-                      ftext += str+'\n'
+                      msg_str = "Send Order(%s) canceled!" % ORDER_ID
+                      print(msg_str)
+                      ftext += msg_str+'\n'
                       break
             # 获得可交易的USDT
             trade_usdt = float(get_trade_usdt())
@@ -859,19 +903,19 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
             if trade_usdt > 0:
                 # 显示目前USDT的剩余数量
                 usdt_cny = trade_usdt*u2c
-                str = "USDT Trade Now: %.4f (%.2f CNY)" % (
+                msg_str = "USDT Trade Now: %.4f (%.2f CNY)" % (
                     trade_usdt, usdt_cny)
-                print(str)
-                ftext += str+'\n'
+                print(msg_str)
+                ftext += msg_str+'\n'
                 # 获得可交易的BTC
                 trade_btc = float(get_trade_btc())
                 # 显示目前BTC的剩余数量与持仓水平
                 btc_cny = trade_btc*price*u2c
                 btc_level_now = btc_hold_level(price)
-                str = "BTC Now: %.8f (%.1f CNY) Total: %.1f CNY Level: %.2f%%" % (
+                msg_str = "BTC Now: %.8f (%.1f CNY) Total: %.1f CNY Level: %.2f%%" % (
                     trade_btc, btc_cny, usdt_cny+btc_cny, btc_level_now)
-                print(str)
-                ftext += str+'\n'
+                print(msg_str)
+                ftext += msg_str+'\n'
                 # 如果设定了'买入几分钟内的最低价'及'仓位越高买入周期越长'
                 if buy_price_period > 0 and buy_period_move > 0:
                     # 设置新的'买入几分钟内的最低价'的值
@@ -883,29 +927,29 @@ def place_order_process(test_price, price, amount, deal_type, ftext, time_line, 
                     update_buy_price_period(new_buy_price_period)
                     buy_price_period = new_buy_price_period
                     # 显示'买入几分钟内的最低价'的值已更新
-                    str = "Minimum Price Period Updated to: %i Minutes" % new_buy_price_period
-                    print(str)
-                    ftext += str+'\n'
+                    msg_str = "Minimum Price Period Updated to: %i Minutes" % new_buy_price_period
+                    print(msg_str)
+                    ftext += msg_str+'\n'
                 # 更新火币交易所的资产现况并显示
-                str = "%i Huobi Assets Updated, Send Order Process Completed" % update_all_huobi_assets()
-                print(str)
-                ftext += str+'\n'
+                msg_str = "%i Huobi Assets Updated, Send Order Process Completed" % update_all_huobi_assets()
+                print(msg_str)
+                ftext += msg_str+'\n'
                 # 如果可交易的比特币数量超过买入比特币的最大总值则显示操作暂停
                 if trade_btc > target_amount:
-                    str = "Already reach target amount, Invest PAUSE!"
-                    print(str)
-                    ftext += str+'\n'
+                    msg_str = "Already reach target amount, Invest PAUSE!"
+                    print(msg_str)
+                    ftext += msg_str+'\n'
     # 如果是测试单
     else:
         # 显示测试单的各项数据
-        str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price, amount, deal_type)
-        print(str)
-        ftext += str+'\n'
+        msg_str = "Sim Order Price: %.2f, Amount: %.6f, Type: %s" % (price, amount, deal_type)
+        print(msg_str)
+        ftext += msg_str+'\n'
         btc_level_now = btc_hold_level(price)
         sim_btc_level = cal_sim_btc_level(price, amount)
-        str = "Sim BTC Level: %.2f%%(+%.2f%%)" % (sim_btc_level, sim_btc_level-btc_level_now)
-        print(str)
-        ftext += str+'\n'
+        msg_str = "Sim BTC Level: %.2f%%(+%.2f%%)" % (sim_btc_level, sim_btc_level-btc_level_now)
+        print(msg_str)
+        ftext += msg_str+'\n'
     # 返回欲显示的输出文字
     return ftext
 
@@ -1090,10 +1134,10 @@ def print_next_exe_time(every_sec, ftext):
     next_hours = float(every_sec/3600)
     delta_next_hours = timedelta(hours=next_hours)
     next_exe_time = to_t(datetime.now() + delta_next_hours)
-    str = "Next Time: %s (%.2f M | %.2f H)" % (
+    msg_str = "Next Time: %s (%.2f M | %.2f H)" % (
         next_exe_time, every_sec/60, every_sec/3600)
-    print(str)
-    ftext += str+'\n'
+    print(msg_str)
+    ftext += msg_str+'\n'
     return ftext
 
 
@@ -1203,28 +1247,28 @@ def batch_sell_process(test_price, price, base_price, ftext, time_line, u2c, pro
                             # 重置交易单号
                             ORDER_ID = ''
                             # 显示处理的讯息
-                            str = "%i Deal Records Auto Sold and Combined, Sold Profit: %.4f CNY" % (
+                            msg_str = "%i Deal Records Auto Sold and Combined, Sold Profit: %.4f CNY" % (
                                 len(ids), real_profit)
-                            print(str)
-                            ftext += str+'\n'
+                            print(msg_str)
+                            ftext += msg_str+'\n'
                             # 更新记录time_line文档以避免更新交易记录时重头读取浪费时间
                             update_time_line(time_now)
-                            str = "Time Line Updated to: %s And Clear Records!" % time_now
-                            print(str)
-                            ftext += str+'\n'
+                            msg_str = "Time Line Updated to: %s And Clear Records!" % time_now
+                            print(msg_str)
+                            ftext += msg_str+'\n'
                         else:
                             # 显示测试单的输出
-                            str = "Sim Update %i Deal Records with Profit: %.2f CNY" % (
+                            msg_str = "Sim Update %i Deal Records with Profit: %.2f CNY" % (
                                 len(ids), sell_profit_total)
-                            print(str)
-                            ftext += str+'\n'
+                            print(msg_str)
+                            ftext += msg_str+'\n'
                         break
     # 如果单次获利最多卖出笔数不大于0表示不允许卖出
     else:
         # 显示无法卖出的原因
-        str = "Stop Sell Because Max Sell Count = 0"
-        print(str)
-        ftext += str+'\n'
+        msg_str = "Stop Sell Because Max Sell Count = 0"
+        print(msg_str)
+        ftext += msg_str+'\n'
     # 返回所有要输出的讯息
     return ftext
 
@@ -1416,11 +1460,11 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
         # 以日期与时间开始Log讯息
         now = datetime.now()
         if below_price > 0:
-            str = "%s Invest Between: %.2f ~ %.2f %s %s" % (get_now(), bottom_price, below_price, acc_id, ACCOUNT_ID)
+            msg_str = "%s Invest Between: %.2f ~ %.2f %s %s" % (get_now(), bottom_price, below_price, acc_id, ACCOUNT_ID)
         else:
-            str = "%s Invest Between: %.2f ~ AUTO" % (get_now(), bottom_price)
-        print(str)
-        ftext += str+'\n'
+            msg_str = "%s Invest Between: %.2f ~ AUTO" % (get_now(), bottom_price)
+        print(msg_str)
+        ftext += msg_str+'\n'
         # 获得现价与汇率值
         price_now = get_price_now()
         u2c = usdt2cny()
@@ -1430,13 +1474,13 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
             if min_price > 0 and max_price > 0:
                 amplitude = (max_price-min_price)/min_price*100
             if test_price > 0:
-                str = "Test Price: %.2f Now: %.2f %i_Min: %.2f %i_Max: %.2f(%.2f%%)" % (test_price, price_now, buy_price_period, min_price, sell_price_period, max_price, amplitude )
+                msg_str = "Test Price: %.2f Now: %.2f %i_Min: %.2f %i_Max: %.2f(%.2f%%)" % (test_price, price_now, buy_price_period, min_price, sell_price_period, max_price, amplitude )
                 price_now = test_price
                 str += '\n' + ("Price Now Update to: %.2f" % price_now)
             else:
-                str = "Price Now: %.2f %i_Min: %.2f %i_Max: %.2f(%.2f%%)" % (price_now, buy_price_period, min_price, sell_price_period, max_price, amplitude )
-            print(str)
-            ftext += str+'\n'
+                msg_str = "Price Now: %.2f %i_Min: %.2f %i_Max: %.2f(%.2f%%)" % (price_now, buy_price_period, min_price, sell_price_period, max_price, amplitude )
+            print(msg_str)
+            ftext += msg_str+'\n'
             # 若为买单或测试单
             if FORCE_BUY == True or test_price > 0:
                 # 原有参与投资的USDT
@@ -1453,9 +1497,9 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                     if reduce_step > 0 and top_price > 0:
                         # 1) 每隔几点购买额度翻倍
                         usdt = cal_invest_usdt(price_now)
-                        str = "*** Double Buy Every %i Calculated ***" % reduce_step
-                        print(str)
-                        ftext += str+'\n'
+                        msg_str = "*** Double Buy Every %i Calculated ***" % reduce_step
+                        print(msg_str)
+                        ftext += msg_str+'\n'
                     else:
                         # 2) 原始的计算方式
                         price_diff = price_now - bottom
@@ -1491,28 +1535,28 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         empty_usdt_time = to_t(now + delta_hours)
                         usdt_cny = trade_usdt*u2c
                         # 显示所有相关购买讯息
-                        str = "BTC Level: %.2f%% (FORCE_BUY:%s) for AccId: %s(%s)" % (
+                        msg_str = "BTC Level: %.2f%% (FORCE_BUY:%s) for AccId: %s(%s)" % (
                             btc_level_now, FORCE_BUY, acc_id, ACCOUNT_ID)
-                        print(str)
-                        ftext += str+'\n'
-                        str = "Total  USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, usdt_cny)
-                        print(str)
-                        ftext += str+'\n'
-                        str = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
-                        print(str)
-                        ftext += str+'\n'
-                        str = "Buy Amount: %.6f BTC (%.2f CNY)" % (amount, amount*price_now*u2c)
-                        print(str)
-                        ftext += str+'\n'
-                        str = "Get Amount: %.8f BTC (%.2f CNY)" % (amount*fees_rate(), amount*price_now*u2c)
-                        print(str)
-                        ftext += str+'\n'
+                        print(msg_str)
+                        ftext += msg_str+'\n'
+                        msg_str = "Total  USDT: %.4f USDT (%.2f CNY)" % (trade_usdt, usdt_cny)
+                        print(msg_str)
+                        ftext += msg_str+'\n'
+                        msg_str = "Invest Cost: %.4f USDT (%.2f CNY)" % (usdt, usdt*u2c)
+                        print(msg_str)
+                        ftext += msg_str+'\n'
+                        msg_str = "Buy Amount: %.6f BTC (%.2f CNY)" % (amount, amount*price_now*u2c)
+                        print(msg_str)
+                        ftext += msg_str+'\n'
+                        msg_str = "Get Amount: %.8f BTC (%.2f CNY)" % (amount*fees_rate(), amount*price_now*u2c)
+                        print(msg_str)
+                        ftext += msg_str+'\n'
                         # 显示下一次执行时间
                         ftext = print_next_exe_time(every_sec, ftext)
-                        str = "Zero Time: %s (%.2f H | %.2f D)" % (
+                        msg_str = "Zero Time: %s (%.2f H | %.2f D)" % (
                             empty_usdt_time, remain_hours, remain_hours/24)
-                        print(str)
-                        ftext += str+'\n'
+                        print(msg_str)
+                        ftext += msg_str+'\n'
                         # 执行买单的委托并显示回传的讯息
                         ftext = place_order_process(
                             test_price, round(price_now*buy_price_rate(), 2), amount, 'buy-limit', ftext, time_line, u2c)
@@ -1520,9 +1564,9 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         return every_sec
                     # 所剩的USDT太少，无法完成一次下单
                     else:
-                        str = "Buy Order Failure! Too small buy usdt( %.2f < %.2f )." % (usdt, MIN_TRADE_USDT)
-                        print(str)
-                        ftext += str+'\n'
+                        msg_str = "Buy Order Failure! Too small buy usdt( %.2f < %.2f )." % (usdt, MIN_TRADE_USDT)
+                        print(msg_str)
+                        ftext += msg_str+'\n'
                         fobj.write(ftext)
                         return every_sec
                 # 不是测试单也不符合买单条件
@@ -1635,7 +1679,7 @@ if __name__ == '__main__':
             with open(PARAMS, 'r') as fread:
                 # 将设定文档参数读入内存
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step, top_price, trace_min_rate, trace_max_rate = params_str.split(' ')
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step, top_price, trace_min_rate, trace_max_rate, top_price_minutes = params_str.split(' ')
                 # 将设定文档参数根据适当的型别初始化
                 every_sec = int(every_sec)
                 below_price = int(below_price)
@@ -1663,12 +1707,20 @@ if __name__ == '__main__':
                 force_sell_price = float(force_sell_price)
                 stop_sell_level = float(stop_sell_level)
                 force_to_buy = int(force_to_buy)
+                # 买入最低价时的最高价
                 buy_period_max = float(buy_period_max)
+                # 成本均价是否越买越低
                 is_lower_ave = int(is_lower_ave)
+                # 每隔几点购买额度翻倍
                 reduce_step = int(reduce_step)
+                # 额度翻倍的最大购买价
                 top_price = int(top_price)
+                # 买入最低价时的反弹率
                 TRACE_MIN_RATE = float(trace_min_rate)
+                # 卖出最高价时的回调率
                 TRACE_MAX_RATE = float(trace_max_rate)
+                # 额度翻倍的最大购买价根据几分钟平均价调整
+                top_price_minutes = int(top_price_minutes)
                 # 获得在几分钟内比特币价格的最大值与最小值
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 # 是否执行强制买入
@@ -1747,10 +1799,10 @@ if __name__ == '__main__':
                                 else:
                                     is_sell_price = False
                                 if price_now > 0 and max_price > 0 and sell_price_period > 0:
-                                    str = "%s:%.2f %imax:%.2f sp:%i buy:%s sell:%s reach_p(%.2f:%.2f): %s rate: %.4f" % (get_now(), price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time, TRACE_MAX_PRICE, TRACE_MAX_PRICE*TRACE_MAX_RATE, is_sell_price, TRACE_MAX_RATE)
-                                    stdout_write(str)
+                                    msg_str = "%s:%.2f %imax:%.2f sp:%i buy:%s sell:%s reach_p(%.2f:%.2f): %s rate: %.4f" % (get_now(), price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time, TRACE_MAX_PRICE, TRACE_MAX_PRICE*TRACE_MAX_RATE, is_sell_price, TRACE_MAX_RATE)
+                                    stdout_write(msg_str)
                                 if over_sell_level and over_sell_time and over_sell_profit and TRACE_MAX_PRICE > 0:
-                                    fa.write(str+'\n')
+                                    fa.write(msg_str+'\n')
                                 # 卖出条件：仓位、时间、获利、[可卖价格之上|分钟内的最高价+到达卖出价]
                                 if over_sell_level and over_sell_time and over_sell_profit and (is_above_price or is_sell_price):
                                     FORCE_SELL = True
@@ -1783,10 +1835,10 @@ if __name__ == '__main__':
                                             is_buy_price = reach_buy_price(price_now, min_price)
                                         else:
                                             is_buy_price = False
-                                        str = "%s:%.2f %imin:%.2f sp:%i buy:%s sell:%s over_max: %s reach_p(%.2f:%.2f): %s lower: %s    " % (get_now(), price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time, over_max_buy_price, TRACE_MIN_PRICE, TRACE_MIN_PRICE*TRACE_MIN_RATE, is_buy_price, pass_lower_check)
-                                        stdout_write(str)
+                                        msg_str = "%s:%.2f %imin:%.2f sp:%i buy:%s sell:%s over_max: %s reach_p(%.2f:%.2f): %s lower: %s    " % (get_now(), price_now, buy_price_period, min_price, force_sell_price, over_buy_time, over_sell_time, over_max_buy_price, TRACE_MIN_PRICE, TRACE_MIN_PRICE*TRACE_MIN_RATE, is_buy_price, pass_lower_check)
+                                        stdout_write(msg_str)
                                         if below_buy_level and over_buy_time and pass_lower_check and TRACE_MIN_PRICE > 0 and not over_max_buy_price:
-                                            fa.write(str+'\n')
+                                            fa.write(msg_str+'\n')
                                         # 买入条件：仓位、时间、达到分钟内的最低价、反弹至指定高度、成本均价是否越买越低
                                         if below_buy_level and over_buy_time and is_buy_price \
                                             and pass_lower_check and not over_max_buy_price:

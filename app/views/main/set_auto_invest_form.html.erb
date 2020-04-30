@@ -211,7 +211,7 @@ price_step = 10
     <tr valign="top">
       <td><%= n %></td>
       <td>每隔几点购买额度翻倍</td>
-      <td><%= invest_params_setup_link(33,0,1000,50) %></td>
+      <td><%= show_invest_param_value(33) %> <%= invest_params_setup_link(33,0,1000,50) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">
@@ -231,6 +231,12 @@ price_step = 10
       <td><%= n %></td>
       <td>卖出最高价时的回调率</td>
       <td><%= show_invest_param_value(36) %> <%= invest_params_setup_link(36,1,1-trace_rate_amp,-0.0001,4) %></td>
+      <% n += 1 %>
+    </tr>
+    <tr valign="top">
+      <td><%= n %></td>
+      <td>额度翻倍的最大购买价<br/>根据几分钟平均价调整</td>
+      <td><%= invest_params_setup_link(37,0,480,10,0,true) %></td>
       <% n += 1 %>
     </tr>
   </table>
