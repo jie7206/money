@@ -317,7 +317,8 @@ class MainController < ApplicationController
       set_invest_params(index,value)
       set_invest_params(0,swap_sec)
       # 如果每隔几点购买额度翻倍 > 0 则必须设定多少价位以下执行买入
-      if index.to_i == 33 and value.to_i > 0
+      # 取消点击每隔几点购买额度翻倍时自动更新额度翻倍的最大购买价除非它等于零
+      if index.to_i == 33 and value.to_i > 0 and get_invest_params(34).to_i == 0
         set_invest_params(34,((get_price_now/100).to_i+1)*100)
       end
       # 定价的策略和买最低价的策略无法并存

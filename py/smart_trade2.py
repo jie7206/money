@@ -1476,7 +1476,7 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
             if test_price > 0:
                 msg_str = "Test Price: %.2f Now: %.2f %i_Min: %.2f %i_Max: %.2f(%.2f%%)" % (test_price, price_now, buy_price_period, min_price, sell_price_period, max_price, amplitude )
                 price_now = test_price
-                str += '\n' + ("Price Now Update to: %.2f" % price_now)
+                msg_str += '\n' + ("Price Now Update to: %.2f" % price_now)
             else:
                 msg_str = "Price Now: %.2f %i_Min: %.2f %i_Max: %.2f(%.2f%%)" % (price_now, buy_price_period, min_price, sell_price_period, max_price, amplitude )
             print(msg_str)
