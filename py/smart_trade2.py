@@ -841,8 +841,8 @@ def get_ave_price(size, ptype = 'close'):
 # 更新购买额度翻倍的最大购买价
 def update_top_price():
     if top_price_minutes > 0:
-        # 最大购买价 = 几分钟内的平均报价 + 每隔几点购买额度翻倍/2
-        new_top_price = int(get_ave_price(top_price_minutes,'high') + reduce_step/2)
+        # 最大购买价 = 几分钟内的平均报价
+        new_top_price = int(get_ave_price(top_price_minutes))
         # 储存定投参数的新值
         if new_top_price > 0 and update_invest_params(34,new_top_price):
             return new_top_price

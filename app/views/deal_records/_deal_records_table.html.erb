@@ -67,6 +67,17 @@
   def build_switch_params( action, id )
       { action: action, id: id }.merge list_page_params
   end
+
+  # 以符号表示成本均价是否越买越低的功能已开启
+  def show_total_ave_cost_price
+    value = @total_ave_cost_price.to_i
+    get_invest_params(32) == '1' ? raw("<u title=\"成交均价(成本均价越买越低的功能已开启)\">#{value}</u>") : raw("<span title=\"成交均价\">#{value}</span>")
+  end
+
+  # 显示额度翻倍的最大购买价
+  def show_double_buy_top_price
+    raw "<span title=\"额度翻倍的最大购买价, 每隔#{get_invest_params(33)}点购买额度翻倍\">#{get_invest_params(34)}</span>"
+  end
 %>
 <table width="<%=$default_table_width%>">
   <tr class="thead">
@@ -241,8 +252,8 @@
        <% end %>
     </td>
     <td align="right">
-      <% # 显示成交均价 %>
-      <%= @total_ave_cost_price.to_i %>/<%= max_buy_price.to_i %>
+      <% # 显示成交均价|额度翻倍的最大购买价 %>
+      <%= show_total_ave_cost_price %> | <%= show_double_buy_top_price %>
     </td>
     <td align="right">
       <% # 显示成本总和 %>
