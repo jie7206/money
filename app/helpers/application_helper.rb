@@ -616,7 +616,8 @@ module ApplicationHelper
   end
 
   # 如果没有负号，在前面显示+号
-  def add_plus(str)
+  def add_plus(s_or_i)
+    str = s_or_i.to_s
     if !str.index("-")
       return "+"+str
     else

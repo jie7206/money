@@ -20,6 +20,8 @@
   total_real_profit = DealRecord.total_real_profit.to_i
   # 平均每秒的已实现损益值
   real_p_sec = DealRecord.real_profit_ave_sec
+  # 资产净值变化值
+  net_value_change = Record.net_value_change_from($send_to_trezor_time).to_i
   # 是否已经达到可以再次买入的时间
   enable_to_buy = DealRecord.enable_to_buy?
 
@@ -74,8 +76,9 @@
     buy_under_price = get_invest_params(1).to_i
     buy_when_minutes = get_invest_params(17).to_i
     buy_period_max_price = get_invest_params(31).to_i
+    max_price_str = buy_period_max_price > 0 ? "|<span title=\"买入最低价时的最高价\">#{buy_period_max_price}</span>" : ""
     result = "低于#{buy_under_price}|#{every_minute}分" if buy_under_price > 0
-    result = "#{buy_when_minutes}低|#{every_minute}分|<span title=\"买入最低价时的最高价\">#{buy_period_max_price}</span>" if buy_when_minutes > 0
+    result = "#{buy_when_minutes}低|#{every_minute}分#{max_price_str}" if buy_when_minutes > 0
     result = "<u>#{result}</u>" if DealRecord.enable_to_buy?
     return raw(result)
   end
@@ -126,10 +129,10 @@
       <% # 更新时间 %>
       <%= link_to t(:updated_time), order_list_params('updated_at') %> |
       <% # 已实现损益 %>
-      <%= t(:deal_record_real_profit) %>
-      ( <%= show_num_h_profit(:day) %>: <%= real_profit_of_24h %><%= ' '+to_n(real_profit_of_24h*cny_to_btc,6) if real_profit_of_24h > 0 %>
-      | 累计: <%= total_real_profit %><%= ' '+to_n(total_real_profit*cny_to_btc,6) if total_real_profit > 0 %>
-      )
+      <%= show_num_h_profit(:day) %> <%= t(:deal_record_real_profit) %>: <%= add_plus(real_profit_of_24h) %>
+      累计: <%= add_plus(total_real_profit) %>
+      <% # 资产净值变化值 %>
+      资产变化: <%= add_plus(net_value_change) %>
     </td>
   </tr>
 <% @deal_records.each do |dr| %>
