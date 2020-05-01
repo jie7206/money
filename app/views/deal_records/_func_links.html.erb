@@ -11,6 +11,8 @@
 @sell_price = get_invest_params(27).to_i
 # 停止自动卖出的仓位值
 @stop_sell_level = get_invest_params(29).to_i
+# 卖出最高价时的最低价
+@sell_period_min = get_invest_params(38).to_i
 # 最初第几笔未卖出交易记录的损益值
 @top_deal_record_profit = DealRecord.top_n_profit(@max_sell_count).floor(1)
 # 获取未卖出且标示为优先卖出的交易笔数
@@ -24,7 +26,7 @@
   to_n(@total_unsell_count/@max_sell_count*@sell_sec/3600.0,1) : 0
 # 显示卖出策略的卖出价格
 @show_sell_price = @sell_price > 0 ? \
-  "#{@sell_price}(#{add_plus(to_n((@sell_price/@total_ave_cost_price.to_f-1)*100,1))}%)" : "#{@sell_minute}分最高价"
+  "#{@sell_price}(#{add_plus(to_n((@sell_price/@total_ave_cost_price.to_f-1)*100,1))}%)" : "#{@sell_minute}分最高"
 # 显示卖出策略的辅助说明文字
 @title = "①下次卖出的盈亏 ②自动卖出的盈亏\n③每次卖几笔 ④几笔标示为优先卖出\n⑤全部未卖的笔数⑥停止自动卖出的仓位值"
 # 如果设定了单次卖出的最低获利值则需要列入考虑才能决定是否达到了可卖出下一笔的条件
@@ -39,11 +41,10 @@ end
 # 建立卖出策略的文字讯息
 def build_show_sell_text( add_u_tag = false )
   sell_price_str = add_u_tag ? "<u>#{@show_sell_price}</u>" : @show_sell_price
-  raw(t(:send_stop_loss)+\
-  "[<span title='#{@title}'>#{@top_deal_record_profit}/#{@profit_goal\
+  raw("[<span title='#{@title}'>#{@top_deal_record_profit}/#{@profit_goal\
   }|#{@max_sell_count}/#{@first_unsell_count}|#{@total_unsell_count\
   }/#{@stop_sell_level}</span>]\
-    @#{sell_price_str}/#{@sell_sec/60}分") # /#{@remain_sell_hours}时
+    #{sell_price_str}|#{@sell_sec/60}分|<span title=\"卖出最高价时的最低价\">#{@sell_period_min}</span>") # /#{@remain_sell_hours}时
 end
 
 # 显示未成交笔数

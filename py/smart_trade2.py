@@ -1679,7 +1679,7 @@ if __name__ == '__main__':
             with open(PARAMS, 'r') as fread:
                 # 将设定文档参数读入内存
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step, top_price, trace_min_rate, trace_max_rate, top_price_minutes = params_str.split(' ')
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step, top_price, trace_min_rate, trace_max_rate, top_price_minutes, sell_period_min = params_str.split(' ')
                 # 将设定文档参数根据适当的型别初始化
                 every_sec = int(every_sec)
                 below_price = int(below_price)
@@ -1721,6 +1721,8 @@ if __name__ == '__main__':
                 TRACE_MAX_RATE = float(trace_max_rate)
                 # 额度翻倍的最大购买价根据几分钟平均价调整
                 top_price_minutes = int(top_price_minutes)
+                # 卖出最高价时的最低价
+                sell_period_min = float(sell_period_min)
                 # 获得在几分钟内比特币价格的最大值与最小值
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 # 是否执行强制买入
@@ -1793,17 +1795,26 @@ if __name__ == '__main__':
                                     over_sell_profit = True
                                 #################################################################
                                 # 达到卖出的条件则执行卖出
+                                # 卖出几分钟内的最高价时是否不低于所设定的最低价
+                                if sell_period_min > 0:
+                                    if price_now >= sell_period_min:
+                                        over_min_sell_price = True
+                                    else:
+                                        over_min_sell_price = False
+                                else:
+                                    over_min_sell_price = True
                                 # 如果破顶后，检查是否回调到想卖出的价位
-                                if reach_high_price or TRACE_MAX_PRICE > 0:
+                                if over_min_sell_price and \
+                                    (reach_high_price or TRACE_MAX_PRICE > 0):
                                     is_sell_price = reach_sell_price(price_now, max_price)
                                 else:
                                     is_sell_price = False
                                 if price_now > 0 and max_price > 0 and sell_price_period > 0:
-                                    msg_str = "%s:%.2f %imax:%.2f sp:%i buy:%s sell:%s reach_p(%.2f:%.2f): %s rate: %.4f" % (get_now(), price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time, TRACE_MAX_PRICE, TRACE_MAX_PRICE*TRACE_MAX_RATE, is_sell_price, TRACE_MAX_RATE)
+                                    msg_str = "%s:%.2f %imax:%.2f sp:%i buy:%s sell:%s reach_p(%.2f:%.2f): %s rate: %.4f over: %s" % (get_now(), price_now, sell_price_period, max_price, force_sell_price, over_buy_time, over_sell_time, TRACE_MAX_PRICE, TRACE_MAX_PRICE*TRACE_MAX_RATE, is_sell_price, TRACE_MAX_RATE, over_min_sell_price)
                                     stdout_write(msg_str)
                                 if over_sell_level and over_sell_time and over_sell_profit and TRACE_MAX_PRICE > 0:
                                     fa.write(msg_str+'\n')
-                                # 卖出条件：仓位、时间、获利、[可卖价格之上|分钟内的最高价+到达卖出价]
+                                # 卖出条件：仓位、时间、获利、[可卖价格之上|卖出分钟内的最高价且到达卖出价]
                                 if over_sell_level and over_sell_time and over_sell_profit and (is_above_price or is_sell_price):
                                     FORCE_SELL = True
                                     break

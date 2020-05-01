@@ -236,7 +236,7 @@ cn:
   order_done: 已成交
   order_undone: 未成交
   update_btc_price_ok: 比特币价格已更新！
-  update_btc_exchange_rates: 更新报价
+  update_btc_exchange_rates: 更新币价
   update_btc: 更新比特币
   profit_p: 利率
   cancel_order: 取消这笔下单

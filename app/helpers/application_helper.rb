@@ -655,4 +655,9 @@ module ApplicationHelper
     end
   end
 
+  # 将价格取整数
+  def get_int_price( price, pos = 100 )
+    ((price/pos).to_i+1)*pos
+  end
+
 end
