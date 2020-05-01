@@ -57,8 +57,11 @@ end
     # 如果有未交易记录并且单次获利最多卖出笔数大于零则显示卖出策略文字
     if @total_unsell_count > 0 and @max_sell_count > 0
       # 如果达到了可卖出的条件则显示文字加上强制卖出的链接否则显示文字即可
+      # show_sell = (@enable_to_sell and @profit_goal_ok) ? \
+      #   link_to(build_show_sell_text(true),send_stop_loss_path) : build_show_sell_text
+      # 为了预防在手机中误触卖出按钮，暂时将卖出链接删除
       show_sell = (@enable_to_sell and @profit_goal_ok) ? \
-        link_to(build_show_sell_text(true),send_stop_loss_path) : build_show_sell_text
+        build_show_sell_text(true) : build_show_sell_text
   %>
     <% # 显示卖出策略文字与链接 %>
     <%= show_sell %> |

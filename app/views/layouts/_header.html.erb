@@ -3,7 +3,7 @@
       <%= site_logo %>
       <%= link_to get_huobi_acc_id, $host2 %>
       <a href="<%= root_path %>"><%= site_name %></a>
-      <%= raw $site_slogon %>
+      <%= link_to raw($site_slogon), "#{$host2}deal_records" %>
     </h1>
 </span>
 <%= render 'layouts/site_nav', id: 'site_nav' %>
