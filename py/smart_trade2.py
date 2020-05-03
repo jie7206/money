@@ -1632,7 +1632,7 @@ def reach_sell_price(price_now, max_price):
 
 # 判断现价是否比成本均价还低
 def check_lower_ave( price_now ):
-    if price_now < btc_ave_cost():
+    if price_now != 0 and price_now < btc_ave_cost():
         return True
     else:
         return False
@@ -1777,7 +1777,7 @@ if __name__ == '__main__':
                                 below_buy_level = max_buy_level > 0 and btc_level_now < max_buy_level
                                 # 成本均价是否越买越低
                                 if is_lower_ave > 0:
-                                    if check_lower_ave(price_now) == True:
+                                    if check_lower_ave(price_now):
                                         pass_lower_check = True
                                     else:
                                         pass_lower_check = False
@@ -1833,7 +1833,7 @@ if __name__ == '__main__':
                                     # 现价、最低价、是否达到分钟内的最低价
                                     price_now, min_price, reach_low_price = min_price_in(min_price_index, buy_price_period)
                                     if price_now > 0 and min_price > 0:
-                                        # 买入几分钟内的最低价时是否不超过所设定的最高价
+                                        # 买入几分钟内的最低价时是否超过了所设定的最高价
                                         if buy_period_max > 0:
                                             if price_now >= buy_period_max:
                                                 over_max_buy_price = True
