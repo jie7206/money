@@ -129,6 +129,9 @@ class Property < ApplicationRecord
     p_trezor = Property.tagged_with('冷钱包').sum {|p| p.amount}
     p_short = Property.tagged_with('短线').sum {|p| p.amount_to(:btc)}
     eq_btc = (p_trezor + p_short).floor(8)
+    # 计算交易所持仓的实际比例
+    btc_ex = btc_in_huobi_records # 交易所持仓的数据集
+    btc_ex_p = (btc_in_huobi_records.sum {|p| p.amount})/eq_btc*100
     # 计算可投资金的实际比例
     investable = investable_fund_records # 所有可投资金数据集
     capital_p = (investable.sum {|p| p.amount_to(:btc)})/eq_btc*100
@@ -144,11 +147,11 @@ class Property < ApplicationRecord
     huobi_p = (Property.tagged_with('交易所').sum {|p| p.amount_to(:btc)})/eq_btc*100
     yuebao_p = (Property.tagged_with('支付宝').sum {|p| p.amount_to(:btc)})/eq_btc*100
     if is_admin
-      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, total_real_profit.to_i.to_s + ' ', total_unsell_profit.to_i.to_s + ' ', ave_hour_profit.to_i.to_s + ' ', total_real_p_24h.to_s + ' ', trezor_p, huobi_p, yuebao_p, capital_p
+      return eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, total_real_profit.to_i.to_s + ' ', total_unsell_profit.to_i.to_s + ' ', ave_hour_profit.to_i.to_s + ' ', total_real_p_24h.to_s + ' ', trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p
     else
       p_fbtc = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
       p_finv = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
-      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, '', '', '', '', trezor_p, huobi_p, yuebao_p, capital_p
+      return p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, '', '', '', '', trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p
     end
   end
 
@@ -222,6 +225,16 @@ class Property < ApplicationRecord
   # 比特币资料集
   def self.btc_records
     Property.tagged_with('比特币')
+  end
+
+  # 交易所持仓的数据集
+  def self.btc_in_huobi_records
+    result = []
+    ps = Property.tagged_with('交易所')
+    ps.each do |p|
+      result << p if p.currency.code == 'BTC'
+    end
+    return result
   end
 
   # 所有可投资金数据集
