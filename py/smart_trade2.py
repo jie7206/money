@@ -804,6 +804,27 @@ def btc_ave_cost():
         return 0
 
 
+# 获得交易列表中未卖出的平均成交价格
+def ave_cost_after_buy(new_price, new_amount):
+    global acc_id
+    rows = select_db("SELECT price, amount, fees FROM deal_records WHERE account = '%s' and auto_sell = 0" % acc_id)
+    if len(rows) > 0:
+        sum_price = sum_amount = 0
+        for row in rows:
+            price = row[0]
+            amount = row[1]
+            fees = row[2]
+            sum_price += price*amount
+            amount = amount - fees
+            sum_amount += amount
+        # 将欲购入的价格与数量纳入计算
+        sum_price += new_price*new_amount
+        sum_amount += new_amount
+        return round(sum_price/sum_amount, 2)
+    else:
+        return 0
+
+
 # 若下单的金额小于所设定的最小金额(比如5USDT)则将下单的数量加以调整，否则下单会失败
 def check_min_trade_amount(price, amount):
     global MIN_TRADE_USDT
@@ -1558,8 +1579,14 @@ def exe_auto_invest(every_sec, below_price, bottom_price, ori_usdt, factor, max_
                         print(msg_str)
                         ftext += msg_str+'\n'
                         # 执行买单的委托并显示回传的讯息
-                        ftext = place_order_process(
-                            test_price, round(price_now*buy_price_rate(), 2), amount, 'buy-limit', ftext, time_line, u2c)
+                        # 如果有设定'均价到多少则停止买入'则需检查买入后是否超出预期均价
+                        order_buy_price = round(price_now*buy_price_rate(), 2)
+                        if buy_limit_ave == 0 or (buy_limit_ave > 0 and ave_cost_after_buy(order_buy_price, amount) < buy_limit_ave):
+                            ftext = place_order_process(test_price, order_buy_price, amount, 'buy-limit', ftext, time_line, u2c)
+                        else:
+                            msg_str = "%s Stop Buy because ave_cost_after_buy not pass!" % get_now()
+                            print(msg_str)
+                            ftext = sline+'\n'+msg_str+'\n'
                         fobj.write(ftext)
                         return every_sec
                     # 所剩的USDT太少，无法完成一次下单
@@ -1679,7 +1706,7 @@ if __name__ == '__main__':
             with open(PARAMS, 'r') as fread:
                 # 将设定文档参数读入内存
                 params_str = fread.read().strip()
-                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step, top_price, trace_min_rate, trace_max_rate, top_price_minutes, sell_period_min = params_str.split(' ')
+                every_sec, below_price, bottom_price, ori_usdt, factor, max_buy_level, target_amount, min_usdt, max_usdt, deal_date, deal_time, test_price, profit_goal, max_sell_count, min_sec_rate, max_sec_rate, detect_sec, buy_price_period, sell_price_period, buy_period_move, force_to_sell, min_price_index, every_sec_for_sell, sell_max_cny, acc_id, deal_cost, deal_amount, force_sell_price, acc_real_profit, stop_sell_level, force_to_buy, buy_period_max, is_lower_ave, reduce_step, top_price, trace_min_rate, trace_max_rate, top_price_minutes, sell_period_min, buy_limit_ave = params_str.split(' ')
                 # 将设定文档参数根据适当的型别初始化
                 every_sec = int(every_sec)
                 below_price = int(below_price)
@@ -1723,6 +1750,8 @@ if __name__ == '__main__':
                 top_price_minutes = int(top_price_minutes)
                 # 卖出最高价时的最低价
                 sell_period_min = float(sell_period_min)
+                # 均价到多少则停止买入
+                buy_limit_ave = float(buy_limit_ave)
                 # 获得在几分钟内比特币价格的最大值与最小值
                 min_price, max_price = get_min_max_price(buy_price_period, sell_price_period)
                 # 是否执行强制买入

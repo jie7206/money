@@ -85,8 +85,10 @@
 
   # 以符号表示成本均价是否越买越低的功能已开启
   def show_total_ave_cost_price
-    value = @total_ave_cost_price.to_i
-    get_invest_params(32) == '1' ? raw("<u title=\"成交均价(成本均价越买越低的功能已开启)\">#{value}</u>") : raw("<span title=\"成交均价\">#{value}</span>")
+    ave_cost_price = @total_ave_cost_price.to_i
+    buy_limit_ave = get_invest_params(39).to_i # 均价到多少则停止买入
+    limit_msg = buy_limit_ave > 0 ? "(均价到达#{buy_limit_ave}则停止买入)" : ""
+    get_invest_params(32) == '1' ? raw("<u title=\"成交均价(成本均价越买越低的功能已开启)\">#{ave_cost_price}</u>") : raw("<span title=\"成交均价#{limit_msg}\">#{ave_cost_price}</span>")
   end
 
   # 显示额度翻倍的最大购买价
