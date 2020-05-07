@@ -7,7 +7,7 @@
   total_real_profit_btc = max_buy_price = 0
 
   # 比特币现价
-  price_now = DealRecord.first.price_now if DealRecord.first
+  price_now = get_btc_price
   # 交易所内剩余的比特币
   btc_amount_ex = DealRecord.btc_amount
   # 人民币兑换比特币

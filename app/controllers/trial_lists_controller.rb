@@ -75,7 +75,7 @@ class TrialListsController < ApplicationController
     private
 
       def prepare_vars
-        @btc_price = DealRecord.first.price_now if DealRecord.first
+        @btc_price = get_btc_price
         @begin_price_for_trial = @btc_price
         @flow_assets_twd = Property.flow_assets_twd
         @btc_amount = get_btc_amount_from_system_params
@@ -91,7 +91,7 @@ class TrialListsController < ApplicationController
           @month_cost_start = $trial_month_cost_start_date
         end
         @usdt2cny = $usdt_to_cny
-        @cny2twd = DealRecord.first.cny_to_twd
+        @cny2twd = DealRecord.new.cny_to_twd
       end
 
       def set_trial_list

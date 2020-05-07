@@ -216,7 +216,7 @@ module ApplicationHelper
   end
 
   # K线图链接
-  def kline_chart_link( text = to_n(DealRecord.first.price_now) )
+  def kline_chart_link( text = to_n(get_btc_price) )
     link_to text, {controller: :main, action: :kline_chart}, {target: :blank}
   end
 
@@ -603,10 +603,14 @@ module ApplicationHelper
 
   # 由系统参数获取要计算的比特币数量
   def get_btc_amount_from_system_params
-    if admin?
-      $trial_btc_amount_admin > 0 ? $trial_btc_amount_admin : Property.find($btc_amount_property_id_admin).amount
-    else
-      $trial_btc_amount > 0 ? $trial_btc_amount : Property.find($btc_amount_property_id).amount
+    begin
+      if admin?
+        $trial_btc_amount_admin > 0 ? $trial_btc_amount_admin : Property.find($btc_amount_property_id_admin).amount
+      else
+        $trial_btc_amount > 0 ? $trial_btc_amount : Property.find($btc_amount_property_id).amount
+      end
+    rescue
+      return 0
     end
   end
 
@@ -659,6 +663,15 @@ module ApplicationHelper
   # 将价格取整数
   def get_int_price( price, pos = 100 )
     ((price/pos).to_i+1)*pos
+  end
+
+  # 取得比特币现价
+  def get_btc_price
+    if rate = eval("$BTC_exchange_rate")
+      return 1.0/rate
+    else
+      return 1.0/Currency.find_by_code('BTC').exchange_rate
+    end
   end
 
 end

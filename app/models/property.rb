@@ -122,7 +122,7 @@ class Property < ApplicationRecord
     # 所有比特币均价
     total_ave_cost = (record_cost+trezor_cost)/(record_amount+trezor_amount)
     # 现价与均价的比率(利率)
-    price_now = DealRecord.first.price_now if DealRecord.first
+    price_now = new.get_btc_price
     price_p = real_ave_cost > 0 ? (price_now/real_ave_cost-1)*100 : 0
     # 以比特币计算的总资产值
     p_btc = btc_records.sum {|p| p.amount}
@@ -131,27 +131,48 @@ class Property < ApplicationRecord
     eq_btc = (p_trezor + p_short).floor(8)
     # 计算交易所持仓的实际比例
     btc_ex = btc_in_huobi_records # 交易所持仓的数据集
-    btc_ex_p = (btc_in_huobi_records.sum {|p| p.amount})/eq_btc*100
+    if eq_btc > 0
+      btc_ex_p = (btc_in_huobi_records.sum {|p| p.amount})/eq_btc*100
+    else
+      btc_ex_p = 0
+    end
     # 计算可投资金的实际比例
     investable = investable_fund_records # 所有可投资金数据集
-    capital_p = (investable.sum {|p| p.amount_to(:btc)})/eq_btc*100
+    if eq_btc > 0
+      capital_p = (investable.sum {|p| p.amount_to(:btc)})/eq_btc*100
+    else
+      capital_p = 0
+    end
     # 如果梭哈均价
     sim_cost = investable.sum {|p| p.amount_to(:usdt)}
     sim_amount = sim_cost/price_now # 所有可投资金全部购买BTC
     sim_ave_cost = (record_cost+trezor_cost+sim_cost)/(record_amount+trezor_amount+sim_amount)
     # 比特币每1个百分点对应多少人民币
-    btc_p = p_btc/(p_trezor + p_short)*100
-    one_btc2cny = p_btc*(new.btc_to_cny)/btc_p
+    begin
+      btc_p = p_btc/(p_trezor + p_short)*100
+      one_btc2cny = p_btc*(new.btc_to_cny)/btc_p
+    rescue
+      btc_p = one_btc2cny = 0
+    end
     # 计算 ①冷钱包购房(85%) ②交易所赚钱(5%) ③余额宝补仓(10%) 的实际比例
-    trezor_p = p_trezor/eq_btc*100
-    huobi_p = (Property.tagged_with('交易所').sum {|p| p.amount_to(:btc)})/eq_btc*100
-    yuebao_p = (Property.tagged_with('支付宝').sum {|p| p.amount_to(:btc)})/eq_btc*100
+    begin
+      trezor_p = p_trezor/eq_btc*100
+      huobi_p = (Property.tagged_with('交易所').sum {|p| p.amount_to(:btc)})/eq_btc*100
+      yuebao_p = (Property.tagged_with('支付宝').sum {|p| p.amount_to(:btc)})/eq_btc*100
+    rescue
+      trezor_p = huobi_p = yuebao_p = 0
+    end
     if is_admin
       return p_btc, eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, total_real_profit.to_i.to_s + ' ', total_unsell_profit.to_i.to_s + ' ', ave_hour_profit.to_i.to_s + ' ', total_real_p_24h.to_s + ' ', trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p
     else
       p_fbtc = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
       p_finv = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
-      return p_fbtc, p_finv.floor(8), p_fbtc/p_finv*100, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, '', '', '', '', trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p
+      if p_finv > 0
+        p_fbtc_finv = p_fbtc/p_finv*100
+      else
+        p_fbtc_finv = 0
+      end
+      return p_fbtc, p_finv.floor(8), p_fbtc_finv, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, '', '', '', '', trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p
     end
   end
 

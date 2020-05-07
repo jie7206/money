@@ -156,7 +156,7 @@ class DealRecord < ApplicationRecord
   # 所有未卖出损益
   def self.total_unsell_profit
     result = 0
-    price_now = DealRecord.first.price_now if DealRecord.first
+    price_now = new.get_btc_price
     where("account = '#{self.get_huobi_acc_id}' and auto_sell = 0").each do |dr|
       result += (price_now-dr.price)*(dr.amount*(1-$fees_rate))
     end
@@ -255,7 +255,11 @@ class DealRecord < ApplicationRecord
     begin
       last_buy_time = unsell_records.order("created_at desc").first.created_at
     rescue
-      last_buy_time = real_sell_records.order("updated_at desc").first.updated_at
+      if real_sell_records.size > 1
+        last_buy_time = real_sell_records.order("updated_at desc").first.updated_at
+      else
+        last_buy_time = '2019-12-31 12:00:00'.to_time
+      end
     end
     pass_sec = (Time.now - last_buy_time).to_i
     return pass_sec - buy_sec # 如果到达可买时间，则回传超过几秒
@@ -268,10 +272,14 @@ class DealRecord < ApplicationRecord
 
   # 超出可卖出时间的秒数
   def self.over_sell_time_sec
-    sell_sec = get_invest_params(22).to_i
-    last_sell_time = real_sell_records.order("updated_at desc").first.updated_at
-    pass_sec = (Time.now - last_sell_time).to_i
-    return pass_sec - sell_sec # 如果到达可卖时间，则回传超过几秒
+    begin
+      sell_sec = get_invest_params(22).to_i
+      last_sell_time = real_sell_records.order("updated_at desc").first.updated_at
+      pass_sec = (Time.now - last_sell_time).to_i
+      return pass_sec - sell_sec # 如果到达可卖时间，则回传超过几秒
+    rescue
+      return 1
+    end
   end
 
   # 是否已经达到可以再次卖出的时间
@@ -286,9 +294,13 @@ class DealRecord < ApplicationRecord
 
   # 平均每秒的已实现损益值
   def self.real_profit_ave_sec( total_real_profit = self.total_real_profit )
-    first_sell_time = real_sell_records.order("updated_at").first.updated_at
-    pass_sec = (Time.now - first_sell_time).to_i
-    return total_real_profit.to_f/pass_sec
+    begin
+      first_sell_time = real_sell_records.order("updated_at").first.updated_at
+      pass_sec = (Time.now - first_sell_time).to_i
+      return total_real_profit.to_f/pass_sec
+    rescue
+      return 0
+    end
   end
 
   # 新增钱包凑数链接以方便凑齐当日存入到冷钱包的比特币数量

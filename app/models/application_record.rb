@@ -83,7 +83,7 @@ class ApplicationRecord < ActiveRecord::Base
   def amount_to( target_code = :twd, self_rate = self.currency.exchange_rate.to_f )
     if trate = target_rate(target_code)
       if (target_code == :cny or target_code == :twd) and self.currency.code == 'BTC'
-        result = amount*DealRecord.first.price_now*eval("usdt_to_#{target_code.to_s}")
+        result = amount*get_btc_price*eval("usdt_to_#{target_code.to_s}")
       else
         result = amount*(trate.to_f/self_rate)
       end

@@ -1,3 +1,5 @@
+require 'socket'
+
 class ApplicationController < ActionController::Base
 
   include ApplicationHelper
@@ -11,6 +13,27 @@ class ApplicationController < ActionController::Base
     $system_params_path = "#{Rails.root}/config/system_params.txt"
     load_global_variables
     Currency.add_or_renew_ex_rates # 方便汇率转换直接调用，无需再次查询数据库
+  end
+
+  # 取得主机IP
+  def get_host_ip
+    ip = get_local_ip.to_s
+    if ip.index("192.")
+      return ip
+    else
+      return $host_public_ip
+    end
+  end
+
+  # 取得本机IP
+  def get_local_ip
+    orig, Socket.do_not_reverse_lookup = Socket.do_not_reverse_lookup, true
+    UDPSocket.open do |s|
+      s.connect '64.233.187.99', 1  #google的ip
+      s.addr.last
+    end
+    ensure
+      Socket.do_not_reverse_lookup = orig
   end
 
   # 读入网站所有的全局参数设定
@@ -486,7 +509,7 @@ class ApplicationController < ActionController::Base
 
   # 取得BTC现价
   def get_price_now
-    DealRecord.first.price_now
+    get_btc_price
   end
 
   # 美元换台币
