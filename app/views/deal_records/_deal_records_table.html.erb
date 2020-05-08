@@ -9,7 +9,7 @@
   # 比特币现价
   price_now = get_btc_price
   # 交易所内剩余的比特币
-  btc_amount_ex = DealRecord.btc_amount
+  @btc_amount_ex = DealRecord.btc_amount
   # 人民币兑换比特币
   cny_to_btc = Currency.new.cny_to_btc
   # 下一笔要卖出的比特币数量
@@ -85,10 +85,31 @@
 
   # 以符号表示成本均价是否越买越低的功能已开启
   def show_total_ave_cost_price
-    ave_cost_price = @total_ave_cost_price.to_i
-    buy_limit_ave = get_invest_params(39).to_i # 均价到多少则停止买入
-    limit_msg = buy_limit_ave > 0 ? "(均价到达#{buy_limit_ave}则停止买入)" : ""
-    get_invest_params(32) == '1' ? raw("<u title=\"成交均价(成本均价越买越低的功能已开启)\">#{ave_cost_price}</u>") : raw("<span title=\"成交均价#{limit_msg}\">#{ave_cost_price}</span>")
+    # 目前的成本均价
+    ave_cost_price = @total_ave_cost_price
+    # 均价到多少则停止买入
+    @buy_limit_ave = get_invest_params(39).to_i
+    limit_msg = @buy_limit_ave > 0 ? "(均价到达#{@buy_limit_ave}则停止买入)" : ""
+    # 如果買入下一筆成本均價將大於上限則以高亮顯示
+    span_class = reach_buy_limit_ave ? "buy_limit_ave" : ""
+    get_invest_params(32) == '1' ? raw("<u class=\"#{span_class}\" title=\"成交均价(成本均价越买越低的功能已开启)\">#{ave_cost_price.to_i}</u>") : raw("<span class=\"#{span_class}\" title=\"成交均价#{limit_msg}\">#{ave_cost_price.to_i}</span>")
+  end
+
+  # 判断買入下一筆成本均價是否將大於上限
+  def reach_buy_limit_ave
+    return true if @total_ave_cost_price >= @buy_limit_ave
+    sum_cost = sum_amount = 0
+    unsells = DealRecord.unsell_records
+    new_price = unsells[-1].price
+    new_amount = unsells[-1].amount
+    sum_cost = @total_ave_cost_price*@btc_amount_ex + new_price*new_amount
+    sum_amount = @btc_amount_ex + new_amount
+    cost_ave = (sum_cost/sum_amount).ceil(0)
+    if @buy_limit_ave > 0 and cost_ave >= @buy_limit_ave
+      return true
+    else
+      return false
+    end
   end
 
   # 显示额度翻倍的最大购买价
@@ -254,7 +275,7 @@
     max_buy_price = dr.price if dr.price >= max_buy_price
   end # 结束 @deal_records.each
   # 成交均价
-  @total_ave_cost_price = total_amount > 0 ? to_n(total_price/total_amount_fee) : ''
+  @total_ave_cost_price = total_amount > 0 ? (total_price/total_amount_fee).floor(4) : ''
 %>
   <tr class="thead">
     <td colspan="2">
@@ -286,9 +307,9 @@
     <td align="right">
       <%
         # 计算交易所是否有足够的量以卖出下一笔记录
-        amount_remain_if_sell = btc_amount_ex - next_sell_amount
+        amount_remain_if_sell = @btc_amount_ex - next_sell_amount
         # 计算交易所是否有足够的量以卖出所有记录
-        amount_remain_if_clear = btc_amount_ex - total_amount_fee
+        amount_remain_if_clear = @btc_amount_ex - total_amount_fee
         # 是否显示8位的比特币数量
         if show_long_btc_amount %>
           <%= to_n(total_amount,8) %>
@@ -296,9 +317,9 @@
         else
       %>
           <% # 显示比特币总和 %>
-          <%= link_to "#{to_n(total_amount_fee,amount_pos)}/#{to_n(btc_amount_ex,amount_pos)}",\
-          place_order_form_path(amount:to_n(btc_amount_ex,6)), \
-          title: "#{to_n(total_amount_fee,8)}/#{to_n(next_sell_amount,8)}/#{to_n(btc_amount_ex,8)}\n 差值: #{to_n(amount_remain_if_sell,8)}(卖)|#{to_n(amount_remain_if_clear,8)}(总)" %>
+          <%= link_to "#{to_n(total_amount_fee,amount_pos)}/#{to_n(@btc_amount_ex,amount_pos)}",\
+          place_order_form_path(amount:to_n(@btc_amount_ex,6)), \
+          title: "#{to_n(total_amount_fee,8)}/#{to_n(next_sell_amount,8)}/#{to_n(@btc_amount_ex,8)}\n 差值: #{to_n(amount_remain_if_sell,8)}(卖)|#{to_n(amount_remain_if_clear,8)}(总)" %>
       <%
         end
       %>
