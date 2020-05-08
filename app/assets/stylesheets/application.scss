@@ -134,13 +134,15 @@ pre {
     line-height: 1.7em;
   }
 }
-.trial_goal_reach {
+.trial_goal_reach, .buysell_high {
   background-color: red;
   color: white;
+  padding: 2px;
 }
-.trial_goal_unreach {
-  background-color: green;
+.trial_goal_unreach, .buysell_low {
+  background-color: #32CD32;
   color: white;
+  padding: 2px;
 }
 .thead {
   background-color: #F7DCB4;

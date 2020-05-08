@@ -2,13 +2,24 @@
   # 获得所有宏观统计数据
   p_btc, eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit, ave_hour_profit, total_real_p_24h, trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p = \
   Property.invest_to_btc( admin? )
+
+  # 买卖比若超过(低于)所设定的值则会以高亮显示
+  def get_buysell_class
+    if @buy_sell_rate.to_f >= $buysell_high_rate
+      return "buysell_high"
+    elsif @buy_sell_rate.to_f <= $buysell_low_rate
+      return "buysell_low"
+    else
+      return ""
+    end
+  end
 %>
 <h2>
   <%= title_html %>
   <% # 显示宏观统计数据 %>
   (
     <% if @buy_sell_rate.to_f > 0 %>
-      <%= raw("<span title=\"买卖多空比\">#{@buy_sell_rate}</span>") %>
+      <%= raw("<span title=\"买卖多空比\" class=\"#{get_buysell_class}\">#{@buy_sell_rate}</span>") %>
     <% end %>
     <%= raw("<span title=\"累计已实现损益\">#{total_real_profit}</span> \
       <span title=\"近期已实现损益:未实现总损益\">#{total_real_p_24h.to_i}:#{total_unsell_profit.to_i}</span> \
