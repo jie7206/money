@@ -283,13 +283,14 @@ class Property < ApplicationRecord
   end
 
   # 流动性资产总值数据集
-  def self.flow_assets_records
-    new.get_properties_from_tags($link_to_flow_assets_list_tags,nil,$link_to_flow_assets_list_mode)
+  def self.flow_assets_records( tags = '比特币 可投资金', mode = 'a' )
+    new.get_properties_from_tags(tags,nil,mode)
   end
 
   # 流动性资产总值台币现值
-  def self.flow_assets_twd
-    flow_assets_records.sum {|p| p.amount_to(:twd)}
+  def self.flow_assets_twd( tags = nil, mode = nil )
+    rs = (tags and mode) ? flow_assets_records(tags,mode) : flow_assets_records
+    rs.sum {|p| p.amount_to(:twd)}
   end
 
   # 计算冷钱包的成本均价

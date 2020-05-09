@@ -97,7 +97,7 @@
 
   # 判断買入下一筆成本均價是否將大於上限
   def reach_buy_limit_ave
-    return true if @total_ave_cost_price >= @buy_limit_ave
+    return true if @total_ave_cost_price.to_i >= @buy_limit_ave
     sum_cost = sum_amount = 0
     unsells = DealRecord.unsell_records
     new_price = unsells[-1].price
