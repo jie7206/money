@@ -19,7 +19,7 @@
   # 总累计获利
   total_real_profit = DealRecord.total_real_profit.to_i
   # 平均每秒的已实现损益值
-  real_p_sec = DealRecord.real_profit_ave_sec
+  real_p_sec = DealRecord.real_profit_ave_sec($send_to_trezor_time)
   # 资产净值变化值
   net_value_change = Record.net_value_change_from($send_to_trezor_time).to_i
   # 是否已经达到可以再次买入的时间
@@ -97,7 +97,7 @@
 
   # 判断買入下一筆成本均價是否將大於上限
   def reach_buy_limit_ave
-    return true if @total_ave_cost_price.to_i >= @buy_limit_ave
+    return true if @buy_limit_ave != 0 and @total_ave_cost_price.to_i >= @buy_limit_ave
     unsells = DealRecord.unsell_records
     if unsells.size > 0
       sum_cost = sum_amount = 0

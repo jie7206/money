@@ -293,11 +293,12 @@ class DealRecord < ApplicationRecord
   end
 
   # 平均每秒的已实现损益值
-  def self.real_profit_ave_sec( total_real_profit = self.total_real_profit )
+  def self.real_profit_ave_sec( from_time = $trade_start_time )
     begin
-      first_sell_time = real_sell_records.order("updated_at").first.updated_at
+      rs = real_sell_records.where("updated_at > '#{from_time.to_s(:db)}'")
+      first_sell_time = rs.order("updated_at").first.updated_at
       pass_sec = (Time.now - first_sell_time).to_i
-      return total_real_profit.to_f/pass_sec
+      return (rs.sum {|dr| dr.real_profit})/pass_sec
     rescue
       return 0
     end
