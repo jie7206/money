@@ -258,6 +258,21 @@ class Property < ApplicationRecord
     return result
   end
 
+  # 流动性资产总值数据集
+  def self.flow_assets_records
+    new.get_properties_from_tags($link_to_flow_assets_list_tags,nil,$link_to_flow_assets_list_mode)
+  end
+
+  # 流动性资产总值台币现值
+  def self.flow_assets_twd
+    flow_assets_records.sum {|p| p.amount_to(:twd)}
+  end
+
+  # 跨账号流动性资产总值台币现值
+  def self.total_flow_assets_twd
+    new.get_properties_from_tags('比特币 可投资金',nil,'a').sum {|p| p.amount_to(:twd)}
+  end
+
   # 所有可投资金数据集
   def self.investable_fund_records
     result = []
@@ -272,25 +287,14 @@ class Property < ApplicationRecord
     investable_fund_records.sum {|p| p.amount_to(:twd)}
   end
 
-  # 跨账号所有可投资金台币现值
-  def self.total_investable_fund_records_twd
-    Property.tagged_with('可投资金').sum {|p| p.amount_to(:twd)}
-  end
-
   # 所有可投资金台币现值
   def self.investable_fund_records_cny
     investable_fund_records.sum {|p| p.amount_to(:cny)}
   end
 
-  # 流动性资产总值数据集
-  def self.flow_assets_records( tags = '比特币 可投资金', mode = 'a' )
-    new.get_properties_from_tags(tags,nil,mode)
-  end
-
-  # 流动性资产总值台币现值
-  def self.flow_assets_twd( tags = nil, mode = nil )
-    rs = (tags and mode) ? flow_assets_records(tags,mode) : flow_assets_records
-    rs.sum {|p| p.amount_to(:twd)}
+  # 跨账号所有可投资金台币现值
+  def self.total_investable_fund_records_twd
+    Property.tagged_with('可投资金').sum {|p| p.amount_to(:twd)}
   end
 
   # 计算冷钱包的成本均价

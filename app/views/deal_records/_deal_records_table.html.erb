@@ -98,15 +98,19 @@
   # 判断買入下一筆成本均價是否將大於上限
   def reach_buy_limit_ave
     return true if @total_ave_cost_price.to_i >= @buy_limit_ave
-    sum_cost = sum_amount = 0
     unsells = DealRecord.unsell_records
-    new_price = unsells[-1].price
-    new_amount = unsells[-1].amount
-    sum_cost = @total_ave_cost_price*@btc_amount_ex + new_price*new_amount
-    sum_amount = @btc_amount_ex + new_amount
-    cost_ave = (sum_cost/sum_amount).ceil(0)
-    if @buy_limit_ave > 0 and cost_ave >= @buy_limit_ave
-      return true
+    if unsells.size > 0
+      sum_cost = sum_amount = 0
+      new_price = unsells[-1].price
+      new_amount = unsells[-1].amount
+      sum_cost = @total_ave_cost_price*@btc_amount_ex + new_price*new_amount
+      sum_amount = @btc_amount_ex + new_amount
+      cost_ave = (sum_cost/sum_amount).ceil(0)
+      if @buy_limit_ave > 0 and cost_ave >= @buy_limit_ave
+        return true
+      else
+        return false
+      end
     else
       return false
     end

@@ -77,7 +77,7 @@ class TrialListsController < ApplicationController
       def prepare_vars
         @btc_price = get_btc_price
         @begin_price_for_trial = @btc_price
-        @flow_assets_twd = Property.flow_assets_twd($link_to_flow_assets_list_tags,$link_to_flow_assets_list_mode)
+        @flow_assets_twd = Property.flow_assets_twd
         @btc_amount = get_btc_amount_from_system_params
         @btc_amount_now = Property.btc_amount_of_flow_assets
         @usdt_to_twd = DealRecord.new.usdt_to_twd

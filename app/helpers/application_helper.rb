@@ -356,7 +356,7 @@ module ApplicationHelper
 
   # 显示资产净值链接
   def show_net_value_link
-    flow_assets_twd = Property.flow_assets_twd.to_i # 流动性资产总值
+    flow_assets_twd = Property.total_flow_assets_twd.to_i # 流动性资产总值
     btc_value_twd = Property.btc_value_twd.to_i # 比特币资产总值
     investable_fund_twd = Property.total_investable_fund_records_twd.to_i # 可买币资产总值
     total_loan_lixi_twd = Property.total_loan_lixi.to_i # n所有贷款含利息
