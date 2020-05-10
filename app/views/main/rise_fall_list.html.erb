@@ -5,6 +5,7 @@ end_price = (@price_now*(1+$rise_fall_rate)).to_i/100*100
 @price_step = $rise_fall_price_step
 @price_now_flag = false # 判断是否到达现价区间旗标
 @start_profit_flag = false # 判断是否开始获利旗标
+@goal_amount_flag = false # 判断是否到达可买币数目标的旗标
 
 # 依据价格显示对应的背景色
 def style_class( price )
@@ -17,6 +18,11 @@ def style_class( price )
   if !@price_now_flag and (price/@price_step).to_i == (@price_now/@price_step).to_i
     @price_now_flag = true
     return raw "class=\"price_now\""
+  end
+  # 高亮到达可买币数目标
+  if !@goal_amount_flag and cal_buy_amount(price) >= $rise_fall_goal_amount
+    @goal_amount_flag = true
+    return raw "class=\"goal_amount\""
   end
   return change_row_color
 end
@@ -37,6 +43,10 @@ end
   }
   .start_neg_profit {
     background-color: #FF4500;
+    color: white;
+  }
+  .goal_amount {
+    background-color: #2E8B57;
     color: white;
   }
 </style>
