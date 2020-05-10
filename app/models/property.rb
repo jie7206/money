@@ -141,7 +141,7 @@ class Property < ApplicationRecord
       btc_ex_p = 0
     end
     # 计算可投资金的实际比例
-    investable = investable_fund_records # 所有可投资金数据集
+    investable = total_investable_fund_records # 所有可投资金数据集
     if eq_btc > 0
       capital_p = (investable.sum {|p| p.amount_to(:btc)})/eq_btc*100
     else
@@ -311,8 +311,13 @@ class Property < ApplicationRecord
   end
 
   # 跨账号所有可投资金台币现值
+  def self.total_investable_fund_records
+    Property.tagged_with('可投资金')
+  end
+
+  # 跨账号所有可投资金台币现值
   def self.total_investable_fund_records_twd
-    Property.tagged_with('可投资金').sum {|p| p.amount_to(:twd)}
+    total_investable_fund_records.sum {|p| p.amount_to(:twd)}
   end
 
   # 计算冷钱包的成本均价
