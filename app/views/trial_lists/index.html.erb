@@ -56,6 +56,8 @@
       <% @btc_price = @btc_price.to_f * (1+$trial_btc_month_grow_rate) %>
       <% @btc_price = $trial_btc_max_price if @btc_price > $trial_btc_max_price %>
       <% @month_cost = (@month_cost.to_f * (1+$trial_cost_month_grow_rate)).to_i %>
+      <% @month_cost = $trial_cost_month_grow_limit \
+          if @month_cost >= $trial_cost_month_grow_limit %>
       <!-- 月末价 //-->
       <td align="right"><%= to_n(@btc_price,0) %></td>
       <!-- 月末额 //-->

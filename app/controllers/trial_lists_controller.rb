@@ -51,6 +51,7 @@ class TrialListsController < ApplicationController
         @btc_price = @btc_price.to_f * (1+$trial_btc_month_grow_rate)
         @btc_price = $trial_btc_max_price if @btc_price > $trial_btc_max_price
         @month_cost = (@month_cost.to_f * (1+$trial_cost_month_grow_rate)).to_i
+        @month_cost = $trial_cost_month_grow_limit if @month_cost >= $trial_cost_month_grow_limit
         end_price = @btc_price.floor(2)
         end_balance = cal_btc_capital
         end_balance_twd = btc_capital_twd
