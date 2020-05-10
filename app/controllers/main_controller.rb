@@ -370,6 +370,8 @@ class MainController < ApplicationController
     @price_now = get_price_now
     @invest_fund_usdt = (Property.investable_fund_records_cny/$usdt_to_cny).floor(4)
     @acc_btc_amount = Property.acc_btc_amount # 该账号BTC数量
+    @total_btc_amount = Property.total_btc_amount # 比特币的总数
+    @total_loan_lixi = Property.total_loan_lixi # 贷款(含利息)的总额
   end
 
   private

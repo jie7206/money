@@ -1,9 +1,45 @@
 <%
-rate = $rise_fall_rate
-price_step = $rise_fall_price_step
-start_price = (@price_now*(1-rate)).to_i/100*100
-end_price = @price_now*(1+rate)
+# 初始化参数
+start_price = (@price_now*(1-$rise_fall_rate)).to_i/100*100
+end_price = (@price_now*(1+$rise_fall_rate)).to_i/100*100
+@price_step = $rise_fall_price_step
+@price_now_flag = false # 判断是否到达现价区间旗标
+@start_profit_flag = false # 判断是否开始获利旗标
+
+# 依据价格显示对应的背景色
+def style_class( price )
+  # 高亮开始获利价格
+  if !@start_profit_flag and cal_profit_twd(price,cal_buy_amount(price)) < 0
+    @start_profit_flag = true
+    return raw "class=\"start_neg_profit\""
+  end
+  # 高亮现价
+  if !@price_now_flag and (price/@price_step).to_i == (@price_now/@price_step).to_i
+    @price_now_flag = true
+    return raw "class=\"price_now\""
+  end
+  return change_row_color
+end
+
+# 计算可买币数
+def cal_buy_amount( price )
+  (@invest_fund_usdt/price).floor(6)
+end
+
+# 计算投资获利
+def cal_profit_twd( price, add_amount = 0 )
+  ((@total_btc_amount+add_amount)*price*usdt_to_twd-@total_loan_lixi).to_i
+end
 %>
+<style>
+  .price_now {
+    background-color: #87CEFA;
+  }
+  .start_neg_profit {
+    background-color: #FF4500;
+    color: white;
+  }
+</style>
 <center>
 <h2><%= t(:rise_fall_list) %> (区间幅度: <%= ($rise_fall_rate*100).to_i %>%)</h2>
 <table width="<%=$default_table_width*0.6%>">
@@ -12,18 +48,30 @@ end_price = @price_now*(1+rate)
     <td>可买币数</td>
     <td>累计币数</td>
     <td>等值台币</td>
+    <td>投资获利</td>
+    <td>获利差值</td>
     <td>资产净值</td>
   </tr>
-  <% (start_price..end_price).step(price_step).each do |price| %>
-    <tr <%= change_row_color %>>
+  <% pre_profit_twd = 0 %>
+  <% (end_price..start_price).step(@price_step*-1).each do |price| %>
+    <tr <%= style_class(price) %>>
       <td align="right"><%= price %></td>
       <% # 可买币数 %>
-      <% add_amount = (@invest_fund_usdt/price).floor(6) %>
+      <% add_amount = cal_buy_amount(price) %>
       <td align="right"><%= to_n(add_amount,6) %></td>
       <% # 累计币数 %>
       <% sum_amount = @acc_btc_amount + add_amount %>
       <td align="right"><%= to_n(sum_amount,8) %></td>
+      <% # 等值台币 %>
       <td align="right"><%= (sum_amount*price*usdt_to_twd).to_i %></td>
+      <% # 投资获利 %>
+      <% profit_twd = cal_profit_twd(price,add_amount) %>
+      <td align="right"><%= profit_twd %></td>
+      <% # 获利差值 %>
+      <% profit_diff = (profit_twd - pre_profit_twd).abs %>
+      <td align="right"><%= profit_diff if pre_profit_twd != 0 %></td>
+      <% pre_profit_twd = profit_twd %>
+      <% # 资产净值 %>
       <td align="right"><%= (Property.net_value(:twd, admin_hash(admin?,btc_price: price))).to_i %></td>
     </tr>
   <% end %>
