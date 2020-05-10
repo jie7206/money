@@ -1,0 +1,31 @@
+<%
+rate = $rise_fall_rate
+price_step = $rise_fall_price_step
+start_price = (@price_now*(1-rate)).to_i/100*100
+end_price = @price_now*(1+rate)
+%>
+<center>
+<h2><%= t(:rise_fall_list) %> (区间幅度: <%= ($rise_fall_rate*100).to_i %>%)</h2>
+<table width="<%=$default_table_width*0.6%>">
+  <tr class="thead">
+    <td>BTC价格</td>
+    <td>可买币数</td>
+    <td>累计币数</td>
+    <td>等值台币</td>
+    <td>资产净值</td>
+  </tr>
+  <% (start_price..end_price).step(price_step).each do |price| %>
+    <tr <%= change_row_color %>>
+      <td align="right"><%= price %></td>
+      <% # 可买币数 %>
+      <% add_amount = (@invest_fund_usdt/price).floor(6) %>
+      <td align="right"><%= to_n(add_amount,6) %></td>
+      <% # 累计币数 %>
+      <% sum_amount = @acc_btc_amount + add_amount %>
+      <td align="right"><%= to_n(sum_amount,8) %></td>
+      <td align="right"><%= (sum_amount*price*usdt_to_twd).to_i %></td>
+      <td align="right"><%= (Property.net_value(:twd, admin_hash(admin?,btc_price: price))).to_i %></td>
+    </tr>
+  <% end %>
+</table>
+</center>

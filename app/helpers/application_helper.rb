@@ -290,6 +290,11 @@ module ApplicationHelper
     end
   end
 
+  # 涨跌试算表链接
+  def rise_fall_list_link
+    link_to t(:rise_fall_list), controller: :main, action: :rise_fall_list
+  end
+
   # 资产标签云
   def get_tag_cloud
     @tags = Property.tag_counts_on(:tags)
@@ -624,6 +629,12 @@ module ApplicationHelper
     link_to @flow_assets_twd.to_i, controller: :properties, tags: $link_to_flow_assets_list_tags, mode: $link_to_flow_assets_list_mode
   end
 
+  # 显示资产时是否包含显示隐藏资产
+  def admin_hash( admin, new_options = {} )
+    options = admin ? {include_hidden: true} : {include_hidden: false}
+    return options.merge new_options
+  end
+  
   # 如果没有负号，在前面显示+号
   def add_plus(s_or_i)
     str = s_or_i.to_s
@@ -678,5 +689,11 @@ module ApplicationHelper
       return 1.0/Currency.find_by_code('BTC').exchange_rate
     end
   end
+
+  # USDT >> TWD
+  def usdt_to_twd
+    DealRecord.new.usdt_to_twd
+  end
+
 
 end

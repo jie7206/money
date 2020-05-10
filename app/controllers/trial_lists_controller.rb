@@ -80,7 +80,7 @@ class TrialListsController < ApplicationController
         @flow_assets_twd = Property.flow_assets_twd
         @btc_amount = get_btc_amount_from_system_params
         @btc_amount_now = Property.btc_amount_of_flow_assets
-        @usdt_to_twd = DealRecord.new.usdt_to_twd
+        @usdt_to_twd = usdt_to_twd
         @investable_fund_records_twd = Property.investable_fund_records_twd
         @investable_fund_records_cny = Property.investable_fund_records_cny
         if admin?

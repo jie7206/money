@@ -33,7 +33,11 @@ class Property < ApplicationRecord
       (next if p.hidden?) if !options[:include_hidden]
       (next if p.negative?) if options[:only_positive]
       (next if p.positive?) if options[:only_negative]
-      result += p.amount_to(target_code)
+      if options[:btc_price]
+        result += p.amount_to(target_code,p.currency.exchange_rate,options[:btc_price])
+      else
+        result += p.amount_to(target_code)
+      end
     end
     return result
   end
@@ -271,6 +275,20 @@ class Property < ApplicationRecord
   # 跨账号流动性资产总值台币现值
   def self.total_flow_assets_twd
     new.get_properties_from_tags('比特币 可投资金',nil,'a').sum {|p| p.amount_to(:twd)}
+  end
+
+  # 该账号BTC数据集
+  def self.acc_btc_records
+    result = []
+    flow_assets_records.each do |p|
+      result << p if p.currency.code == 'BTC'
+    end
+    return result
+  end
+
+  # 该账号BTC数量
+  def self.acc_btc_amount
+    acc_btc_records.sum {|p| p.amount}
   end
 
   # 所有可投资金数据集

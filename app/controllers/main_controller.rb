@@ -365,6 +365,13 @@ class MainController < ApplicationController
     redirect_to action: :system_params_form
   end
 
+  # 建立漲跌試算表列出可买币数、累计币数、等值台币及资产净值
+  def rise_fall_list
+    @price_now = get_price_now
+    @invest_fund_usdt = (Property.investable_fund_records_cny/$usdt_to_cny).floor(4)
+    @acc_btc_amount = Property.acc_btc_amount # 该账号BTC数量
+  end
+
   private
 
     # 系统参数的更新必须确保每一行以钱号开头以免系统无法运作

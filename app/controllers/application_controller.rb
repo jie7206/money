@@ -78,12 +78,6 @@ class ApplicationController < ActionController::Base
     Time.now.strftime("%H:%M")
   end
 
-  # 显示资产时是否包含显示隐藏资产
-  def admin_hash( admin, new_options = {} )
-    options = admin ? {include_hidden: true} : {include_hidden: false}
-    return options.merge new_options
-  end
-
   # 从火币网取得某一数字货币的最新报价
   def get_huobi_price( symbol )
     begin

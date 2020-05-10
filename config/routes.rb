@@ -81,8 +81,10 @@ Rails.application.routes.draw do
   get 'check_open_order', to: 'open_orders#check_open_order'
   get 'clear_open_orders', to: 'open_orders#clear'
   get 'huobi_assets', to: 'properties#huobi_assets'
+  get 'save_trials_to_db', to: 'trial_lists#save_trials_to_db'
   get 'main/del_huobi_orders'
   get 'main/kline_chart'
   get 'main/line_chart'
-  get 'save_trials_to_db', to: 'trial_lists#save_trials_to_db'
+  get 'main/rise_fall_list'
+
 end
