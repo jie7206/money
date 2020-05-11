@@ -2,13 +2,9 @@ require 'json'
 
 class MainController < ApplicationController
 
-  skip_before_action :verify_authenticity_token, :only => [:order_calculate, :place_order]
+  include ActionView::Helpers::OutputSafetyHelper # 为了使用 raw
 
-  # 显示走势图
-  def chart
-    build_fusion_chart_data(get_class_name_by_login,1)
-    render template: 'shared/chart'
-  end
+  skip_before_action :verify_authenticity_token, :only => [:order_calculate, :place_order]
 
   # 显示登入表单及接受登入表单
   def login
@@ -51,6 +47,12 @@ class MainController < ApplicationController
   # 是否有从表单输入PIN值
   def input_pincode?
     params[:pincode] and !params[:pincode].empty?
+  end
+
+  # 显示走势图
+  def chart
+    build_fusion_chart_data(get_class_name_by_login,1)
+    render template: 'shared/chart'
   end
 
   # 更新火币所有账号的资料
@@ -252,6 +254,164 @@ class MainController < ApplicationController
     else
       render plain: 'Connect Error!'
     end
+  end
+
+  # 显示原始报价数据
+  def kline_data
+    render json: get_kline
+  end
+
+  # 以50对比的数学模型测试自动买卖是否能盈利
+  def model_trade_test_set
+    raw_data = get_kline($mt_period,$mt_size)
+    message = ""
+    ($mt_dv_begin..$mt_dv_end).each do |dv| # 仓位阀值
+      ($mt_size_begin..$mt_size_end).each do |pn| # 计算的报价笔数
+        message += model_trade_core(raw_data,false,dv,pn)
+      end
+    end
+    @text = "<h2>#{t(:model_trade_set)}</h2>\n#{message}"
+    render template: 'shared/blank'
+  end
+
+  # 以50对比的数学模型测试自动买卖是否能盈利
+  def model_trade_test_single
+    @text = "<h2>#{t(:model_trade_single)}</h2>\n#{model_trade_core}"
+    render template: 'shared/blank'
+  end
+
+  # 以50对比的数学模型核心程序(dv=仓位阀值,pn=计算的报价笔数)
+  def model_trade_core( raw_data = get_kline($mt_period,$mt_size), show_msg = true, dv = 0, pn = 0 )
+
+    if raw_data.size > 0
+
+      cal_price_size = pn > 0 ? $mt_size_step*pn : $mts_cal_size_value # 要计算的报价笔数
+      total_test_count = total_neg_count = 0 # 计算总平均亏损率用
+      message = ""
+
+      set_diff_value = dv > 0 ? 0.005*dv : $mts_set_diff_value # 仓位至少相差多少才动作
+
+      (1..$mt_cal_loop).each do
+
+        neg_count = 0 # 资产亏损的次数
+        diff_value = set_diff_value # 仓位至少相差多少才动作
+
+        (1..$mt_loop_num).each do
+
+          # 初始化参数
+          capital = ori_capital = 4000 # 投入资金(USDT)
+          amount = 0 # 持有的比特币数量
+          keep = $mt_keep_level # 保持比特币仓位
+          diff = diff_value # 仓位至少相差多少才动作
+          value = capital # 资产总值(USDT)
+
+          start_time = nil # 开始计算的时间
+          end_time = nil # 结束计算的时间
+          start_time_flag = false # 开始计算的时间旗标
+          time = nil # 最新计算的时间
+
+          prices = raw_data[rand(0..($mt_size-cal_price_size)),cal_price_size]
+          prices.each do |d|
+            time = Time.at(d["id"])
+            cal_all = $mt_cal_all # 是否计算全部数据
+            from_date, to_date = $mt_from_date, $mt_to_date # 挑选日期计算
+            if cal_all or (time >= from_date.to_time and time <= to_date.to_time)
+              if !start_time_flag
+                start_time = time
+                start_time_flag = true
+              end
+              end_time = time
+              price = d["close"]
+              # 计算比特币仓位
+              level = amount*price/value
+              # 如果仓位小于保持仓位且还有剩余资金则买进
+              if (keep-level) > diff and capital > 0
+                # 计算用多少USDT购买
+                usdt = value*(keep-level)
+                # 买入的单位数
+                unit = usdt/price*(1-$mt_fee_rate)
+                # 累计的单位数
+                amount += unit
+                # 更新资金余额
+                capital -= usdt
+                # 更新资产总值
+                value = capital + amount*price
+                # 更新比特币仓位
+                level_after = amount*price/value
+                # 交易摘要
+                summary = <<-EOF
+                          时间：#{to_t(time)}<br/>
+                          现价：#{price}<br/>
+                          仓位：#{(level*100).floor(2)}%<br/>
+                          买入：#{unit.floor(8)} BTC<br/>
+                          总数：#{amount.floor(8)} BTC<br/>
+                          仓位：#{(level_after*100).floor(2)}%<br/>
+                          花费：#{usdt.floor(2)} USDT<br/>
+                          余额：#{capital.floor(2)} USDT<br/>
+                          总值：#{value.floor(2)} USDT<p/>
+                EOF
+                # message += summary
+              end
+              # 如果仓位大于保持仓位且还有剩余BTC则卖出
+              if (level-keep) > diff and amount > 0
+                # 计算要卖出多少USDT
+                usdt = value*(level-keep)
+                # 卖出的单位数
+                unit = usdt/price
+                # 累计的单位数
+                amount -= unit
+                # 更新资金余额
+                capital += usdt*(1-$mt_fee_rate)
+                # 更新资产总值
+                value = capital + amount*price
+                # 更新比特币仓位
+                level_after = amount*price/value
+                # 交易摘要
+                summary = <<-EOF
+                          时间：#{to_t(time)}<br/>
+                          现价：#{price}<br/>
+                          仓位：#{(level*100).floor(2)}%<br/>
+                          卖出：#{unit.floor(8)} BTC<br/>
+                          总数：#{amount.floor(8)} BTC<br/>
+                          仓位：#{(level_after*100).floor(2)}%<br/>
+                          进账：#{usdt.floor(2)} USDT<br/>
+                          余额：#{capital.floor(2)} USDT<br/>
+                          总值：#{value.floor(2)} USDT<p/>
+                EOF
+                # message += summary
+              end
+            end # end cal_all
+          end # end prices.each
+
+          if show_msg and start_time_flag
+            message += "持仓：#{$mt_keep_level*100}% 阀值：#{add_zero(to_n(set_diff_value*100),2)}% 区间：#{$mt_period} 间隔：#{add_zero(day_diff(start_time,end_time),3)}天 #{to_d(start_time,true)} → #{to_d(end_time,true)} 变化：#{ori_capital.to_i} → #{value.to_i}(#{add_zero(to_n(value/ori_capital*100,2),3)}%)<br/>"
+          end
+          # 记录资产亏损的次数
+          if value < ori_capital
+            neg_count += 1
+            total_neg_count += 1
+          end
+          # 测试总次数
+          total_test_count += 1
+
+        end # end $mt_loop_num
+
+        neg_rate = neg_count.to_f/$mt_loop_num*100 # 亏损率
+        if show_msg
+          message += "<hr/>测试次数：#{$mt_loop_num} 亏损次数：#{neg_count} 平均亏损率：#{to_n(neg_rate)}%<hr/>"
+        end
+      end # end $mt_cal_loop
+      info = "持仓：#{$mt_keep_level*100}% 阀值：#{add_zero(to_n(set_diff_value*100),2)}% #{$mt_period}报价笔数：#{add_zero(cal_price_size,4)}"
+      summary = "总测试次数：#{add_zero(total_test_count,4)} 总亏损次数：#{add_zero(total_neg_count,4)} 平均总亏损率：#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}%"
+      if show_msg
+        message += "#{summary}<hr/>"
+      else
+        message = "#{info} #{summary}<br/>"
+      end
+    else
+      message = "无法读取报价，请稍后再试..."
+    end # end raw_data.size > 0
+    return message
   end
 
   # 计算中间价

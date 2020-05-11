@@ -472,10 +472,11 @@ class ApplicationController < ActionController::Base
   end
 
   # 返回K线数据（蜡烛图）
-  def get_kline
-    symbol = params[:symbol] ? params[:symbol] : "btcusdt"
-    period = params[:period] ? params[:period] : $default_chart_period
-    size = params[:size] ? params[:size] : $chart_data_size
+  # period : 1min, 5min, 15min, 30min, 60min, 4hour, 1day, 1mon, 1week, 1year
+  def get_kline( default_period = $default_chart_period, default_size = $chart_data_size, default_symbol = "btcusdt" )
+    symbol = params[:symbol] ? params[:symbol] : default_symbol
+    period = params[:period] ? params[:period] : default_period
+    size = params[:size] ? params[:size] : default_size
     @symbol_title = symbol_title(symbol)
     @period_title = period_title(period)
     begin
@@ -606,6 +607,17 @@ class ApplicationController < ActionController::Base
     exe_update_huobi_assets
     update_deal_cost_amount
     update_total_real_profit
+  end
+
+  # 计算两时间间隔天数
+  def day_diff( from_time, to_time = 0, include_seconds = false )
+      from_time = from_time.to_time if from_time.respond_to?(:to_time)
+      to_time = to_time.to_time if to_time.respond_to?(:to_time)
+      begin
+        return (((to_time - from_time).abs)/86400).round
+      rescue
+        return 0
+      end
   end
 
   # 建立回到目录页的方法

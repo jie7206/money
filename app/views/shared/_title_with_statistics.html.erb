@@ -21,15 +21,15 @@
     <% if @buy_sell_rate.to_f > 0 %>
       <%= raw("<span title=\"买卖多空比\" class=\"#{get_buysell_class}\">#{@buy_sell_rate}</span>") %>
     <% end %>
-    <%= raw("<span title=\"累计已实现损益\">#{total_real_profit}</span> \
-      <span title=\"近期已实现损益:未实现总损益\">#{total_real_p_24h.to_i}:#{total_unsell_profit.to_i}</span> \
+    <%= raw("<span title=\"近期已实现损益:未实现总损益\">#{total_real_p_24h.to_i}:#{total_unsell_profit.to_i}</span> \
       <span title=\"交易记录的总体利率\">#{add_plus(to_n(price_p,1))}%</span> \
-      <span title=\"交易记录均价:冷钱包均价:全部均价:如果满仓均价\">#{real_ave_cost.to_i}:#{trezor_ave_cost.to_i}:#{total_ave_cost.to_i}:#{sim_ave_cost.to_i}</span> \
-      <span title=\"比特币总持有数:以比特币计算的总资产值\">#{to_n(p_btc,2)}:#{to_n(eq_btc,2)}</span> \
+      <span title=\"冷钱包均价:全部均价:如果满仓均价:交易记录均价\">#{trezor_ave_cost.to_i}:#{total_ave_cost.to_i}:#{sim_ave_cost.to_i}:#{real_ave_cost.to_i}</span> \
+      <span title=\"比特币总持有数:如果满仓比特币总持有数\">#{to_n(p_btc,2)}:#{to_n(eq_btc,2)}</span> \
       <span title=\"比特币占总资产比例(#{to_n(btc_p,3)}%), 每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> \
       <span title=\"冷钱包占总资产比例(#{to_n(trezor_p,3)}%)\">#{to_n(trezor_p,1)}%</span> \
       <span title=\"交易所持仓占总资产比例(#{to_n(btc_ex_p,3)}%)\">#{to_n(btc_ex_p,1)}%</span> \
       <span title=\"可投资金占总资产比例(#{to_n(capital_p,3)}%)\">#{to_n(capital_p,1)}%</span> \
+      <span title=\"累计已实现损益\">#{total_real_profit}</span>
       ") %>
   )
 </h2>

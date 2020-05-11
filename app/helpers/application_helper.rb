@@ -252,6 +252,16 @@ module ApplicationHelper
     link_to t(:clear_open_orders), clear_open_orders_path, { id: 'clear_open_orders' }
   end
 
+  # 50:50的数学模型测试
+  def model_trade_single_link
+    link_to t(:model_trade_single), mtrade_path
+  end
+
+  # 50:50的数学模型测试
+  def model_trade_link
+    link_to t(:model_trade_set), mtrades_path
+  end
+
   # 设置定投参数表单链接
   def set_auto_invest_form_link
     link_to t(:set_auto_invest_params), set_auto_invest_form_path, { id: 'set_auto_invest_form' }
@@ -634,7 +644,7 @@ module ApplicationHelper
     options = admin ? {include_hidden: true} : {include_hidden: false}
     return options.merge new_options
   end
-  
+
   # 如果没有负号，在前面显示+号
   def add_plus(s_or_i)
     str = s_or_i.to_s
