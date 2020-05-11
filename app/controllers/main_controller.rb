@@ -49,12 +49,12 @@ class MainController < ApplicationController
     params[:pincode] and !params[:pincode].empty?
   end
 
-  # 显示走势图
-  def chart
+  # 显示资产净值走势图
+  def net_chart
     build_fusion_chart_data(get_class_name_by_login,1)
     render template: 'shared/chart'
   end
-
+  
   # 更新火币所有账号的资料
   def update_huobi_data
     if update_all_huobi_assets > 0 and update_huobi_deal_records
@@ -276,8 +276,19 @@ class MainController < ApplicationController
 
   # 以50对比的数学模型测试自动买卖是否能盈利
   def model_trade_test_single
+    build_fusion_chart_data('Currency',6,cal_mts_data_size)
     @text = "<h2>#{t(:model_trade_single)}</h2>\n#{model_trade_core}"
-    render template: 'shared/blank'
+    render template: 'shared/chart'
+  end
+
+  # 计算要显示的BTC走势图资料笔数
+  def cal_mts_data_size
+    if !$mt_from_date.empty? and !$mt_to_date.empty?
+      end_date = $mt_to_date.to_date > Date.today ? Date.today : $mt_to_date
+      return day_diff($mt_from_date,end_date)
+    else
+      return 30*3
+    end
   end
 
   # 以50对比的数学模型核心程序(dv=仓位阀值,pn=计算的报价笔数)
@@ -313,8 +324,10 @@ class MainController < ApplicationController
           prices = raw_data[rand(0..($mt_size-cal_price_size)),cal_price_size]
           prices.each do |d|
             time = Time.at(d["id"])
-            cal_all = $mt_cal_all # 是否计算全部数据
-            from_date, to_date = $mt_from_date, $mt_to_date # 挑选日期计算
+            # 是否计算全部数据
+            cal_all = ($mt_from_date.empty? or $mt_to_date.empty?) ? true : false
+            # 挑选日期区间计算
+            from_date, to_date = $mt_from_date, $mt_to_date
             if cal_all or (time >= from_date.to_time and time <= to_date.to_time)
               if !start_time_flag
                 start_time = time

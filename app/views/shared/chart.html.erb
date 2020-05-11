@@ -5,4 +5,7 @@
       <%= period_link_for_chart(:line_chart) %>
     </div>
   <% end %>
+  <% if @text and !@text.empty? %>
+    <%= raw(@text) %>
+  <% end %>
 <p><p>

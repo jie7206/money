@@ -46,7 +46,7 @@ Rails.application.routes.draw do
 
   get '/login', to: 'main#login'
   get '/logout', to: 'main#logout'
-  get '/chart', to: 'main#chart'
+  get '/net_chart', to: 'main#net_chart'
   get 'update_huobi_data', to: 'main#update_huobi_data'
   get 'update_all_data', to: 'properties#update_all_data'
   get 'update_all_exchange_rates', to: 'currencies#update_all_exchange_rates'

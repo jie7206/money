@@ -1,4 +1,4 @@
-<h2><%= link_to t(:property_index), chart_path %><%= portfolio_name %></h2>
+<h2><%= link_to t(:property_index), net_chart_path %><%= portfolio_name %></h2>
 <% if @properties and @properties.size > 0 %>
   <%= render 'properties_table', properties: @properties, show_summary: @show_summary %>
 <% end %>

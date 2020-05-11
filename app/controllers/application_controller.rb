@@ -299,7 +299,7 @@ class ApplicationController < ActionController::Base
   # 生成FusionCharts的XML资料
   def build_fusion_chart_data( class_name, oid, chart_data_size = $chart_data_size )
     @name = class_name.index('Net') ? '资产总净值' : eval(class_name).find(oid).name
-    records = Record.where(["class_name = ? and oid = ? and updated_at >= ?",class_name,oid,Date.today-$fusionchart_data_num.days]).order('updated_at')
+    records = Record.where(["class_name = ? and oid = ? and updated_at >= ?",class_name,oid,Date.today-chart_data_size.days]).order('updated_at')
     # 依照资料笔数的多寡来决定如何取图表中第一个值
     case records.size
       when 0
@@ -309,7 +309,7 @@ class ApplicationController < ActionController::Base
         last_value = records.first.value
     end
     today = Date.today
-    start_date = today - $fusionchart_data_num.days
+    start_date = today - chart_data_size.days
     @chart_data = ''
     @data_arr = [] # 为了找出最大值和最小值
     start_date.upto(today) do |date|
@@ -341,7 +341,7 @@ class ApplicationController < ActionController::Base
     else
       show_newest_value_diff = "#{@newest_value_diff} | #{to_n(@newest_value_rate)}%"
     end
-    @caption = "#{@name} #{$fusionchart_data_num}天走势图 最新 #{@before_newest_value} ( #{show_newest_value_diff} ) ➠  #{@newest_value} | #{(@newest_value*t2c).to_i} ( #{@min_value} | #{(@min_value*t2c).to_i} ➠ #{@max_value} | #{(@max_value*t2c).to_i} )"
+    @caption = "#{@name} #{chart_data_size}天走势图 最新 #{@before_newest_value} ( #{show_newest_value_diff} ) ➠  #{@newest_value} | #{(@newest_value*t2c).to_i} ( #{@min_value} | #{(@min_value*t2c).to_i} ➠ #{@max_value} | #{(@max_value*t2c).to_i} )"
   end
 
   # 显示走势图
