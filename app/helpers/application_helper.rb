@@ -79,11 +79,13 @@ module ApplicationHelper
   end
 
   # 默认的日期显示格式
-  def to_d( date, simple = false )
-    if !simple
-      date.to_s(:db)
-    else
+  def to_d( date, simple = false, six_num = false )
+    if simple
       date.strftime("%y-%m-%d")
+    elsif six_num
+      date.strftime("%y%m%d")
+    else
+      date.to_s(:db)
     end
   end
 

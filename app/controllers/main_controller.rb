@@ -299,8 +299,11 @@ class MainController < ApplicationController
       cal_price_size = pn > 0 ? $mt_size_step*pn : $mts_cal_size_value # 要计算的报价笔数
       set_diff_value = dv > 0 ? $mt_dv_step*dv : $mts_set_diff_value # 仓位至少相差多少才动作
       total_test_count = total_neg_count = total_neg_count_btc = 0 # 计算总平均亏损率用
-      cap_rates = [] # 为了找出资产利率最大值与最小值
-      btc_rates = [] # 为了找出币数利率最大值与最小值
+      cap_rates_max = 0 ; cap_rates_min = 100 # 为了找出资产利率最大值与最小值
+      btc_rates_max = 0 ; btc_rates_min = 100 # 为了找出币数利率最大值与最小值
+      # 为了找出计算数据日期的最大值与最小值
+      cal_begin_date = to_d(Date.today,false,true)
+      cal_end_date = ""
 
       message = "" # 回传显示讯息
 
@@ -329,6 +332,7 @@ class MainController < ApplicationController
           prices = raw_data[rand(0..($mt_size-cal_price_size)),cal_price_size]
           prices.each do |d|
             time = Time.at(d["id"])
+            time_str = to_d(time,false,true)
             # 是否计算全部数据
             cal_all = ($mt_from_date.empty? or $mt_to_date.empty?) ? true : false
             # 挑选日期区间计算
@@ -337,8 +341,10 @@ class MainController < ApplicationController
               if !start_time_flag
                 start_time = time
                 start_time_flag = true
+                cal_begin_date = time_str if time_str < cal_begin_date
               end
               end_time = time
+              cal_end_date = time_str if time_str > cal_end_date
               price = d["close"]
               # 计算比特币仓位
               level = amount*price/value
@@ -409,8 +415,6 @@ class MainController < ApplicationController
           # 计算利率
           cap_rate = value/ori_capital*100
           btc_rate = amount/start_amount*100
-          cap_rates << cap_rate
-          btc_rates << btc_rate
 
           # 记录资产亏损的次数
           if value < ori_capital
@@ -425,9 +429,13 @@ class MainController < ApplicationController
           # 记录资产利率的最大值与最小值
           capital_rate_max = cap_rate if cap_rate > capital_rate_max
           capital_rate_min = cap_rate if cap_rate < capital_rate_min
+          cap_rates_max = cap_rate if cap_rate > cap_rates_max
+          cap_rates_min = cap_rate if cap_rate < cap_rates_min
           # 记录币数利率的最大值与最小值
           amount_rate_max = btc_rate if btc_rate > amount_rate_max
           amount_rate_min = btc_rate if btc_rate < amount_rate_min
+          btc_rates_max = btc_rate if btc_rate > btc_rates_max
+          btc_rates_min = btc_rate if btc_rate < btc_rates_min
 
           # 测试总次数
           total_test_count += 1
@@ -445,8 +453,8 @@ class MainController < ApplicationController
           message += "<hr/>测试次数：#{$mt_loop_num} 资产亏损次数：#{neg_count} 资产平均亏损率：#{to_n(neg_rate)}% 币数亏损次数：#{neg_count_btc} 币数平均亏损率：#{to_n(neg_rate_btc)}% 资产：#{to_n(capital_rate_min)}% → #{to_n(capital_rate_max)}% 币数：#{to_n(amount_rate_min)}% → #{to_n(amount_rate_max)}%<hr/>"
         end
       end # end $mt_cal_loop
-      info = "持仓:#{($mt_keep_level*100).to_i}%(#{add_zero(to_n(set_diff_value*100),1)}%) #{$mt_period} #{add_zero(cal_price_size,4)}笔"
-      summary = "测试次数:#{add_zero(total_test_count,4)} 资产亏损:#{add_zero(total_neg_count,4)}次 亏损率:#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}% 币数亏损:#{add_zero(total_neg_count_btc,4)}次 亏损率:#{add_zero(to_n(total_neg_count_btc.to_f/total_test_count*100,0),3)}% 资产:#{add_zero(to_n(cap_rates.min),3)}% → #{add_zero(to_n(cap_rates.max),3)}% 币数:#{add_zero(to_n(btc_rates.min),3)}% → #{add_zero(to_n(btc_rates.max),3)}%"
+      info = "持仓:#{($mt_keep_level*100).to_i}%(#{to_n(set_diff_value*100,2)}%) #{$mt_period} #{add_zero(cal_price_size,4)}笔"
+      summary = "#{cal_begin_date}-#{cal_end_date} 测#{add_zero(total_test_count,4)}次 资亏#{add_zero(total_neg_count,4)}次(#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}%) 币亏#{add_zero(total_neg_count_btc,4)}次(#{add_zero(to_n(total_neg_count_btc.to_f/total_test_count*100,0),3)}%) 资产 #{add_zero(to_n(cap_rates_min),3)}% → #{add_zero(to_n(cap_rates_max),3)}% 币数 #{add_zero(to_n(btc_rates_min),3)}% → #{add_zero(to_n(btc_rates_max),3)}%"
       if show_msg
         message += "#{summary}<hr/>"
       else
