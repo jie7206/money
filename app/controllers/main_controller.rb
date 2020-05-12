@@ -54,7 +54,7 @@ class MainController < ApplicationController
     build_fusion_chart_data(get_class_name_by_login,1)
     render template: 'shared/chart'
   end
-  
+
   # 更新火币所有账号的资料
   def update_huobi_data
     if update_all_huobi_assets > 0 and update_huobi_deal_records
@@ -297,23 +297,28 @@ class MainController < ApplicationController
     if raw_data.size > 0
 
       cal_price_size = pn > 0 ? $mt_size_step*pn : $mts_cal_size_value # 要计算的报价笔数
-      total_test_count = total_neg_count = 0 # 计算总平均亏损率用
-      message = ""
+      set_diff_value = dv > 0 ? $mt_dv_step*dv : $mts_set_diff_value # 仓位至少相差多少才动作
+      total_test_count = total_neg_count = total_neg_count_btc = 0 # 计算总平均亏损率用
+      cap_rates = [] # 为了找出资产利率最大值与最小值
+      btc_rates = [] # 为了找出币数利率最大值与最小值
 
-      set_diff_value = dv > 0 ? 0.005*dv : $mts_set_diff_value # 仓位至少相差多少才动作
+      message = "" # 回传显示讯息
 
       (1..$mt_cal_loop).each do
 
         neg_count = 0 # 资产亏损的次数
-        diff_value = set_diff_value # 仓位至少相差多少才动作
+        neg_count_btc = 0 # 币数亏损的次数
+        capital_rate_max = 0 ; capital_rate_min = 100 # 资产利率的最大值与最小值记录
+        amount_rate_max = 0 ; amount_rate_min = 100 # 币数利率的最大值与最小值记录
 
         (1..$mt_loop_num).each do
 
           # 初始化参数
           capital = ori_capital = 4000 # 投入资金(USDT)
-          amount = 0 # 持有的比特币数量
+          amount = start_amount = 0 # 持有的比特币数量
+          start_amount_flag = false # 比特币初始量旗标
           keep = $mt_keep_level # 保持比特币仓位
-          diff = diff_value # 仓位至少相差多少才动作
+          diff = set_diff_value # 仓位至少相差多少才动作
           value = capital # 资产总值(USDT)
 
           start_time = nil # 开始计算的时间
@@ -343,6 +348,11 @@ class MainController < ApplicationController
                 usdt = value*(keep-level)
                 # 买入的单位数
                 unit = usdt/price*(1-$mt_fee_rate)
+                # 比特币初始量
+                if !start_amount_flag
+                  start_amount = unit
+                  start_amount_flag = true
+                end
                 # 累计的单位数
                 amount += unit
                 # 更新资金余额
@@ -396,26 +406,47 @@ class MainController < ApplicationController
             end # end cal_all
           end # end prices.each
 
-          if show_msg and start_time_flag
-            message += "持仓：#{$mt_keep_level*100}% 阀值：#{add_zero(to_n(set_diff_value*100),2)}% 区间：#{$mt_period} 间隔：#{add_zero(day_diff(start_time,end_time),3)}天 #{to_d(start_time,true)} → #{to_d(end_time,true)} 变化：#{ori_capital.to_i} → #{value.to_i}(#{add_zero(to_n(value/ori_capital*100,2),3)}%)<br/>"
-          end
+          # 计算利率
+          cap_rate = value/ori_capital*100
+          btc_rate = amount/start_amount*100
+          cap_rates << cap_rate
+          btc_rates << btc_rate
+
           # 记录资产亏损的次数
           if value < ori_capital
             neg_count += 1
             total_neg_count += 1
           end
+          # 记录币数亏损的次数
+          if amount < start_amount
+            neg_count_btc += 1
+            total_neg_count_btc += 1
+          end
+          # 记录资产利率的最大值与最小值
+          capital_rate_max = cap_rate if cap_rate > capital_rate_max
+          capital_rate_min = cap_rate if cap_rate < capital_rate_min
+          # 记录币数利率的最大值与最小值
+          amount_rate_max = btc_rate if btc_rate > amount_rate_max
+          amount_rate_min = btc_rate if btc_rate < amount_rate_min
+
           # 测试总次数
           total_test_count += 1
 
+          if show_msg and start_time_flag
+            message += "持仓：#{$mt_keep_level*100}% 阀值：#{add_zero(to_n(set_diff_value*100),1)}% 区间：#{$mt_period} 间隔：#{add_zero(day_diff(start_time,end_time),3)}天 #{to_d(start_time,true)} → #{to_d(end_time,true)} 资产：#{ori_capital.to_i} → #{value.to_i}(#{add_zero(to_n(cap_rate,2),3)}%) 币数：#{to_n(start_amount,8)} → #{to_n(amount,8)}(#{add_zero(to_n(btc_rate,2),3)}%)<br/>"
+          end
+
         end # end $mt_loop_num
 
-        neg_rate = neg_count.to_f/$mt_loop_num*100 # 亏损率
+        neg_rate = neg_count.to_f/$mt_loop_num*100 # 资产亏损率
+        neg_rate_btc = neg_count_btc.to_f/$mt_loop_num*100 # 币数亏损率
+
         if show_msg
-          message += "<hr/>测试次数：#{$mt_loop_num} 亏损次数：#{neg_count} 平均亏损率：#{to_n(neg_rate)}%<hr/>"
+          message += "<hr/>测试次数：#{$mt_loop_num} 资产亏损次数：#{neg_count} 资产平均亏损率：#{to_n(neg_rate)}% 币数亏损次数：#{neg_count_btc} 币数平均亏损率：#{to_n(neg_rate_btc)}% 资产：#{to_n(capital_rate_min)}% → #{to_n(capital_rate_max)}% 币数：#{to_n(amount_rate_min)}% → #{to_n(amount_rate_max)}%<hr/>"
         end
       end # end $mt_cal_loop
-      info = "持仓：#{$mt_keep_level*100}% 阀值：#{add_zero(to_n(set_diff_value*100),2)}% #{$mt_period}报价笔数：#{add_zero(cal_price_size,4)}"
-      summary = "总测试次数：#{add_zero(total_test_count,4)} 总亏损次数：#{add_zero(total_neg_count,4)} 平均总亏损率：#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}%"
+      info = "持仓:#{($mt_keep_level*100).to_i}%(#{add_zero(to_n(set_diff_value*100),1)}%) #{$mt_period} #{add_zero(cal_price_size,4)}笔"
+      summary = "测试次数:#{add_zero(total_test_count,4)} 资产亏损:#{add_zero(total_neg_count,4)}次 亏损率:#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}% 币数亏损:#{add_zero(total_neg_count_btc,4)}次 亏损率:#{add_zero(to_n(total_neg_count_btc.to_f/total_test_count*100,0),3)}% 资产:#{add_zero(to_n(cap_rates.min),3)}% → #{add_zero(to_n(cap_rates.max),3)}% 币数:#{add_zero(to_n(btc_rates.min),3)}% → #{add_zero(to_n(btc_rates.max),3)}%"
       if show_msg
         message += "#{summary}<hr/>"
       else
