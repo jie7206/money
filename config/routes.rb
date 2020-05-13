@@ -81,6 +81,7 @@ Rails.application.routes.draw do
   get 'kdata', to: 'main#kline_data'
   get 'mtrades', to: 'main#model_trade_test_set'
   get 'mtrade', to: 'main#model_trade_test_single'
+  get 'save_kdata', to: 'main#save_kline_data'
   get 'check_open_order', to: 'open_orders#check_open_order'
   get 'clear_open_orders', to: 'open_orders#clear'
   get 'huobi_assets', to: 'properties#huobi_assets'

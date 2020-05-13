@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_21_041225) do
+ActiveRecord::Schema.define(version: 2020_05_12_223150) do
 
   create_table "currencies", force: :cascade do |t|
     t.string "name"
@@ -57,6 +57,19 @@ ActiveRecord::Schema.define(version: 2020_03_21_041225) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["property_id"], name: "index_items_on_property_id"
+  end
+
+  create_table "line_data", force: :cascade do |t|
+    t.string "symbol"
+    t.string "period"
+    t.integer "tid"
+    t.decimal "open"
+    t.decimal "close"
+    t.decimal "high"
+    t.decimal "low"
+    t.decimal "vol"
+    t.decimal "amount"
+    t.integer "count"
   end
 
   create_table "open_orders", force: :cascade do |t|

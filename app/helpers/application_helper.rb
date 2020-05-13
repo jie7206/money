@@ -264,6 +264,11 @@ module ApplicationHelper
     link_to t(:model_trade_set), mtrades_path
   end
 
+  # 储存报价数据
+  def save_kdata_link
+    link_to t(:save_kdata), save_kdata_path
+  end
+
   # 设置定投参数表单链接
   def set_auto_invest_form_link
     link_to t(:set_auto_invest_params), set_auto_invest_form_path, { id: 'set_auto_invest_form' }
@@ -490,7 +495,7 @@ module ApplicationHelper
   # 取得最新的比特币报价
   def btc_price
     begin
-      root = JSON.parse(`python py/huobi_price.py symbol=btcusdt period=1min size=1`)
+      root = JSON.parse(`python py/huobi_price.py symbol=btcusdt period=1min size=1 from=0 to=0`)
       if root["data"] and root["data"][0]
         return format("%.2f",root["data"][0]["close"]).to_f
       else

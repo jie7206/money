@@ -261,13 +261,121 @@ class MainController < ApplicationController
     render json: get_kline
   end
 
+  # 检查是否超过火币WebSocket所能容许的查询期间
+  # 1min, 5min, 15min, 30min, 60min, 4hour, 1day, 1mon, 1week, 1year
+  def get_kline_time( from_time, to_time, period = '60min', max_size = 300 )
+    next_from_time = nil # 如果没取完，下次开始的时间
+    sec_num = 0 # 各期间所对应的秒数
+    case period
+      when '1min'
+        sec_num = 60
+      when '5min'
+        sec_num = 60*5
+      when '15min'
+        sec_num = 60*15
+      when '30min'
+        sec_num = 60*30
+      when '60min'
+        sec_num = 60*60
+      when '4hour'
+        sec_num = 60*60*4
+      when '1day'
+        sec_num = 60*60*24
+      when '1week'
+        sec_num = 60*60*24*7
+      when '1mon'
+        sec_num = 60*60*24*30
+      when '1year'
+        sec_num = 60*60*24*365
+    end
+    from_time_num = from_time.to_time.to_i
+    to_time_num = to_time.to_time.to_i
+    max_to_time_num = from_time_num + sec_num*max_size
+    if to_time_num > max_to_time_num
+      to_time_num = max_to_time_num
+      next_from_time = Time.at(max_to_time_num).to_s(:db)
+    end
+    return from_time_num, to_time_num, next_from_time
+  end
+
+  # 储存原始报价数据
+  def save_kline_data
+    symbol = $kline_data_symbol
+    period = $kline_data_period
+    get_from_time = $kline_data_from
+    get_to_time = $kline_data_to
+    count = 0
+    while true
+      from_time, to_time, next_from_time = \
+        get_kline_time(get_from_time,get_to_time,period)
+      raw_data = get_kline(period,0,symbol,from_time,to_time).reverse
+      if raw_data.size > 0
+        raw_data.each do |d|
+          if not LineData.find_repeat(symbol,period,d["id"])
+            LineData.create(
+              symbol: symbol,
+              period: period,
+              tid: d["id"],
+              open: d["open"],
+              close: d["close"],
+              high: d["high"],
+              low: d["low"],
+              vol: d["vol"].floor(4),
+              amount: d["amount"].floor(4),
+              count: d["count"]
+            )
+            count += 1
+          end
+        end
+      end
+      if next_from_time != nil
+        get_from_time = next_from_time
+      else
+        break
+      end
+    end
+    flash.now[:notice] = "已将#{count}笔#{symbol}(#{period})的数据存入数据库！(#{now})"
+    # flash.now[:notice] = "已读取#{count}笔#{symbol}(#{period})的数据！(#{now})"
+    @text = <<-EOF
+              如有需要，请到系统参数页面修改下列参数后执行：
+              <ol>
+                <li>$mt_period = '#{$mt_period}'</li>
+                <li>$kline_data_symbol = '#{$kline_data_symbol}'</li>
+                <li>$kline_data_from = '#{$kline_data_from}'</li>
+                <li>$kline_data_to = '#{$kline_data_to}'</li>
+              </ol>
+    EOF
+    render template: 'shared/blank'
+  end
+
+  # 取得报价资料
+  def get_price_data
+    if !$mt_from.empty? and !$mt_to.empty?
+      result = []
+      get_from_time = $mt_from
+      while true
+        from_time, to_time, next_from_time = \
+          get_kline_time(get_from_time,$mt_to,$mt_period)
+        result += get_kline($mt_period,0,'btcusdt',from_time,to_time).reverse
+        if next_from_time != nil
+          get_from_time = next_from_time
+        else
+          break
+        end
+      end
+      return result
+    else
+      return get_kline($mt_period,$mt_size)
+    end
+  end
+
   # 以50对比的数学模型测试自动买卖是否能盈利
   def model_trade_test_set
-    raw_data = get_kline($mt_period,$mt_size)
+    # raw_data = get_kline_db($mt_from,$mt_to,$mt_period)
     message = ""
     ($mt_dv_begin..$mt_dv_end).each do |dv| # 仓位阀值
       ($mt_size_begin..$mt_size_end).each do |pn| # 计算的报价笔数
-        message += model_trade_core(raw_data,false,dv,pn)
+        message += model_trade_core(get_price_data,false,dv,pn)
       end
     end
     @text = "<h2>#{t(:model_trade_set)}</h2>\n#{message}"
@@ -277,7 +385,7 @@ class MainController < ApplicationController
   # 以50对比的数学模型测试自动买卖是否能盈利
   def model_trade_test_single
     build_fusion_chart_data('Currency',6,cal_mts_data_size)
-    @text = "<h2>#{t(:model_trade_single)}</h2>\n#{model_trade_core}"
+    @text = "<h2>#{t(:model_trade_single)}</h2>\n#{model_trade_core(get_price_data)}"
     render template: 'shared/chart'
   end
 
@@ -292,9 +400,11 @@ class MainController < ApplicationController
   end
 
   # 以50对比的数学模型核心程序(dv=仓位阀值,pn=计算的报价笔数)
-  def model_trade_core( raw_data = get_kline($mt_period,$mt_size), show_msg = true, dv = 0, pn = 0 )
+  def model_trade_core( raw_data, show_msg = true, dv = 0, pn = 0 )
 
-    if raw_data.size > 0
+    data_size = raw_data.size
+
+    if data_size > 0
 
       cal_price_size = pn > 0 ? $mt_size_step*pn : $mts_cal_size_value # 要计算的报价笔数
       set_diff_value = dv > 0 ? $mt_dv_step*dv : $mts_set_diff_value # 仓位至少相差多少才动作
@@ -304,7 +414,6 @@ class MainController < ApplicationController
       # 为了找出计算数据日期的最大值与最小值
       cal_begin_date = to_d(Date.today,false,true)
       cal_end_date = ""
-
       message = "" # 回传显示讯息
 
       (1..$mt_cal_loop).each do
@@ -329,9 +438,17 @@ class MainController < ApplicationController
           start_time_flag = false # 开始计算的时间旗标
           time = nil # 最新计算的时间
 
-          prices = raw_data[rand(0..($mt_size-cal_price_size)),cal_price_size]
+          # 避免超出索引
+          if cal_price_size > data_size - $mt_size_step
+            cal_price_size = data_size - $mt_size_step
+          end
+          prices = raw_data[rand(0..(data_size-cal_price_size)),cal_price_size]
           prices.each do |d|
-            time = Time.at(d["id"])
+            begin
+              time = Time.at(d.tid)
+            rescue
+              time = Time.at(d["id"])
+            end
             time_str = to_d(time,false,true)
             # 是否计算全部数据
             cal_all = ($mt_from_date.empty? or $mt_to_date.empty?) ? true : false
@@ -345,7 +462,11 @@ class MainController < ApplicationController
               end
               end_time = time
               cal_end_date = time_str if time_str > cal_end_date
-              price = d["close"]
+              begin
+                price = d.close
+              rescue
+                price = d["close"]
+              end
               # 计算比特币仓位
               level = amount*price/value
               # 如果仓位小于保持仓位且还有剩余资金则买进
@@ -413,8 +534,8 @@ class MainController < ApplicationController
           end # end prices.each
 
           # 计算利率
-          cap_rate = value/ori_capital*100
-          btc_rate = amount/start_amount*100
+          cap_rate = value/ori_capital*100 if ori_capital > 0
+          btc_rate = amount/start_amount*100 if start_amount > 0
 
           # 记录资产亏损的次数
           if value < ori_capital
@@ -439,9 +560,10 @@ class MainController < ApplicationController
 
           # 测试总次数
           total_test_count += 1
+          puts "total_test_count=#{total_test_count}"
 
           if show_msg and start_time_flag
-            message += "持仓：#{$mt_keep_level*100}% 阀值：#{add_zero(to_n(set_diff_value*100),1)}% 区间：#{$mt_period} 间隔：#{add_zero(day_diff(start_time,end_time),3)}天 #{to_d(start_time,true)} → #{to_d(end_time,true)} 资产：#{ori_capital.to_i} → #{value.to_i}(#{add_zero(to_n(cap_rate,2),3)}%) 币数：#{to_n(start_amount,8)} → #{to_n(amount,8)}(#{add_zero(to_n(btc_rate,2),3)}%)<br/>"
+            message += "持仓：#{$mt_keep_level*100}% 阀值：#{to_n(set_diff_value*100,2)}% 区间：#{$mt_period} 间隔：#{add_zero(day_diff(start_time,end_time),3)}天 #{to_d(start_time,true)} → #{to_d(end_time,true)} 资产：#{ori_capital.to_i} → #{value.to_i}(#{add_zero(to_n(cap_rate,2),3)}%) 币数：#{to_n(start_amount,8)} → #{to_n(amount,8)}(#{add_zero(to_n(btc_rate,2),3)}%)<br/>"
           end
 
         end # end $mt_loop_num

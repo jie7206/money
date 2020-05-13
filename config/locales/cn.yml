@@ -28,6 +28,7 @@ cn:
   rise_fall_list: 涨跌试算
   model_trade_set: 模型总测
   model_trade_single: 模型单测
+  save_kdata: 储存报价
   home_title: 我的首页
   back_to_home: 返回首页
   hello: 您好！欢迎来到我的网站 ^_^

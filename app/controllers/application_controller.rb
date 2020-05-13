@@ -27,13 +27,17 @@ class ApplicationController < ActionController::Base
 
   # 取得本机IP
   def get_local_ip
-    orig, Socket.do_not_reverse_lookup = Socket.do_not_reverse_lookup, true
-    UDPSocket.open do |s|
-      s.connect '64.233.187.99', 1  #google的ip
-      s.addr.last
-    end
+    begin
+      orig, Socket.do_not_reverse_lookup = Socket.do_not_reverse_lookup, true
+      UDPSocket.open do |s|
+        s.connect '64.233.187.99', 1  #google的ip
+        s.addr.last
+      end
+    rescue
+      '192.168.1.103'
     ensure
       Socket.do_not_reverse_lookup = orig
+    end
   end
 
   # 读入网站所有的全局参数设定
@@ -81,7 +85,7 @@ class ApplicationController < ActionController::Base
   # 从火币网取得某一数字货币的最新报价
   def get_huobi_price( symbol )
     begin
-      root = JSON.parse(`python py/huobi_price.py symbol=#{symbol} period=1min size=1`)
+      root = JSON.parse(`python py/huobi_price.py symbol=#{symbol} period=1min size=1 from=0 to=0`)
       if root["data"] and root["data"][0]
         return format("%.2f",root["data"][0]["close"]).to_f
       else
@@ -473,18 +477,27 @@ class ApplicationController < ActionController::Base
 
   # 返回K线数据（蜡烛图）
   # period : 1min, 5min, 15min, 30min, 60min, 4hour, 1day, 1mon, 1week, 1year
-  def get_kline( default_period = $default_chart_period, default_size = $chart_data_size, default_symbol = "btcusdt" )
+  # file_path = "#{RAILS_ROOT}/py/btc_prices.txt"
+  def get_kline( default_period = $default_chart_period, default_size = $chart_data_size, default_symbol = "btcusdt", from_time = 0, to_time = 0, file_path = nil )
     symbol = params[:symbol] ? params[:symbol] : default_symbol
     period = params[:period] ? params[:period] : default_period
     size = params[:size] ? params[:size] : default_size
     @symbol_title = symbol_title(symbol)
     @period_title = period_title(period)
     begin
-      root = JSON.parse(`python py/huobi_price.py symbol=#{symbol} period=#{period}  size=#{size}`)
+      source = file_path ? File.read(file_path) : `python py/huobi_price.py symbol=#{symbol} period=#{period} size=#{size} from=#{from_time} to=#{to_time}`
+      root = JSON.parse(source)
       return root["data"].reverse! if root["data"] and root["data"][0]
     rescue
       return []
     end
+  end
+
+  # 由数据库中取回数据
+  def get_kline_db( from, to, period, symbol = 'btcusdt' )
+    from_tid = from.to_time.to_i
+    to_tid = to.to_time.to_i
+    LineData.select("tid,close").where("tid >= #{from_tid} and tid <= #{to_tid} and symbol = '#{symbol}' and period = '#{period}'")
   end
 
   # 计算买卖双方成交量比值
