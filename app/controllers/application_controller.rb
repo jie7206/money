@@ -553,15 +553,40 @@ class ApplicationController < ActionController::Base
   end
 
   # 写入定投参数
-  def write_invest_params( text )
+  def write_to_file( file_path, text )
     begin
-      File.open($auto_invest_params_path, 'w+') do |f|
+      File.open(file_path, 'w+') do |f|
         f.write(text)
       end
       return true
     rescue
       return false
     end
+  end
+
+  # 写入定投参数
+  def write_invest_params( text )
+    write_to_file( $auto_invest_params_path, text )
+  end
+
+  # 写入模型总测
+  def write_mtrades_log( text )
+    write_to_file( $mtrades_log_path, text )
+  end
+
+  # 读取模型总测
+  def read_mtrades_log
+    File.read($mtrades_log_path)
+  end
+
+  # 写入模型单测
+  def write_mtrade_log( text )
+    write_to_file( $mtrade_log_path, text )
+  end
+
+  # 读取模型单测
+  def read_mtrade_log
+    File.read($mtrade_log_path)
   end
 
   # 获取单次最多卖出笔数

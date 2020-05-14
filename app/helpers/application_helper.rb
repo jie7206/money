@@ -256,12 +256,12 @@ module ApplicationHelper
 
   # 50:50的数学模型测试
   def model_trade_single_link
-    link_to t(:model_trade_single), mtrade_path
+    link_to t(:model_trade_single), mtrade_log_path
   end
 
   # 50:50的数学模型测试
   def model_trade_link
-    link_to t(:model_trade_set), mtrades_path
+    link_to t(:model_trade_set), mtrades_log_path
   end
 
   # 储存报价数据
@@ -667,6 +667,16 @@ module ApplicationHelper
     if num.to_i > 0
       result = num.to_s
       case pos
+        when 5
+          if num.to_i < 10000 and num.to_i >=1000
+            result = "0"+result
+          elsif num.to_i < 1000 and num.to_i >=100
+            result = "00"+result
+          elsif num.to_i < 100 and num.to_i >=10
+            result = "000"+result
+          elsif num.to_i < 10
+            result = "0000"+result
+          end
         when 4
           if num.to_i < 1000 and num.to_i >=100
             result = "0"+result
@@ -712,5 +722,10 @@ module ApplicationHelper
     DealRecord.new.usdt_to_twd
   end
 
+  # 设定模型总测的页面内容
+  def set_mt_page_content( text, link_path, message )
+    link_str = helpers.link_to(raw(text+" <small>(点此重新执行测试)</small>"),link_path)
+    @text = "<div id='mt_title'>#{link_str}</div>\n#{message}"
+  end
 
 end

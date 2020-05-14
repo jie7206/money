@@ -337,7 +337,7 @@ class MainController < ApplicationController
     flash.now[:notice] = "已将#{count}笔#{symbol}(#{period})的数据存入数据库！(#{now})"
     # flash.now[:notice] = "已读取#{count}笔#{symbol}(#{period})的数据！(#{now})"
     @text = <<-EOF
-              如有需要，请到系统参数页面修改下列参数后执行：
+              如有需要，请到系统参数页面修改下列参数后执行:
               <ol>
                 <li>$mt_period = '#{$mt_period}'</li>
                 <li>$kline_data_symbol = '#{$kline_data_symbol}'</li>
@@ -378,15 +378,30 @@ class MainController < ApplicationController
         message += model_trade_core(get_price_data,false,dv,pn)
       end
     end
-    @text = "<h2>#{t(:model_trade_set)}</h2>\n#{message}"
+    write_mtrades_log message
+    set_mt_page_content t(:model_trade_set), mtrades_path, message
+    render template: 'shared/blank'
+  end
+
+  # 显示以50对比的数学模型测试结果
+  def show_mtrades_log
+    set_mt_page_content t(:model_trade_set), mtrades_path, read_mtrades_log
     render template: 'shared/blank'
   end
 
   # 以50对比的数学模型测试自动买卖是否能盈利
   def model_trade_test_single
     build_fusion_chart_data('Currency',6,cal_mts_data_size)
-    @text = "<h2>#{t(:model_trade_single)}</h2>\n#{model_trade_core(get_price_data)}"
+    message = model_trade_core(get_price_data)
+    write_mtrade_log message
+    set_mt_page_content t(:model_trade_single), mtrade_path, message
     render template: 'shared/chart'
+  end
+
+  # 显示以50对比的数学模型测试结果
+  def show_mtrade_log
+    set_mt_page_content t(:model_trade_single), mtrade_path, read_mtrade_log
+    render template: 'shared/blank'
   end
 
   # 计算要显示的BTC走势图资料笔数
@@ -411,6 +426,7 @@ class MainController < ApplicationController
       total_test_count = total_neg_count = total_neg_count_btc = 0 # 计算总平均亏损率用
       cap_rates_max = 0 ; cap_rates_min = 100 # 为了找出资产利率最大值与最小值
       btc_rates_max = 0 ; btc_rates_min = 100 # 为了找出币数利率最大值与最小值
+      total_operate_count = 0 # 计算操作次数
       # 为了找出计算数据日期的最大值与最小值
       cal_begin_date = to_d(Date.today,false,true)
       cal_end_date = ""
@@ -422,6 +438,8 @@ class MainController < ApplicationController
         neg_count_btc = 0 # 币数亏损的次数
         capital_rate_max = 0 ; capital_rate_min = 100 # 资产利率的最大值与最小值记录
         amount_rate_max = 0 ; amount_rate_min = 100 # 币数利率的最大值与最小值记录
+        total_buy_count = 0 # 记录总买进次数
+        total_sell_count = 0 # 记录总卖出次数
 
         (1..$mt_loop_num).each do
 
@@ -438,8 +456,11 @@ class MainController < ApplicationController
           start_time_flag = false # 开始计算的时间旗标
           time = nil # 最新计算的时间
 
+          buy_count = 0 # 记录买进次数
+          sell_count = 0 # 记录卖出次数
+
           # 避免超出索引
-          if cal_price_size > data_size - $mt_size_step
+          if cal_price_size > data_size or cal_price_size > data_size - $mt_size_step
             cal_price_size = data_size - $mt_size_step
           end
           prices = raw_data[rand(0..(data_size-cal_price_size)),cal_price_size]
@@ -500,6 +521,9 @@ class MainController < ApplicationController
                           余额：#{capital.floor(2)} USDT<br/>
                           总值：#{value.floor(2)} USDT<p/>
                 EOF
+                buy_count += 1
+                total_buy_count += 1
+                total_operate_count += 1
                 # message += summary
               end
               # 如果仓位大于保持仓位且还有剩余BTC则卖出
@@ -528,6 +552,9 @@ class MainController < ApplicationController
                           余额：#{capital.floor(2)} USDT<br/>
                           总值：#{value.floor(2)} USDT<p/>
                 EOF
+                sell_count += 1
+                total_sell_count += 1
+                total_operate_count += 1
                 # message += summary
               end
             end # end cal_all
@@ -563,7 +590,7 @@ class MainController < ApplicationController
           puts "total_test_count=#{total_test_count}"
 
           if show_msg and start_time_flag
-            message += "持仓：#{$mt_keep_level*100}% 阀值：#{to_n(set_diff_value*100,2)}% 区间：#{$mt_period} 间隔：#{add_zero(day_diff(start_time,end_time),3)}天 #{to_d(start_time,true)} → #{to_d(end_time,true)} 资产：#{ori_capital.to_i} → #{value.to_i}(#{add_zero(to_n(cap_rate,2),3)}%) 币数：#{to_n(start_amount,8)} → #{to_n(amount,8)}(#{add_zero(to_n(btc_rate,2),3)}%)<br/>"
+            message += "持仓:#{$mt_keep_level*100}% 阀值:#{to_n(set_diff_value*100,2)}% 区间:#{$mt_period} 间隔:#{add_zero(day_diff(start_time,end_time),3)}天 #{to_d(start_time,true)} → #{to_d(end_time,true)} 资产:#{ori_capital.to_i} → #{value.to_i}(#{add_zero(to_n(cap_rate,2),3)}%) 币数:#{to_n(start_amount,8)} → #{to_n(amount,8)}(#{add_zero(to_n(btc_rate,2),3)}%) 买/卖:#{add_zero(buy_count,3)}/#{add_zero(sell_count,3)}/#{buy_count+sell_count}<br/>"
           end
 
         end # end $mt_loop_num
@@ -572,11 +599,11 @@ class MainController < ApplicationController
         neg_rate_btc = neg_count_btc.to_f/$mt_loop_num*100 # 币数亏损率
 
         if show_msg
-          message += "<hr/>测试次数：#{$mt_loop_num} 资产亏损次数：#{neg_count} 资产平均亏损率：#{to_n(neg_rate)}% 币数亏损次数：#{neg_count_btc} 币数平均亏损率：#{to_n(neg_rate_btc)}% 资产：#{to_n(capital_rate_min)}% → #{to_n(capital_rate_max)}% 币数：#{to_n(amount_rate_min)}% → #{to_n(amount_rate_max)}%<hr/>"
+          message += "<hr/>测试次数:#{$mt_loop_num} 资产亏损次数:#{neg_count} 资产平均亏损率:#{to_n(neg_rate)}% 币数亏损次数:#{neg_count_btc} 币数平均亏损率:#{to_n(neg_rate_btc)}% 资产:#{to_n(capital_rate_min)}% → #{to_n(capital_rate_max)}% 币数:#{to_n(amount_rate_min)}% → #{to_n(amount_rate_max)}% 买/卖:#{total_buy_count}/#{total_sell_count}/#{total_buy_count+total_sell_count}<hr/>"
         end
       end # end $mt_cal_loop
       info = "持仓:#{($mt_keep_level*100).to_i}%(#{to_n(set_diff_value*100,2)}%) #{$mt_period} #{add_zero(cal_price_size,4)}笔"
-      summary = "#{cal_begin_date}-#{cal_end_date} 测#{add_zero(total_test_count,4)}次 资亏#{add_zero(total_neg_count,4)}次(#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}%) 币亏#{add_zero(total_neg_count_btc,4)}次(#{add_zero(to_n(total_neg_count_btc.to_f/total_test_count*100,0),3)}%) 资产 #{add_zero(to_n(cap_rates_min),3)}% → #{add_zero(to_n(cap_rates_max),3)}% 币数 #{add_zero(to_n(btc_rates_min),3)}% → #{add_zero(to_n(btc_rates_max),3)}%"
+      summary = "#{cal_begin_date}-#{cal_end_date} 测#{add_zero(total_test_count,4)}次 操作#{add_zero(total_operate_count,5)}次(#{add_zero(to_n(total_operate_count.to_f/(cal_price_size*total_test_count)*100,0),2)}%) 资亏#{add_zero(total_neg_count,4)}次(#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}%) 币亏#{add_zero(total_neg_count_btc,4)}次(#{add_zero(to_n(total_neg_count_btc.to_f/total_test_count*100,0),3)}%) 资产% #{add_zero(to_n(cap_rates_min,0),3)}→#{add_zero(to_n(cap_rates_max,0),3)} 币数% #{add_zero(to_n(btc_rates_min,0),3)}→#{add_zero(to_n(btc_rates_max,0),3)}"
       if show_msg
         message += "#{summary}<hr/>"
       else
