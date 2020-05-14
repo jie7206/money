@@ -373,8 +373,8 @@ class MainController < ApplicationController
   def model_trade_test_set
     # raw_data = get_kline_db($mt_from,$mt_to,$mt_period)
     message = ""
-    ($mt_dv_begin..$mt_dv_end).each do |dv| # 仓位阀值
-      ($mt_size_begin..$mt_size_end).each do |pn| # 计算的报价笔数
+    $mt_dv_range.each do |dv| # 仓位阀值
+      $mt_size_range.each do |pn| # 计算的报价笔数
         message += model_trade_core(get_price_data,false,dv,pn)
       end
     end
@@ -421,8 +421,8 @@ class MainController < ApplicationController
 
     if data_size > 0
 
-      cal_price_size = pn > 0 ? $mt_size_step*pn : $mts_cal_size_value # 要计算的报价笔数
-      set_diff_value = dv > 0 ? $mt_dv_step*dv : $mts_set_diff_value # 仓位至少相差多少才动作
+      cal_price_size = pn > 0 ? pn : $mts_cal_size_value # 要计算的报价笔数
+      set_diff_value = dv > 0 ? dv : $mts_set_diff_value # 仓位至少相差多少才动作
       total_test_count = total_neg_count = total_neg_count_btc = 0 # 计算总平均亏损率用
       cap_rates_max = 0 ; cap_rates_min = 100 # 为了找出资产利率最大值与最小值
       btc_rates_max = 0 ; btc_rates_min = 100 # 为了找出币数利率最大值与最小值
@@ -431,8 +431,13 @@ class MainController < ApplicationController
       cal_begin_date = to_d(Date.today,false,true)
       cal_end_date = ""
       message = "" # 回传显示讯息
+      # 如果不使用随机日期，则模型单测只测试一次
+      mts_already_run = false
 
       (1..$mt_cal_loop).each do
+
+        # 如果不使用随机日期，则模型单测只测试一次
+        break if !$mts_random_date and mts_already_run
 
         neg_count = 0 # 资产亏损的次数
         neg_count_btc = 0 # 币数亏损的次数
@@ -442,6 +447,9 @@ class MainController < ApplicationController
         total_sell_count = 0 # 记录总卖出次数
 
         (1..$mt_loop_num).each do
+
+          # 如果不使用随机日期，则模型单测只测试一次
+          break if !$mts_random_date and mts_already_run
 
           # 初始化参数
           capital = ori_capital = 4000 # 投入资金(USDT)
@@ -459,11 +467,16 @@ class MainController < ApplicationController
           buy_count = 0 # 记录买进次数
           sell_count = 0 # 记录卖出次数
 
-          # 避免超出索引
-          if cal_price_size > data_size or cal_price_size > data_size - $mt_size_step
-            cal_price_size = data_size - $mt_size_step
+          if !show_msg or $mts_random_date # 总测 或 单测使用随机日期多笔测试
+            # 避免超出索引
+            if cal_price_size > data_size or cal_price_size > data_size - 500
+              cal_price_size = data_size - 500
+            end
+            prices = raw_data[rand(0..(data_size-cal_price_size)),cal_price_size]
+          else
+            prices = raw_data
+            mts_already_run = true
           end
-          prices = raw_data[rand(0..(data_size-cal_price_size)),cal_price_size]
           prices.each do |d|
             begin
               time = Time.at(d.tid)
@@ -598,13 +611,13 @@ class MainController < ApplicationController
         neg_rate = neg_count.to_f/$mt_loop_num*100 # 资产亏损率
         neg_rate_btc = neg_count_btc.to_f/$mt_loop_num*100 # 币数亏损率
 
-        if show_msg
+        if show_msg and $mts_random_date
           message += "<hr/>测试次数:#{$mt_loop_num} 资产亏损次数:#{neg_count} 资产平均亏损率:#{to_n(neg_rate)}% 币数亏损次数:#{neg_count_btc} 币数平均亏损率:#{to_n(neg_rate_btc)}% 资产:#{to_n(capital_rate_min)}% → #{to_n(capital_rate_max)}% 币数:#{to_n(amount_rate_min)}% → #{to_n(amount_rate_max)}% 买/卖:#{total_buy_count}/#{total_sell_count}/#{total_buy_count+total_sell_count}<hr/>"
         end
       end # end $mt_cal_loop
       info = "持仓:#{($mt_keep_level*100).to_i}%(#{to_n(set_diff_value*100,2)}%) #{$mt_period} #{add_zero(cal_price_size,4)}笔"
       summary = "#{cal_begin_date}-#{cal_end_date} 测#{add_zero(total_test_count,4)}次 操作#{add_zero(total_operate_count,5)}次(#{add_zero(to_n(total_operate_count.to_f/(cal_price_size*total_test_count)*100,0),2)}%) 资亏#{add_zero(total_neg_count,4)}次(#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}%) 币亏#{add_zero(total_neg_count_btc,4)}次(#{add_zero(to_n(total_neg_count_btc.to_f/total_test_count*100,0),3)}%) 资产% #{add_zero(to_n(cap_rates_min,0),3)}→#{add_zero(to_n(cap_rates_max,0),3)} 币数% #{add_zero(to_n(btc_rates_min,0),3)}→#{add_zero(to_n(btc_rates_max,0),3)}"
-      if show_msg
+      if show_msg and $mts_random_date
         message += "#{summary}<hr/>"
       else
         message = "#{info} #{summary}<br/>"

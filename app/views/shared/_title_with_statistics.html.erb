@@ -2,12 +2,24 @@
   # 获得所有宏观统计数据
   p_btc, eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, total_real_profit, total_unsell_profit, ave_hour_profit, total_real_p_24h, trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p = \
   Property.invest_to_btc( admin? )
+  @btc_p = btc_p
 
   # 买卖比若超过(低于)所设定的值则会以高亮显示
-  def get_buysell_class
+  def buysell_class
     if @buy_sell_rate.to_f >= $buysell_high_rate
       return "buysell_high"
     elsif @buy_sell_rate.to_f <= $buysell_low_rate
+      return "buysell_low"
+    else
+      return ""
+    end
+  end
+
+  # 仓位变化大于某个值则高亮显示以提示买卖时机
+  def level_diff_class
+    if @btc_p >= $btc_base_level + $highlight_level_diff
+      return "buysell_high"
+    elsif @btc_p <= $btc_base_level - $highlight_level_diff
       return "buysell_low"
     else
       return ""
@@ -19,13 +31,13 @@
   <% # 显示宏观统计数据 %>
   (
     <% if @buy_sell_rate.to_f > 0 %>
-      <%= raw("<span title=\"买卖多空比\" class=\"#{get_buysell_class}\">#{@buy_sell_rate}</span>") %>
+      <%= raw("<span title=\"买卖多空比\" class=\"#{buysell_class}\">#{@buy_sell_rate}</span>") %>
     <% end %>
     <%= raw("<span title=\"近期已实现损益:未实现总损益\">#{total_real_p_24h.to_i}:#{total_unsell_profit.to_i}</span> \
       <span title=\"交易记录的总体利率\">#{add_plus(to_n(price_p,1))}%</span> \
       <span title=\"冷钱包均价:全部均价:如果满仓均价:交易记录均价\">#{trezor_ave_cost.to_i}:#{total_ave_cost.to_i}:#{sim_ave_cost.to_i}:#{real_ave_cost.to_i}</span> \
       <span title=\"比特币总持有数:如果满仓比特币总持有数\">#{to_n(p_btc,2)}:#{to_n(eq_btc,2)}</span> \
-      <span title=\"比特币占总资产比例(#{to_n(btc_p,3)}%), 每百分点等于#{one_btc2cny.to_i}人民币\">#{to_n(btc_p,1)}%</span> \
+      <span title=\"比特币占总资产比例(#{to_n(btc_p,3)}%), 每百分点等于#{one_btc2cny.to_i}人民币\" class=\"#{level_diff_class}\">#{to_n(btc_p,1)}%</span> \
       <span title=\"冷钱包占总资产比例(#{to_n(trezor_p,3)}%)\">#{to_n(trezor_p,1)}%</span> \
       <span title=\"交易所持仓占总资产比例(#{to_n(btc_ex_p,3)}%)\">#{to_n(btc_ex_p,1)}%</span> \
       <span title=\"可投资金占总资产比例(#{to_n(capital_p,3)}%)\">#{to_n(capital_p,1)}%</span> \
