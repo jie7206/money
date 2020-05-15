@@ -495,9 +495,8 @@ class ApplicationController < ActionController::Base
 
   # 由数据库中取回数据
   def get_kline_db( from, to, period, symbol = 'btcusdt' )
-    from_tid = from.to_time.to_i
-    to_tid = to.to_time.to_i
-    LineData.select("tid,close").where("tid >= #{from_tid} and tid <= #{to_tid} and symbol = '#{symbol}' and period = '#{period}'")
+    # SQlite效能太差，超过230笔后几乎无法执行(等非常久)
+    LineData.select("tid,close").where("tid >= #{from.to_time.to_i} and tid <= #{to.to_time.to_i} and symbol = '#{symbol}' and period = '#{period}'").limit(230)
   end
 
   # 计算买卖双方成交量比值

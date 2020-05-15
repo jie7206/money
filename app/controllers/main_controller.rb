@@ -376,33 +376,42 @@ class MainController < ApplicationController
   end
 
   # 取得报价资料
-  def get_price_data
-    if !$mt_from.empty? and !$mt_to.empty?
-      result = []
-      get_from_time = $mt_from
-      while true
-        from_time, to_time, next_from_time = \
-          get_kline_time(get_from_time,$mt_to,$mt_period)
-        result += get_kline($mt_period,0,'btcusdt',from_time,to_time).reverse
-        if next_from_time != nil
-          get_from_time = next_from_time
-        else
-          break
-        end
-      end
-      return result
+  def get_price_data( options = {} )
+    if options[:local_db] == true
+      return get_kline_db($mt_from, $mt_to, $mt_period)
     else
-      return get_kline($mt_period,$mt_size)
+      if !$mt_from.empty? and !$mt_to.empty?
+        result = []
+        get_from_time = $mt_from
+        while true
+          from_time, to_time, next_from_time = \
+            get_kline_time(get_from_time,$mt_to,$mt_period)
+          result += get_kline($mt_period,0,'btcusdt',from_time,to_time).reverse
+          if next_from_time != nil
+            get_from_time = next_from_time
+          else
+            break
+          end
+        end
+        return result
+      else
+        return get_kline($mt_period,$mt_size)
+      end
     end
   end
 
   # 以50对比的数学模型测试自动买卖是否能盈利
   def model_trade_test_set
-    # raw_data = get_kline_db($mt_from,$mt_to,$mt_period)
     message = ""
+    # 本地数据库过慢，必须是只测试一次才行
+    if $mts_use_local_db
+      price_data = get_price_data(local_db: true)
+    else
+      price_data = get_price_data
+    end
     $mt_dv_range.each do |dv| # 仓位阀值
       $mt_size_range.each do |pn| # 计算的报价笔数
-        message += model_trade_core(get_price_data,false,dv,pn)
+        message += model_trade_core(price_data,false,dv,pn)
       end
     end
     write_mtrades_log message
@@ -418,11 +427,16 @@ class MainController < ApplicationController
 
   # 以50对比的数学模型测试自动买卖是否能盈利
   def model_trade_test_single
-    build_fusion_chart_data('Currency',6,cal_mts_data_size)
-    message = model_trade_core(get_price_data)
+    # 本地数据库过慢，必须是只测试一次才行
+    if !$mts_random_date and $mts_use_local_db
+      price_data = get_price_data(local_db: true)
+    else
+      price_data = get_price_data
+    end
+    message = model_trade_core(price_data)
     write_mtrade_log message
     set_mt_page_content t(:model_trade_single), mtrade_path, message
-    render template: 'shared/chart'
+    render template: 'shared/blank'
   end
 
   # 显示以50对比的数学模型测试结果
@@ -444,6 +458,7 @@ class MainController < ApplicationController
   # 以50对比的数学模型核心程序(dv=仓位阀值,pn=计算的报价笔数)
   def model_trade_core( raw_data, show_msg = true, dv = 0, pn = 0 )
 
+    message = "" # 回传显示讯息
     data_size = raw_data.size
 
     if data_size > 0
@@ -457,7 +472,6 @@ class MainController < ApplicationController
       # 为了找出计算数据日期的最大值与最小值
       cal_begin_date = to_d(Date.today,false,true)
       cal_end_date = ""
-      message = "" # 回传显示讯息
       # 如果不使用随机日期，则模型单测只测试一次
       mts_already_run = false
 
@@ -496,8 +510,8 @@ class MainController < ApplicationController
 
           if !show_msg or $mts_random_date # 总测 或 单测使用随机日期多笔测试
             # 避免超出索引
-            if cal_price_size > data_size or cal_price_size > data_size - 500
-              cal_price_size = data_size - 500
+            if cal_price_size > data_size or cal_price_size > data_size - $mt_size_fix
+              cal_price_size = data_size - $mt_size_fix
             end
             prices = raw_data[rand(0..(data_size-cal_price_size)),cal_price_size]
           else
@@ -600,6 +614,9 @@ class MainController < ApplicationController
             end # end cal_all
           end # end prices.each
 
+          # 加一条水平线比较美观
+          message += "<hr/>" if total_operate_count > 0
+
           # 计算利率
           cap_rate = value/ori_capital*100 if ori_capital > 0
           btc_rate = amount/start_amount*100 if start_amount > 0
@@ -644,16 +661,23 @@ class MainController < ApplicationController
           message += "<hr/>"
         end
       end # end $mt_cal_loop
+      # 修正单测时操作比例计算错误问题
+      if show_msg and !$mts_random_date
+        operate_rate = total_operate_count.to_f/data_size*100
+      else
+        operate_rate = total_operate_count.to_f/(cal_price_size*total_test_count)*100
+      end
       info = "持仓:#{($mt_keep_level*100).to_i}%(#{to_n(set_diff_value*100,2)}%) #{$mt_period} #{add_zero(cal_price_size,4)}笔"
-      summary = "#{cal_begin_date}-#{cal_end_date} 测#{add_zero(total_test_count,4)}次 操作#{add_zero(total_operate_count,5)}次(#{add_zero(to_n(total_operate_count.to_f/(cal_price_size*total_test_count)*100,0),2)}%) 资亏#{add_zero(total_neg_count,4)}次(#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}%) 币亏#{add_zero(total_neg_count_btc,4)}次(#{add_zero(to_n(total_neg_count_btc.to_f/total_test_count*100,0),3)}%) 资产% #{add_zero(to_n(cap_rates_min,0),3)}→#{add_zero(to_n(cap_rates_max,0),3)} 币数% #{add_zero(to_n(btc_rates_min,0),3)}→#{add_zero(to_n(btc_rates_max,0),3)}"
+      summary = "#{cal_begin_date}-#{cal_end_date} 测#{add_zero(total_test_count,4)}次 操作#{add_zero(total_operate_count,5)}次(#{add_zero(to_n(operate_rate,0),2)}%) 资亏#{add_zero(total_neg_count,4)}次(#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}%) 币亏#{add_zero(total_neg_count_btc,4)}次(#{add_zero(to_n(total_neg_count_btc.to_f/total_test_count*100,0),3)}%) 资产% #{add_zero(to_n(cap_rates_min,0),3)}→#{add_zero(to_n(cap_rates_max,0),3)} 币数% #{add_zero(to_n(btc_rates_min,0),3)}→#{add_zero(to_n(btc_rates_max,0),3)}"
       if show_msg
         message += "#{summary}<hr/>"
       else
         message = "#{info} #{summary}<br/>"
       end
     else
-      message = "无法读取报价，请稍后再试..."
+      message = "无法读取报价(数据笔数为0)，请检查数据来源或稍后再试！"
     end # end raw_data.size > 0
+
     return message
   end
 
