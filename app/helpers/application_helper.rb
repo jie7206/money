@@ -307,6 +307,11 @@ module ApplicationHelper
     end
   end
 
+  # 仓位试算表链接
+  def level_trial_list_link
+    link_to t(:level_trial_list), controller: :main, action: :level_trial_list
+  end
+
   # 涨跌试算表链接
   def rise_fall_list_link
     link_to t(:rise_fall_list), controller: :main, action: :rise_fall_list

@@ -25,6 +25,7 @@ cn:
   switch_to_balance: 转到消帐记录
   btc_ave_price: 所有比特币均价
   begin_profit_price: 开始获利的现价
+  level_trial_list: 仓位试算
   rise_fall_list: 涨跌试算
   model_trade_set: 模型总测
   model_trade_single: 模型单测

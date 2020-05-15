@@ -479,7 +479,7 @@ class MainController < ApplicationController
           break if !$mts_random_date and mts_already_run
 
           # 初始化参数
-          capital = ori_capital = 4000 # 投入资金(USDT)
+          capital = ori_capital = 10000 # 投入资金(USDT)
           amount = start_amount = 0 # 持有的比特币数量
           start_amount_flag = false # 比特币初始量旗标
           keep = $mt_keep_level # 保持比特币仓位
@@ -550,21 +550,21 @@ class MainController < ApplicationController
                 # 更新比特币仓位
                 level_after = amount*price/value
                 # 交易摘要
-                summary = <<-EOF
-                          时间：#{to_t(time)}<br/>
-                          现价：#{price}<br/>
-                          仓位：#{(level*100).floor(2)}%<br/>
-                          买入：#{unit.floor(8)} BTC<br/>
-                          总数：#{amount.floor(8)} BTC<br/>
-                          仓位：#{(level_after*100).floor(2)}%<br/>
-                          花费：#{usdt.floor(2)} USDT<br/>
-                          余额：#{capital.floor(2)} USDT<br/>
-                          总值：#{value.floor(2)} USDT<p/>
+                trade_info = <<-EOF
+                          #{to_t(time)}
+                          现价：#{add_zero(price.to_i,5)}
+                          仓位：#{add_zero(to_n(level*100,0))}%
+                          买入：#{to_n(unit,3)}
+                          总数：#{to_n(amount,3)}
+                          仓位：#{add_zero(to_n(level_after*100,1))}%
+                          花费：#{add_zero(usdt.to_i,4)}
+                          余额：#{add_zero(capital.to_i,4)}
+                          总值：#{add_zero(value.to_i,5)}<br/>
                 EOF
                 buy_count += 1
                 total_buy_count += 1
                 total_operate_count += 1
-                # message += summary
+                message += trade_info if !$mts_random_date
               end
               # 如果仓位大于保持仓位且还有剩余BTC则卖出
               if (level-keep) > diff and amount > 0
@@ -581,21 +581,21 @@ class MainController < ApplicationController
                 # 更新比特币仓位
                 level_after = amount*price/value
                 # 交易摘要
-                summary = <<-EOF
-                          时间：#{to_t(time)}<br/>
-                          现价：#{price}<br/>
-                          仓位：#{(level*100).floor(2)}%<br/>
-                          卖出：#{unit.floor(8)} BTC<br/>
-                          总数：#{amount.floor(8)} BTC<br/>
-                          仓位：#{(level_after*100).floor(2)}%<br/>
-                          进账：#{usdt.floor(2)} USDT<br/>
-                          余额：#{capital.floor(2)} USDT<br/>
-                          总值：#{value.floor(2)} USDT<p/>
+                trade_info = <<-EOF
+                          #{to_t(time)}
+                          现价：#{add_zero(price.to_i,5)}
+                          仓位：#{add_zero(to_n(level*100,0))}%
+                          卖出：#{to_n(unit,3)}
+                          总数：#{to_n(amount,3)}
+                          仓位：#{add_zero(to_n(level_after*100,1))}%
+                          进账：#{add_zero(usdt.to_i,4)}
+                          余额：#{add_zero(capital.to_i,4)}
+                          总值：#{add_zero(value.to_i,5)}<br/>
                 EOF
                 sell_count += 1
                 total_sell_count += 1
                 total_operate_count += 1
-                # message += summary
+                message += trade_info if !$mts_random_date
               end
             end # end cal_all
           end # end prices.each
@@ -640,11 +640,13 @@ class MainController < ApplicationController
 
         if show_msg and $mts_random_date
           message += "<hr/>测试次数:#{$mt_loop_num} 资产亏损次数:#{neg_count} 资产平均亏损率:#{to_n(neg_rate)}% 币数亏损次数:#{neg_count_btc} 币数平均亏损率:#{to_n(neg_rate_btc)}% 资产:#{to_n(capital_rate_min)}% → #{to_n(capital_rate_max)}% 币数:#{to_n(amount_rate_min)}% → #{to_n(amount_rate_max)}% 买/卖:#{total_buy_count}/#{total_sell_count}/#{total_buy_count+total_sell_count}<hr/>"
+        elsif show_msg and !$mts_random_date
+          message += "<hr/>"
         end
       end # end $mt_cal_loop
       info = "持仓:#{($mt_keep_level*100).to_i}%(#{to_n(set_diff_value*100,2)}%) #{$mt_period} #{add_zero(cal_price_size,4)}笔"
       summary = "#{cal_begin_date}-#{cal_end_date} 测#{add_zero(total_test_count,4)}次 操作#{add_zero(total_operate_count,5)}次(#{add_zero(to_n(total_operate_count.to_f/(cal_price_size*total_test_count)*100,0),2)}%) 资亏#{add_zero(total_neg_count,4)}次(#{add_zero(to_n(total_neg_count.to_f/total_test_count*100,0),3)}%) 币亏#{add_zero(total_neg_count_btc,4)}次(#{add_zero(to_n(total_neg_count_btc.to_f/total_test_count*100,0),3)}%) 资产% #{add_zero(to_n(cap_rates_min,0),3)}→#{add_zero(to_n(cap_rates_max,0),3)} 币数% #{add_zero(to_n(btc_rates_min,0),3)}→#{add_zero(to_n(btc_rates_max,0),3)}"
-      if show_msg and $mts_random_date
+      if show_msg
         message += "#{summary}<hr/>"
       else
         message = "#{info} #{summary}<br/>"
@@ -773,6 +775,14 @@ class MainController < ApplicationController
     @acc_btc_amount = Property.acc_btc_amount # 该账号BTC数量
     @total_btc_amount = Property.total_btc_amount # 比特币的总数
     @total_loan_lixi = Property.total_loan_lixi # 贷款(含利息)的总额
+  end
+
+  # 建立仓位试算表预先知道多少价格买进或卖出多少数量以提前准备
+  def level_trial_list
+    @price_now = get_price_now
+    @keep = $btc_base_level # 想要保持的基准仓位
+    @fund_usdt = Property.total_investable_fund_records_usdt # 跨账号所有可投资金USDT现值
+    @btc_amount = Property.btc_amount # 比特币总数
   end
 
   private

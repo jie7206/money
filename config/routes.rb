@@ -92,5 +92,6 @@ Rails.application.routes.draw do
   get 'main/kline_chart'
   get 'main/line_chart'
   get 'main/rise_fall_list'
+  get 'main/level_trial_list'
 
 end

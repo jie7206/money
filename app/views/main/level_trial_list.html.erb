@@ -1,0 +1,92 @@
+<%
+# 初始化参数
+start_price = (@price_now*(1-$level_trial_rate)).to_i/100*100
+end_price = (@price_now*(1+$level_trial_rate)).to_i/100*100
+@price_step = $level_trial_price_step
+@price_now_flag = false # 判断是否到达现价区间旗标
+@sell_flag = false # 判断是否到达卖出价
+@buy_flag = false # 判断是否到达买入价
+@level = 0 # 供程序运行时用
+
+# 依据价格显示对应的背景色
+def style_class( price )
+  # 计算仓位
+  @level = Property.btc_level(price)
+  # 高亮卖出价
+  if !@sell_flag and @level <= $btc_base_level+$highlight_level_diff
+    @sell_flag = true
+    return raw "class=\"start_sell\""
+  end
+  # 高亮现价
+  if !@price_now_flag and (price/@price_step).to_i == (@price_now/@price_step).to_i
+    @price_now_flag = true
+    return raw "class=\"price_now\""
+  end
+  # 高亮买入价
+  if !@buy_flag and Property.btc_level(price) <= $btc_base_level-$highlight_level_diff
+    @buy_flag = true
+    return raw "class=\"start_buy\""
+  end
+  return change_row_color
+end
+
+# 计算交易资金
+def cal_usdt( price )
+  Property.total_flow_assets_usdt(price)*((@keep-@level)/100)
+end
+
+# 计算交易币数
+def cal_amount( price )
+  @trade_usdt.abs/price
+end
+%>
+<style>
+  .price_now {
+    background-color: #87CEFA;
+  }
+  .start_sell {
+    background-color: #FF4500;
+    color: white;
+  }
+  .start_buy {
+    background-color: #2E8B57;
+    color: white;
+  }
+</style>
+<center>
+<h2><%= t(:level_trial_list) %> (区间幅度: <%= ($level_trial_rate*100).to_i %>%)</h2>
+<table width="<%=$default_table_width*0.7%>">
+  <tr class="thead">
+    <td>价格(USDT)</td>
+    <td>持仓水位(%)</td>
+    <td>卖出币数(฿)</td>
+    <td>资金收益(¥)</td>
+    <td>资金合计(¥)</td>
+    <td>买入资金(¥)</td>
+    <td>币数增加(฿)</td>
+    <td>币数合计(฿)</td>
+  </tr>
+  <% (end_price..start_price).step(@price_step*-1).each do |price| %>
+    <tr <%= style_class(price) %>>
+      <% # BTC价格 %>
+      <td align="right"><%= price %></td>
+      <% # 持仓水位 %>
+      <td align="right"><%= to_n(Property.btc_level(price),2) %></td>
+      <% # 卖出币数 %>
+      <% @trade_usdt = cal_usdt(price) %>
+      <% @trade_amount = cal_amount(price) %>
+      <td align="right"><%= to_n(@trade_amount,8) if @trade_usdt < 0 %></td>
+      <% # 资金收益 %>
+      <td align="right"><%= (@trade_usdt.abs*$usdt_to_cny).to_i if @trade_usdt < 0 %></td>
+      <% # 资金合计 %>
+      <td align="right"><%= ((@fund_usdt+@trade_usdt.abs)*$usdt_to_cny).to_i if @trade_usdt < 0 %></td>
+      <% # 买入资金 %>
+      <td align="right"><%= (@trade_usdt*$usdt_to_cny).to_i if @trade_usdt > 0 %></td>
+      <% # 币数增加 %>
+      <td align="right"><%= to_n(@trade_amount,8) if @trade_usdt > 0 %></td>
+      <% # 币数合计 %>
+      <td align="right"><%= to_n(@btc_amount+@trade_amount,8) if @trade_usdt > 0 %></td>
+    </tr>
+  <% end %>
+</table>
+</center>

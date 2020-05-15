@@ -34,7 +34,7 @@ class Property < ApplicationRecord
       (next if p.negative?) if options[:only_positive]
       (next if p.positive?) if options[:only_negative]
       if options[:btc_price]
-        result += p.amount_to(target_code,p.currency.exchange_rate,options[:btc_price])
+        result += p.amount_to(target_code,options[:btc_price])
       else
         result += p.amount_to(target_code)
       end
@@ -279,13 +279,21 @@ class Property < ApplicationRecord
   end
 
   # 跨账号流动性资产总值台币现值
-  def self.total_flow_assets_twd
-    total_flow_assets_records.sum {|p| p.amount_to(:twd)}
+  def self.total_flow_assets_twd( btc_price = nil )
+    if btc_price
+      total_flow_assets_records.sum {|p| p.amount_to(:twd,btc_price)}
+    else
+      total_flow_assets_records.sum {|p| p.amount_to(:twd)}
+    end
   end
 
   # 跨账号流动性资产总值USDT现值
-  def self.total_flow_assets_usdt
-    total_flow_assets_records.sum {|p| p.amount_to(:usdt)}
+  def self.total_flow_assets_usdt( btc_price = nil )
+    if btc_price
+      total_flow_assets_records.sum {|p| p.amount_to(:usdt,btc_price)}
+    else
+      total_flow_assets_records.sum {|p| p.amount_to(:usdt)}
+    end
   end
 
   # 该账号BTC数据集
@@ -377,10 +385,14 @@ class Property < ApplicationRecord
   end
 
   # 比特币目前的值
-  def self.btc_value_twd
+  def self.btc_value_twd( btc_price = nil )
     ps = btc_records
     if ps.size > 0
-      return ps.sum {|p| p.amount_to(:twd)}
+      if btc_price
+        return ps.sum {|p| p.amount_to(:twd,btc_price)}
+      else
+        return ps.sum {|p| p.amount_to(:twd)}
+      end
     else
       return 0
     end
@@ -397,8 +409,8 @@ class Property < ApplicationRecord
   end
 
   # 回传BTC总仓位值 = 比特币资产总值/流动性资产总值
-  def self.btc_level
-    btc_value_twd/total_flow_assets_twd*100
+  def self.btc_level( btc_price = nil )
+    btc_value_twd(btc_price)/total_flow_assets_twd(btc_price)*100
   end
 
   # 要写入记录列表的值
