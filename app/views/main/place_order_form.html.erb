@@ -54,6 +54,10 @@
     <td><%= text_field_tag(:amount, @amount) %></td>
   </tr>
   <tr>
+    <td>额度：</td>
+    <td><%= to_n(@price*@amount)+' USDT' if @price and @amount %></td>
+  </tr>
+  <tr>
     <td colspan="2" align="right" class="tfoot">
       <%= button_tag( t(:order_calculate), type: 'button', id: 'calculate_button', onclick: 'submit_calculate()' ) %>&nbsp;&nbsp;&nbsp;
       <%= button_tag( t(:place_order_to_huobi), type: 'button', id: 'submit_button', onclick: 'submit_order()' ) %>

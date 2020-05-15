@@ -78,7 +78,34 @@ class MainController < ApplicationController
 
   # 火币下单确认页
   def place_order_form
-    if params[:id]
+    if params[:keep_level] # 仓位恒定投资法
+      keep = $btc_base_level.to_f/100 # 想要保持的基准仓位
+      level = Property.btc_level/100 # BTC总仓位值
+      diff = 0 # $highlight_level_diff # 仓位变化大于此值则高亮显示以提示买卖时机
+      capital = Property.total_investable_fund_records_usdt # 跨账号所有可投资金台币现值
+      amount = Property.btc_amount #
+      value = Property.total_flow_assets_usdt # 跨账号流动性资产总值USDT现值
+      price = btc_price # BTC现价
+      @debug_msg = "#{to_n(keep,4)} #{to_n(level,4)} #{to_n(diff,4)} #{to_n(capital,4)} #{to_n(amount,4)} #{to_n(value,4)} #{to_n(price,4)} "
+      # 如果仓位小于保持仓位且还有剩余资金则买进
+      if (keep-level) > diff and capital > 0
+        # 计算用多少USDT购买
+        usdt = value*(keep-level)
+        # 买入的单位数
+        unit = usdt/price
+        @deal_type = 'buy-limit'
+      end
+      # 如果仓位大于保持仓位且还有剩余BTC则卖出
+      if (level-keep) > diff and amount > 0
+        # 计算要卖出多少USDT
+        usdt = value*(level-keep)
+        # 卖出的单位数
+        unit = usdt/price
+        @deal_type = 'sell-limit'
+      end
+      @amount = unit.floor(6)
+      @price = price
+    elsif params[:id]
       @deal_record_id = params[:id]
       if deal_record = DealRecord.find(@deal_record_id)
         @amount = deal_record.real_amount.floor(6)

@@ -495,9 +495,13 @@ module ApplicationHelper
   # 取得最新的比特币报价
   def btc_price
     begin
-      root = JSON.parse(`python py/huobi_price.py symbol=btcusdt period=1min size=1 from=0 to=0`)
-      if root["data"] and root["data"][0]
-        return format("%.2f",root["data"][0]["close"]).to_f
+      if $auto_update_btc_price > 0
+        root = JSON.parse(`python py/huobi_price.py symbol=btcusdt period=1min size=1 from=0 to=0`)
+        if root["data"] and root["data"][0]
+          return format("%.2f",root["data"][0]["close"]).to_f
+        else
+          return btc_price_local
+        end
       else
         return btc_price_local
       end

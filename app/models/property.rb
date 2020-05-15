@@ -142,6 +142,7 @@ class Property < ApplicationRecord
     end
     # 计算可投资金的实际比例
     investable = total_investable_fund_records # 所有可投资金数据集
+    investable_cny = investable.sum {|p| p.amount_to(:cny)}
     if eq_btc > 0
       capital_p = (investable.sum {|p| p.amount_to(:btc)})/eq_btc*100
     else
@@ -153,7 +154,7 @@ class Property < ApplicationRecord
     sim_ave_cost = (record_cost+trezor_cost+sim_cost)/(record_amount+trezor_amount+sim_amount)
     # 比特币每1个百分点对应多少人民币
     begin
-      btc_p = p_btc/(p_trezor + p_short)*100
+      btc_p = btc_level #p_btc/(p_trezor + p_short)*100
       one_btc2cny = p_btc*(new.btc_to_cny)/btc_p
     rescue
       btc_p = one_btc2cny = 0
@@ -167,7 +168,7 @@ class Property < ApplicationRecord
       trezor_p = huobi_p = yuebao_p = 0
     end
     if is_admin
-      return p_btc, eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, total_real_profit.to_i.to_s + ' ', total_unsell_profit.to_i.to_s + ' ', ave_hour_profit.to_i.to_s + ' ', total_real_p_24h.to_s + ' ', trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p
+      return p_btc, eq_btc, btc_p, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, total_real_profit.to_i.to_s + ' ', total_unsell_profit.to_i.to_s + ' ', ave_hour_profit.to_i.to_s + ' ', total_real_p_24h.to_s + ' ', trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p, investable_cny
     else
       p_fbtc = Property.tagged_with('家庭比特币').sum {|p| p.amount_to(:btc)}
       p_finv = Property.tagged_with('家庭投资').sum {|p| p.amount_to(:btc)}
@@ -176,7 +177,7 @@ class Property < ApplicationRecord
       else
         p_fbtc_finv = 0
       end
-      return p_fbtc, p_finv.floor(8), p_fbtc_finv, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, '', '', '', '', trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p
+      return p_fbtc, p_finv.floor(8), p_fbtc_finv, sim_ave_cost, real_ave_cost, trezor_ave_cost, total_ave_cost, price_p, one_btc2cny, '', '', '', '', trezor_p, huobi_p, yuebao_p, capital_p, btc_ex_p, investable_cny
     end
   end
 
@@ -214,6 +215,11 @@ class Property < ApplicationRecord
      trezor_total_cost_twd*(new.twd_to_usdt)
   end
 
+  # 比特币资料集
+  def self.btc_records
+    Property.tagged_with('比特币')
+  end
+
   # 比特币的总数
   def self.total_btc_amount
     btc_records.sum {|p| p.amount}
@@ -247,11 +253,6 @@ class Property < ApplicationRecord
     btc_ave_cost
   end
 
-  # 比特币资料集
-  def self.btc_records
-    Property.tagged_with('比特币')
-  end
-
   # 交易所持仓的数据集
   def self.btc_in_huobi_records
     result = []
@@ -273,8 +274,18 @@ class Property < ApplicationRecord
   end
 
   # 跨账号流动性资产总值台币现值
+  def self.total_flow_assets_records
+    new.get_properties_from_tags('比特币 可投资金',nil,'a')
+  end
+
+  # 跨账号流动性资产总值台币现值
   def self.total_flow_assets_twd
-    new.get_properties_from_tags('比特币 可投资金',nil,'a').sum {|p| p.amount_to(:twd)}
+    total_flow_assets_records.sum {|p| p.amount_to(:twd)}
+  end
+
+  # 跨账号流动性资产总值USDT现值
+  def self.total_flow_assets_usdt
+    total_flow_assets_records.sum {|p| p.amount_to(:usdt)}
   end
 
   # 该账号BTC数据集
@@ -318,6 +329,11 @@ class Property < ApplicationRecord
   # 跨账号所有可投资金台币现值
   def self.total_investable_fund_records_twd
     total_investable_fund_records.sum {|p| p.amount_to(:twd)}
+  end
+
+  # 跨账号所有可投资金USDT现值
+  def self.total_investable_fund_records_usdt
+    total_investable_fund_records.sum {|p| p.amount_to(:usdt)}
   end
 
   # 计算冷钱包的成本均价
@@ -378,6 +394,11 @@ class Property < ApplicationRecord
     year_goal = (btc_value_of_twd*year_profit_p).to_i
     year_profit = (btc_value_of_twd*profit_p_value).to_i
     return "预估年化利率：#{format("%.2f", profit_p_value*100)}%" + br + "比特币年目标：#{year_goal}" + br + "比特币年获利：#{year_profit}" + br + "平均每月获利：#{year_profit/12}"
+  end
+
+  # 回传BTC总仓位值 = 比特币资产总值/流动性资产总值
+  def self.btc_level
+    btc_value_twd/total_flow_assets_twd*100
   end
 
   # 要写入记录列表的值

@@ -77,6 +77,9 @@ pre {
   text-decoration:none;
   background-color:transparent;
 }
+.buysell_high a, .buysell_low a, .buysell_high a:visited, .buysell_low a:visited {
+  color: white;
+}
 #login_form {
   margin-top: 1em;
 }
@@ -150,7 +153,7 @@ pre {
   padding: 2px;
 }
 .trial_goal_unreach, .buysell_low {
-  background-color: #32CD32;
+  background-color: #090;
   color: white;
   padding: 2px;
 }
