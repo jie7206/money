@@ -81,26 +81,26 @@ class MainController < ApplicationController
     if params[:keep_level] # 仓位恒定投资法
       keep = $btc_base_level.to_f/100 # 想要保持的基准仓位
       level = Property.btc_level/100 # BTC总仓位值
-      diff = 0 # $highlight_level_diff # 仓位变化大于此值则高亮显示以提示买卖时机
       capital = Property.total_investable_fund_records_usdt # 跨账号所有可投资金台币现值
-      amount = Property.btc_amount #
+      amount = Property.btc_amount # BTC总数
       value = Property.total_flow_assets_usdt # 跨账号流动性资产总值USDT现值
       price = btc_price # BTC现价
-      @debug_msg = "#{to_n(keep,4)} #{to_n(level,4)} #{to_n(diff,4)} #{to_n(capital,4)} #{to_n(amount,4)} #{to_n(value,4)} #{to_n(price,4)} "
+      fee_rate = $fees_rate # 交易手续费率
       # 如果仓位小于保持仓位且还有剩余资金则买进
-      if (keep-level) > diff and capital > 0
+      if (keep-level) > 0 and capital > 0
         # 计算用多少USDT购买
         usdt = value*(keep-level)
         # 买入的单位数
         unit = usdt/price
+        unit = buy_amount_to_keep_level capital, amount, keep, price, fee_rate
         @deal_type = 'buy-limit'
       end
       # 如果仓位大于保持仓位且还有剩余BTC则卖出
-      if (level-keep) > diff and amount > 0
+      if (level-keep) > 0 and amount > 0
         # 计算要卖出多少USDT
         usdt = value*(level-keep)
         # 卖出的单位数
-        unit = usdt/price
+        unit = sell_amount_to_keep_level capital, amount, keep, price
         @deal_type = 'sell-limit'
       end
       @amount = unit.floor(6)
@@ -362,11 +362,10 @@ class MainController < ApplicationController
       end
     end
     flash.now[:notice] = "已将#{count}笔#{symbol}(#{period})的数据存入数据库！(#{now})"
-    # flash.now[:notice] = "已读取#{count}笔#{symbol}(#{period})的数据！(#{now})"
     @text = <<-EOF
               如有需要，请到系统参数页面修改下列参数后执行:
               <ol>
-                <li>$mt_period = '#{$mt_period}'</li>
+                <li>$kline_data_period = '#{$kline_data_period}'</li>
                 <li>$kline_data_symbol = '#{$kline_data_symbol}'</li>
                 <li>$kline_data_from = '#{$kline_data_from}'</li>
                 <li>$kline_data_to = '#{$kline_data_to}'</li>
@@ -546,10 +545,12 @@ class MainController < ApplicationController
               level = amount*price/value
               # 如果仓位小于保持仓位且还有剩余资金则买进
               if (keep-level) > diff and capital > 0
-                # 计算用多少USDT购买
-                usdt = value*(keep-level)
                 # 买入的单位数
-                unit = usdt/price*(1-$mt_fee_rate)
+                unit = buy_amount_to_keep_level capital, amount, keep, price, $mt_fee_rate
+                # 计算用多少USDT购买
+                usdt = price*unit
+                # 实际购得的比特币数
+                unit = unit * (1-$mt_fee_rate)
                 # 比特币初始量
                 if !start_amount_flag
                   start_amount = unit
@@ -582,10 +583,10 @@ class MainController < ApplicationController
               end
               # 如果仓位大于保持仓位且还有剩余BTC则卖出
               if (level-keep) > diff and amount > 0
-                # 计算要卖出多少USDT
-                usdt = value*(level-keep)
                 # 卖出的单位数
-                unit = usdt/price
+                unit = sell_amount_to_keep_level capital, amount, keep, price
+                # 计算要卖出多少USDT
+                usdt = price*unit
                 # 累计的单位数
                 amount -= unit
                 # 更新资金余额
@@ -644,7 +645,7 @@ class MainController < ApplicationController
 
           # 测试总次数
           total_test_count += 1
-          puts "total_test_count=#{total_test_count}"
+          puts "pn: #{pn} dv: #{dv} count: #{total_test_count}"
 
           if show_msg and start_time_flag
             message += "持仓:#{$mt_keep_level*100}% 阀值:#{to_n(set_diff_value*100,2)}% 区间:#{$mt_period} 间隔:#{add_zero(day_diff(start_time,end_time),3)}天 #{to_d(start_time,true)} → #{to_d(end_time,true)} 资产:#{ori_capital.to_i} → #{value.to_i}(#{add_zero(to_n(cap_rate,2),3)}%) 币数:#{to_n(start_amount,8)} → #{to_n(amount,8)}(#{add_zero(to_n(btc_rate,2),3)}%) 买/卖:#{add_zero(buy_count,3)}/#{add_zero(sell_count,3)}/#{buy_count+sell_count}<br/>"

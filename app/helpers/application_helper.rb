@@ -737,4 +737,14 @@ module ApplicationHelper
     @text = "<div id='mt_title'>#{link_str}</div>\n#{message}"
   end
 
+  # 计算保持仓位所需卖出的币数
+  def sell_amount_to_keep_level( a, b, k, p ) # a:原有资金 b:原有币数 k:基准仓位 p:现价
+    (((1-k)*p*b-k*a)/p)
+  end
+
+  # 计算保持仓位所需买入的币数
+  def buy_amount_to_keep_level( a, b, k, p, f ) # a:原有资金 b:原有币数 k:基准仓位 p:现价 f:手续费率
+    (k*(p*b+a)-p*b)/(p*(1-f*(1-k)))
+  end
+
 end

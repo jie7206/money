@@ -1,19 +1,24 @@
 <%
 # 初始化参数
-start_price = (@price_now*(1-$level_trial_rate)).to_i/100*100
-end_price = (@price_now*(1+$level_trial_rate)).to_i/100*100
-@price_step = $level_trial_price_step
+@keep_level = $btc_base_level #仓位恒定投资法的基准仓位
+@target_level_diff = $highlight_level_diff # 仓位变化大于此值则提示买卖时机
+@price_step = $level_trial_price_step # 每隔多少显示一笔记录
 @price_now_flag = false # 判断是否到达现价区间旗标
 @sell_flag = false # 判断是否到达卖出价
 @buy_flag = false # 判断是否到达买入价
 @level = 0 # 供程序运行时用
+@pos = 8 # 比特币数量显示位数
+@level_trial_rate = $level_trial_rate # 仓位试算最高最低价区间比例
+@fee_rate = $fees_rate # 交易手续费率
+start_price = (@price_now*(1-@level_trial_rate)).to_i/100*100
+end_price = (@price_now*(1+@level_trial_rate)).to_i/100*100
 
 # 依据价格显示对应的背景色
 def style_class( price )
   # 计算仓位
   @level = Property.btc_level(price)
   # 高亮卖出价
-  if !@sell_flag and @level <= $btc_base_level+$highlight_level_diff
+  if !@sell_flag and @level <= @keep_level+@target_level_diff
     @sell_flag = true
     return raw "class=\"start_sell\""
   end
@@ -23,21 +28,40 @@ def style_class( price )
     return raw "class=\"price_now\""
   end
   # 高亮买入价
-  if !@buy_flag and Property.btc_level(price) <= $btc_base_level-$highlight_level_diff
+  if !@buy_flag and Property.btc_level(price) <= @keep_level-@target_level_diff
     @buy_flag = true
     return raw "class=\"start_buy\""
   end
   return change_row_color
 end
 
-# 计算交易资金
-def cal_usdt( price )
-  Property.total_flow_assets_usdt(price)*((@keep-@level)/100)
+# 计算卖出的币数
+def cal_sell_amount( price )
+  a = @fund_usdt              # 原有资金
+  b = @btc_amount.floor(@pos) # 原有币数
+  k = @keep_level.to_f/100    # 基准仓位
+  p = price                   # 现价
+  @sell_amount = sell_amount_to_keep_level a, b, k, p
 end
 
-# 计算交易币数
-def cal_amount( price )
-  @trade_usdt.abs/price
+# 计算买入的币数
+def cal_buy_amount( price )
+  a = @fund_usdt              # 原有资金
+  b = @btc_amount.floor(@pos) # 原有币数
+  k = @keep_level.to_f/100    # 基准仓位
+  p = price                   # 现价
+  f = @fee_rate               # 交易手续费率
+  @buy_amount = buy_amount_to_keep_level a, b, k, p, f
+end
+
+# 计算卖出后获得的资金
+def cal_sell_usdt( price )
+  cal_sell_amount(price)*price*(1-@fee_rate)
+end
+
+# 计算买入后付出的资金
+def cal_buy_usdt( price )
+  cal_buy_amount(price)*price
 end
 %>
 <style>
@@ -54,38 +78,75 @@ end
   }
 </style>
 <center>
-<h2><%= t(:level_trial_list) %> (区间幅度: <%= ($level_trial_rate*100).to_i %>%)</h2>
-<table width="<%=$default_table_width*0.7%>">
+<h2><%= t(:level_trial_list) %> (区间幅度: <%= (@level_trial_rate*100).to_i %>%)</h2>
+<table width="<%=$default_table_width%>">
   <tr class="thead">
     <td>价格(USDT)</td>
-    <td>持仓水位(%)</td>
+    <td>原始仓位(%)</td>
     <td>卖出币数(฿)</td>
-    <td>资金收益(¥)</td>
-    <td>资金合计(¥)</td>
-    <td>买入资金(¥)</td>
+    <td>卖后币数(฿)</td>
+    <td>资金增加(¥)</td>
+    <td>卖后资金(¥)</td>
+    <td>卖后仓位(%)</td>
+    <td>资金减少(¥)</td>
+    <td>买后资金(¥)</td>
     <td>币数增加(฿)</td>
-    <td>币数合计(฿)</td>
+    <td>买后币数(฿)</td>
+    <td>买后仓位(%)</td>
   </tr>
   <% (end_price..start_price).step(@price_step*-1).each do |price| %>
     <tr <%= style_class(price) %>>
       <% # BTC价格 %>
       <td align="right"><%= price %></td>
-      <% # 持仓水位 %>
-      <td align="right"><%= to_n(Property.btc_level(price),2) %></td>
-      <% # 卖出币数 %>
-      <% @trade_usdt = cal_usdt(price) %>
-      <% @trade_amount = cal_amount(price) %>
-      <td align="right"><%= to_n(@trade_amount,8) if @trade_usdt < 0 %></td>
-      <% # 资金收益 %>
-      <td align="right"><%= (@trade_usdt.abs*$usdt_to_cny).to_i if @trade_usdt < 0 %></td>
-      <% # 资金合计 %>
-      <td align="right"><%= ((@fund_usdt+@trade_usdt.abs)*$usdt_to_cny).to_i if @trade_usdt < 0 %></td>
-      <% # 买入资金 %>
-      <td align="right"><%= (@trade_usdt*$usdt_to_cny).to_i if @trade_usdt > 0 %></td>
-      <% # 币数增加 %>
-      <td align="right"><%= to_n(@trade_amount,8) if @trade_usdt > 0 %></td>
-      <% # 币数合计 %>
-      <td align="right"><%= to_n(@btc_amount+@trade_amount,8) if @trade_usdt > 0 %></td>
+      <% # 原始仓位 %>
+      <% btc_level = Property.btc_level(price) %>
+      <td align="right"><%= to_n(btc_level,2) %></td>
+      <% if btc_level >= @keep_level %>
+        <% # 卖出币数 %>
+        <% sell_usdt = cal_sell_usdt(price) %>
+        <td align="right"><%= to_n(@sell_amount,@pos) %></td>
+        <% # 卖后币数 %>
+        <% new_amount = @btc_amount-@sell_amount %>
+        <td align="right"><%= to_n(new_amount,@pos) %></td>
+        <% # 资金增加 %>
+        <td align="right"><%= (sell_usdt*$usdt_to_cny).to_i %></td>
+        <% # 卖后资金 %>
+        <% new_fund_usdt = @fund_usdt+sell_usdt %>
+        <td align="right"><%= (new_fund_usdt*$usdt_to_cny).to_i %></td>
+        <% # 卖后仓位 %>
+        <% new_level = (new_amount*price)/(new_amount*price+new_fund_usdt)*100 %>
+        <td align="right"><%= to_n(new_level) %></td>
+        <% # 买入资金 %>
+        <td align="right"></td>
+        <% # 买后资金 %>
+        <td align="right"></td>
+        <% # 币数增加 %>
+        <td align="right"></td>
+        <% # 买后币数 %>
+        <td align="right"></td>
+        <% # 买后仓位 %>
+        <td align="right"></td>
+      <% else %>
+        <td align="right"></td>
+        <td align="right"></td>
+        <td align="right"></td>
+        <td align="right"></td>
+        <td align="right"></td>
+        <% # 资金减少 %>
+        <% buy_usdt = cal_buy_usdt( price ) %>
+        <td align="right"><%= (buy_usdt*$usdt_to_cny).to_i %></td>
+        <% # 买后资金 %>
+        <% new_fund_usdt = @fund_usdt-buy_usdt %>
+        <td align="right"><%= (new_fund_usdt*$usdt_to_cny).to_i %></td>
+        <% # 币数增加 %>
+        <td align="right"><%= to_n(@buy_amount,@pos) %></td>
+        <% # 买后币数 %>
+        <% new_amount = @btc_amount+@buy_amount %>
+        <td align="right"><%= to_n(new_amount,@pos) %></td>
+        <% # 买后仓位 %>
+        <% new_level = (new_amount*price)/(new_amount*price+new_fund_usdt)*100 %>
+        <td align="right"><%= to_n(new_level) %></td>
+      <% end %>
     </tr>
   <% end %>
 </table>

@@ -28,7 +28,7 @@
 
   # 点击交易列表里的仓位值会带入下单页并自动计算价格与买卖数量
   def show_btc_p_link_order
-    link_to "#{to_n(@btc_p,1)}%", controller: :main, action: :place_order_form, keep_level: 1
+    link_to "#{to_n(@btc_p,2)}%", controller: :main, action: :place_order_form, keep_level: 1
   end
 %>
 <h2>
