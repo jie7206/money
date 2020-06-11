@@ -24,25 +24,29 @@ def update_huobi_deal_records(time_line='2019-12-14 12:00:00'):
         n += 1
         this_day = next_day
 
-    for start_date, end_date in date_array:
-        for deal_type in ['buy-limit', 'buy-market']:
-            for data in orders_matchresults('btcusdt', deal_type, start_date, end_date)['data']:
-                data_id = int(data['id'])
-                sql = "SELECT id FROM deal_records WHERE data_id = %i" % data_id
-                result = CONN.execute(sql)
-                if not len(result.fetchall()) == 1:
-                    price = float(data['price'])
-                    amount = float(data['filled-amount'])
-                    fees = float(data['filled-fees'])
-                    earn_limit = float((fees*price+price*amount*0.002)*7.1)
-                    created_at = db_time(data['created-at'])
-                    if created_at > time_line:
-                        sql = "INSERT INTO deal_records (account, data_id, symbol, deal_type, price, amount, fees, \
-                                earn_limit, loss_limit, created_at, updated_at, auto_sell) VALUES ('170', %i, 'btcusdt', '%s', %f, %f, %f, %.4f, 0, '%s', '%s', 0)" \
-                                % (data_id, deal_type, price, amount, fees, earn_limit, created_at, created_at)
-                        CONN.execute(sql)
-                        CONN.commit()
-                        count += 1
+    with open(PARAMS, 'r') as f:
+        arr = f.read().strip().split(' ')
+        acc_id = arr[24]
+        for start_date, end_date in date_array:
+            for deal_type in ['buy-limit', 'buy-market']:
+                for data in orders_matchresults('btcusdt', deal_type, start_date, end_date)['data']:
+                    time.sleep(0.1)
+                    data_id = int(data['id'])
+                    sql = "SELECT id FROM deal_records WHERE data_id = %i" % data_id
+                    result = CONN.execute(sql)
+                    if not len(result.fetchall()) == 1:
+                        price = float(data['price'])
+                        amount = float(data['filled-amount'])
+                        fees = float(data['filled-fees'])
+                        earn_limit = float((fees*price+price*amount*0.002)*7.1)
+                        created_at = db_time(data['created-at'])
+                        if created_at > time_line:
+                            sql = "INSERT INTO deal_records (account, data_id, symbol, deal_type, price, amount, fees, \
+                                    earn_limit, loss_limit, created_at, updated_at, auto_sell) VALUES ('%s', %i, 'btcusdt', '%s', %f, %f, %f, %.4f, 0, '%s', '%s', 0)" \
+                                    % (acc_id, data_id, deal_type, price, amount, fees, earn_limit, created_at, created_at)
+                            CONN.execute(sql)
+                            CONN.commit()
+                            count += 1
     return count
 
 

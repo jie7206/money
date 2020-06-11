@@ -381,8 +381,15 @@ module ApplicationHelper
         </tr>"
   end
 
+  # 重新读取资产净值
+  def reload_net_value( admin = admin? )
+    @properties_net_value_twd = Property.net_value :twd, admin_hash(admin)
+    @properties_net_value_cny = Property.net_value :cny, admin_hash(admin)
+  end
+
   # 显示资产净值链接
   def show_net_value_link
+    reload_net_value
     flow_assets_twd = Property.total_flow_assets_twd.to_i # 流动性资产总值
     btc_value_twd = Property.btc_value_twd.to_i # 比特币资产总值
     investable_fund_twd = Property.total_investable_fund_records_twd.to_i # 可买币资产总值

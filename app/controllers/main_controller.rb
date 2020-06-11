@@ -385,7 +385,11 @@ class MainController < ApplicationController
         while true
           from_time, to_time, next_from_time = \
             get_kline_time(get_from_time,$mt_to,$mt_period)
-          result += get_kline($mt_period,0,'btcusdt',from_time,to_time).reverse
+          begin
+            result += get_kline($mt_period,0,'btcusdt',from_time,to_time).reverse
+          rescue
+            break
+          end
           if next_from_time != nil
             get_from_time = next_from_time
           else
@@ -394,7 +398,11 @@ class MainController < ApplicationController
         end
         return result
       else
-        return get_kline($mt_period,$mt_size)
+        begin
+          return get_kline($mt_period,$mt_size)
+        rescue
+          return []
+        end
       end
     end
   end
@@ -492,7 +500,7 @@ class MainController < ApplicationController
           break if !$mts_random_date and mts_already_run
 
           # 初始化参数
-          capital = ori_capital = 10000 # 投入资金(USDT)
+          capital = ori_capital = $mt_ori_usdt # 投入资金(USDT)
           amount = start_amount = 0 # 持有的比特币数量
           start_amount_flag = false # 比特币初始量旗标
           keep = $mt_keep_level # 保持比特币仓位

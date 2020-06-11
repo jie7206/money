@@ -1,157 +1,36 @@
 ----------------------------------------------------------------------
-2020-03-14 21:00:56 Invest Between: 4200.00 ~ AUTO
-4 Digital Prices updated
-Test Price: 3700.00 Now: 5434.50 30_Min: 5358.00 120_Max: 5498.00
-Price Now Update to: 3700.00
-BTC Level: 40.75% (FORCE_BUY:False)
-Total  USDT: 2131.4311 USDT (14908.93 CNY)
-Invest Cost: 168.0000 USDT (1175.13 CNY)
-Buy  Amount: 0.045405 BTC (1175.13 CNY)
-Next Time: 2020-03-14 21:30:58 (30.02 M | 0.50 H)
-Zero Time: 2020-03-15 03:21:46 (6.35 H | 0.26 D)
-Sim Order Price: 3700.56, Amount: 0.045405, Type: buy-limit
-Sim BTC Level: 39.16%, Ave: 6549.04
+2020-06-10 17:23:48 Invest Between: 3000.00 ~ AUTO
+Price Now: 9720.73 360_Min: 9710.00 120_Max: 9763.57(0.55%)
+*** Double Buy Every 100 Calculated ***
+Buy Order Failure! Too small buy usdt( 5.05 < 5.20 ).
+2020-06-10 17:32:47:9710.25 360min:9710.00 sp:0 buy:True sell:True over_max: False reach_p(9710.00:9719.71): False lower: True    
+2020-06-10 17:32:52:9710.23 360min:9710.00 sp:0 buy:True sell:True over_max: False reach_p(9710.00:9719.71): False lower: True    
+2020-06-10 17:32:57:9710.01 360min:9710.00 sp:0 buy:True sell:True over_max: False reach_p(9710.00:9719.71): False lower: True    
+2020-06-10 17:33:03:9705.08 360min:9705.08 sp:0 buy:True sell:True over_max: False reach_p(9705.08:9714.79): False lower: True    
+2020-06-10 17:33:08:9706.49 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:33:13:9712.58 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:33:18:9712.59 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:33:23:9712.59 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:33:28:9712.60 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:33:33:9712.59 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:33:38:9712.10 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:33:44:9712.10 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:33:49:9712.11 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:33:54:9712.59 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:33:59:9712.69 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:34:04:9712.69 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
+2020-06-10 17:34:09:9712.70 360min:9705.00 sp:0 buy:True sell:True over_max: False reach_p(9705.00:9714.70): False lower: True    
 ----------------------------------------------------------------------
-2020-03-14 21:03:27 Invest Between: 4200.00 ~ AUTO
-0 Digital Prices updated
-Price Now: 5445.10 60_Min: 0.00 120_Max: 0.00
-Buy conditions not met, Check if can sell...
-Profit: 15060.05 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 21:33:27 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 21:04:04 Invest Between: 4200.00 ~ AUTO
-4 Digital Prices updated
-Test Price: 5350.00 Now: 5436.87 60_Min: 5318.00 120_Max: 5498.00
-Price Now Update to: 5350.00
-BTC Level: 49.86% (FORCE_BUY:False)
-Total  USDT: 2131.4311 USDT (14908.93 CNY)
-Invest Cost: 25.4100 USDT (177.74 CNY)
-Buy  Amount: 0.004750 BTC (177.74 CNY)
-Next Time: 2020-03-14 21:34:06 (30.02 M | 0.50 H)
-Zero Time: 2020-03-16 15:01:55 (41.96 H | 1.75 D)
-Sim Order Price: 5350.80, Amount: 0.004750, Type: buy-limit
-Sim BTC Level: 43.33%, Ave: 6958.13
-----------------------------------------------------------------------
-2020-03-14 21:19:52 Invest Between: 4200.00 ~ AUTO
-0 Digital Prices updated
-Price Now: 5358.65 60_Min: 5318.00 120_Max: 5498.00
-Buy conditions not met, Check if can sell...
-Profit: 14820.95 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 21:49:52 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 21:36:15 Invest Between: 4200.00 ~ AUTO
-2 Digital Prices updated
-Price Now: 5344.74 60_Min: 0.00 120_Max: 0.00
-BTC Level: 49.84% (FORCE_BUY:True)
-Total  USDT: 2131.4311 USDT (14908.93 CNY)
-Invest Cost: 25.6400 USDT (179.35 CNY)
-Buy  Amount: 0.004797 BTC (179.35 CNY)
-Next Time: 2020-03-14 22:06:15 (30.00 M | 0.50 H)
-Zero Time: 2020-03-16 15:10:07 (41.56 H | 1.73 D)
-Send Order(74767881988) successfully
-1 Deal Records added
-USDT Trade Now: 2105.7948 (14729.61 CNY)
-BTC Trade Now: 0.30098762 (11254.22 CNY) Total: 25983.84 CNY
-BTC Level Now: 50.44%  Ave: 5355.40 Profit Now: -57.64 CNY
-4 Huobi Assets Updated, Send Order Process Completed
-----------------------------------------------------------------------
-2020-03-14 21:38:35 Invest Between: 4200.00 ~ AUTO
-1 Digital Prices updated
-Price Now: 5337.46 60_Min: 5327.00 120_Max: 5498.00
-Buy conditions not met, Check if can sell...
-Profit: -80.26 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 22:08:35 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 21:47:29 Invest Between: 4200.00 ~ AUTO
-3 Digital Prices updated
-Price Now: 5331.66 60_Min: 5327.00 120_Max: 5493.00
-Buy conditions not met, Check if can sell...
-Profit: -144.62 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 22:17:29 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 21:48:52 Invest Between: 4200.00 ~ AUTO
-2 Digital Prices updated
-Price Now: 5325.43 60_Min: 5311.02 120_Max: 5493.00
-Buy conditions not met, Check if can sell...
-Profit: -170.76 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 22:18:53 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 21:50:01 Invest Between: 4200.00 ~ AUTO
-1 Digital Prices updated
-Price Now: 5319.79 60_Min: 5311.02 120_Max: 5469.98
-Buy conditions not met, Check if can sell...
-Profit: -194.42 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 22:20:02 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 21:52:12 Invest Between: 4200.00 ~ AUTO
-0 Digital Prices updated
-Price Now: 5327.25 60_Min: 5311.02 240_Max: 5498.00
-Buy conditions not met, Check if can sell...
-Profit: -163.13 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 22:22:12 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 21:56:34 Invest Between: 4200.00 ~ AUTO
-4 Digital Prices updated
-Price Now: 5308.07 120_Min: 5300.00 240_Max: 5498.00
-Buy conditions not met, Check if can sell...
-Profit: -243.59 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 22:26:35 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 21:56:52 Invest Between: 4200.00 ~ AUTO
-4 Digital Prices updated
-Price Now: 5300.00 120_Min: 5300.00 240_Max: 5498.00
-Buy conditions not met, Check if can sell...
-Profit: -277.45 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 22:26:53 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 21:59:27 Invest Between: 4200.00 ~ AUTO
-1 Digital Prices updated
-Price Now: 5290.52 120_Min: 5270.15 240_Max: 5498.00
-Buy conditions not met, Check if can sell...
-Profit: -317.22 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 22:29:28 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 22:17:56 Invest Between: 4200.00 ~ AUTO
-4 Digital Prices updated
-Price Now: 5336.74 120_Min: 5270.15 240_Max: 5498.00
-Buy conditions not met, Check if can sell...
-Profit: -123.31 < 100.00 or Sell Count = 0 or Sell Time < 1800
-Next Time: 2020-03-14 22:47:56 (30.00 M | 0.50 H)
-----------------------------------------------------------------------
-2020-03-14 22:18:23 Invest Between: 4200.00 ~ AUTO
-0 Digital Prices updated
-Price Now: 5344.50 120_Min: 5270.15 240_Max: 5498.00
-Buy conditions not met, Check if can sell...
-Profit: -90.76 < 100.00 or Sell Count = 0 or Sell Time < 600
-Next Time: 2020-03-14 22:28:23 (10.00 M | 0.17 H)
-----------------------------------------------------------------------
-2020-03-14 22:38:52 Invest Between: 4200.00 ~ AUTO
-1 Digital Prices updated
-Can't get price, wait 5 seconds for next operate
-----------------------------------------------------------------------
-2020-03-14 22:38:57 Invest Between: 4200.00 ~ AUTO
-1 Digital Prices updated
-Price Now: 5360.81 120_Min: 5270.15 240_Max: 5498.00
-Buy conditions not met, Check if can sell...
-Profit: -22.33 < 100.00 or Sell Count = 0 or Sell Time < 600
-Next Time: 2020-03-14 22:48:58 (10.00 M | 0.17 H)
-----------------------------------------------------------------------
-2020-03-14 22:44:58 Invest Between: 4200.00 ~ AUTO
-0 Digital Prices updated
-Price Now: 5343.45 120_Min: 0.00 240_Max: 0.00
-Buy conditions not met, Check if can sell...
-Profit: -95.16 < 100.00 or Sell Count = 0 or Sell Time < 600
-Next Time: 2020-03-14 22:54:58 (10.00 M | 0.17 H)
-----------------------------------------------------------------------
-2020-03-14 22:45:14 Invest Between: 4200.00 ~ AUTO
-0 Digital Prices updated
-Test Price: 5200.00 Now: 5335.20 120_Min: 5270.15 240_Max: 5498.00
-Price Now Update to: 5200.00
-BTC Level: 59.74% (FORCE_BUY:False)
-Total  USDT: 2105.7948 USDT (14729.61 CNY)
-Invest Cost: 63.0000 USDT (440.67 CNY)
-Buy  Amount: 0.012115 BTC (440.67 CNY)
-Next Time: 2020-03-14 23:05:16 (20.02 M | 0.33 H)
-Zero Time: 2020-03-15 09:54:18 (11.15 H | 0.46 D)
-Sim Order Price: 5200.78, Amount: 0.012115, Type: buy-limit
-Sim BTC Level: 56.64%, Ave: 4204.45
+2020-06-11 09:32:01 Invest Between: 3000.00 ~ AUTO
+Test Price: 9900.00 Now: 9898.27 360_Min: 9823.03 480_Max: 9980.94(1.61%)
+Price Now Update to: 9900.00
+*** Double Buy Every 100 Calculated ***
+BTC Level: 8.88% (FORCE_BUY:False) for AccId: 135(6565695)
+Total  USDT: 1715.6014 USDT (12121.31 CNY)
+Invest Cost: 7.0000 USDT (49.46 CNY)
+Buy Amount: 0.000707 BTC (49.46 CNY)
+Get Amount: 0.00070566 BTC (49.46 CNY)
+Next Time: 2020-06-11 09:42:10 (10.15 M | 0.17 H)
+Zero Time: 2020-06-13 02:59:38 (41.46 H | 1.73 D)
+Sim Order Price: 9901.98, Amount: 0.000707, Type: buy-limit
+Sim BTC Level: 9.25%(+0.37%)

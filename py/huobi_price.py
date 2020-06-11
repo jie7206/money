@@ -25,9 +25,7 @@ def get_socket_huobi_price(from_time, to_time, symbol='btcusdt', period='60min')
     ws.send(trade_str)
     compress_data = ws.recv()
     response = gzip.decompress(compress_data).decode('utf-8')
-    root = json.loads(response)
-    if root['status'] == 'ok':
-        return root
+    return json.loads(response)
 
 
 if __name__ == '__main__':

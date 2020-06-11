@@ -88,7 +88,7 @@ end_price2 = @price_now*(1+rate2)
     <tr valign="top">
       <td><%= n %></td>
       <td>单次卖出的最低获利值</td>
-      <td><%= show_invest_param_value(12) %> <%= invest_params_setup_link(12,1,500,10,0,true) %></td>
+      <td><%= show_invest_param_value(12) %> <%= invest_params_setup_link(12,1,100,1,0,true) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top" class="set_aif_bg_rose">
@@ -124,7 +124,7 @@ end_price2 = @price_now*(1+rate2)
     <tr valign="top" class="set_aif_bg_rose">
       <td><%= n %></td>
       <td>卖出几分钟内的最高价</td>
-      <td><%= show_invest_param_value(18) %> <%= invest_params_setup_link(18,0,480,5) %></td>
+      <td><%= show_invest_param_value(18) %> <%= invest_params_setup_link(18,0,60*24,10) %></td>
       <% n += 1 %>
     </tr>
     <tr valign="top">

@@ -254,9 +254,8 @@ class ApplicationController < ActionController::Base
 
   # 获取资产的净值等统计数据
   def summary( admin = admin? )
+    reload_net_value(admin)
     @show_summary = params[:tags] ? false : true
-    @properties_net_value_twd = Property.net_value :twd, admin_hash(admin)
-    @properties_net_value_cny = Property.net_value :cny, admin_hash(admin)
     @properties_lixi_twd = Property.lixi :twd, admin_hash(admin)
     @properties_value_twd = Property.value :twd, admin_hash(admin,only_positive: true)
     @properties_loan_twd = Property.value :twd, admin_hash(admin,only_negative: true)
@@ -487,7 +486,8 @@ class ApplicationController < ActionController::Base
     begin
       source = file_path ? File.read(file_path) : `python py/huobi_price.py symbol=#{symbol} period=#{period} size=#{size} from=#{from_time} to=#{to_time}`
       root = JSON.parse(source)
-      return root["data"].reverse! if root["data"] and root["data"][0]
+      puts "get #{symbol} #{period} kline with size: #{size} from: #{from_time} to: #{to_time}"
+      return root["data"].reverse! if root["status"] == 'ok' and root["data"] and root["data"][0]
     rescue
       return []
     end
